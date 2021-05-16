@@ -1,0 +1,95 @@
+Conventions:
+
+Label format:
+
+<Type><Identifier>_<Label>
+
+Type: Hardware sections & Compiler special
+m -> Macro
+v -> VRAM
+w -> WRAM
+s -> SRAM
+o -> OAM
+h -> HRAM
+r -> Register & Interrupt Enable
+(none) -> ROM Bank (Subroutine / Data)
+flags / constants / enums are all uppercase
+
+Identifier: Game specific
+
+GFX  -> Graphics (uncompressed)
+BG -> Tilemap (uncompressed)
+
+OBJLst -> OBJ (Sprite) mappings
+BGLst -> special tilemaps
+
+OBJLstAnim -> Table of sprite mapping IDs
+OBJLstAnimOff -> Table of offsets (inc amount) to the current sprite mapping ID
+OBJLstPtrTable -> Pointer table where each entry points to a OBJLst
+OBJLstPtrTableSet -> Pointer table for the above (to not repeat "PtrTable" again)
+OBJLstParentPtrTable -> Pointer table of OBJLstPtrTable ordered in a specific way
+Map_Ending_Write<???>OBJLst
+;--
+DO NOT CALL THEM LIKE THIS
+Pl_JumpYOffTbl ->
+_YOffTbl -> Offset table (Y value only)
+_PosOffTbl -> Offset table (both coords)
+;--
+; CALL THEM INSTEAD:
+_YPath
+_UPath
+_XPath..
+;--
+
+--
+\$A7A[\dA-F]
+L08(.*): db
+;X          ##
+\r\n\tdb    ##
+(?:.*?,){2} ## $&\r\n\t db 
+; =============== FUNCTION ===============
+; =============== START OF ALIGN JUNK ===============
+; =============== END OF BANK ===============
+; ========================================
+ActGFXDef Format:
+- Byte 0: Bank Number
+- Byte 1-2: Ptr to GFX
+- Byte 4: Tiles count
+--
+Title -> Title screen
+Save -> Save select
+Game -> Gameplay
+Map -> Map screen
+CourseClr -> Course clear screen
+Demo -> Demo mode
+Bgm -> Music
+Sfx -> Sound effect (split into SFX1 SFX2 SFX3 SFX4)
+Act -> Actor (object)
+ActInit -> Actor LOAD code
+ActS -> Actor SETUP code (or SHARED)
+Ev -> Event (aka MapSect / patch tilemap) 
+ExActS -> Extra Actor SETUP code
+ExAct -> Extra Actor code
+PlBGColi -> Player Tile collision
+PlActColi -> Player Actor collision
+ActBGColi -> Actor Tile collision
+ExActActColi -> ExActor Actor collision 
+TrRoom -> Treasure Room (ie: the one seen when clearing a level)
+
+wStatic -> shared across "Static screen modes"
+---
+
+Level<num> always refers to the level ID.
+Course<num> always refers to the level number.
+The level designation is always preferred.
+
+
+[TCRF]
+[TCRF?]
+[TODO]
+[POI]
+[BUG]
+[BUG?]
+
+TODOS:
+- Idea: php script to generate variable names from "memory.asm" and "hardware.asm"

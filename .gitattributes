@@ -1,0 +1,7 @@
+* text=false
+
+*.bin binary
+*.evt binary
+*.evp binary
+*.rlc binary
+*.rls binary

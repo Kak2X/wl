@@ -1,0 +1,23 @@
+# trash
+trash/
+
+# build output
+wl.gb
+wl.map
+wl.o
+wl.sav
+wl.sym
+wl.sn*
+
+# provide your own comparision rom
+original.gb
+original.sav
+original.sym
+
+# not necessary
+tempconv.txt
+tempconv.bin
+tempconv.asm
+shell.cmd
+temp.asm
+wl*.asm
