@@ -1133,12 +1133,10 @@ ActS_SpawnHeartInvincible:
 	ld   a, [sActSetX_High]
 	ldi  [hl], a
 	;--
-	; [BUG] This is meant to spawn the heart exactly above the actor, to make it immediately visible.
-	;		Otherwise, it would spawn over the star effect.
-	;		The top collision box size is a good value to determine this, 
-	;		since it goes off the same origin, and its height matches more or less the sprite height.
-	;		However, they used the wrong collision border here.
-	;		It should have been sActSetColiBoxL, though the error is barely perceptible.
+	; Spawn the heart exactly above the actor, to make it immediately visible.
+	; Otherwise, it would spawn over the star effect.
+	; The top collision box size is a good value to determine this, 
+	; since it goes off the same origin, and its height matches more or less the sprite height.
 	ld   a, [sActSetColiBoxU]	; C = ABS(sActSetColiBoxU)
 	cpl							; Note: sActSetColiBoxU is always negative
 	inc  a

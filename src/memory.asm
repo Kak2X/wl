@@ -1131,7 +1131,7 @@ sLvlScrollUpdD1Y_Low  EQU $A9D3
 sLvlScrollUpdD1X_High EQU $A9D4
 sLvlScrollUpdD1X_Low  EQU $A9D5
 sStaticScreenMode EQU $A9D6 ; If set, the current screen is single-screen and unscrollable. Not all are like this.
-sTitleNext EQU $A9D7
+sTitleRetVal EQU $A9D7 ; Return value for the title screen code
 s_X_TitleNext EQU $A9D7
 sCourseClrBonusEnd EQU $A9D7 	; Reminder to switch to the Treasure Room once the bonus games return to the Course Clear screen
 								; This is because

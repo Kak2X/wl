@@ -38,7 +38,7 @@ Mode_Title:
 ; =============== Mode_Title_Intro ===============
 Mode_Title_Intro:
 	; Should we transition from the title screen to another mode?
-	ld   a, [sTitleNext]
+	ld   a, [sTitleRetVal]
 	dec  a					; $01 - Demo mode
 	jr   z, .toDemoMode
 	dec  a					; $02 - Save select
@@ -50,7 +50,7 @@ Mode_Title_Intro:
 .toDemoMode:
 	; Initialize demo mode
 	xor  a						
-	ld   [sTitleNext], a
+	ld   [sTitleRetVal], a
 	ld   [sStaticScreenMode], a
 	ld   a, DEMOMODE_INIT
 	ld   [sDemoMode], a
@@ -102,7 +102,7 @@ Mode_Title_Intro:
 ; =============== Mode_Title_SwitchToSaveSelectInit ===============
 Mode_Title_SwitchToSaveSelectInit:
 	xor  a
-	ld   [sTitleNext], a
+	ld   [sTitleRetVal], a
 	ld   [sStaticScreenMode], a
 	ld   [sMapRetVal], a
 	ld   a, GM_TITLE_INITSAVESEL
@@ -1149,7 +1149,7 @@ CourseClr_GetPlWalkSpeed:
 	ret
 	
 ; =============== CourseClr_IntroMoveR1 ===============
-; Mode $01: Player moves right, until the first door.
+; Mode $02: Player moves right, until the first door.
 CourseClr_IntroMoveR1:
 	call NonGame_Wario_AnimWalkFast
 	

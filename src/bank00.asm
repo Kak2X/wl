@@ -374,7 +374,7 @@ VBlankHandler:
 	ld   [MBC1RomBank], a
 	
 	; If we are in the save select screen, perform the pipe animation
-	ld   a, [sTitleNext]	
+	ld   a, [sTitleRetVal]	
 	cp   a, TITLE_NEXT_SAVE	; Did we transition from title screen to save select?
 	jr   nz, .end			; If not, skip
 	mHomeCall ScreenEvent_Do ; BANK $05
@@ -512,7 +512,7 @@ GameInit:
 	ld   [sGameMode], a
 	ld   [sSubMode], a
 	ld   [sScreenUpdateMode], a
-	ld   [sTitleNext], a
+	ld   [sTitleRetVal], a
 	xor  a					; Initialize new key status
 	ldh  [hJoyNewKeys], a
 	ei						; Enable the interrupts just before entering the main loop

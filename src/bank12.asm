@@ -299,8 +299,8 @@ Title_InitVars:
 ; =============== Title_Mode_Main ===============
 ; This is when the Title Screen is first shown, before the intro cutscene starts.
 Title_Mode_Main:
-	; [TCRF] This sTitleNext value is not used to start the intro
-	ld   a, [sTitleNext]
+	; [TCRF] This sTitleRetVal value is not used to start the intro
+	ld   a, [sTitleRetVal]
 	cp   a, TITLE_NEXT_INTRO
 	jr   z, Title_SwitchToIntro
 	;--
@@ -359,7 +359,7 @@ Intro_Do:
 	jr   z, Intro_CheckCutsceneAct		; If not, handle the main intro
 	; Otherwise, set transition to save select screen.
 	ld   a, TITLE_NEXT_SAVE
-	ld   [sTitleNext], a
+	ld   [sTitleRetVal], a
 	ret
 	
 ; =============== Intro_CheckCutsceneAct ===============
@@ -1083,7 +1083,7 @@ Title_FadeOut_SetPal:
 ; Sets the switch to Demo mode from the title screen.
 Title_SwitchToDemo:
 	ld   a, TITLE_NEXT_DEMO
-	ld   [sTitleNext], a
+	ld   [sTitleRetVal], a
 	xor  a
 	ld   [wTitleMode], a
 	ret
