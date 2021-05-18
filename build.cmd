@@ -10,7 +10,8 @@ if %ERRORLEVEL% neq 0 goto link_fail
 echo ==========================
 echo   Build Success.
 echo ==========================
-
+echo Fixing header checksum...
+rgbds\rgbfix -v wl.gb
 if EXIST original.gb ( fc /B wl.gb original.gb )
 
 goto end
