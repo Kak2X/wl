@@ -92,7 +92,7 @@ HeartBonus_WriteOBJ:
 	call HeartBonus_WriteEnemyOBJ
 	call HeartBonus_WriteCoinDigitsOBJHigh
 	call HeartBonus_WriteLivesHeartsDigitsOBJ
-	jp   Title_FinalizeWorkOAM
+	jp   Static_FinalizeWorkOAM
 	
 ; =============== HeartBonus_WriteMenuCursorOBJ ===============
 ; Writes the cursor shown in the difficulty selection screen.
@@ -682,7 +682,7 @@ CoinBonus_WriteOBJ:
 	call CoinBonus_WriteDigitOBJMid
 	call CoinBonus_WriteDigitOBJLow
 	call CoinBonus_WriteItemOBJ
-	jp   Title_FinalizeWorkOAM
+	jp   Static_FinalizeWorkOAM
 ; =============== CoinBonus_WriteDigitOBJHigh ===============
 ; Writes the hundreds digit of the coin count.
 CoinBonus_WriteDigitOBJHigh:

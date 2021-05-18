@@ -45,7 +45,7 @@ Intro_WriteOBJ:
 	call Intro_WriteShipOBJLst
 	call Intro_WriteWaterSplashOBJLst
 	; Clean free OAM slots
-	jp   Title_FinalizeWorkOAM
+	jp   Static_FinalizeWorkOAM
 	
 ; =============== Intro_WriteWarioOBJLst ===============
 ; Writes Wario's sprite mappings to OAM.

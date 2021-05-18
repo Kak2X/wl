@@ -15,7 +15,7 @@
 ; -> L: If set, the leftmost border is locked
 ;
 ; In theory bit 2 (up border lock) and bit 3 (down border lock) also exist,
-; but they are auto-generated for freeroaming mode so any value would get overridden.
+; but they are auto-generated for freeroaming mode (and not used elsewhere) so any value would get overridden.
 ;
 Level_ScrollLocks:
 ScrollLocks_C26: INCBIN "data/lvl/c26/scroll_locks.bin"
@@ -73,7 +73,7 @@ ScrollLocks_C31B: INCBIN "data/lvl/c31b/scroll_locks.bin"
 ;  3|- $05-$06: Ptr to status bar GFX (Bank $11)
 ;  4|- $07-$08: Ptr to animated tile GFX (Bank $11)
 ;  5|- $09    : Bank number for level layout
-;  5|- $0A    : Level layout ID (relative to bank number)
+;  5|- $0A    : Level layout ID (to a ptr table at the top of the specified bank number)
 ;  6|- $0B-$0C: Ptr to 16x16 block definitions (Bank $0B)
 ;  7|- $0D-$0E: Player Y pos
 ;  8|- $0F-$10: Player X pos

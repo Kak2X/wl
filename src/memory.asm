@@ -1459,7 +1459,7 @@ wEndingMode EQU $C0A0
 
 wStaticAnimMode EQU $C0A1 ; Tile animation mode for static screens
 
-wStaticOBJCount      EQU $C0A2 ; Number of OBJ written to OAM (for static screens like Title_WriteOBJLst and CoinBonus_WriteOBJ)
+wStaticOBJCount      EQU $C0A2 ; Number of OBJ written to OAM (for static screens that call Static_WriteOBJLst)
 
 wStaticPlLstId     EQU $C0A3
 wStaticPlX         EQU $C0A4

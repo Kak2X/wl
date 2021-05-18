@@ -375,8 +375,8 @@ VBlankHandler:
 	
 	; If we are in the save select screen, perform the pipe animation
 	ld   a, [sTitleRetVal]	
-	cp   a, TITLE_NEXT_SAVE	; Did we transition from title screen to save select?
-	jr   nz, .end			; If not, skip
+	cp   a, TITLE_NEXT_SAVE			; Did we transition from title screen to save select?
+	jr   nz, .end					; If not, skip
 	mHomeCall ScreenEvent_Do ; BANK $05
 	
 .end:
@@ -458,7 +458,7 @@ GameInit:
 	ld   a, $1C
 	ldh  [rOBP0], a
 	
-	; Initialize the sound engine; for some reason it calls a wrapper
+	; Initialize the sound engine
 	mHomeCall Sound_InitStub ; BANK 04
 	
 	; Clear GFX
@@ -581,7 +581,7 @@ MainLoop:
 	
 	; Execute the sound code immediately, so it won't be affected by any possible lag
 	; Though it does mean rSX effects may occasionally look "wrong" near the top of the screen
-	; Since every so often (around 7 frames) the sound engine will do its thing and take away cycles
+	; Since every so often (generally around 7 frames) the sound engine will do its thing and take away cycles
 	mHomeCall Sound_DoStub ; BANK 04
 	
 	;--
@@ -946,12 +946,12 @@ ActS_SpawnBlockBreak:
 	ld   b, $07
 	call ClearRAMRange_Mini
 	call ExActS_Spawn
-	; Only occasionally spawn a coin (Timer 5; every other DIV tick)
+	; Only occasionally spawn a coin (50% chance, 25% timer chance)
 	ld   a, [sTimer]
-	and  a, $03
-	jr   nz, .noCoin
+	and  a, $03				; Timer % 4 != 0?
+	jr   nz, .noCoin		; If so, skip
 	ldh  a, [rDIV]
-	and  a, $01
+	and  a, $01				; 50% chance
 	jr   nz, .noCoin
 	call SubCall_ActS_SpawnCoinFromBlock
 .noCoin:
@@ -986,7 +986,8 @@ ExActS_CopySet2ToSet:
 ;
 ; There is an unnecessary use of rst $28 (could have been directly a table)
 ; which not only is a waste of space/time, but invalid levels will instantly 
-; crash the game when trying to get their course number.
+; crash the game when trying to get their course number (which leaves out
+; certain other failsafes impossible to trigger)
 ;
 ; OUT
 ; - A: Course number in BCD format
@@ -6464,13 +6465,14 @@ Static_WriteOBJLst:
 	jr   z, .loop				; If not, loop
 	ret
 	
-; =============== Title_FinalizeWorkOAM ===============
+; =============== Static_FinalizeWorkOAM ===============
 ; Blanks the leftover parts of the OAM copy.
 ; This is to make sure leftovers from the previous frame don't get drawn on screen.
 ;
+; This is specific to the "static" modes since it uses wStaticOBJCount.
+;
 ; See also: FinalizeWorkOAM
-
-Title_FinalizeWorkOAM:
+Static_FinalizeWorkOAM:
 	ld   hl, sWorkOAM
 	; Determine the WorkOAM offset from the OBJCount
 	ld   a, [wStaticOBJCount]
@@ -6499,8 +6501,6 @@ Title_FinalizeWorkOAM:
 	jr   .loop
 ; =============== Static_Pl_WalkAnim ===============
 ; Handles the timing for Wario's standard walking animation in a static screen (ie: Bonus games).
-; This works for for multiple modes, so it requires the IDs of the walking frames to be the same across sets of constants.
-; (ie: *** == OBJ_STATIC_WARIO_WALK0)
 Static_Pl_WalkAnim:
 	ld   a, [wStaticPlAnimTimer]	; Timer++
 	inc  a
@@ -7417,8 +7417,8 @@ Map_WriteOBJLst:
 ; Sprite mappings for Wario in the Map Screen
 ; $2C0F
 OBJLstPtrTable_MapWario:
-	; [TCRF] The way these are laid out suggest that animations were 
-	;        made of 4 frames rather than 4.
+	; [TCRF] The way these are laid out suggest that animations were intended 
+	;        at some point to be 4 frames instead of 3.
 	;        However, with the exception of the first one, all point to unused dummt OBJLst.
 	dw OBJLst_Unused_MapWarioWalk0
 	dw OBJLst_MapWarioWalk1

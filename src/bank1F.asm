@@ -41,7 +41,7 @@ Ending_WriteOBJ:
 	call Ending_WriteCloud1OBJ
 	call Ending_WriteGenieFaceOBJ
 	call Ending_WriteBalloonOBJ
-	jp   Title_FinalizeWorkOAM
+	jp   Static_FinalizeWorkOAM
 	
 ; =============== Ending_WriteHeldOBJ ===============
 ; Writes the object Wario can hold (either the lamp sprite or moneybags). 
