@@ -562,7 +562,7 @@ Demo_GetInput:
 	ret
 	
 ; =============== Game_Do ===============
-; Starts a chain of subroutine for common actions during gameplay,
+; Starts a chain of subroutines for common actions to perform during gameplay,
 ; including player controls / collision detection and screen effects.
 Game_Do:
 	call Level_Screen_DoTrainShake
@@ -930,7 +930,7 @@ Game_DoPostHitInvuln:
 ; Main subroutine for handling player control during gameplay.
 ;
 ; This is the very end of the chain of gameplay modes.
-; If we don't get here (ie: return early), the player is basically frozen.
+; If we don't get here (ie: we returned early), the player is basically frozen.
 Pl_DoCtrl:
 	ld   a, [sPlAction]
 	rst  $28

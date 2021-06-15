@@ -5252,13 +5252,13 @@ BGMLenTable_5A3A:
 ;
 ; For more details on the commands themselves, see Sound_ParseBGMCommand.
 BGMCmdTable_5A49: 
-	sndlentbl $59EF
+	sndlentbl BGMLenTable_59EF
 	sndend
 BGMCmdTable_5A4D: 
-	sndlentbl $59FE
+	sndlentbl BGMLenTable_59FE
 	sndend
 BGMCmdTable_5A51: 
-	sndlentbl $5A0D
+	sndlentbl BGMLenTable_5A0D
 	sndend
 BGMCmdTable_5A55: 
 	sndpitchbase $00

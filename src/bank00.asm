@@ -276,11 +276,12 @@ L0000ED: db $8A;X
 L0000EE: db $0A;X
 L0000EF: db $20;X
 ; This is marked as used by the CDL as a side-effect of the sound driver.
-; L0000F0 appears as a pointer to a BGM Table inside the various chunks...
-; ...but it's not actually a real table pointer as it just points to uninitialized junk.
 ;
-; Instead, it's treated as the loop command BGMTBLCMD_REDIR ($F0,£00)
-; The code recognizes the command instead of parsing out the chunk... but evidently the CDL marks this as used anyway???
+; L0000F0 appears as a pointer to a BGM Table inside the various chunks...
+; ...but it's not actually a real table pointer!
+;
+; Instead, it's treated as the loop command BGMTBLCMD_REDIR (byte sequence $F0,$00)
+; The code recognizes the command instead of parsing out the invalid chunk... but evidently the CDL marks this as used anyway???
 L0000F0: db $80		
 L0000F1: db $2A
 L0000F2: db $80
