@@ -806,13 +806,13 @@ Act_Lamp_SpawnCloudPlatform:
 ActInit_Unused_MiniGenie: 
 	; Setup collision box
 	ld   a, -$10
-	ld   [$A106], a
+	ld   [sActSetColiBoxU], a
 	ld   a, +$00
-	ld   [$A107], a
+	ld   [sActSetColiBoxD], a
 	ld   a, -$08
-	ld   [$A108], a
+	ld   [sActSetColiBoxL], a
 	ld   a, +$08
-	ld   [$A109], a
+	ld   [sActSetColiBoxR], a
 	
 	; Setup main code
 	ld   bc, SubCall_Act_MiniGenie
@@ -2885,8 +2885,8 @@ Act_SyrupCastleBoss_BGWrite_Ground:
 	jr   nz, .loop	; If not, loop
 	ret
 	
-; =============== mSSTeacupBoss_BGWriteCall* ===============
-; Helper macro for generating a call to Act_SSTeacupBoss_BGWrite*
+; =============== mSyrupCastleBoss_BGWriteCall* ===============
+; Helper macro for generating a call to Act_SyrupCastleBoss_BGWrite*
 ; IN
 ; - 1: Base address
 ; - 2: X offset (in tiles)
@@ -2912,7 +2912,7 @@ ENDM
 ; This is meant to be done only when the boss first loads.
 Act_SyrupCastleBoss_BGWrite_GenieBody:
 	ld   bc, BG_Act_SyrupCastleBoss_GenieBody
-	;                              BASE              X  Y  Count
+	;                                 BASE              X  Y  Count
 	mAct_SyrupCastleBoss_BGWriteCall2 vBGGenieBossBody, 0, 0, 5
 	mAct_SyrupCastleBoss_BGWriteCall2 vBGGenieBossBody, 0, 1, 5
 	mAct_SyrupCastleBoss_BGWriteCall2 vBGGenieBossBody, 0, 2, 5
@@ -2927,84 +2927,84 @@ Act_SyrupCastleBoss_BGWrite_GenieBody:
 	
 Act_SyrupCastleBoss_BGWrite_GenieHandClosedL:;C
 	ld   bc, BG_Act_SyrupCastleBoss_GenieHandClosedL
-	;                             BASE               X  Y  Count
+	;                                BASE               X  Y  Count
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossHandL, 0, 0, 5
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossHandL, 0, 1, 5
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossHandL, 0, 2, 5
 	ret
 Act_SyrupCastleBoss_BGWrite_GenieHandOpenL:
 	ld   bc, BG_Act_SyrupCastleBoss_GenieHandOpenL
-	;                             BASE               X  Y  Count
+	;                                BASE               X  Y  Count
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossHandL, 0, 0, 5
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossHandL, 0, 1, 5
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossHandL, 0, 2, 5
 	ret
 Act_SyrupCastleBoss_BGWrite_GenieHandPointL:
 	ld   bc, BG_Act_SyrupCastleBoss_GenieHandPointL
-	;                             BASE               X  Y  Count
+	;                                BASE               X  Y  Count
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossHandL, 0, 0, 5
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossHandL, 0, 1, 5
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossHandL, 0, 2, 5
 	ret
 Act_SyrupCastleBoss_BGWrite_GenieHandClosedR:
 	ld   bc, BG_Act_SyrupCastleBoss_GenieHandClosedR
-	;                             BASE               X  Y  Count
+	;                                BASE               X  Y  Count
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossHandR, 0, 0, 5
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossHandR, 0, 1, 5
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossHandR, 0, 2, 5
 	ret
 Act_SyrupCastleBoss_BGWrite_GenieHandOpenR:
 	ld   bc, BG_Act_SyrupCastleBoss_GenieHandOpenR
-	;                             BASE               X  Y  Count
+	;                                BASE               X  Y  Count
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossHandR, 0, 0, 5
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossHandR, 0, 1, 5
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossHandR, 0, 2, 5
 	ret
 Act_SyrupCastleBoss_BGWrite_GenieHandPointR:
 	ld   bc, BG_Act_SyrupCastleBoss_GenieHandPointR
-	;                             BASE               X  Y  Count
+	;                                BASE               X  Y  Count
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossHandR, 0, 0, 5
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossHandR, 0, 1, 5
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossHandR, 0, 2, 5
 	ret
 Act_SyrupCastleBoss_BGWrite_GenieFootDownL:
 	ld   bc, BG_Act_SyrupCastleBoss_GenieFootDownL
-	;                             BASE               X  Y  Count
+	;                                BASE               X  Y  Count
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossFootL, 0, 0, 2
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossFootL, 0, 1, 4
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossFootL, 2, 2, 3
 	ret
 Act_SyrupCastleBoss_BGWrite_GenieFootUpL:
 	ld   bc, BG_Act_SyrupCastleBoss_GenieFootUpL
-	;                             BASE               X  Y  Count
+	;                                BASE               X  Y  Count
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossFootL, 0, 0, 2
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossFootL, 0, 1, 4
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossFootL, 2, 2, 3
 	ret
 Act_SyrupCastleBoss_BGWrite_GenieFootDownR:
 	ld   bc, BG_Act_SyrupCastleBoss_GenieFootDownR
-	;                             BASE               X  Y  Count
+	;                                BASE               X  Y  Count
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossFootR, 3, 0, 2
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossFootR, 1, 1, 4
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossFootR, 0, 2, 3
 	ret
 Act_SyrupCastleBoss_BGWrite_GenieFootUpR:
 	ld   bc, BG_Act_SyrupCastleBoss_GenieFootUpR
-	;                             BASE               X  Y  Count
+	;                                BASE               X  Y  Count
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossFootR, 3, 0, 2
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossFootR, 1, 1, 4
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossFootR, 0, 2, 3
 	ret
 Act_SyrupCastleBoss_BGWrite_GenieFaceHit:
 	ld   bc, BG_Act_SyrupCastleBoss_GenieFaceHit
-	;                             BASE              X  Y  Count
+	;                                BASE              X  Y  Count
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossFace, 0, 0, 4
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossFace, 0, 1, 4
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossFace, 1, 2, 2
 	ret
 Act_SyrupCastleBoss_BGWrite_GenieFace:
 	ld   bc, BG_Act_SyrupCastleBoss_GenieFace
-	;                             BASE              X  Y  Count
+	;                                BASE              X  Y  Count
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossFace, 0, 0, 4
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossFace, 0, 1, 4
 	mAct_SyrupCastleBoss_BGWriteCall vBGGenieBossFace, 1, 2, 2

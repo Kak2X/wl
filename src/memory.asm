@@ -579,6 +579,7 @@ sActRiceBeachBossDAttackDelay EQU $A3B9 ; The boss spins in place until it expir
 sActSyrupCastleBossHitAnimTimer EQU $A3BA ; Set sfter the final boss is hit. The boss returns to normal when it elapses
 sActSyrupCastleBossHitCount EQU $A3BB
 sPlPowerBak EQU $A3BC ; Backup of the actual powerup state, used for faking the powerup during calls to ExActBGColi_DragonHatFlame_CheckBlockId
+sUnused_A3BD EQU $A3BD ; [TCRF] Only initialized to $00 once after the actor layout is loaded and never read back
 sActSlotTransparent EQU $A3BE ; Performs transparency effect for the actor
 sActSyrupCastleBossDead EQU $A3BF ; Used as an indicator for the ending cutscene.
 ;--
@@ -683,7 +684,12 @@ sBGMNR31     EQU $A64B ; Channel 3 Sound Length
 sBGMNR32     EQU $A64C ; Channel 3 Select output level (R/W)
 sBGMNR33     EQU $A64D ; Channel 3 Frequency's lower data (W)
 sBGMNR34     EQU $A64E ; Channel 3 Frequency's higher data (R/W)
-sBGMCurChReg4Copy EQU $A653 ; [TCRF?] Where is this used?
+
+; [TCRF] Contain copies of registers value which are never read back, set occasionally by certain subroutines
+sBGM_Unused_NR42Copy EQU $A651
+sBGM_Unused_CurChReg3Copy EQU $A652
+sBGM_Unused_CurChReg4Copy EQU $A653
+
 ; Sound_SetBGMCh1
 ; BGM Command Table pointer (for current chunk)
 sBGMCh1CmdPtr EQU $A656 

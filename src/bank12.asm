@@ -330,6 +330,7 @@ Title_FadeOut3:
 	ldh  [rBGP], a
 	ret
 	
+; =============== Title_SwitchToIntro ===============
 Title_SwitchToIntro:
 	ld   a, $20
 	ld   [sBGMSet], a

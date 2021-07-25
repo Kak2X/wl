@@ -32,7 +32,7 @@ Level_LoadActLayout:
 	ld   [sPlFreezeTimer], a
 	ld   [sActBigItemBoxUsed], a
 	ld   [sActBigItemBoxType], a
-	ld   [$A3BD], a
+	ld   [sUnused_A3BD], a
 	ld   [sActSyrupCastleBossDead], a
 	ld   [sActLampEndingOk], a
 	ld   [sActKnightDead], a

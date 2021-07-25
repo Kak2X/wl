@@ -1621,10 +1621,10 @@ Sound_SetBGMCh4:
 	ldh  [rNR42], a
 	ld   a, [sBGMCurChReg3]
 	ldh  [rNR43], a
-	ld   [$A652], a
+	ld   [sBGM_Unused_CurChReg3Copy], a
 	ld   a, [sBGMCurChReg4]
 	ldh  [rNR44], a
-	ld   [sBGMCurChReg4Copy], a
+	ld   [sBGM_Unused_CurChReg4Copy], a
 	ret
 ; =============== Sound_ParseBGMCommand ===============
 ; Decodes the custom BGM sound format and generates the
@@ -2474,10 +2474,10 @@ Sound_SetBGMCh4_MuteCh4:
 	ld   [sBGMCh4On], a
 	ld   a, $08
 	ldh  [rNR42], a
-	ld   [$A651], a
+	ld   [sBGM_Unused_NR42Copy], a
 	ld   a, $80
 	ldh  [rNR44], a
-	ld   [sBGMCurChReg4Copy], a
+	ld   [sBGM_Unused_CurChReg4Copy], a
 	ret
 ; =============== Sound_ClearBGMRAM ===============
 ; Clears the area of SRAM dedicated to BGM playback.

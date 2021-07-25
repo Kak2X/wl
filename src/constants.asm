@@ -1294,6 +1294,7 @@ TITLE_MODE_INIT   EQU $00
 TITLE_MODE_MAIN   EQU $01
 TITLE_MODE_INTRO  EQU $02
 
+; Return values for the title screen code..
 ; Specifies the action id for switching modes from the title screen
 TITLE_NEXT_NONE    EQU $00
 TITLE_NEXT_DEMO    EQU $01
