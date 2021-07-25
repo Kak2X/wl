@@ -61,13 +61,13 @@ L13403D: db $31;X
 L13403E: db $25;X
 L13403F: db $09;X
 ; =============== END OF ALIGN JUNK ===============
-LevelLayout_C04: INCBIN "data/lvl/c04/layout.bin"
-LevelLayout_C09: INCBIN "data/lvl/c09/layout.bin"
-LevelLayout_C03A: INCBIN "data/lvl/c03a/layout.bin"
-LevelLayout_C02: INCBIN "data/lvl/c02/layout.bin"
-LevelLayout_C08: INCBIN "data/lvl/c08/layout.bin"
-LevelLayout_C11: INCBIN "data/lvl/c11/layout.bin"
-LevelLayout_C35: INCBIN "data/lvl/c35/layout.bin"
+LevelLayout_C04: INCBIN "data/lvl/c04/level_layout.bin"
+LevelLayout_C09: INCBIN "data/lvl/c09/level_layout.bin"
+LevelLayout_C03A: INCBIN "data/lvl/c03a/level_layout.bin"
+LevelLayout_C02: INCBIN "data/lvl/c02/level_layout.bin"
+LevelLayout_C08: INCBIN "data/lvl/c08/level_layout.bin"
+LevelLayout_C11: INCBIN "data/lvl/c11/level_layout.bin"
+LevelLayout_C35: INCBIN "data/lvl/c35/level_layout.bin"
 ; =============== END OF BANK ===============
 L137F1A: db $FF;X
 L137F1B: db $FF;X

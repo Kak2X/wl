@@ -61,12 +61,12 @@ L16403D: db $00;X
 L16403E: db $00;X
 L16403F: db $00;X
 ; =============== END OF ALIGN JUNK ===============
-LevelLayout_C34: INCBIN "data/lvl/c34/layout.bin"
-LevelLayout_C30: INCBIN "data/lvl/c30/layout.bin"
-LevelLayout_C21: INCBIN "data/lvl/c21/layout.bin"
-LevelLayout_C22: INCBIN "data/lvl/c22/layout.bin"
-LevelLayout_C01B: INCBIN "data/lvl/c01b/layout.bin"
-LevelLayout_C19: INCBIN "data/lvl/c19/layout.bin"
+LevelLayout_C34: INCBIN "data/lvl/c34/level_layout.bin"
+LevelLayout_C30: INCBIN "data/lvl/c30/level_layout.bin"
+LevelLayout_C21: INCBIN "data/lvl/c21/level_layout.bin"
+LevelLayout_C22: INCBIN "data/lvl/c22/level_layout.bin"
+LevelLayout_C01B: INCBIN "data/lvl/c01b/level_layout.bin"
+LevelLayout_C19: INCBIN "data/lvl/c19/level_layout.bin"
 ; =============== END OF BANK ===============
 L167CF9: db $00;X
 L167CFA: db $00;X

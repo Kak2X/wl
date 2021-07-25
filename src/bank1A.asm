@@ -63,11 +63,11 @@ L1A403D: db $B8;X
 L1A403E: db $00;X
 L1A403F: db $00;X
 ; =============== END OF ALIGN JUNK ===============
-LevelLayout_C28: INCBIN "data/lvl/c28/layout.bin"
-LevelLayout_C18: INCBIN "data/lvl/c18/layout.bin"
-LevelLayout_C14: INCBIN "data/lvl/c14/layout.bin"
-LevelLayout_C38: INCBIN "data/lvl/c38/layout.bin"
-LevelLayout_C39: INCBIN "data/lvl/c39/layout.bin"
+LevelLayout_C28: INCBIN "data/lvl/c28/level_layout.bin"
+LevelLayout_C18: INCBIN "data/lvl/c18/level_layout.bin"
+LevelLayout_C14: INCBIN "data/lvl/c14/level_layout.bin"
+LevelLayout_C38: INCBIN "data/lvl/c38/level_layout.bin"
+LevelLayout_C39: INCBIN "data/lvl/c39/level_layout.bin"
 ; =============== END OF BANK ===============
 L1A7EA6: db $00;X
 L1A7EA7: db $18;X
