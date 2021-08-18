@@ -639,13 +639,11 @@ Act_MtTeapotBoss:
 	ld   [sActMtTeapotBossEscapeKeyCount], a
 	cp   a, $05									; Did we press A 5 times?
 	jr   c, .chkRoutine							; If not, skip
-	; Otherwise, escape from the boss
+	; Otherwise, escape from the boss and accept the jump
 	xor  a
 	ld   [sActMtTeapotBossEscapeKeyCount], a
 	ld   [sPlFreezeTimer], a
-	ld   d, $0D
-	ld   hl, $4E18
-	call SubCall
+	mSubCall Pl_StartJump ; BANK $0D
 	;--
 .chkRoutine:
 	ld   a, [sActLocalRoutineId]
