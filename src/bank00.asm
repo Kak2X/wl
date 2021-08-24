@@ -9315,9 +9315,10 @@ ActS_InitToSlot:
 	call nc, ActS_SetLeftDir	; If so, choose the right direction
 	
 	; [POI] When an actor is spawned by moving it on-screen, it's marked by
-	;       this special value as "active status"... which is treated identically
-	;       to status $02 (many checks for "visible & active" do >= $02).
-	;       This gets overwritten almost immediately as soon as the game performs
+	;       this special value as "active status"... which makes it execute for one frame even if actors are globally paused.
+	;		This value is otherwise treated identically to status $02 (many checks for "visible & active" do >= $02).
+	;       
+	;       Note that this gets overwritten almost immediately as soon as the game performs
 	;       an off-screen check on the actor the next frame.
 	ld   a, $03
 	ld   [sActSetActive], a

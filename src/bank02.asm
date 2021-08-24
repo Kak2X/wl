@@ -177,7 +177,7 @@ ActS_Execute:
 	;--
 .noLagChk:
 	; Type $03 runs for one frame even if actors are meant to be paused
-	ld   a, [sActSet]
+	ld   a, [sActSetActive]
 	cp   a, $03
 	jr   z, .executeOffScreen
 	; Are all actors paused (and not execute)?
