@@ -752,7 +752,7 @@ Game_ChkLadderCenterRight:
 	; If the screen is locked horizontally (either left or right border)
 	; only move the player without scrolling the screen.
 	ld   a, [sLvlScrollLockCur]
-	and  a, SCRLOCK_L|SCRLOCK_R
+	and  a, DIR_L|DIR_R
 	jr   nz, .noScrMove
 	ld   a, [sLvlScrollHAmount]
 	add  b
@@ -784,7 +784,7 @@ Game_ChkLadderCenterLeft:
 	; If the screen is locked horizontally (either left or right border)
 	; only move the player without scrolling the screen.
 	ld   a, [sLvlScrollLockCur]
-	and  a, SCRLOCK_L|SCRLOCK_R
+	and  a, DIR_L|DIR_R
 	jr   nz, .noScrMove
 	ld   a, [sLvlScrollHAmount]
 	sub  a, b
@@ -3446,7 +3446,7 @@ Pl_DoCtrl_Dash:
 	;--
 	; Try to scroll the screen right if we can.
 	ld   a, [sLvlScrollLockCur]
-	and  a, SCRLOCK_R|SCRLOCK_L		; Is there a scroll lock active?
+	and  a, DIR_R|DIR_L				; Is there a scroll lock active?
 	jr   nz, .moveRight				; If so, don't scroll
 	ld   a, [sLvlScrollMode]
 	cp   a, LVLSCROLL_CHKAUTO		; Are we in an autoscroll/noscroll mode?
@@ -3490,7 +3490,7 @@ Pl_DoCtrl_Dash:
 	;--
 	; Try to scroll the screen left if we can.
 	ld   a, [sLvlScrollLockCur]
-	and  a, SCRLOCK_R|SCRLOCK_L		; Is there a scroll lock active?
+	and  a, DIR_R|DIR_L				; Is there a scroll lock active?
 	jr   nz, .moveLeft				; If so, don't scroll
 	ld   a, [sLvlScrollMode]
 	cp   a, LVLSCROLL_CHKAUTO		; Are we in an autoscroll/noscroll mode?
@@ -3852,7 +3852,7 @@ Pl_DoCtrl_DashJet:
 	;--
 	; Try to scroll the screen right
 	ld   a, [sLvlScrollLockCur]
-	and  a, SCRLOCK_L|SCRLOCK_R	; Is there a scroll lock set?	
+	and  a, DIR_L|DIR_R			; Is there a scroll lock set?	
 	jr   nz, .moveRight			; If so, don't scroll
 	ld   a, [sLvlScrollMode]
 	cp   a, LVLSCROLL_CHKAUTO	; Are we in an autoscrolling/noscroll mode?
@@ -3886,7 +3886,7 @@ Pl_DoCtrl_DashJet:
 	;--
 	; Try to scroll the screen left
 	ld   a, [sLvlScrollLockCur]
-	and  a, SCRLOCK_L|SCRLOCK_R	; Is there a scroll lock set?	
+	and  a, DIR_L|DIR_R			; Is there a scroll lock set?	
 	jr   nz, .moveLeft			; If so, don't scroll
 	ld   a, [sLvlScrollMode]
 	cp   a, LVLSCROLL_CHKAUTO	; Are we in an autoscrolling/noscroll mode?
@@ -4191,7 +4191,7 @@ Pl_MoveRightChkSpeed:
 Pl_MoveRightWithScreen:
 	; Don't scroll the screen if there's a scroll lock or we are in an autoscroller/boss scroll
 	ld   a, [sLvlScrollLockCur]
-	and  a, SCRLOCK_L|SCRLOCK_R
+	and  a, DIR_L|DIR_R
 	jr   nz, Pl_MoveRightStub
 	ld   a, [sLvlScrollMode]
 	cp   a, LVLSCROLL_CHKAUTO
@@ -4359,7 +4359,7 @@ ENDC
 Pl_MoveLeftWithScreen:
 	; Don't scroll the screen if there's a scroll lock or we are in an autoscroller/boss scroll
 	ld   a, [sLvlScrollLockCur]
-	and  a, SCRLOCK_L|SCRLOCK_R
+	and  a, DIR_L|DIR_R
 	jr   nz, Pl_MoveLeftStub
 	ld   a, [sLvlScrollMode]
 	cp   a, LVLSCROLL_CHKAUTO

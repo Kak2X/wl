@@ -1961,7 +1961,7 @@ Pl_MoveDown:
 	call Level_ScreenLock_DoBottom
 	; Is a vertical scroll lock active?
 	ld   a, [sLvlScrollLockCur]
-	and  a, SCRLOCK_U|SCRLOCK_D
+	and  a, DIR_U|DIR_D
 	ret  nz
 	; If not, mark the screen movement offset
 	ld   a, [sLvlScrollVAmount]
@@ -1998,7 +1998,7 @@ Pl_MoveUp:
 	call Level_ScreenLock_DoTop
 	; Is a vertical scroll lock active?
 	ld   a, [sLvlScrollLockCur]
-	and  a, SCRLOCK_U|SCRLOCK_D
+	and  a, DIR_U|DIR_D
 	ret  nz
 	; If not, mark the screen movement offset
 	ld   a, [sLvlScrollVAmount]
@@ -2061,73 +2061,73 @@ Level_Screen_MoveUp:
 ; Handles the right screen lock when moving right.
 Level_ScreenLock_DoRight:
 	ld   a, [sLvlScrollLockCur]		
-	bit  SCRLOCKB_L, a              ; Is the left border (opposite) lock set?
-	jr   nz, .checkRemoveLeft		; If so, don't scroll the screen right
+	bit  DIRB_L, a              ; Is the left border (opposite) lock set?
+	jr   nz, .checkRemoveLeft	; If so, don't scroll the screen right
 .checkSet:
 	; Determine if the current screen has a right screen lock
 	ld   hl, sLvlScrollLocks
 	call Level_ScreenLock_IndexScreen
-	bit  SCRLOCKB_R, [hl]			; Does it have one?
-	ret  z							; If not, return
+	bit  DIRB_R, [hl]			; Does it have one?
+	ret  z						; If not, return
 	
 	; Trigger the screen lock if we're close to the border
 	ld   a, [sLvlScrollX_Low]		
-	cp   a, $100-$50				; Is the player $50px close to the right border? 
+	cp   a, $100-$50			; Is the player $50px close to the right border? 
 	ret  c
 	
-	ld   a, $100-$50				; Snap the scroll pos
+	ld   a, $100-$50			; Snap the scroll pos
 	ld   [sLvlScrollX_Low], a
 	ld   hl, sLvlScrollLockCur
-	set  SCRLOCKB_R, [hl]			; Enable the right lock
+	set  DIRB_R, [hl]			; Enable the right lock
 	ret
 .checkRemoveLeft:
 	ld   a, [sPlX_Low]
-	cp   a, $61						; Is sPlX_Low <= $60?
-	ret  c							; If so, return
-	ld   hl, sLvlScrollLockCur		; Otherwise, clear the screen lock
-	res  SCRLOCKB_L, [hl]
+	cp   a, $61					; Is sPlX_Low <= $60?
+	ret  c						; If so, return
+	ld   hl, sLvlScrollLockCur	; Otherwise, clear the screen lock
+	res  DIRB_L, [hl]
 	ret
 ; =============== Level_ScreenLock_DoLeft ===============
 ; Handles the left screen lock when moving left.
 Level_ScreenLock_DoLeft:
 	ld   a, [sLvlScrollLockCur]
-	bit  SCRLOCKB_R, a				; Is the left border (opposite) lock set?
-	jr   nz, .checkRemoveRight		; If so, don't scroll the screen right
+	bit  DIRB_R, a				; Is the left border (opposite) lock set?
+	jr   nz, .checkRemoveRight	; If so, don't scroll the screen right
 	
 	; Determine if the current screen has a left screen lock
 	ld   hl, sLvlScrollLocks
 	call Level_ScreenLock_IndexScreen
-	bit  SCRLOCKB_L, [hl]			; Does it have one?
-	ret  z							; If not, return
+	bit  DIRB_L, [hl]			; Does it have one?
+	ret  z						; If not, return
 	
 	; Trigger the screen lock if we're close to the border
-	ld   a, [sLvlScrollX_Low]		; Is the player $60px close to the right border? 
-	cp   a, $61						; (<= $60)
-	ret  nc							; If not, return
+	ld   a, [sLvlScrollX_Low]	; Is the player $60px close to the right border? 
+	cp   a, $61					; (<= $60)
+	ret  nc						; If not, return
 	
-	ld   a, $60						; Snap the scroll pos
+	ld   a, $60					; Snap the scroll pos
 	ld   [sLvlScrollX_Low], a
 	ld   hl, sLvlScrollLockCur
-	set  SCRLOCKB_L, [hl]			; Enable the left lock
+	set  DIRB_L, [hl]			; Enable the left lock
 	ret
 .checkRemoveRight:
 	ld   a, [sPlX_Low]
-	cp   a, $100-$50				; Is sPlX_Low > $B0?
-	ret  nc							; If so, return
-	ld   hl, sLvlScrollLockCur		; Otherwise, clear the screen lock
-	res  SCRLOCKB_R, [hl]
+	cp   a, $100-$50			; Is sPlX_Low > $B0?
+	ret  nc						; If so, return
+	ld   hl, sLvlScrollLockCur	; Otherwise, clear the screen lock
+	res  DIRB_R, [hl]
 	ret
 ; =============== Level_ScreenLock_DoBottom ===============
 ; Autogenerates the bottom screen lock flag for freescroll mode, when moving down.
 Level_ScreenLock_DoBottom:
 	ld   a, [sLvlScrollLockCur]
-	bit  SCRLOCKB_U, a			; Is the upper screen (opposite) lock set?
-	jr   nz, .checkRemoveUp		; If so, don't scroll the screen downwards
+	bit  DIRB_U, a						; Is the upper screen (opposite) lock set?
+	jr   nz, .checkRemoveUp				; If so, don't scroll the screen downwards
 .checkSet:
 	; Should the screen lock be set?
 	ld   a, [sLvlScrollY_High]
-	cp   a, HIGH(LEVEL_HEIGHT) - 1	; Are we on a lowest sector of the level?
-	ret  nz							; If not, return
+	cp   a, HIGH(LEVEL_HEIGHT) - 1		; Are we on a lowest sector of the level?
+	ret  nz								; If not, return
 	
 	; [BUG?] For some reason, freescroll triggers the bottom screen lock a full
 	;        block ($10) above the normal limit.
@@ -2140,45 +2140,45 @@ FREESCROLL_LOW_BORDER EQU ($100-LVLSCROLL_YOFFSET)-$10
 ENDC
 
 	ld   a, [sLvlScrollY_Low]		
-	cp   a, FREESCROLL_LOW_BORDER			; Is the screen fully scrolled to the bottom (or over the limit)?
-	ret  c									; If not (< $A8), return
+	cp   a, FREESCROLL_LOW_BORDER		; Is the screen fully scrolled to the bottom (or over the limit)?
+	ret  c								; If not (< $A8), return
 	
-	ld   a, FREESCROLL_LOW_BORDER			; Otherwise, snap it back to the lower border
+	ld   a, FREESCROLL_LOW_BORDER		; Otherwise, snap it back to the lower border
 	ld   [sLvlScrollY_Low], a
 	ld   hl, sLvlScrollLockCur
-	set  SCRLOCKB_D, [hl]					; And mark the scroll lock
+	set  DIRB_D, [hl]					; And mark the scroll lock
 	ret
 .checkRemoveUp:
 	; Unmark the upper screen lock only if the screen isn't fully scrolled up
 	ld   a, [sPlY_Low]					
-	cp   a, LVLSCROLL_YOFFSET				; Is the screen still fully scrolled up?
-	ret  c									; If so, don't unmark the scroll lock
+	cp   a, LVLSCROLL_YOFFSET			; Is the screen still fully scrolled up?
+	ret  c								; If so, don't unmark the scroll lock
 	
 	ld   hl, sLvlScrollLockCur
-	res  SCRLOCKB_U, [hl]					
+	res  DIRB_U, [hl]					
 	ret
 
 ; =============== Level_ScreenLock_DoTop ===============
 ; Autogenerates the top screen lock flag for freescroll mode, when moving up.
 Level_ScreenLock_DoTop:
 	ld   a, [sLvlScrollLockCur]
-	bit  SCRLOCKB_D, a						; Is the lower screen (opposite) lock set?
-	jr   nz, .checkRemoveDown				; If so, don't scroll the screen upwards
+	bit  DIRB_D, a						; Is the lower screen (opposite) lock set?
+	jr   nz, .checkRemoveDown			; If so, don't scroll the screen upwards
 	
 .checkSet:
 	; Should the screen lock be set?
 	ld   a, [sLvlScrollY_High]				
-	and  a									; Are we on a upper sector of the level? (sectorY $00)
-	ret  nz									; If not, return
+	and  a								; Are we on a upper sector of the level? (sectorY $00)
+	ret  nz								; If not, return
 	
 	; Account for hw scroll offset
 	ld   a, [sLvlScrollY_Low]				
-	cp   a, LVLSCROLL_YOFFSET				; Is the screen fully scrolled to the top (or over the limit)?		
+	cp   a, LVLSCROLL_YOFFSET			; Is the screen fully scrolled to the top (or over the limit)?		
 	ret  nc
-	ld   a, LVLSCROLL_YOFFSET				; If so, snap the screen to the top border
+	ld   a, LVLSCROLL_YOFFSET			; If so, snap the screen to the top border
 	ld   [sLvlScrollY_Low], a
 	ld   hl, sLvlScrollLockCur
-	set  SCRLOCKB_U, [hl]					; And mark the upper scroll lock
+	set  DIRB_U, [hl]					; And mark the upper scroll lock
 	ret
 .checkRemoveDown:
 	; [BUG?] See Level_ScreenLock_DoBottom
@@ -2189,7 +2189,7 @@ Level_ScreenLock_DoTop:
 	ret  nc
 	
 	ld   hl, sLvlScrollLockCur
-	res  SCRLOCKB_D, [hl]					
+	res  DIRB_D, [hl]					
 	ret
 	
 

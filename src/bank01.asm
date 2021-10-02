@@ -565,8 +565,8 @@ DEBUG_FREEROAM_SPEED EQU $03
 	call Level_ScreenLock_DoRight
 	
 	ld   a, [sLvlScrollLockCur]
-	bit  SCRLOCKB_R, a				; Is there a right screen lock?
-	jp   nz, .end					; If so, jump
+	bit  DIRB_R, a				; Is there a right screen lock?
+	jp   nz, .end				; If so, jump
 	; Otherwise scroll the screen right 3px
 	ld   a, DEBUG_FREEROAM_SPEED
 	ld   [sLvlScrollHAmount], a
@@ -578,8 +578,8 @@ DEBUG_FREEROAM_SPEED EQU $03
 	call Level_ScreenLock_DoLeft
 	
 	ld   a, [sLvlScrollLockCur]
-	bit  SCRLOCKB_L, a				; Is there a left screen lock?
-	jr   nz, .end					; If so, jump
+	bit  DIRB_L, a				; Is there a left screen lock?
+	jr   nz, .end				; If so, jump
 	; Otherwise scroll the screen left 3px
 	ld   a, -DEBUG_FREEROAM_SPEED
 	ld   [sLvlScrollHAmount], a
@@ -6993,7 +6993,7 @@ Level_Screen_ScrollHorz:
 	
 	; If there are any active horz screen locks, don't do anything
 	ld   a, [sLvlScrollLockCur]
-	and  a, SCRLOCK_R|SCRLOCK_L
+	and  a, DIR_R|DIR_L
 	ret  nz
 	
 	ld   a, [sPlActSolid]
@@ -7531,7 +7531,7 @@ Level_Scroll_DoAutoScrollLeft:
 	; Scroll the screen left if there isn't a screen lock
 	ld   b, $01						; B = Movement speed
 	ld   a, [sLvlScrollLockCur]
-	and  a, SCRLOCK_L|SCRLOCK_R		; Is there a screen lock?
+	and  a, DIR_L|DIR_R				; Is there a screen lock?
 	jr   nz, .chkScroll				; If so, jump
 	
 	ld   a, [sLvlScrollHAmount]		; Otherwise scroll the screen
@@ -7576,7 +7576,7 @@ Level_Scroll_DoAutoScrollRight:
 	; Scroll the screen right if there isn't a screen lock
 	ld   b, $01						; B = Movement speed
 	ld   a, [sLvlScrollLockCur]
-	and  a, SCRLOCK_L|SCRLOCK_R		; Is there a screen lock?
+	and  a, DIR_L|DIR_R				; Is there a screen lock?
 	jr   nz, .chkScroll				; If so, jump
 	
 	ld   a, [sLvlScrollHAmount]		; Otherwise scroll the screen
