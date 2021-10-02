@@ -1,13 +1,13 @@
 ;
 ; BANK $1C - Level Layouts
 ;
-	dw LevelLayout_C03B
-	dw LevelLayout_C37
-	dw LevelLayout_C31A
-	dw LevelLayout_C23
-	dw LevelLayout_C40
-	dw LevelLayout_C06
-	dw LevelLayout_C31B
+LevelLayoutPtr_C03B: dw LevelLayout_C03B
+LevelLayoutPtr_C37: dw LevelLayout_C37
+LevelLayoutPtr_C31A: dw LevelLayout_C31A
+LevelLayoutPtr_C23: dw LevelLayout_C23
+LevelLayoutPtr_C40: dw LevelLayout_C40
+LevelLayoutPtr_C06: dw LevelLayout_C06
+LevelLayoutPtr_C31B: dw LevelLayout_C31B
 ; =============== START OF ALIGN JUNK ===============
 IF SKIP_JUNK == 0
 	INCLUDE "src/align_junk/L1C400E.asm"

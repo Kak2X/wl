@@ -157,6 +157,17 @@ assert HIGH(\2) < $10
 	db LOW(\2)
 ENDM
 
+; =============== dlvl ===============
+; Generates a level ID for use in a level/room header.
+; IN:
+; - 1: Label to a level pointer (LevelLayoutPtr_*)
+dlvl: MACRO
+	db BANK(\1)	   ; Bank number
+	db LOW(\1 / 2) ; ID of the entry in the level pointer table, which is at 
+	               ; the *very beginning* of every bank containing level layouts.
+	               ; So, dividing \1 by 2 is enough to get the ID for the LevelLayoutPtr_* entry inside the pointer table.
+ENDM
+
 ; =============== sext ===============
 ; Shorthand for generating the high byte of a value when doing sign-extension
 ; IN

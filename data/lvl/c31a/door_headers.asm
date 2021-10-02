@@ -1,8 +1,8 @@
 Door_C31A_17:
 	dc $0160,$0F98	; Player pos (Y / X)
-	db $00			; Scroll lock
+	db DIR_NONE		; Scroll lock
 	dc $00E0,$0F38	; Scroll pos (Y / X)
-	db $00			; Scroll mode
+	db LVLSCROLL_SEGSCRL	; Scroll mode
 	db $00			; BG Priority
 	db $07			; Tile animation speed
 	db $E1			; Palette
@@ -14,9 +14,9 @@ Door_C31A_17:
 	dw ActGroup_C31A_Room1F		; Actor Setup code
 Door_C31A_1F:
 	dc $01E0,$07B8	; Player pos (Y / X)
-	db $00			; Scroll lock
+	db DIR_NONE		; Scroll lock
 	dc $0160,$0758	; Scroll pos (Y / X)
-	db $00			; Scroll mode
+	db LVLSCROLL_SEGSCRL	; Scroll mode
 	db $00			; BG Priority
 	db $07			; Tile animation speed
 	db $E1			; Palette

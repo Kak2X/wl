@@ -2,16 +2,16 @@
 	dw GFX_LevelShared_03	; Block GFX
 	dw GFX_StatusBar_01	; Status Bar GFX
 	dw GFX_LevelAnim_08	; Animated tiles GFX
-	db $1C,$02	; Level Layout ID	
+	dlvl LevelLayoutPtr_C31A	; Level Layout ID	
 	dw LevelBlock_StoneCave	; 16x16 Blocks 
 	db $00,$D0	; Player X
 	db $0F,$98	; Player Y
 	db OBJ_WARIO_STAND ; OBJLst Frame
-	db $20		; OBJLst Flags
+	db OBJLST_XFLIP	; OBJLst Flags (Face Right)
 	db $00,$60	; Scroll Y
 	db $0F,$38	; Scroll X
-	db $00		; Screen Lock Flags
-	db $00		; Screen Scroll Mode
+	db DIR_NONE		; Screen Lock Flags
+	db LVLSCROLL_SEGSCRL	; Screen Scroll Mode
 	db $00		; Spawn in swim action
 	db $07		; Tile animation speed
 	db $E1		; BG Palette

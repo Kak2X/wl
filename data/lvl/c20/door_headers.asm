@@ -1,8 +1,8 @@
 Door_C20_18:
 	dc $0160,$0948	; Player pos (Y / X)
-	db $02			; Scroll lock
+	db DIR_L		; Scroll lock
 	dc $00E0,$0900	; Scroll pos (Y / X)
-	db $00			; Scroll mode
+	db LVLSCROLL_SEGSCRL	; Scroll mode
 	db $00			; BG Priority
 	db $00			; Tile animation speed
 	db $E1			; Palette
@@ -14,9 +14,9 @@ Door_C20_18:
 	dw ActGroup_C20_Room19		; Actor Setup code
 Door_C20_09:
 	dc $01E0,$0B28	; Player pos (Y / X)
-	db $02			; Scroll lock
+	db DIR_L		; Scroll lock
 	dc $0160,$0B00	; Scroll pos (Y / X)
-	db $00			; Scroll mode
+	db LVLSCROLL_SEGSCRL	; Scroll mode
 	db $00			; BG Priority
 	db $00			; Tile animation speed
 	db $63			; Palette
@@ -28,9 +28,9 @@ Door_C20_09:
 	dw ActGroup_TreasureG		; Actor Setup code
 Door_C20_1B:
 	dc $00E0,$0988	; Player pos (Y / X)
-	db $00			; Scroll lock
+	db DIR_NONE		; Scroll lock
 	dc $0060,$0928	; Scroll pos (Y / X)
-	db $00			; Scroll mode
+	db LVLSCROLL_SEGSCRL	; Scroll mode
 	db $00			; BG Priority
 	db $00			; Tile animation speed
 	db $E1			; Palette

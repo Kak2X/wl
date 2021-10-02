@@ -1,12 +1,12 @@
 ;
 ; BANK $0A - Level Layouts
 ;
-	dw LevelLayout_C26
-	dw LevelLayout_C33
-	dw LevelLayout_C15
-	dw LevelLayout_C20
-	dw LevelLayout_C16
-	dw LevelLayout_C10
+LevelLayoutPtr_C26: dw LevelLayout_C26
+LevelLayoutPtr_C33: dw LevelLayout_C33
+LevelLayoutPtr_C15: dw LevelLayout_C15
+LevelLayoutPtr_C20: dw LevelLayout_C20
+LevelLayoutPtr_C16: dw LevelLayout_C16
+LevelLayoutPtr_C10: dw LevelLayout_C10
 ; =============== START OF ALIGN JUNK ===============
 IF SKIP_JUNK == 0
 	INCLUDE "src/align_junk/L0A400C.asm"

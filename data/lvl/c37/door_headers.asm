@@ -1,8 +1,8 @@
 Door_C37_16:
 	dc $0150,$0F68	; Player pos (Y / X)
-	db $00			; Scroll lock
+	db DIR_NONE		; Scroll lock
 	dc $00E0,$0F08	; Scroll pos (Y / X)
-	db $00			; Scroll mode
+	db LVLSCROLL_SEGSCRL	; Scroll mode
 	db $00			; BG Priority
 	db $00			; Tile animation speed
 	db $E1			; Palette
@@ -14,9 +14,9 @@ Door_C37_16:
 	dw ActGroup_C37_Room1F		; Actor Setup code
 Door_C37_1F:
 	dc $01D0,$0678	; Player pos (Y / X)
-	db $00			; Scroll lock
+	db DIR_NONE		; Scroll lock
 	dc $0160,$0618	; Scroll pos (Y / X)
-	db $00			; Scroll mode
+	db LVLSCROLL_SEGSCRL	; Scroll mode
 	db $00			; BG Priority
 	db $0F			; Tile animation speed
 	db $E1			; Palette
@@ -28,9 +28,9 @@ Door_C37_1F:
 	dw ActGroup_C37_Room10		; Actor Setup code
 Door_C37_1D:
 	dc $00E0,$0C78	; Player pos (Y / X)
-	db $00			; Scroll lock
+	db DIR_NONE		; Scroll lock
 	dc $0060,$0C18	; Scroll pos (Y / X)
-	db $00			; Scroll mode
+	db LVLSCROLL_SEGSCRL	; Scroll mode
 	db $00			; BG Priority
 	db $07			; Tile animation speed
 	db $E1			; Palette
@@ -42,9 +42,9 @@ Door_C37_1D:
 	dw ActGroup_C37_Room0C		; Actor Setup code
 Door_C37_0C:
 	dc $01B0,$0DC8	; Player pos (Y / X)
-	db $01			; Scroll lock
+	db DIR_R		; Scroll lock
 	dc $0160,$0D50	; Scroll pos (Y / X)
-	db $00			; Scroll mode
+	db LVLSCROLL_SEGSCRL	; Scroll mode
 	db $00			; BG Priority
 	db $0F			; Tile animation speed
 	db $E1			; Palette
@@ -56,9 +56,9 @@ Door_C37_0C:
 	dw ActGroup_C37_Room10		; Actor Setup code
 Door_C37_1E:
 	dc $00E0,$0E28	; Player pos (Y / X)
-	db $02			; Scroll lock
+	db DIR_L		; Scroll lock
 	dc $0060,$0E00	; Scroll pos (Y / X)
-	db $00			; Scroll mode
+	db LVLSCROLL_SEGSCRL	; Scroll mode
 	db $00			; BG Priority
 	db $00			; Tile animation speed
 	db $63			; Palette
@@ -70,9 +70,9 @@ Door_C37_1E:
 	dw ActGroup_TreasureN		; Actor Setup code
 Door_C37_0E:
 	dc $01F0,$0E88	; Player pos (Y / X)
-	db $00			; Scroll lock
+	db DIR_NONE		; Scroll lock
 	dc $0160,$0E28	; Scroll pos (Y / X)
-	db $00			; Scroll mode
+	db LVLSCROLL_SEGSCRL	; Scroll mode
 	db $00			; BG Priority
 	db $0F			; Tile animation speed
 	db $E1			; Palette

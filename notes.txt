@@ -47,6 +47,8 @@ L08(.*): db
 ;X          ##
 \r\n\tdb    ##
 (?:.*?,){2} ## $&\r\n\t db 
+\tdw LevelLayout_(.*) ## LevelLayoutPtr_$1: dw LevelLayout_$1
+
 ; =============== FUNCTION ===============
 ; =============== START OF ALIGN JUNK ===============
 ; =============== END OF BANK ===============

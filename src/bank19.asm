@@ -1,12 +1,12 @@
 ;
 ; BANK $19 - Level Layouts
 ;
-	dw LevelLayout_C05
-	dw LevelLayout_C36
-	dw LevelLayout_C24
-	dw LevelLayout_C25
-	dw LevelLayout_C32
-	dw LevelLayout_C27
+LevelLayoutPtr_C05: dw LevelLayout_C05
+LevelLayoutPtr_C36: dw LevelLayout_C36
+LevelLayoutPtr_C24: dw LevelLayout_C24
+LevelLayoutPtr_C25: dw LevelLayout_C25
+LevelLayoutPtr_C32: dw LevelLayout_C32
+LevelLayoutPtr_C27: dw LevelLayout_C27
 ; =============== START OF ALIGN JUNK ===============
 IF SKIP_JUNK == 0
 	INCLUDE "src/align_junk/L19400C.asm"

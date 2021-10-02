@@ -1,11 +1,11 @@
 ;
 ; BANK $1A - Level Layouts
 ;
-	dw LevelLayout_C28
-	dw LevelLayout_C18
-	dw LevelLayout_C14
-	dw LevelLayout_C38
-	dw LevelLayout_C39
+LevelLayoutPtr_C28: dw LevelLayout_C28
+LevelLayoutPtr_C18: dw LevelLayout_C18
+LevelLayoutPtr_C14: dw LevelLayout_C14
+LevelLayoutPtr_C38: dw LevelLayout_C38
+LevelLayoutPtr_C39: dw LevelLayout_C39
 	
 ; =============== START OF ALIGN JUNK ===============
 IF SKIP_JUNK == 0

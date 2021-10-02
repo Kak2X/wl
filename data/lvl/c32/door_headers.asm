@@ -1,8 +1,8 @@
 Door_C32_1D:
 	dc $00E0,$0E58	; Player pos (Y / X)
-	db $02			; Scroll lock
+	db DIR_L		; Scroll lock
 	dc $0090,$0E00	; Scroll pos (Y / X)
-	db $10			; Scroll mode
+	db LVLSCROLL_FREE	; Scroll mode
 	db $00			; BG Priority
 	db $07			; Tile animation speed
 	db $E1			; Palette
@@ -14,9 +14,9 @@ Door_C32_1D:
 	dw ActGroup_C32_Room0E		; Actor Setup code
 Door_C32_0E:
 	dc $01D0,$0DD8	; Player pos (Y / X)
-	db $01			; Scroll lock
+	db DIR_R		; Scroll lock
 	dc $0160,$0D50	; Scroll pos (Y / X)
-	db $00			; Scroll mode
+	db LVLSCROLL_SEGSCRL	; Scroll mode
 	db $00			; BG Priority
 	db $00			; Tile animation speed
 	db $E1			; Palette

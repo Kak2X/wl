@@ -1,8 +1,8 @@
 Door_C07_19:
 	dc $01B0,$0C38	; Player pos (Y / X)
-	db $02			; Scroll lock
+	db DIR_L		; Scroll lock
 	dc $0160,$0C00	; Scroll pos (Y / X)
-	db $00			; Scroll mode
+	db LVLSCROLL_SEGSCRL	; Scroll mode
 	db $00			; BG Priority
 	db $07			; Tile animation speed
 	db $E1			; Palette
@@ -14,9 +14,9 @@ Door_C07_19:
 	dw ActGroup_C07_Room1C		; Actor Setup code
 Door_C07_1C:
 	dc $0130,$09D8	; Player pos (Y / X)
-	db $01			; Scroll lock
+	db DIR_R		; Scroll lock
 	dc $00E0,$0950	; Scroll pos (Y / X)
-	db $10			; Scroll mode
+	db LVLSCROLL_FREE	; Scroll mode
 	db $00			; BG Priority
 	db $07			; Tile animation speed
 	db $E1			; Palette
@@ -28,9 +28,9 @@ Door_C07_1C:
 	dw ActGroup_C07_Room10		; Actor Setup code
 Door_C07_14:
 	dc $01D0,$0A88	; Player pos (Y / X)
-	db $00			; Scroll lock
+	db DIR_NONE		; Scroll lock
 	dc $0160,$0A38	; Scroll pos (Y / X)
-	db $00			; Scroll mode
+	db LVLSCROLL_SEGSCRL	; Scroll mode
 	db $00			; BG Priority
 	db $07			; Tile animation speed
 	db $E1			; Palette
@@ -42,9 +42,9 @@ Door_C07_14:
 	dw ActGroup_C07_Room0A		; Actor Setup code
 Door_C07_1A:
 	dc $0190,$04B8	; Player pos (Y / X)
-	db $00			; Scroll lock
+	db DIR_NONE		; Scroll lock
 	dc $0140,$0458	; Scroll pos (Y / X)
-	db $10			; Scroll mode
+	db LVLSCROLL_FREE	; Scroll mode
 	db $00			; BG Priority
 	db $07			; Tile animation speed
 	db $E1			; Palette
@@ -56,9 +56,9 @@ Door_C07_1A:
 	dw ActGroup_C07_Room10		; Actor Setup code
 Door_C07_04:
 	dc $00D0,$0A88	; Player pos (Y / X)
-	db $00			; Scroll lock
+	db DIR_NONE		; Scroll lock
 	dc $0060,$0A38	; Scroll pos (Y / X)
-	db $00			; Scroll mode
+	db LVLSCROLL_SEGSCRL	; Scroll mode
 	db $00			; BG Priority
 	db $07			; Tile animation speed
 	db $E1			; Palette
@@ -70,9 +70,9 @@ Door_C07_04:
 	dw ActGroup_C07_Room0A		; Actor Setup code
 Door_C07_0A:
 	dc $00A0,$04B8	; Player pos (Y / X)
-	db $00			; Scroll lock
+	db DIR_NONE		; Scroll lock
 	dc $0050,$0458	; Scroll pos (Y / X)
-	db $10			; Scroll mode
+	db LVLSCROLL_FREE	; Scroll mode
 	db $00			; BG Priority
 	db $07			; Tile animation speed
 	db $E1			; Palette
@@ -84,9 +84,9 @@ Door_C07_0A:
 	dw ActGroup_C07_Room10		; Actor Setup code
 Door_C07_13:
 	dc $01E0,$0B58	; Player pos (Y / X)
-	db $00			; Scroll lock
+	db DIR_NONE		; Scroll lock
 	dc $0160,$0B08	; Scroll pos (Y / X)
-	db $00			; Scroll mode
+	db LVLSCROLL_SEGSCRL	; Scroll mode
 	db $00			; BG Priority
 	db $07			; Tile animation speed
 	db $E1			; Palette
@@ -100,7 +100,7 @@ Door_C07_1B:
 	dc $01D0,$0368	; Player pos (Y / X)
 	db $08			; Scroll lock
 	dc $0150,$0308	; Scroll pos (Y / X)
-	db $10			; Scroll mode
+	db LVLSCROLL_FREE	; Scroll mode
 	db $00			; BG Priority
 	db $07			; Tile animation speed
 	db $E1			; Palette
