@@ -390,7 +390,7 @@ Sound_DoCurrentSFX4:
 	and  a
 	ret  z				; If not, return
 .handle
-	cp   a, $1C			; Are we trying to play an invalid SFX
+	cp   a, $1C			; Are we trying to play an invalid SFX? (>= last valid one + 1)
 	jr   nc, .invalid	; If so, jump
 	ld   hl, Sound_SFX4NextPtrTable
 	call Sound_IndexPtrTable
@@ -398,8 +398,13 @@ Sound_DoCurrentSFX4:
 	; [TCRF] Handler for invalid SFX4 requests.
 .invalid:
 	xor  a
+IF FIX_BUGS == 1
+	ld  [sSFX4], a ; [BUG] should have been sSFX4 instead
+ELSE
 	ld  [$420B], a ; [BUG] should have been sSFX4 instead
+ENDC
 	ret
+	
 ; =============== Sound_UseHurryUp ===============
 ; Sets the BGM options for the hurry up version of the requested track.
 ; As a result, this should only be used when starting a new track.
@@ -2307,7 +2312,11 @@ Sound_DoBGMPitchCmd_SetPitchBend:
 	ld   a, [sBGMPPCmdPitchIndex]	; Was the timer initialized?
 	and  a
 	jr   nz, .hasTimer				; If so, jump
-	ld   a, $11						; [BUG] Taking the 'dec a' into account, this initialize it to $10
+IF FIX_BUGS == 1
+	ld   a, $10
+ELSE
+	ld   a, $11						; [BUG] Taking the 'dec a' into account, this initializes it to $10
+ENDC
 	ld   [sBGMPPCmdPitchIndex], a   ;       This is 1 byte after the end of the pitch table.
 .hasTimer:
 	dec  a				
@@ -13583,32 +13592,6 @@ BGMCmdTable_7FCB:
 	sndloop
 	sndend
 ; =============== END OF BANK ===============
-L047FE3: db $FF;X
-L047FE4: db $FF;X
-L047FE5: db $FB;X
-L047FE6: db $FB;X
-L047FE7: db $BF;X
-L047FE8: db $FF;X
-L047FE9: db $FF;X
-L047FEA: db $EF;X
-L047FEB: db $EE;X
-L047FEC: db $FE;X
-L047FED: db $AE;X
-L047FEE: db $FF;X
-L047FEF: db $EE;X
-L047FF0: db $FF;X
-L047FF1: db $EE;X
-L047FF2: db $F7;X
-L047FF3: db $CF;X
-L047FF4: db $FF;X
-L047FF5: db $FF;X
-L047FF6: db $FF;X
-L047FF7: db $FF;X
-L047FF8: db $EF;X
-L047FF9: db $FF;X
-L047FFA: db $FE;X
-L047FFB: db $FB;X
-L047FFC: db $BF;X
-L047FFD: db $FE;X
-L047FFE: db $FF;X
-L047FFF: db $AE;X
+IF SKIP_JUNK == 0
+	INCLUDE "src/align_junk/L047FE3.asm"
+ENDC

@@ -305,11 +305,29 @@ ENDR
 	;
 	;		Though this can only be triggered if the key isn't thrown -- picking
 	;		the key up corrects this problem.
+IF FIX_BUGS == 1 
+	ld   a, [sActHeldId]
+	cp   a, ACT_KEY			; Are we holding a key?
+	jr   z, .keyObj			; If so, jump
+.coinObj:
 	ld   a, LOW(OBJLstSharedPtrTable_Act_10Coin)
 	ldi  [hl], a
 	ld   a, HIGH(OBJLstSharedPtrTable_Act_10Coin)
 	ldi  [hl], a
+	jr   .end
+.keyObj:
+	ld   a, LOW(OBJLstSharedPtrTable_Act_Key)
+	ldi  [hl], a
+	ld   a, HIGH(OBJLstSharedPtrTable_Act_Key)
+	ldi  [hl], a
+ELSE
+	ld   a, LOW(OBJLstSharedPtrTable_Act_10Coin)
+	ldi  [hl], a
+	ld   a, HIGH(OBJLstSharedPtrTable_Act_10Coin)
+	ldi  [hl], a
+ENDC
 	
+.end:
 	ld   a, $01
 	ld   [sActHeld], a
 	ret
@@ -405,7 +423,7 @@ Level_ActLayoutPtrTable:
 ; Additional shared options in the form of macros are provided below. (or room-specific code).
 
 ; =============== mActGroup ===============
-; Defines the main code for an actor group for a room.
+; Sets up the code/graphics for an actor group in a room.
 ;
 ; It sets up the following:
 ;
@@ -415,7 +433,7 @@ Level_ActLayoutPtrTable:
 ; -  3: Bank number for OBJLst
 ;
 ; ActGroupGFXDef (4 bytes; shortneded through mActGFXDef)
-; -  0: Bank number
+; -  0: Bank number for GFX
 ; -1-2: Ptr to GFX
 ; -  3: Tile count
 ;
@@ -1297,84 +1315,9 @@ OBJLst_Act_SpearGoom_Unused_StunAltR: INCBIN "data/objlst/actor/speargoom_unused
 GFX_Act_SpearGoom: INCBIN "data/gfx/actor/speargoom.bin"
 
 ; =============== START OF ALIGN JUNK ===============
-L076EB2: db $A0;X
-L076EB3: db $A2;X
-L076EB4: db $2A;X
-L076EB5: db $AA;X
-L076EB6: db $82;X
-L076EB7: db $A8;X
-L076EB8: db $AA;X
-L076EB9: db $AA;X
-L076EBA: db $8A;X
-L076EBB: db $AA;X
-L076EBC: db $2A;X
-L076EBD: db $28;X
-L076EBE: db $AA;X
-L076EBF: db $8A;X
-L076EC0: db $AA;X
-L076EC1: db $AA;X
-L076EC2: db $AA;X
-L076EC3: db $A2;X
-L076EC4: db $AA;X
-L076EC5: db $22;X
-L076EC6: db $2A;X
-L076EC7: db $88;X
-L076EC8: db $A8;X
-L076EC9: db $AA;X
-L076ECA: db $8A;X
-L076ECB: db $AA;X
-L076ECC: db $A2;X
-L076ECD: db $AA;X
-L076ECE: db $AA;X
-L076ECF: db $8A;X
-L076ED0: db $22;X
-L076ED1: db $AA;X
-L076ED2: db $AA;X
-L076ED3: db $AA;X
-L076ED4: db $A8;X
-L076ED5: db $AA;X
-L076ED6: db $AA;X
-L076ED7: db $22;X
-L076ED8: db $AA;X
-L076ED9: db $AA;X
-L076EDA: db $AA;X
-L076EDB: db $2A;X
-L076EDC: db $AA;X
-L076EDD: db $AA;X
-L076EDE: db $AA;X
-L076EDF: db $A2;X
-L076EE0: db $0A;X
-L076EE1: db $AA;X
-L076EE2: db $A8;X
-L076EE3: db $AA;X
-L076EE4: db $AA;X
-L076EE5: db $8A;X
-L076EE6: db $AA;X
-L076EE7: db $AA;X
-L076EE8: db $AA;X
-L076EE9: db $AA;X
-L076EEA: db $AA;X
-L076EEB: db $AA;X
-L076EEC: db $AA;X
-L076EED: db $A8;X
-L076EEE: db $AA;X
-L076EEF: db $8A;X
-L076EF0: db $8A;X
-L076EF1: db $AA;X
-L076EF2: db $2A;X
-L076EF3: db $A2;X
-L076EF4: db $82;X
-L076EF5: db $AA;X
-L076EF6: db $AA;X
-L076EF7: db $A8;X
-L076EF8: db $A8;X
-L076EF9: db $AA;X
-L076EFA: db $2A;X
-L076EFB: db $8A;X
-L076EFC: db $2A;X
-L076EFD: db $AA;X
-L076EFE: db $2A;X
-L076EFF: db $2A;X
+IF SKIP_JUNK == 0
+	INCLUDE "src/align_junk/L076EB2.asm"
+ENDC
 ; =============== END OF ALIGN JUNK ===============
 
 ActLayout_C26: INCBIN "data/lvl/c26/actor_layout.bin"
@@ -1422,157 +1365,6 @@ ActLayout_C06: INCBIN "data/lvl/c06/actor_layout.bin"
 ActLayout_C31B: INCBIN "data/lvl/c31b/actor_layout.bin"
 
 ; =============== END OF BANK ===============
-L077F66: db $82;X
-L077F67: db $A2;X
-L077F68: db $AA;X
-L077F69: db $8A;X
-L077F6A: db $A8;X
-L077F6B: db $2A;X
-L077F6C: db $8A;X
-L077F6D: db $88;X
-L077F6E: db $A8;X
-L077F6F: db $A8;X
-L077F70: db $AA;X
-L077F71: db $AA;X
-L077F72: db $AA;X
-L077F73: db $AA;X
-L077F74: db $AA;X
-L077F75: db $02;X
-L077F76: db $A8;X
-L077F77: db $AA;X
-L077F78: db $AA;X
-L077F79: db $AA;X
-L077F7A: db $AA;X
-L077F7B: db $02;X
-L077F7C: db $8A;X
-L077F7D: db $88;X
-L077F7E: db $A0;X
-L077F7F: db $A8;X
-L077F80: db $AE;X
-L077F81: db $AA;X
-L077F82: db $AA;X
-L077F83: db $EA;X
-L077F84: db $AA;X
-L077F85: db $AE;X
-L077F86: db $AA;X
-L077F87: db $BA;X
-L077F88: db $AA;X
-L077F89: db $AA;X
-L077F8A: db $BE;X
-L077F8B: db $AA;X
-L077F8C: db $AA;X
-L077F8D: db $AA;X
-L077F8E: db $AA;X
-L077F8F: db $EA;X
-L077F90: db $AA;X
-L077F91: db $AA;X
-L077F92: db $AA;X
-L077F93: db $AA;X
-L077F94: db $AA;X
-L077F95: db $AA;X
-L077F96: db $AA;X
-L077F97: db $AA;X
-L077F98: db $AE;X
-L077F99: db $EA;X
-L077F9A: db $AA;X
-L077F9B: db $AA;X
-L077F9C: db $AA;X
-L077F9D: db $AA;X
-L077F9E: db $AA;X
-L077F9F: db $EA;X
-L077FA0: db $AE;X
-L077FA1: db $AA;X
-L077FA2: db $AA;X
-L077FA3: db $AA;X
-L077FA4: db $AE;X
-L077FA5: db $AA;X
-L077FA6: db $AA;X
-L077FA7: db $AA;X
-L077FA8: db $AA;X
-L077FA9: db $AA;X
-L077FAA: db $AA;X
-L077FAB: db $AA;X
-L077FAC: db $AA;X
-L077FAD: db $AA;X
-L077FAE: db $AA;X
-L077FAF: db $AA;X
-L077FB0: db $AA;X
-L077FB1: db $EA;X
-L077FB2: db $EB;X
-L077FB3: db $AA;X
-L077FB4: db $AA;X
-L077FB5: db $AB;X
-L077FB6: db $AA;X
-L077FB7: db $AA;X
-L077FB8: db $EA;X
-L077FB9: db $AA;X
-L077FBA: db $AE;X
-L077FBB: db $AA;X
-L077FBC: db $AA;X
-L077FBD: db $AA;X
-L077FBE: db $AA;X
-L077FBF: db $AA;X
-L077FC0: db $AB;X
-L077FC1: db $AA;X
-L077FC2: db $AE;X
-L077FC3: db $EA;X
-L077FC4: db $AA;X
-L077FC5: db $AA;X
-L077FC6: db $AA;X
-L077FC7: db $EE;X
-L077FC8: db $EA;X
-L077FC9: db $AA;X
-L077FCA: db $EA;X
-L077FCB: db $EA;X
-L077FCC: db $AA;X
-L077FCD: db $AA;X
-L077FCE: db $AA;X
-L077FCF: db $AA;X
-L077FD0: db $AE;X
-L077FD1: db $AE;X
-L077FD2: db $AA;X
-L077FD3: db $AA;X
-L077FD4: db $AA;X
-L077FD5: db $AE;X
-L077FD6: db $EA;X
-L077FD7: db $AA;X
-L077FD8: db $AE;X
-L077FD9: db $AA;X
-L077FDA: db $AA;X
-L077FDB: db $AE;X
-L077FDC: db $AA;X
-L077FDD: db $AA;X
-L077FDE: db $AA;X
-L077FDF: db $AE;X
-L077FE0: db $AA;X
-L077FE1: db $EA;X
-L077FE2: db $AE;X
-L077FE3: db $AE;X
-L077FE4: db $AA;X
-L077FE5: db $AA;X
-L077FE6: db $EA;X
-L077FE7: db $AE;X
-L077FE8: db $AA;X
-L077FE9: db $AA;X
-L077FEA: db $AA;X
-L077FEB: db $EA;X
-L077FEC: db $AE;X
-L077FED: db $AA;X
-L077FEE: db $FE;X
-L077FEF: db $AA;X
-L077FF0: db $EE;X
-L077FF1: db $AA;X
-L077FF2: db $EA;X
-L077FF3: db $AA;X
-L077FF4: db $AA;X
-L077FF5: db $AA;X
-L077FF6: db $AA;X
-L077FF7: db $AA;X
-L077FF8: db $AE;X
-L077FF9: db $AA;X
-L077FFA: db $AA;X
-L077FFB: db $BE;X
-L077FFC: db $EA;X
-L077FFD: db $AA;X
-L077FFE: db $AA;X
-L077FFF: db $AA;X
+IF SKIP_JUNK == 0
+	INCLUDE "src/align_junk/L077F66.asm"
+ENDC

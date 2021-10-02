@@ -42,8 +42,10 @@ Map_Overworld_BridgeAutoMove:
 ;       it's done immediately before the path starts, so the player has a chance to break it 
 ;       by holding B when the game returns to the overworld.
 ;       This cancels the automatic movement, causing Wario to stay on the Bridge.
+IF FIX_BUGS == 0
 	xor  a
 	ld   [sMapBridgeAutoMove], a
+ENDC
 	ret
 	
 .checkSlRight:
@@ -599,13 +601,6 @@ Map_Overworld_CheckForNewPath:
 	
 	; We need to index the correct entry of the PathDir data.
 	; Determine the index for the direction we've pressed.
-	
-	; [BUG] These are not checked in the same order as Map_GetPathCompletionBitPtr
-	;       As either of these doesn't account for multiple keypresses, those can cause problems.
-	;       If a path is defined, the level can be skipped.
-	;       If no path is defined for a direction, it will use the magic value $FF as a path ID.
-	;       Then it becomes a game of chance if the broken Wario anim ID it pulls out causes a crash
-	;       or if the broken path control value causes a softlock.
 	bit  KEYB_RIGHT, a
 	jr   nz, .right
 	bit  KEYB_LEFT, a
@@ -615,6 +610,7 @@ Map_Overworld_CheckForNewPath:
 	bit  KEYB_DOWN, a
 	jr   nz, .down
 	ret
+
 .right:
 	ld   a, $01
 	jr   .end
@@ -3993,6 +3989,9 @@ Map_OnPathEnd:
 	
 	xor  a								; Use front frame
 	ld   [sMapWarioAnimId], a
+IF FIX_BUGS == 1
+	ld   [sMapBridgeAutoMove], a
+ENDC
 	ld   a, $07							; Set slower anim speed
 	ld   [sMapWarioYOscillateMask], a
 	ret
@@ -4359,8 +4358,6 @@ Map_Submap_CheckForNewPath:
 	
 	; We need to index the correct entry of the PathDir data.
 	; Determine the index for the direction we've pressed.
-	
-	; [BUG] Same bug as Map_Submap_CheckForNewPath.
 	bit  KEYB_RIGHT, a
 	jr   nz, .right
 	bit  KEYB_LEFT, a
@@ -4410,7 +4407,9 @@ Map_Submap_DoPathSeg:
 	cp   a, MAP_MPC_DOWN
 	jp   z, .down
 .stop:
-	ret ; We never get here
+	; [POI] We normally never get here.
+	;       However, with glitches (see [BUG] at Map_GetPathCompletionBitPtr) it's possible reach this and softlock the game.
+	ret
 	
 ; The actual subroutines for moving Wario in a submap
 ; All of these perform path movement every other frame.
@@ -5128,7 +5127,7 @@ Map_RiceBeach_IsPathOpen:    mMapIsSubmapOpen sMapRiceBeachCompletion, sMap_Unus
 ;
 ; OUT
 ; - H: Parh unlock bitmask 
-; - L: Parh unlock bitmask (high byte)
+; - L: Path unlock bitmask (high byte)
 Map_Submap_GetPathCompletionBitPtr:
 	ld   a, [sMapLevelId]
 	ld   hl, PathUnlockPtrTable_Course
@@ -5139,7 +5138,21 @@ Map_GetPathCompletionBitPtr:
 	; We now are pointing to another table for the unlock requirements
 	; from the current location in the map.
 	; Determine the index to use depending on the direction we want to go.
+	
+	; [BUG] These are not checked in the same order as other places.
+	;       As none of the subroutines doesn't account for multiple keypresses, those can cause problems.
+	;
+	;		In practice this becomes a problem when holding DOWN-RIGHT in a spot where there's a path below, but not on the right.
+	;       If a path is defined, the level can be skipped.
+	;       If no path is defined for a direction, it will use the magic value $FF as a path ID.
+	;       Then it becomes a game of chance if the broken Wario anim ID it pulls out causes a crash
+	;       or if the broken path control value causes a softlock.
+	
 	ld   a, [sMapPathDirSel]
+IF FIX_BUGS == 1
+	bit  KEYB_RIGHT, a
+	jr   nz, .right
+ENDC
 	bit  KEYB_LEFT, a
 	jr   nz, .left
 	bit  KEYB_UP, a
@@ -8627,323 +8640,6 @@ Map_ScreenEvent:
 	ret
 	
 ; =============== END OF BANK ===============
-L087EB6: db $0A;X
-
-; [TCRF] Duplicate of the last part of Map_ScreenEvent.
-;        Curiously, the subroutines called don't point to the expected locations,
-;        hinting this comes from a prototype of the game.
-EOB_Map_ScreenEvent: 
-	jr   z, .modeStoveCanyon
-	cp   a, MAP_MODE_OVERWORLD
-	jr   nz, .checkEv
-.overworld:	
-	call $534E
-.checkEv:	
-	ld   a, [sMapSyrupCastleCutscene]
-	cp   a, MAP_SCC_C38CLEAR
-	jr   z, .doEv
-	cp   a, MAP_SCC_C39CLEAR
-	jr   z, .doEv
-	ld   a, [sMapLevelClear]
-	and  a
-	ret  z
-.doEv:	
-	call $7487
-	ret  
-.modeSSTeacup:	
-	call $518E
-	jr   .checkEv
-.modeStoveCanyon:	
-	call $51F6
-	jr   .checkEv
-	ret  
-	
-L087EDF: db $AE;X
-L087EE0: db $FF;X
-L087EE1: db $FE;X
-L087EE2: db $EA;X
-L087EE3: db $FE;X
-L087EE4: db $FB;X
-L087EE5: db $FB;X
-L087EE6: db $EA;X
-L087EE7: db $EB;X
-L087EE8: db $AA;X
-L087EE9: db $EE;X
-L087EEA: db $AB;X
-L087EEB: db $FF;X
-L087EEC: db $AF;X
-L087EED: db $EE;X
-L087EEE: db $AF;X
-L087EEF: db $EE;X
-L087EF0: db $FF;X
-L087EF1: db $EE;X
-L087EF2: db $EA;X
-L087EF3: db $EF;X
-L087EF4: db $EB;X
-L087EF5: db $FE;X
-L087EF6: db $BE;X
-L087EF7: db $BA;X
-L087EF8: db $EA;X
-L087EF9: db $EB;X
-L087EFA: db $FA;X
-L087EFB: db $FE;X
-L087EFC: db $AE;X
-L087EFD: db $AF;X
-L087EFE: db $EB;X
-L087EFF: db $EE;X
-L087F00: db $88;X
-L087F01: db $00;X
-L087F02: db $A0;X
-L087F03: db $0A;X
-L087F04: db $A0;X
-L087F05: db $80;X
-L087F06: db $88;X
-L087F07: db $82;X
-L087F08: db $80;X
-L087F09: db $2A;X
-L087F0A: db $A2;X
-L087F0B: db $2A;X
-L087F0C: db $00;X
-L087F0D: db $00;X
-L087F0E: db $22;X
-L087F0F: db $88;X
-L087F10: db $82;X
-L087F11: db $80;X
-L087F12: db $28;X
-L087F13: db $A0;X
-L087F14: db $A0;X
-L087F15: db $A8;X
-L087F16: db $08;X
-L087F17: db $08;X
-L087F18: db $8A;X
-L087F19: db $08;X
-L087F1A: db $A2;X
-L087F1B: db $20;X
-L087F1C: db $00;X
-L087F1D: db $A0;X
-L087F1E: db $A0;X
-L087F1F: db $00;X
-L087F20: db $20;X
-L087F21: db $00;X
-L087F22: db $20;X
-L087F23: db $0A;X
-L087F24: db $28;X
-L087F25: db $A0;X
-L087F26: db $AA;X
-L087F27: db $80;X
-L087F28: db $A2;X
-L087F29: db $20;X
-L087F2A: db $AA;X
-L087F2B: db $08;X
-L087F2C: db $02;X
-L087F2D: db $22;X
-L087F2E: db $08;X
-L087F2F: db $20;X
-L087F30: db $A8;X
-L087F31: db $A0;X
-L087F32: db $8A;X
-L087F33: db $80;X
-L087F34: db $80;X
-L087F35: db $20;X
-L087F36: db $08;X
-L087F37: db $A8;X
-L087F38: db $0A;X
-L087F39: db $2A;X
-L087F3A: db $00;X
-L087F3B: db $A2;X
-L087F3C: db $22;X
-L087F3D: db $0A;X
-L087F3E: db $88;X
-L087F3F: db $82;X
-L087F40: db $20;X
-L087F41: db $00;X
-L087F42: db $A2;X
-L087F43: db $8A;X
-L087F44: db $82;X
-L087F45: db $A2;X
-L087F46: db $00;X
-L087F47: db $02;X
-L087F48: db $88;X
-L087F49: db $08;X
-L087F4A: db $08;X
-L087F4B: db $00;X
-L087F4C: db $2A;X
-L087F4D: db $02;X
-L087F4E: db $82;X
-L087F4F: db $00;X
-L087F50: db $A0;X
-L087F51: db $A0;X
-L087F52: db $02;X
-L087F53: db $00;X
-L087F54: db $A8;X
-L087F55: db $82;X
-L087F56: db $80;X
-L087F57: db $00;X
-L087F58: db $88;X
-L087F59: db $A8;X
-L087F5A: db $A2;X
-L087F5B: db $A0;X
-L087F5C: db $2A;X
-L087F5D: db $08;X
-L087F5E: db $00;X
-L087F5F: db $00;X
-L087F60: db $02;X
-L087F61: db $80;X
-L087F62: db $A2;X
-L087F63: db $22;X
-L087F64: db $08;X
-L087F65: db $20;X
-L087F66: db $00;X
-L087F67: db $08;X
-L087F68: db $82;X
-L087F69: db $A0;X
-L087F6A: db $00;X
-L087F6B: db $20;X
-L087F6C: db $08;X
-L087F6D: db $0A;X
-L087F6E: db $20;X
-L087F6F: db $0A;X
-L087F70: db $20;X
-L087F71: db $02;X
-L087F72: db $A0;X
-L087F73: db $A2;X
-L087F74: db $20;X
-L087F75: db $20;X
-L087F76: db $88;X
-L087F77: db $80;X
-L087F78: db $00;X
-L087F79: db $A0;X
-L087F7A: db $00;X
-L087F7B: db $82;X
-L087F7C: db $82;X
-L087F7D: db $A0;X
-L087F7E: db $00;X
-L087F7F: db $00;X
-L087F80: db $EA;X
-L087F81: db $FF;X
-L087F82: db $AF;X
-L087F83: db $BF;X
-L087F84: db $BE;X
-L087F85: db $FF;X
-L087F86: db $FF;X
-L087F87: db $FF;X
-L087F88: db $EF;X
-L087F89: db $AE;X
-L087F8A: db $EE;X
-L087F8B: db $EE;X
-L087F8C: db $FF;X
-L087F8D: db $AA;X
-L087F8E: db $EF;X
-L087F8F: db $EB;X
-L087F90: db $FF;X
-L087F91: db $FE;X
-L087F92: db $EB;X
-L087F93: db $FE;X
-L087F94: db $EB;X
-L087F95: db $AF;X
-L087F96: db $EF;X
-L087F97: db $FE;X
-L087F98: db $EE;X
-L087F99: db $EF;X
-L087F9A: db $EF;X
-L087F9B: db $EF;X
-L087F9C: db $FF;X
-L087F9D: db $BE;X
-L087F9E: db $FA;X
-L087F9F: db $FE;X
-L087FA0: db $FB;X
-L087FA1: db $AE;X
-L087FA2: db $AE;X
-L087FA3: db $BE;X
-L087FA4: db $FB;X
-L087FA5: db $EF;X
-L087FA6: db $FF;X
-L087FA7: db $BE;X
-L087FA8: db $FF;X
-L087FA9: db $EA;X
-L087FAA: db $EB;X
-L087FAB: db $BF;X
-L087FAC: db $EB;X
-L087FAD: db $FF;X
-L087FAE: db $EF;X
-L087FAF: db $FA;X
-L087FB0: db $FB;X
-L087FB1: db $FA;X
-L087FB2: db $EE;X
-L087FB3: db $FF;X
-L087FB4: db $FB;X
-L087FB5: db $BE;X
-L087FB6: db $FE;X
-L087FB7: db $EB;X
-L087FB8: db $FA;X
-L087FB9: db $BE;X
-L087FBA: db $EF;X
-L087FBB: db $BF;X
-L087FBC: db $EE;X
-L087FBD: db $EE;X
-L087FBE: db $FF;X
-L087FBF: db $EE;X
-L087FC0: db $FF;X
-L087FC1: db $EB;X
-L087FC2: db $AF;X
-L087FC3: db $AE;X
-L087FC4: db $BE;X
-L087FC5: db $EE;X
-L087FC6: db $BF;X
-L087FC7: db $FF;X
-L087FC8: db $EF;X
-L087FC9: db $FF;X
-L087FCA: db $EE;X
-L087FCB: db $FF;X
-L087FCC: db $EE;X
-L087FCD: db $FE;X
-L087FCE: db $EE;X
-L087FCF: db $AE;X
-L087FD0: db $AA;X
-L087FD1: db $AE;X
-L087FD2: db $FF;X
-L087FD3: db $EF;X
-L087FD4: db $EF;X
-L087FD5: db $FF;X
-L087FD6: db $EE;X
-L087FD7: db $BB;X
-L087FD8: db $AE;X
-L087FD9: db $BE;X
-L087FDA: db $FE;X
-L087FDB: db $AF;X
-L087FDC: db $FA;X
-L087FDD: db $BB;X
-L087FDE: db $FE;X
-L087FDF: db $EF;X
-L087FE0: db $EF;X
-L087FE1: db $BA;X
-L087FE2: db $EF;X
-L087FE3: db $EA;X
-L087FE4: db $BF;X
-L087FE5: db $AE;X
-L087FE6: db $BE;X
-L087FE7: db $BF;X
-L087FE8: db $EA;X
-L087FE9: db $EE;X
-L087FEA: db $EE;X
-L087FEB: db $EF;X
-L087FEC: db $AE;X
-L087FED: db $EF;X
-L087FEE: db $BF;X
-L087FEF: db $EF;X
-L087FF0: db $EE;X
-L087FF1: db $FE;X
-L087FF2: db $FE;X
-L087FF3: db $BA;X
-L087FF4: db $FF;X
-L087FF5: db $AB;X
-L087FF6: db $EE;X
-L087FF7: db $FE;X
-L087FF8: db $FB;X
-L087FF9: db $FB;X
-L087FFA: db $AE;X
-L087FFB: db $EF;X
-L087FFC: db $AE;X
-L087FFD: db $BA;X
-L087FFE: db $EE;X
-L087FFF: db $EA;X
+IF SKIP_JUNK == 0
+	INCLUDE "src/align_junk/L087EB6.asm"
+ENDC

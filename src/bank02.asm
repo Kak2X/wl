@@ -47,6 +47,11 @@ ActS_Do:
 	
 	; After the freeze effect is done, always blank out the pal inversion effect
 	; [BUG] This doesn't check for the game being paused, which leads to a variety of glitches.
+IF FIX_BUGS == 1
+	ld   a, [sPaused]
+	and  a						; Is the game paused?
+	jr   nz, .chkScrollSpawn	; If so, don't decrement the freeze timer
+ENDC
 	ld   a, [sPlFreezeTimer]
 	or   a						; Is the effect set?
 	jr   z, .chkScrollSpawn		; If not, jump
@@ -552,6 +557,10 @@ ActBGColi_IsEmptyWaterBlock:
 	;       the door and a solid wall in C27.
 	cp   a, BLOCKID_WATER				; == $4A
 	jp   z, ActBGColi_Ret0
+IF FIX_BUGS == 1
+	cp   a, BLOCKID_WATERDOOR			; == $4B
+	jp   z, ActBGColi_Ret0
+ENDC
 	cp   a, BLOCKID_WATERHARDBREAK		; not == $50
 	jp   z, ActBGColi_Ret1
 	cp   a, BLOCKID_WATERBREAK			; not == $51
@@ -1160,8 +1169,12 @@ ActS_InitByRightScroll:
 	; Have we reached the end of level layout?
 	; (done in case we're near the bottom of the level)
 	ld   a, h		
-	cp   a, HIGH(wLevelLayout_End)
-	ret  nc
+	cp   a, HIGH(wLevelLayout_End)		; LayoutPtr >= LayoutEnd?
+	ret  nc								; If so, don't spawn it
+	IF FIX_BUGS == 1
+		cp   a, HIGH(wLevelLayout)	; LayoutPtr < LayoutStart?
+		ret  c								; If so, don't spawn it
+	ENDC
 	; If there's an actor on this block (MSB set), spawn it
 	bit  7, [hl]
 	call nz, ActS_InitByLevelLayoutPtr
@@ -1192,8 +1205,12 @@ ActS_InitByLeftScroll:
 .loop:
 	; Have we reached the end of level layout?
 	ld   a, h		
-	cp   a, HIGH(wLevelLayout_End)
-	ret  nc
+	cp   a, HIGH(wLevelLayout_End)		; LayoutPtr >= LayoutEnd?
+	ret  nc								; If so, don't spawn it
+	IF FIX_BUGS == 1
+		cp   a, HIGH(wLevelLayout)	; LayoutPtr < LayoutStart?
+		ret  c								; If so, don't spawn it
+	ENDC
 	; If there's an actor on this block (MSB set), spawn it
 	bit  7, [hl]
 	call nz, ActS_InitByLevelLayoutPtr
@@ -1223,8 +1240,12 @@ ActS_InitByUpScroll:
 .loop:
 	; Have we reached the end of level layout?
 	ld   a, h		
-	cp   a, HIGH(wLevelLayout_End)
-	ret  nc
+	cp   a, HIGH(wLevelLayout_End)		; LayoutPtr >= LayoutEnd?
+	ret  nc								; If so, don't spawn it
+	IF FIX_BUGS == 1
+		cp   a, HIGH(wLevelLayout)	; LayoutPtr < LayoutStart?
+		ret  c								; If so, don't spawn it
+	ENDC
 	; If there's an actor on this block (MSB set), spawn it
 	bit  7, [hl]
 	call nz, ActS_InitByLevelLayoutPtr
@@ -1254,8 +1275,12 @@ ActS_InitByDownScroll:
 .loop:
 	; Have we reached the end of level layout?
 	ld   a, h		
-	cp   a, HIGH(wLevelLayout_End)
-	ret  nc
+	cp   a, HIGH(wLevelLayout_End)		; LayoutPtr >= LayoutEnd?
+	ret  nc								; If so, don't spawn it
+	IF FIX_BUGS == 1
+		cp   a, HIGH(wLevelLayout)	; LayoutPtr < LayoutStart?
+		ret  c								; If so, don't spawn it
+	ENDC
 	; If there's an actor on this block (MSB set), spawn it
 	bit  7, [hl]
 	call nz, ActS_InitByLevelLayoutPtr
@@ -1456,7 +1481,7 @@ ActS_Held:
 	jp   z, ActS_StartStun	; If not, set it in the stun state
 	ld   a, [sActSyrupCastleBossDead]
 	or   a							; Are we starting the ending cutscene?
-	jp   nz, ActS_Held_ForceDelete	; If so, get rid of anything we're holding
+	jp   nz, ActS_Held_ForceDelete	; If so, get rid of anything we're holding (note that the lamp handles the held code by itself)
 	
 	;
 	; Check for autokill if we're also holding a key
@@ -1906,10 +1931,27 @@ ActS_StartThrow:
 	ld   a, [sPlAction]
 	cp   a, PL_ACT_JUMP				; Are we jumping?
 	ret  nz							; If not, return
-	ld   a, [sPlJumpYPathIndex]
-	cp   a, (Pl_JumpYPath.down-Pl_JumpYPath); Are we past the peak of the jump (ie: moving downwards, hopefully)	
-	ret  nc										; If so, return
-	mActSetYSpeed -$04				; Otherwise, change the throw arc
+	
+	IF FIX_BUGS == 1
+		; Determine peak value for the jump
+		ld   b, (Pl_JumpYPath.down-Pl_JumpYPath) ; B = Normal jump peak
+		ld   a, [sHighJump]
+		and  a							; Doing an high jump?
+		jr   z, .setJump				; If not, skip ahead
+		ld   b, (Pl_HighJumpYPath.down-Pl_HighJumpYPath) ; B = High jump peak
+	.setJump:
+		ld   a, [sPlJumpYPathIndex]
+		cp   a, b						; Are we past the peak of the jump (ie: moving downwards, hopefully)	
+		ret  nc							; If so, return
+		mActSetYSpeed -$04				; Otherwise, change the throw arc
+	ELSE
+		ld   a, [sPlJumpYPathIndex]
+		cp   a, (Pl_JumpYPath.down-Pl_JumpYPath)	; Are we past the peak of the jump (ie: moving downwards, hopefully)	
+		ret  nc										; If so, return
+		mActSetYSpeed -$04							; Otherwise, change the throw arc
+	ENDC
+	
+
 	ret
 	
 ; =============== ActS_Throw_OnCollide ===============
@@ -3651,6 +3693,10 @@ ActS_SafeDropUnderwater:
 	ld   [sSFX4Set], a
 	ld   a, $01							; Sync DropSpeed to actual value
 	ld   [sActSetYSpeed_Low], a
+IF FIX_BUGS == 1
+	xor  a								; fix for stunning underwater actors	
+	ld   [sActSetYSpeed_High], a
+ENDC
 	ret	
 	
 ; =============== ActS_StunGroundMove ===============
@@ -4402,7 +4448,37 @@ ActS_StunDefault_Main:
 	and  a, $F0
 	ld   [sActSetY_Low], a
 	
+	; [BUG] This should not be set when the actor is a 10-coin.
+	;       Otherwise, the coin will indefinitely spin in-place.
+	
+	
+;IF FIX_BUGS == 1
+;	;--
+;	ld   b, a				; Save A
+;	ld   a, [sActSetId]
+;	cp   a, ACT_KEY			; Are we holding a key?
+;	jr   z, .noCheck		; If so, skip
+;	ld   a, b				; Restore A
+;		
+;	ld   a, [sActCoinGroundTimer]
+;	cp   a, $78					; Did we stay on the ground for more than $77 frames?
+;	ret  c						; If so, return
+;	xor  a						; Otherwise, despawn the coin
+;	ld   [sActSet], a
+;	;--
+;.noCheck:
+;ENDC
+	
+IF FIX_BUGS == 1
+	ld   bc, SubCall_ActS_DefaultStand		; Set code ptr for key
+	ld   a, [sActSetId]
+	cp   a, ACT_KEY							; Are we holding a key?
+	jr   z, .setCodePtr						; If so, skip
+	ld   bc, SubCall_Act_Coin				; Set code ptr for 10coin
+.setCodePtr:
+ELSE
 	ld   bc, SubCall_ActS_DefaultStand		; Set code ptr
+ENDC
 	call ActS_SetCodePtr
 	
 	;--
@@ -5067,6 +5143,9 @@ ActS_StunByLevelLayoutPtr:
 ; =============== START OF ACTOR SUBCALL TARGETS ===============
 ; Note that all of those pointing to this bank don't need to be subcalls.
 SubCall_ActInit_SSTeacupBoss: mSubCallRet ActInit_SSTeacupBoss ; BANK $0F
+IF FIX_BUGS == 1
+SubCall_ActInit2_SSTeacupBoss: mSubCallRet ActInit2_SSTeacupBoss ; BANK $0F
+ENDC
 SubCall_Act_SSTeacupBoss: mSubCallRet Act_SSTeacupBoss ; BANK $0F
 SubCall_ActInit_SSTeacupBossWatch: mSubCallRet ActInit_SSTeacupBossWatch ; BANK $18
 SubCall_Act_SSTeacupBossWatch: mSubCallRet Act_SSTeacupBossWatch ; BANK $18
@@ -5127,6 +5206,9 @@ SubCall_ActInit_ParsleyWoodsBossGhostGoom: mSubCallRet ActInit_ParsleyWoodsBossG
 SubCall_Act_ParsleyWoodsBoss: mSubCallRet Act_ParsleyWoodsBoss ; BANK $18
 SubCall_Act_ParsleyWoodsBossGhostGoom: mSubCallRet Act_ParsleyWoodsBossGhostGoom ; BANK $18
 SubCall_ActInit_StoveCanyonBoss: mSubCallRet ActInit_StoveCanyonBoss ; BANK $18
+IF FIX_BUGS == 1
+SubCall_ActInit2_StoveCanyonBoss: mSubCallRet ActInit2_StoveCanyonBoss ; BANK $18
+ENDC
 SubCall_Act_StoveCanyonBoss: mSubCallRet Act_StoveCanyonBoss ; BANK $18
 SubCall_ActInit_StoveCanyonBossTongue: mSubCallRet ActInit_StoveCanyonBossTongue ; BANK $18
 SubCall_Act_StoveCanyonBossTongue: mSubCallRet Act_StoveCanyonBossTongue ; BANK $18
@@ -5454,7 +5536,11 @@ Act_Snowman_SetTurnDelay:
 Act_Snowman_MoveLeft:
 	; If there's a solid block on the left, turn right
 	call ActColi_GetBlockId_LowL
+IF FIX_BUGS == 1
+	mSubCall ActBGColi_IsSolid
+ELSE
 	mSubCall ActBGColi_IsSolidOnTop ; [BUG] Should be ActBGColi_IsSolid
+ENDC
 	or   a
 	jr   nz, Act_Snowman_SetTurnDelay
 	
@@ -5487,7 +5573,11 @@ Act_Snowman_MoveLeft:
 Act_Snowman_MoveRight:
 	; If there's a solid block on the right, turn left
 	call ActColi_GetBlockId_LowR
+IF FIX_BUGS == 1
+	mSubCall ActBGColi_IsSolid
+ELSE
 	mSubCall ActBGColi_IsSolidOnTop ; [BUG] Should be ActBGColi_IsSolid
+ENDC
 	or   a
 	jr   nz, Act_Snowman_SetTurnDelay
 	
@@ -5553,7 +5643,11 @@ Act_Snowman_Shoot:
 	; [BUG] / [TCRF] The animation is being interrupted early.
 	; This value cuts out an extra frame.
 	ld   a, [sActSetOBJLstId]
+IF FIX_BUGS == 1
+	cp   a, $05					; Is the anim. over yet? (or rather, "is this the last valid sprite id?")
+ELSE
 	cp   a, $03					; Is the anim. over yet?
+ENDC
 	jr   nc, .endMode			; If so, jump
 	call ActS_IncOBJLstIdEvery8
 	ret
@@ -5767,7 +5861,11 @@ Act_Snowman_SpawnIce:
 	;       always fail since sActSetRoutineId can't ever be $CB.
 	
 	ld   a, l							; Seek to (what should have been) code ptr
+IF FIX_BUGS == 1
+	add  (sActSetCodePtr-sActSet)	
+ELSE
 	add  (sActSetRoutineId-sActSet)	
+ENDC
 	ld   l, a
 	
 	; Only compare with the low byte to save time
@@ -5787,7 +5885,11 @@ Act_Snowman_SpawnIce:
 	dec  d					; Have we searched in all 5 slots?
 	ret  z					; If so, return
 	ld   a, l				; If not, move to the next actor slot
+IF FIX_BUGS == 1
+	add  (sActSet_End-sActSet) - (sActSetCodePtr-sActSet)
+ELSE
 	add  (sActSet_End-sActSet) - (sActSetRoutineId-sActSet)
+ENDC
 	ld   l, a
 	jr   .checkSlot
 	
@@ -7735,7 +7837,7 @@ ActInit_BigItemBox:
 	
 	; Otherwise, set the properties of the used block
 	push bc							; Alternate sprite mappings
-	ld   bc, $7578					
+	ld   bc, OBJLstPtrTable_Act_BigItemBox_Used					
 	call ActS_SetOBJLstPtr
 	pop  bc
 	
@@ -7802,6 +7904,17 @@ Act_BigItemBox_Idle:
 	ld   [sScreenShakeTimer], a
 	ld   a, $01						; Mark as used for the entire level
 	ld   [sActBigItemBoxUsed], a
+IF FIX_BUGS == 1
+	; [BUG] If we hit the box by jetdashing underwater near the bottom of the actor,
+	;       it would cause problems by forcing out Wario of the jet dash in an unsafe way.
+	;ld   a, [sPlAction]
+	;cp   a, PL_ACT_DASHJET			; Are we jetdashing?
+	;ret  nz							; If not, return
+	;xor  a
+	;ld   a, [sPlAction]
+	;ld   a, [sPlJetDashTimer]
+	;mSubCall Pl_SwitchToDashRebound ; If so, end the dash prematurely
+ENDC
 	ret
 	
 ; =============== Act_BigItemBox_Hit ===============
@@ -7977,6 +8090,13 @@ Act_Bomb_Idle_OnTouch:
 	
 	; [BUG] No check if we're already holding something.
 	;       This means we can hold multiple actors at once, which is buggy.
+	IF FIX_BUGS == 1
+		ld   a, [sActHeld]
+		and  a							; Are we currrently holding something else?
+		jp   nz, Act_Bomb_WaitExplode	; If so, make it explode but don't hold it
+	ENDC
+	
+.end:
 	ld   a, BOMB_RTN_HELD
 	ld   [sActLocalRoutineId], a
 	ret
@@ -7989,7 +8109,8 @@ Act_Bomb_Idle_OnTouch:
 ;       It's also missing logic which makes it behave in buggy ways:
 ;       - It doesn't clear sActHeldId, which makes it possible to clone
 ;         previously held default actors (read: 10-coins and keys).
-;         The value isn't even cleared when coming from other levels.
+;         The value isn't even cleared when coming from other levels -- Act_Held in the only
+;         one that syncs the value when needed (when holding something), but this forgets to do it.
 ;       - It doesn't care if we were already holding something previously, so
 ;         we can hold multiple actors at once.
 ;         (this would have gone to Act_Bomb_Idle_OnTouch)
@@ -8001,6 +8122,9 @@ Act_Bomb_Held:
 	ld   a, $02					; Force held flag
 	ld   [sActHeld], a
 	xor  a						; Force light
+IF FIX_BUGS == 1
+	ld   [sActHeldId], a		; We don't need this (only useful to transfer actors between doors, and we can't do that with bombs)
+ENDC
 	ld   [sActHoldHeavy], a
 	
 	; [BUG?] Is this intentional?
@@ -8043,11 +8167,26 @@ Act_Bomb_SwitchToThrown:
 	ld   a, [sPlAction]
 	cp   a, PL_ACT_JUMP				; Are we jumping?
 	ret  nz							; If not, return
-	ld   a, [sPlJumpYPathIndex]
-	cp   a, (Pl_JumpYPath.down-Pl_JumpYPath); Are we past the peak of the jump (ie: moving downwards, hopefully)	
-	ret  nc										; If so, return
-	mActSetYSpeed -$03				; Otherwise, change the throw arc
 	
+	
+	IF FIX_BUGS == 1
+		; Determine peak value for the jump
+		ld   b, (Pl_JumpYPath.down-Pl_JumpYPath) ; B = Normal jump peak
+		ld   a, [sHighJump]
+		and  a							; Doing an high jump?
+		jr   z, .setJump				; If not, skip ahead
+		ld   b, (Pl_HighJumpYPath.down-Pl_HighJumpYPath) ; B = High jump peak
+	.setJump:
+		ld   a, [sPlJumpYPathIndex]
+		cp   a, b						; Are we past the peak of the jump (ie: moving downwards, hopefully)	
+		ret  nc							; If so, return
+		mActSetYSpeed -$03				; Otherwise, change the throw arc
+	ELSE
+		ld   a, [sPlJumpYPathIndex]
+		cp   a, (Pl_JumpYPath.down-Pl_JumpYPath); Are we past the peak of the jump (ie: moving downwards, hopefully)	
+		ret  nc										; If so, return
+		mActSetYSpeed -$03				; Otherwise, change the throw arc
+	ENDC
 	ret
 	
 ; =============== Act_Bomb_Idle_OnThrowOrGroundpound ===============
@@ -8822,167 +8961,6 @@ Act_ExitSkull:;I
 OBJLst_Act_ExitSkull: INCBIN "data/objlst/actor/exitskull.bin"
 GFX_Act_ExitSkull: INCBIN "data/gfx/actor/exitskull.bin"
 ; =============== END OF BANK ===============
-L027F5C: db $00;X
-L027F5D: db $A0;X
-L027F5E: db $20;X
-L027F5F: db $A0;X
-L027F60: db $00;X
-L027F61: db $00;X
-L027F62: db $08;X
-L027F63: db $00;X
-L027F64: db $AA;X
-L027F65: db $08;X
-L027F66: db $02;X
-L027F67: db $02;X
-L027F68: db $A0;X
-L027F69: db $08;X
-L027F6A: db $08;X
-L027F6B: db $00;X
-L027F6C: db $00;X
-L027F6D: db $20;X
-L027F6E: db $22;X
-L027F6F: db $08;X
-L027F70: db $A8;X
-L027F71: db $00;X
-L027F72: db $2A;X
-L027F73: db $02;X
-L027F74: db $00;X
-L027F75: db $20;X
-L027F76: db $20;X
-L027F77: db $20;X
-L027F78: db $A0;X
-L027F79: db $02;X
-L027F7A: db $00;X
-L027F7B: db $00;X
-L027F7C: db $20;X
-L027F7D: db $20;X
-L027F7E: db $28;X
-L027F7F: db $00;X
-L027F80: db $EE;X
-L027F81: db $BE;X
-L027F82: db $FF;X
-L027F83: db $FF;X
-L027F84: db $FB;X
-L027F85: db $EE;X
-L027F86: db $BF;X
-L027F87: db $AF;X
-L027F88: db $FF;X
-L027F89: db $FE;X
-L027F8A: db $FA;X
-L027F8B: db $FE;X
-L027F8C: db $FB;X
-L027F8D: db $FF;X
-L027F8E: db $AF;X
-L027F8F: db $EB;X
-L027F90: db $FE;X
-L027F91: db $FE;X
-L027F92: db $FF;X
-L027F93: db $FF;X
-L027F94: db $EF;X
-L027F95: db $FE;X
-L027F96: db $EF;X
-L027F97: db $AA;X
-L027F98: db $AF;X
-L027F99: db $AE;X
-L027F9A: db $FF;X
-L027F9B: db $EA;X
-L027F9C: db $EB;X
-L027F9D: db $EF;X
-L027F9E: db $EE;X
-L027F9F: db $FE;X
-L027FA0: db $FF;X
-L027FA1: db $EA;X
-L027FA2: db $AF;X
-L027FA3: db $EE;X
-L027FA4: db $FB;X
-L027FA5: db $EE;X
-L027FA6: db $BE;X
-L027FA7: db $FF;X
-L027FA8: db $EA;X
-L027FA9: db $EF;X
-L027FAA: db $FE;X
-L027FAB: db $EF;X
-L027FAC: db $FF;X
-L027FAD: db $FF;X
-L027FAE: db $FF;X
-L027FAF: db $EE;X
-L027FB0: db $EE;X
-L027FB1: db $EA;X
-L027FB2: db $EB;X
-L027FB3: db $FE;X
-L027FB4: db $FB;X
-L027FB5: db $EF;X
-L027FB6: db $EB;X
-L027FB7: db $FE;X
-L027FB8: db $EE;X
-L027FB9: db $FF;X
-L027FBA: db $BA;X
-L027FBB: db $FE;X
-L027FBC: db $EB;X
-L027FBD: db $AA;X
-L027FBE: db $FE;X
-L027FBF: db $FA;X
-L027FC0: db $FB;X
-L027FC1: db $AF;X
-L027FC2: db $EE;X
-L027FC3: db $FE;X
-L027FC4: db $AF;X
-L027FC5: db $EF;X
-L027FC6: db $FF;X
-L027FC7: db $EF;X
-L027FC8: db $EE;X
-L027FC9: db $FF;X
-L027FCA: db $FE;X
-L027FCB: db $FB;X
-L027FCC: db $FE;X
-L027FCD: db $FE;X
-L027FCE: db $EF;X
-L027FCF: db $BB;X
-L027FD0: db $AB;X
-L027FD1: db $AF;X
-L027FD2: db $EF;X
-L027FD3: db $EF;X
-L027FD4: db $EC;X
-L027FD5: db $FF;X
-L027FD6: db $AF;X
-L027FD7: db $BE;X
-L027FD8: db $EF;X
-L027FD9: db $EE;X
-L027FDA: db $FE;X
-L027FDB: db $BE;X
-L027FDC: db $AE;X
-L027FDD: db $BF;X
-L027FDE: db $EE;X
-L027FDF: db $FF;X
-L027FE0: db $EE;X
-L027FE1: db $BA;X
-L027FE2: db $FE;X
-L027FE3: db $AF;X
-L027FE4: db $EF;X
-L027FE5: db $FF;X
-L027FE6: db $EF;X
-L027FE7: db $EF;X
-L027FE8: db $FF;X
-L027FE9: db $BE;X
-L027FEA: db $FF;X
-L027FEB: db $BA;X
-L027FEC: db $FE;X
-L027FED: db $FF;X
-L027FEE: db $EE;X
-L027FEF: db $EE;X
-L027FF0: db $CF;X
-L027FF1: db $BA;X
-L027FF2: db $EA;X
-L027FF3: db $EB;X
-L027FF4: db $FB;X
-L027FF5: db $EB;X
-L027FF6: db $EF;X
-L027FF7: db $BE;X
-L027FF8: db $FE;X
-L027FF9: db $AF;X
-L027FFA: db $EF;X
-L027FFB: db $AF;X
-L027FFC: db $FF;X
-L027FFD: db $AF;X
-L027FFE: db $EF;X
-L027FFF: db $AE;X
+IF SKIP_JUNK == 0
+	INCLUDE "src/align_junk/L027F5C.asm"
+ENDC

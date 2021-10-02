@@ -1,6 +1,6 @@
 @echo off
 echo Assembling...
-rgbds\rgbasm -h -L -vo -v -o wl.o main.asm
+rgbds\rgbasm -h -L -vo -v -o wl.o config_original.asm
 if %ERRORLEVEL% neq 0 goto assemble_fail
 
 echo Linking...

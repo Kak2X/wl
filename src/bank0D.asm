@@ -28,7 +28,7 @@ Pl_HatSwitchAnim_SetNextAction:
 	dw Pl_SetMoveAction 	; No change
 	dw Pl_SetDuckAction 	; No change
 	dw Pl_GrabLadder		; No change
-	dw Pl_SwitchToSwim  	; No change, [BUG] but ends up spawning the water splash
+	dw Pl_SwitchToSwim  	; No change, [BUG] but ends up spawning the water splash (fixed elsewhere)
 	dw Pl_SwitchToJump		; ...
 	dw Pl_SwitchToJump		; Cancel grab
 	dw Pl_SwitchToHardBumpAir				; Pl_SwitchToHardBump
@@ -56,8 +56,12 @@ Pl_SwitchToJump:
 	ld   [sPlTimer], a
 	; [BUG] Resetting the jump table index allows you to start a new jump while in the air.
 	;       This isn't correct since this is called when already in the air.
+IF FIX_FUN_BUGS == 0
 	ld   [sPlJumpYPathIndex], a
+ENDC
+IF IMPROVE == 0
 	ld   [sPlMovingJump], a
+ENDC
 	ld   [sPlGroundDashTimer], a
 	ld   [sPlJetDashTimer], a
 	
@@ -855,6 +859,10 @@ Game_DoScreenShake:
 	
 	xor  a						; End the screen shake effect
 	ld   [sPlScreenShake], a
+	
+IF FIX_BUGS == 1
+	ret
+ELSE
 	;--
 	; [BUG] This is absolutely not correct; and I'm not even sure why it's here.
 	;
@@ -870,7 +878,8 @@ Game_DoScreenShake:
 	; - Sliding on ice after the screen shake ends, without having to press anything else
 	jp   Pl_SetMoveAction
 	;--
-	
+ENDC
+
 ; =============== Game_DoPostHitInvuln ===============
 ; Part 8 of Game_Do.
 ; Handles the timer for the post-invulnerability state.
@@ -957,6 +966,12 @@ Pl_DoCtrl:
 ; =============== Pl_DoCtrl_Stand ===============
 Pl_DoCtrl_Stand:
 
+IF FIX_BUGS == 1
+	ld   a, [sPlActSolid]
+	and  a								; Standing on a solid actor?
+	call z, Level_Scroll_CheckSegScroll	; If not, call
+ENDC
+
 	; Start by checking if we've just started to hold an enemy (held: 1, last: 0)
 	; This would start a fast anim in which player ctrl is disabled.
 	; Code setup like this can be found in other actions.
@@ -992,7 +1007,7 @@ Pl_DoCtrl_Stand:
 	; Door collision
 .checkDoorEnter:
 	call PlBGColi_GetBlockIdLow
-	cp   a, BLOCKID_DOOR		; Are we colliding with a door at slightly above ground level?
+	cp   a, BLOCKID_DOOR		; Are we colliding with a door?
 	jr   nz, .checkLadder		; If not, jump
 	ld   a, [sPlBgColiBlockEq]
 	and  a						; Are we precisely over the door? (not between door and another tile)
@@ -1381,15 +1396,37 @@ Pl_SetGrab2Action:
 	ld   [sPlTimer], a
 	
 	; Pick the correct player anim depending on big/small status
+IF FIX_BUGS == 1
+		ld   a, [sSmallWario]	
+		and  a					; Are we small Wario?
+		jr   nz, .plSmall		; If so, jump
+		ld   a, [sPlDuck]
+		and  a					; Are we ducking?
+		jr   nz, .plDuck		; If so, jump
+		
+	.plBig:
+		ld   a, OBJ_WARIO_GRAB
+		ld   [sPlLstId], a
+		ret
+	.plDuck:
+		ld   a, OBJ_WARIO_DUCKHOLD
+		ld   [sPlLstId], a
+		ret
+	.plSmall:	
+		ld   a, OBJ_SMALLWARIO_HOLD
+		ld   [sPlLstId], a
+		ret
+	
+ELSE
 	ld   a, OBJ_WARIO_GRAB	; Default to normal grab
 	ld   [sPlLstId], a
-	
 	ld   a, [sSmallWario]	; If we're small, pick the other one
 	and  a
 	ret  z
 	ld   a, OBJ_SMALLWARIO_HOLD
 	ld   [sPlLstId], a
 	
+
 	; [BUG] Badly placed check.
 	; This is checked only if we're Small Wario, who can never duck.
 	; As a result, the correct grab anim isn't used when ducking (until the anim ends).
@@ -1401,6 +1438,7 @@ Pl_SetGrab2Action:
 	ld   a, OBJ_WARIO_DUCKHOLD
 	ld   [sPlLstId], a
 	ret
+ENDC
 	
 Pl_DoCtrl_Walk_CheckThrow:
 	; If we were holding something in the last frame but we aren't anymore, throw the actor.
@@ -1434,7 +1472,11 @@ Pl_DoCtrl_Walk_CheckMain:
 	; Start a (moving) jump when pressing A
 	ldh  a, [hJoyNewKeys]
 	bit  KEYB_A, a
+IF IMPROVE == 1
+	jp   nz, Pl_StartJump
+ELSE
 	jp   nz, Pl_StartMovingJump
+ENDC
 	; Perform the powerup-specific action when pressing B
 	ldh  a, [hJoyNewKeys]
 	bit  KEYB_B, a
@@ -1723,6 +1765,25 @@ Pl_DoCtrl_Climb:
 	
 	call Pl_AnimClimb
 	
+	
+IF FIX_FUN_BUGS == 1
+	; Reorganized to work with the ladder body being set as COLI_EMPTY.
+	
+	; Even when not moving, always check what we're over
+	call PlBGColi_CheckLadderLow
+	and  a							; Are we over a ladder block?
+	jr   nz, .moveDown				; If so, skip ahead
+	
+	call PlBGColi_DoGround
+	cp   a, COLI_WATER				; Is there water below?
+	jp   z, Pl_SwitchToSwim			; If so, jump
+	and  a							; Is it empty below?
+	jp   z, Pl_SwitchToJumpFall2	; If so, fall
+	
+	ld   a, [sPlBGColiLadderType]		
+	and  a							; Is there a ladder block below?
+	jr   z, .switchToStand			; If not, it's a solid
+ELSE
 	; This is also not great for ladders; again when big, *only* checking 
 	; for the bottom collision makes it the opposite of generous.
 	call PlBGColi_DoGround
@@ -1734,6 +1795,8 @@ Pl_DoCtrl_Climb:
 	ld   a, [sPlBGColiLadderType]		
 	and  a								; Is there a ladder block below?
 	jr   z, .switchToStand				; If not, it's a solid
+ENDC
+.moveDown:
 	ld   b, $01							; Otherwise, move downwards 
 	call Pl_MoveDown
 	ret
@@ -1744,7 +1807,23 @@ Pl_DoCtrl_Climb:
 	and  a, $F0
 	ld   [sPlY_Low], a
 	jp   Pl_SwitchToStand
+	
 .noVMove:
+IF FIX_FUN_BUGS == 1
+	; Reorganized to work with the ladder body being set as COLI_EMPTY.
+	
+	; Even when not moving, always check what we're over
+	call PlBGColi_CheckLadderLow
+	and  a							; Are we over a ladder block?
+	jr   nz, .checkHMove			; If so, skip ahead
+	
+	call PlBGColi_DoGround
+	cp   a, COLI_WATER				; Water?
+	jp   z, Pl_SwitchToSwim
+	and  a							; Empty?
+	jp   z, Pl_SwitchToJumpFall2
+	jr   .switchToStand				; Solid!
+ELSE
 	; Even when not moving, always check what we're over
 	call PlBGColi_DoGround
 	cp   a, COLI_WATER				; Water?
@@ -1755,7 +1834,10 @@ Pl_DoCtrl_Climb:
 	call PlBGColi_CheckLadderLow
 	and  a							; Solid?
 	jr   z, .switchToStand
+ENDC
+
 	;--
+.checkHMove:
 	ldh  a, [hJoyKeys]
 	and  a, KEY_LEFT|KEY_RIGHT		; Is there horizontal movement?
 	ret  z							; If not, return
@@ -1765,14 +1847,17 @@ Pl_DoCtrl_Climb:
 	jp   nz, Pl_AirMoveRight
 	jp   Pl_AirMoveLeft
 	
-; =============== Pl_StartMovingJump ===============
-; This subroutine starts a jump from the ground when walking.
-; This one sets a flag that allows horizontal movement by just holding A,
-; without explicitly holding LEFT/RIGHT.
-; The code to handle this is in Pl_DoCtrl_Jump.
-Pl_StartMovingJump:
-	ld   a, $01
-	ld   [sPlMovingJump], a
+IF IMPROVE == 0
+	; =============== Pl_StartMovingJump ===============
+	; This subroutine starts a jump from the ground when walking.
+	; This one sets a flag that allows horizontal movement by just holding A,
+	; without explicitly holding LEFT/RIGHT.
+	; The code to handle this is in Pl_DoCtrl_Jump.
+	Pl_StartMovingJump:
+		ld   a, $01
+		ld   [sPlMovingJump], a
+ENDC
+
 ; =============== Pl_StartJump ===============
 ; This subroutine starts a jump from the ground.
 ; Not for the dash-jump.
@@ -1849,6 +1934,7 @@ Pl_StartJetDashWater:
 	xor  a						; Unmark the ground swim action
 	ld   [sPlSwimGround], a
 	
+IF IMPROVE == 0
 	; If there isn't a solid block above, jet dashing moves the player upwards by 2px.
 	; This is very likely done to (badly) mask a collision bug which is easy to fix anyway.
 	ld   a, $01
@@ -1861,6 +1947,7 @@ Pl_StartJetDashWater:
 .noMoveUp:
 	xor  a
 	ld   [sPlBGColiSolidReadOnly], a
+ENDC
 	ret
 	
 ; =============== Pl_DoCtrl_Swim ===============
@@ -2418,8 +2505,10 @@ Pl_DoCtrl_Jump:
 	call PlBGColi_CheckLadderLow	
 	and  a					; Colliding with a ladder block?
 	jr   z, .main			; If not, jump
+IF IMPROVE == 0
 	xor  a					; If so, end the jump
 	ld   [sPlMovingJump], a
+ENDC
 	jp   Pl_GrabLadder		; and grab the ladder
 	;--
 .main:
@@ -2437,6 +2526,10 @@ Pl_DoCtrl_Jump:
 	bit  KEYB_LEFT, a
 	jp   nz, Pl_AirMoveLeft
 	
+IF IMPROVE == 1
+	; Moving jumps suck
+	ret
+ELSE
 	;--
 	; Special case for the "moving jumps", which are jumps started while walking (instead of standing still)
 	; When holding A, the player automatically moves to the direction he's facing.
@@ -2456,6 +2549,7 @@ Pl_DoCtrl_Jump:
 	jp   z, Pl_AirMoveLeft	; If not, move left
 	jp   Pl_AirMoveRight
 	;--
+ENDC
 	
 ; =============== Pl_DoCtrl_ActInt ===============
 ; Used for actor interactions which freeze the player for a while.
@@ -2530,6 +2624,10 @@ Pl_DoCtrl_HardBumpGround:
 	; [BUG] This doesn't explicitly set the OBJLst frame to OBJ_WARIO_DUCKWALK.
 	;       Because of this, when holding LEFT/RIGHT after a ground bump,
 	;		the game does Anim2Frame with incorrect frames. (alternates between OBJ_WARIO_BUMPAIR and OBJ_WARIO_SWIM2)
+IF FIX_BUGS == 1
+	ld   a, OBJ_WARIO_DUCKWALK
+	ld   [sPlLstId], a
+ENDC
 	xor  a
 	ld   [sPlBumpYPathIndex], a
 	ld   [sPlHurtType], a
@@ -2794,21 +2892,21 @@ Pl_JumpSetY:
 	; Like .normalJump, but with different table and indexes
 	
 	; Index the table
-	ld   hl, Wario_HighJumpYPath
+	ld   hl, Pl_HighJumpYPath
 	ld   d, $00
 	ld   a, [sPlJumpYPathIndex]
 	ld   e, a
 	add  hl, de
 	ld   b, [hl]
 	; Update the Y pos
-	cp   a, Wario_HighJumpYPath.down-Wario_HighJumpYPath
+	cp   a, Pl_HighJumpYPath.down-Pl_HighJumpYPath
 	jr   nc, Pl_JumpAddY
 	jr   Pl_JumpSubY
 .superJump:
 	; Like .highJump, but upwards movement is handled differently
 	
 	; Index the table
-	ld   hl, Wario_HighJumpYPath
+	ld   hl, Pl_HighJumpYPath
 	ld   d, $00
 	ld   a, [sPlJumpYPathIndex]
 	ld   e, a
@@ -2816,7 +2914,7 @@ Pl_JumpSetY:
 	ld   b, [hl]
 	
 	; Update the Y pos
-	cp   a, Wario_HighJumpYPath.down-Wario_HighJumpYPath
+	cp   a, Pl_HighJumpYPath.down-Pl_HighJumpYPath
 	jr   nc, Pl_JumpAddY
 	; If the index is before the peak of the jump, we have upwards movement.
 	sla  b				; Move at twice the normal speed (of the high table)
@@ -2837,8 +2935,12 @@ Pl_JumpSubY2:
 	; Check for top collision
 	ld   c, b				; Save for later
 	call PlBGColi_DoTop		; Handle top collision
-	cp   a, COLI_WATER		; Is there a water/sand block?	
+	cp   a, COLI_WATER		; Is there a water/sand block?
+IF IMPROVE == 1
+	jr   z, .startSwim
+ELSE
 	jp   z, Pl_SwitchToSwim	; If so, try to swim on it (not that it works)
+ENDC
 	and  a	; COLI_EMPTY	; Is there an empty block?
 	jp   nz, Pl_JumpSolidTop	; If not, there's a solid block so end the jump
 	ld   b, c
@@ -2865,6 +2967,18 @@ Pl_JumpSubY2:
 	inc  a
 	ld   [sPlJumpYPathIndex], a
 	ret
+IF IMPROVE == 1
+.startSwim:
+    ;ld   a, [sPlSand]
+	;and  a						; Did we hit a sand block?
+	ld   a, $01					
+	;jr   nz, .startSand		; If so, jump
+	ld   [sPlSwimUpTimer], a	; Continue swimming up
+	jp   Pl_SwitchToSwim
+;.startSand:			
+;	ld   [sPlSandJump], a		; Start in the jump mode to avoid falling off
+;	jp   Pl_SwitchToSand
+ENDC
 ; =============== Pl_JumpAddY ===============
 ; Attempts to move the player down by the specified amount during a fall.
 ; IN
@@ -2927,7 +3041,9 @@ Pl_JumpAddY:
 	jr   z, .setAnim
 	
 	xor  a
+IF IMPROVE == 0
 	ld   [sPlMovingJump], a
+ENDC
 	ld   [sPlJumpYPathIndex], a
 	ld   [sHighJump], a
 	; If holding LEFT/RIGHT, go straight into the walking action
@@ -2943,7 +3059,9 @@ Pl_JumpAddY:
 	ld   a, SFX1_21				; Play SFX
 	ld   [sSFX1Set], a
 	xor  a								; Reset vars
+IF IMPROVE == 0
 	ld   [sPlMovingJump], a
+ENDC
 	ld   [sPlJumpYPathIndex], a
 	ld   [sHighJump], a
 	
@@ -2969,7 +3087,13 @@ Pl_JumpAddY:
 	; [BUG] This doesn't take into account the "standing on actor" flag.
 	;       As a result, ground pounding on a solid actor (ie: coin lock) near the top of the screen
 	;		will cause the screen to scroll upwards, which is wrong.
+IF FIX_BUGS == 1
+	ld   a, [sPlActSolid]
+	and  a									; Standing on a solid actor?
+	call z, Level_Scroll_CheckSegScroll		; If not, call
+ELSE
 	call Level_Scroll_CheckSegScrollAlt
+ENDC
 	;--
 	ld   a, [sScreenShakeTimer]
 	and  a							; Is a ground pound/screen shake already active?
@@ -2992,7 +3116,12 @@ Pl_JumpAddY:
 	;       to destroy all of them in one go. At most, three blocks can be destroyed.
 	;
 	;    Pl_SwitchToStand2 should be called instead.
+IF FIX_BUGS == 1
+	jp   Pl_SwitchToStand2
+ELSE
 	jp   Pl_SwitchToStand
+ENDC
+
 	
 ; =============== Pl_SwitchToJumpFall ===============
 ; Switches to the jump action in the falling state (when moving off the edge of a platform, ...).
@@ -3037,7 +3166,7 @@ Pl_SetJumpYFall:
 	and  a						; Did we trigger a normal high jump?
 	ret  z						; If not, return (and keep the index for the normal jump)
 .highJump:
-	ld   a, Wario_HighJumpYPath.down - Wario_HighJumpYPath
+	ld   a, Pl_HighJumpYPath.down - Pl_HighJumpYPath
 	ld   [sPlJumpYPathIndex], a
 	ret
 	
@@ -3084,8 +3213,10 @@ Pl_SwitchToSwim:
 	cp   a, PL_ACT_DEAD
 	ret  z
 	;--
+IF IMPROVE == 0
 	xor  a
 	ld   [sPlMovingJump], a
+ENDC
 	; Sand is a """subtype""" of the water collision type.
 	; If the special flag is set, treat it as sand instead.
 	ld   a, [sPlSand]
@@ -3112,6 +3243,7 @@ Pl_SwitchToSwim:
 	; Since we're most likely coming from a jump
 	xor  a
 	ld   [sPlJumpYPathIndex], a
+	
 	; Switch to the swimming action
 	ld   a, PL_ACT_SWIM
 	ld   [sPlAction], a
@@ -3384,7 +3516,9 @@ Pl_SwitchToDashRebound:
 	ld   [sPlLstId], a
 	xor  a
 	ld   [sPlBumpYPathIndex], a
+IF IMPROVE == 0
 	ld   [sPlMovingJump], a
+ENDC
 	ld   [sPlJetDashTimer], a
 	ld   [sPlTimer], a
 	ld   [sPlGroundDashTimer], a
@@ -3444,7 +3578,7 @@ Pl_DoCtrl_DashRebound:
 	ld   a, [sPlFlags]
 	bit  OBJLSTB_XFLIP, a			; Facing right?
 	jr   z, .faceLeft				; If not, jump
-.faceRight
+.faceRight:
 	; Of course it needs to check for collision.
 	
 	; [BUG] Unlike the hard rebound code, this doesn't ever scroll the screen,
@@ -3455,8 +3589,14 @@ Pl_DoCtrl_DashRebound:
 	ret  z							; don't actually move
 	call Level_ScreenLock_DoLeft
 	ld   b, $01						; Otherwise move left by 1px
+IF FIX_BUGS == 1
+	ld   a, [sPlXRel]			
+	cp   a, $00+$08					; sPlXRel < $08?
+	jr   c, .screenL				; If so, also move the screen
+ENDC
 	call Pl_MoveLeftStub
 	ret
+
 .faceLeft:
 	; Like before, but moving right. Same [BUG] applies.
 	call PlBGColi_DoRight
@@ -3464,8 +3604,23 @@ Pl_DoCtrl_DashRebound:
 	ret  nz
 	call Level_ScreenLock_DoRight
 	ld   b, $01
+IF FIX_BUGS == 1
+	ld   a, [sPlXRel]
+	cp   a, SCREEN_H-$08			; sPlXRel >= $A8?
+	jr   nc, .screenR				; If so, move thr screen too
+ENDC
 	call Pl_MoveRightStub
 	ret
+	
+IF FIX_BUGS == 1
+.screenL:
+	call Pl_MoveLeftWithScreen
+	ret
+.screenR:
+	call Pl_MoveRightWithScreen
+	ret
+ENDC
+
 .switchToDown:
 	ld   a, Pl_HardBumpYPath.down-Pl_HardBumpYPath
 	ld   [sPlBumpYPathIndex], a
@@ -3478,11 +3633,32 @@ Pl_DoCtrl_DashRebound:
 	
 	; Check for ground collision type
 	ld   c, b
+	
+IF FIX_FUN_BUGS == 1
+	; [BUG] Part of a bugfix to prevent walking normally after jetdashing on sand.
+	;       Unlike elsewhere, we don't need to check if we're underwater,
+	;       since we can't dash rebound to begin with in that case.
+	call PlBGColi_GetBlockIdLow	; A = Block ID we're over
+	cp   a, BLOCKID_SAND		; Is it a sand block?
+	jp   z, Pl_SwitchToSand		; If so, jump
+	cp   a, BLOCKID_SANDSPIKE	; Is it a sand block with spikes?
+	jp   z, Pl_SwitchToSand		; If so, jump
+	ld   [sTmp_A9EE], a			; Save for later	
+ENDC
 	call PlBGColi_DoGround		; Handle collision
 	cp   a, COLI_WATER			; Is there a water block below?
 	jr   z, .landWater			; If so, jump
 	and  a ; COLI_EMPTY			; Is there an empty block below?
 	jr   nz, .chkLandSolid		; If not (solid block), jump
+	
+	; FIX_FUN_BUGS makes ladder blocks of type COLI_EMPTY, so this needs to be moved here
+IF FIX_FUN_BUGS == 1
+.chkLadderAsEmpty:
+	; Special case for ladder collision
+	ld   a, [sPlBGColiLadderType]
+	and  a
+	jr   nz, .chkLadder
+ENDC
 .doMoveDown:
 	ld   b, c					; Move player down
 	call Pl_MoveDown
@@ -3513,6 +3689,17 @@ Pl_DoCtrl_DashRebound:
 	and  a
 	ret  nz
 	
+IF FIX_FUN_BUGS == 1
+	ld   a, [sTmp_A9EE]			; A = Block ID | Restored
+	; [BUG] Fixes ground walking when descending on water.
+	; If we're over a water block, switch to the swim action .
+	; This can only happen if a water current moves us down during a jet dash.
+	cp   a, BLOCKID_WATER		; Block ID < WATER_START?
+	jr   c, .noLandWater   		; If so, jump
+	cp   a, BLOCKID_WATER_END	; Block ID < (first ID after end of water blocks)?
+	jr   c, .landWater			; If so, jump
+.noLandWater:
+ENDC
 	; Special case for ladder collision (since they are set as solid, but really aren't)
 	ld   a, [sPlBGColiLadderType]
 	and  a
@@ -3540,7 +3727,11 @@ Pl_DoCtrl_DashRebound:
 	xor  a
 	ld   [sPlBumpYPathIndex], a
 	ld   [sPlJumpYPathIndex], a
+IF OPTIMIZE == 1
+	call Level_Scroll_CheckSegScroll
+ELSE
 	call Level_Scroll_CheckSegScrollAlt
+ENDC
 	jp   Pl_GrabLadder
 	
 ; =============== Pl_DoCtrl_DashJump ===============
@@ -3552,7 +3743,7 @@ Pl_DoCtrl_DashJump:
 	jp   nz, Pl_SwitchToDashRebound
 	;--
 	; Dash jumps use the high jump Y offset table
-	ld   hl, Wario_HighJumpYPath		; HL = Y Offset Table
+	ld   hl, Pl_HighJumpYPath		; HL = Y Offset Table
 	ld   d, $00							; DE = sPlJumpYPathIndex
 	ld   a, [sPlJumpYPathIndex]
 	ld   e, a
@@ -3560,7 +3751,7 @@ Pl_DoCtrl_DashJump:
 	ld   b, [hl]						; B = Y Offset
 	
 	; [POI] Curiously, this uses the same peak value as Pl_JumpYPath, which
-	;       is different compared to Wario_HighJumpYPath.
+	;       is different compared to Pl_HighJumpYPath.
 	
 	; Determine if before or after peak
 	; When the jump peak is reached here the dashjump ends.
@@ -3716,6 +3907,19 @@ Pl_DoCtrl_DashJet:
 	and  a						; Were we in water?
 	jp   nz, Pl_SwitchToSwim	; If so, switch back to the swim action
 	
+	; [BUG] Collision for the block low isn't also checked
+	;       This is noticeable when jet dashing on quicksand while on the ground,
+	;       since it will let you walk normally on sand. 
+	;       (this needs to be added elsewhere too, like when rebounding off a wall or when descending)
+IF FIX_FUN_BUGS == 1
+	; Dashing on sand doesn't set sPlWaterAction, so check for the block ID directly
+	call PlBGColi_GetBlockIdLow	; A = Block ID we're over
+	cp   a, BLOCKID_SAND		; Is it a sand block?
+	jp   z, Pl_SwitchToSand		; If so, jump
+	cp   a, BLOCKID_SANDSPIKE	; Is it a sand block with spikes?
+	jp   z, Pl_SwitchToSand		; If so, jump
+ENDC
+
 	call PlBGColi_DoGround		; Do ground collision
 	dec  a ; COLI_SOLID			; Are we over a solid block?
 	jr   z, .switchToStand		; If so, jump
@@ -3733,7 +3937,18 @@ Pl_DoCtrl_DashJet:
 	
 	; [BUG] This should check for sPlWaterAction, but it doesn't.
 	;       While partially masked by the game moving the player upwards on underwater jet dashes,
-	;		this allows you to walk normally on ground by making the ground check below detect solid.
+	;		this allows you to walk normally on ground by making the ground check below detect solid.	
+IF FIX_FUN_BUGS == 1
+	ld   a, [sPlWaterAction]
+	and  a						; Were we in water?
+	jp   nz, Pl_SwitchToSwim	; If so, switch back to the swim action
+	; Dashing on sand doesn't set sPlWaterAction, so check for the block ID directly
+	call PlBGColi_GetBlockIdLow	; A = Block ID we're over
+	cp   a, BLOCKID_SAND		; Is it a sand block?
+	jp   z, Pl_SwitchToSand		; If so, jump
+	cp   a, BLOCKID_SANDSPIKE	; Is it a sand block with spikes?
+	jp   z, Pl_SwitchToSand		; If so, jump
+ENDC
 	
 	call PlBGColi_DoGround		; Handle block collision below
 	cp   a, COLI_WATER			; Is there a water block below?	
@@ -3747,15 +3962,10 @@ Pl_DoCtrl_DashJet:
 	ret
 	
 .switchToStand:
-	; [BUG] There's no special check for ladders here.
-	;       Which is why you can stand on the ladder body if ending a dash over one.
 	ld   a, [sPlY_Low]		; Align to Y block boundary
 	and  a, $F0
 	ld   [sPlY_Low], a
 	
-	; [BUG] Collision for the block low isn't checked
-	; This is noticeable when jet dashing on quicksand while on the ground,
-	; since it will let you walk normally on sand.
 	jp   Pl_SwitchToStand
 	
 	
@@ -4104,6 +4314,13 @@ Pl_MoveLeftChkSpeed:
 	;		You're meant to always move at normal speed in that state, even when carrying an heavy actor.
 	;		As a result you move right faster than moving left (when holding an heavy actor).
 	
+IF FIX_BUGS == 1
+	; Bull Wario walks at normal speed, even when holding heavy actors
+	ld   a, [sPlPower]
+	cp   a, PL_POW_BULL
+	jr   z, Pl_MoveLeftWithScreen
+ENDC
+
 	; If we aren't holding anything or it's not heavy, move at normal speed
 	ld   a, [sActHeld]
 	and  a
@@ -4391,8 +4608,12 @@ Pl_JumpAnim:
 	; Otherwise, keep ducking
 	ld   a, $01
 	ld   [sPlDuck], a
+IF FIX_BUGS == 1
+	jr   .setDuck
+ELSE
 	jr   .setJump	; ...and the bug. Should have jumped to .setDuck
-	
+ENDC
+
 ; =============== Pl_AnimClimb ===============
 ; Animates the player's climbing animation.
 Pl_AnimClimb:
@@ -4495,8 +4716,8 @@ Pl_StartActionB_Jet:
 	; If we're ducking, check if we have enough space to start a dash
 	; Like what's done for the ground dash
 	ld   a, [sPlDuck]
-	and  a
-	jr   z, .start
+	and  a						; Are we ducking?
+	jr   z, .start				; If not, skip
 .chkDuck:
 	xor  a						
 	ld   [sPlDuck], a
@@ -4569,7 +4790,8 @@ Pl_StartActionB_Jet:
 	call ClearRAMRange_Mini
 	call ExActS_Spawn
 	ret
-Pl_StartActionB_JetOrDragon:;JC
+; =============== Pl_StartActionB_JetOrDragon ===============
+Pl_StartActionB_JetOrDragon:
 	; Jump accordingly based on the powerup
 	ld   a, [sPlPower]			
 	cp   a, PL_POW_JET
@@ -4770,7 +4992,9 @@ Pl_SwitchToStand:
 	ld   [sPlDuck], a
 	ld   [sPlGroundDashTimer], a
 	ld   [sPlJetDashTimer], a
+IF IMPROVE == 0
 	ld   [sPlMovingJump], a
+ENDC
 	ld   [sHighJump], a
 	ld   [sPlJumpYPathIndex], a
 	
@@ -4811,8 +5035,11 @@ Pl_SwitchToStand2:
 	; This isn't very nice (but you can still trigger this anyway since they forgot to account for this in the ground pound...)
 	ld   a, [sPlActSolid]
 	and  a									; Standing on a solid actor?
+IF OPTIMIZE == 1
+	call z, Level_Scroll_CheckSegScroll	; If not, call
+ELSE
 	call z, Level_Scroll_CheckSegScrollAlt	; If not, call
-	
+ENDC
 	; If we're holding something, pick the correct anim
 	ld   a, [sActHeld]
 	and  a					; Holding something?
@@ -4919,7 +5146,12 @@ Level_Scroll_CheckSegScroll:
 ; OUT
 ; - A: Scroll direction value
 Level_Scroll_SegScrollDown:
+IF FIX_BUGS == 1
+	ld   a, [sLvlScrollLevel]
+	dec  a
+ELSE
 	ld   a, c					; [BUG] Set the updated scroll level (hopefully only differs by 1)
+ENDC
 	ld   [sLvlScrollLevel], a
 	ld   a, DIR_D				; Trigger the screen scroll
 	ld   [sLvlScrollSet], a
@@ -4938,7 +5170,12 @@ Level_Scroll_SegScrollDown:
 ; OUT
 ; - A: Scroll direction value
 Level_Scroll_SegScrollUp:
+IF FIX_BUGS == 1
+	ld   a, [sLvlScrollLevel]
+	inc  a
+ELSE
 	ld   a, c					; [BUG] Set the updated scroll level (hopefully only differs by 1)
+ENDC
 	ld   [sLvlScrollLevel], a
 	ld   a, DIR_U				; Trigger the screen scroll
 	ld   [sLvlScrollSet], a
@@ -4975,6 +5212,9 @@ Level_Scroll_CheckSegScrollDown:
 Level_Scroll_SegScrollNoChange:
 	xor  a						; No change
 	ret
+	
+; Since it's a duplicate subroutine, it can be removed.
+IF OPTIMIZE == 0
 ; =============== Level_Scroll_CheckSegScrollAlt ===============
 ; Checks if the screen should be scrolled up or down in SEGSCRL mode.
 ; This is identical to Level_Scroll_CheckSegScroll, but is only called after a few actions (like ending a jump).
@@ -4993,7 +5233,8 @@ Level_Scroll_CheckSegScrollAlt:
 	jr   c, Level_Scroll_SegScrollUp		; Old < Current?
 	; [TCRF] We never get here, since downwards scrolling is automatic and not action-specific.
 	jr   Level_Scroll_SegScrollDown 
-	
+ENDC
+
 ; =============== Pl_Anim2FrameSlow ===============
 ; Animates a player's 2 frame animation cycle every $10 frames.
 ; Identical to Pl_Anim2Frame except slower.
@@ -6083,9 +6324,16 @@ PlActColiMask_CheckType_Norm:
 	jr   PlActColiMask_CheckType_SetRoutineId
 	
 .fromAbove:
+
+	;
 	; When jumping on an actor, setup a new normal jump by switching to the "Actor Jump" action.
+	;
+	
+IF IMPROVE == 0
+	; Stop any existing "moving jump"
 	xor  a
 	ld   [sPlMovingJump], a
+ENDC
 	
 	; If holding A start a full normal jump, otherwise start a small hop.
 	; This is done by choosing a different initial jump Y table index.
@@ -8712,6 +8960,10 @@ Level_AnimTiles:
 	ld   a, [sGameMode]				
 	cp   a, GM_LEVEL 				; Are we in normal gameplay?
 	jr   z, .animTiles				; If so, animate the tiles
+IF FIX_BUGS == 1
+	cp   a, GM_LEVELENTRANCE 		; Are we exiting the level from the entrance door?
+	jr   z, .animTiles				; If so, animate the tiles
+ENDC
 	
 	; Chained game mode checks. 
 	; For each of these, if the game mode doesn't match, it will skip to the next label.
@@ -8824,1303 +9076,9 @@ Level_AnimTiles:
 	ret
 	
 ; =============== START OF ALIGN JUNK ===============
-; This chunk of garbage can be removed to make space.
-; The next real data is the input demo tables.
-; ========================================
-; Partial copy of the end of the above subroutine.
-L0D72F5: db $2A;X
-L0D72F6: db $12;X
-L0D72F7: db $1C;X
-L0D72F8: db $05;X
-L0D72F9: db $20;X
-L0D72FA: db $E5;X
-L0D72FB: db $C9;X
-; ========================================
-; Unknown chunk of trash.
-L0D72FC: db $02;X
-L0D72FD: db $00;X
-L0D72FE: db $00;X
-L0D72FF: db $00;X
-L0D7300: db $EF;X
-L0D7301: db $F7;X
-L0D7302: db $FB;X
-L0D7303: db $F9;X
-L0D7304: db $FF;X
-L0D7305: db $AE;X
-L0D7306: db $FF;X
-L0D7307: db $F7;X
-L0D7308: db $D2;X
-L0D7309: db $3A;X
-L0D730A: db $FF;X
-L0D730B: db $DF;X
-L0D730C: db $7F;X
-L0D730D: db $77;X
-L0D730E: db $E7;X
-L0D730F: db $79;X
-L0D7310: db $EE;X
-L0D7311: db $B2;X
-L0D7312: db $9F;X
-L0D7313: db $AF;X
-L0D7314: db $FF;X
-L0D7315: db $BB;X
-L0D7316: db $BF;X
-L0D7317: db $FE;X
-L0D7318: db $F7;X
-L0D7319: db $F7;X
-L0D731A: db $FE;X
-L0D731B: db $0F;X
-L0D731C: db $EF;X
-L0D731D: db $3C;X
-L0D731E: db $7B;X
-L0D731F: db $FF;X
-L0D7320: db $AD;X
-L0D7321: db $7B;X
-L0D7322: db $FE;X
-L0D7323: db $F3;X
-L0D7324: db $F6;X
-L0D7325: db $57;X
-L0D7326: db $F9;X
-L0D7327: db $7D;X
-L0D7328: db $FC;X
-L0D7329: db $FD;X
-L0D732A: db $FF;X
-L0D732B: db $CF;X
-L0D732C: db $BA;X
-L0D732D: db $FB;X
-L0D732E: db $F7;X
-L0D732F: db $AF;X
-L0D7330: db $BF;X
-L0D7331: db $D7;X
-L0D7332: db $B7;X
-L0D7333: db $A3;X
-L0D7334: db $FF;X
-L0D7335: db $FD;X
-L0D7336: db $F6;X
-L0D7337: db $EF;X
-L0D7338: db $7E;X
-L0D7339: db $97;X
-L0D733A: db $FF;X
-L0D733B: db $16;X
-L0D733C: db $E9;X
-L0D733D: db $F3;X
-L0D733E: db $4F;X
-L0D733F: db $BF;X
-L0D7340: db $DF;X
-L0D7341: db $FB;X
-L0D7342: db $DD;X
-L0D7343: db $FB;X
-L0D7344: db $FF;X
-L0D7345: db $E2;X
-L0D7346: db $5B;X
-L0D7347: db $86;X
-L0D7348: db $EB;X
-L0D7349: db $7D;X
-L0D734A: db $AB;X
-L0D734B: db $CF;X
-L0D734C: db $3F;X
-L0D734D: db $3F;X
-L0D734E: db $B3;X
-L0D734F: db $BF;X
-L0D7350: db $D7;X
-L0D7351: db $BF;X
-L0D7352: db $EF;X
-L0D7353: db $BF;X
-L0D7354: db $2F;X
-L0D7355: db $ED;X
-L0D7356: db $D7;X
-L0D7357: db $BA;X
-L0D7358: db $76;X
-L0D7359: db $F7;X
-L0D735A: db $EA;X
-L0D735B: db $DF;X
-L0D735C: db $FB;X
-L0D735D: db $77;X
-L0D735E: db $FF;X
-L0D735F: db $6D;X
-L0D7360: db $BF;X
-L0D7361: db $BF;X
-L0D7362: db $F1;X
-L0D7363: db $57;X
-L0D7364: db $FF;X
-L0D7365: db $F7;X
-L0D7366: db $F6;X
-L0D7367: db $F5;X
-L0D7368: db $FD;X
-L0D7369: db $9A;X
-L0D736A: db $EE;X
-L0D736B: db $CF;X
-L0D736C: db $FF;X
-L0D736D: db $93;X
-L0D736E: db $3B;X
-L0D736F: db $7D;X
-L0D7370: db $DB;X
-L0D7371: db $66;X
-L0D7372: db $7B;X
-L0D7373: db $5F;X
-L0D7374: db $DB;X
-L0D7375: db $CD;X
-L0D7376: db $FF;X
-L0D7377: db $F9;X
-L0D7378: db $FF;X
-L0D7379: db $F7;X
-L0D737A: db $F3;X
-L0D737B: db $CB;X
-L0D737C: db $FF;X
-L0D737D: db $DE;X
-L0D737E: db $FB;X
-L0D737F: db $29;X
-L0D7380: db $00;X
-L0D7381: db $00;X
-L0D7382: db $00;X
-L0D7383: db $00;X
-L0D7384: db $00;X
-L0D7385: db $00;X
-L0D7386: db $14;X
-L0D7387: db $00;X
-L0D7388: db $00;X
-L0D7389: db $00;X
-L0D738A: db $08;X
-L0D738B: db $00;X
-L0D738C: db $00;X
-L0D738D: db $00;X
-L0D738E: db $00;X
-L0D738F: db $00;X
-L0D7390: db $00;X
-L0D7391: db $00;X
-L0D7392: db $00;X
-L0D7393: db $00;X
-L0D7394: db $00;X
-L0D7395: db $00;X
-L0D7396: db $00;X
-L0D7397: db $00;X
-L0D7398: db $00;X
-L0D7399: db $00;X
-L0D739A: db $00;X
-L0D739B: db $00;X
-L0D739C: db $00;X
-L0D739D: db $00;X
-L0D739E: db $00;X
-L0D739F: db $00;X
-L0D73A0: db $00;X
-L0D73A1: db $00;X
-L0D73A2: db $88;X
-L0D73A3: db $00;X
-L0D73A4: db $00;X
-L0D73A5: db $00;X
-L0D73A6: db $00;X
-L0D73A7: db $00;X
-L0D73A8: db $00;X
-L0D73A9: db $00;X
-L0D73AA: db $10;X
-L0D73AB: db $00;X
-L0D73AC: db $00;X
-L0D73AD: db $00;X
-L0D73AE: db $00;X
-L0D73AF: db $00;X
-L0D73B0: db $00;X
-L0D73B1: db $00;X
-L0D73B2: db $00;X
-L0D73B3: db $00;X
-L0D73B4: db $00;X
-L0D73B5: db $01;X
-L0D73B6: db $00;X
-L0D73B7: db $00;X
-L0D73B8: db $02;X
-L0D73B9: db $00;X
-L0D73BA: db $00;X
-L0D73BB: db $00;X
-L0D73BC: db $00;X
-L0D73BD: db $00;X
-L0D73BE: db $00;X
-L0D73BF: db $00;X
-L0D73C0: db $02;X
-L0D73C1: db $00;X
-L0D73C2: db $00;X
-L0D73C3: db $00;X
-L0D73C4: db $00;X
-L0D73C5: db $00;X
-L0D73C6: db $00;X
-L0D73C7: db $00;X
-L0D73C8: db $00;X
-L0D73C9: db $00;X
-L0D73CA: db $00;X
-L0D73CB: db $00;X
-L0D73CC: db $00;X
-L0D73CD: db $00;X
-L0D73CE: db $00;X
-L0D73CF: db $00;X
-L0D73D0: db $00;X
-L0D73D1: db $00;X
-L0D73D2: db $00;X
-L0D73D3: db $00;X
-L0D73D4: db $00;X
-L0D73D5: db $00;X
-L0D73D6: db $00;X
-L0D73D7: db $00;X
-L0D73D8: db $00;X
-L0D73D9: db $00;X
-L0D73DA: db $00;X
-L0D73DB: db $00;X
-L0D73DC: db $00;X
-L0D73DD: db $00;X
-L0D73DE: db $00;X
-L0D73DF: db $00;X
-L0D73E0: db $00;X
-L0D73E1: db $00;X
-L0D73E2: db $10;X
-L0D73E3: db $00;X
-L0D73E4: db $00;X
-L0D73E5: db $00;X
-L0D73E6: db $00;X
-L0D73E7: db $00;X
-L0D73E8: db $00;X
-L0D73E9: db $00;X
-L0D73EA: db $08;X
-L0D73EB: db $00;X
-L0D73EC: db $00;X
-L0D73ED: db $01;X
-L0D73EE: db $00;X
-L0D73EF: db $00;X
-L0D73F0: db $00;X
-L0D73F1: db $00;X
-L0D73F2: db $00;X
-L0D73F3: db $00;X
-L0D73F4: db $02;X
-L0D73F5: db $00;X
-L0D73F6: db $00;X
-L0D73F7: db $00;X
-L0D73F8: db $00;X
-L0D73F9: db $00;X
-L0D73FA: db $00;X
-L0D73FB: db $00;X
-L0D73FC: db $00;X
-L0D73FD: db $00;X
-L0D73FE: db $00;X
-L0D73FF: db $00;X
-L0D7400: db $FF;X
-L0D7401: db $FF;X
-L0D7402: db $BF;X
-L0D7403: db $FF;X
-L0D7404: db $FF;X
-L0D7405: db $FB;X
-L0D7406: db $FF;X
-L0D7407: db $FF;X
-L0D7408: db $FF;X
-L0D7409: db $FF;X
-L0D740A: db $FF;X
-L0D740B: db $FF;X
-L0D740C: db $FF;X
-L0D740D: db $FF;X
-L0D740E: db $FF;X
-L0D740F: db $FB;X
-L0D7410: db $FF;X
-L0D7411: db $FF;X
-L0D7412: db $FF;X
-L0D7413: db $FF;X
-L0D7414: db $FD;X
-L0D7415: db $FF;X
-L0D7416: db $FF;X
-L0D7417: db $FF;X
-L0D7418: db $FF;X
-L0D7419: db $FF;X
-L0D741A: db $FF;X
-L0D741B: db $FF;X
-L0D741C: db $FF;X
-L0D741D: db $FF;X
-L0D741E: db $FF;X
-L0D741F: db $FF;X
-L0D7420: db $FF;X
-L0D7421: db $FF;X
-L0D7422: db $FF;X
-L0D7423: db $FF;X
-L0D7424: db $FF;X
-L0D7425: db $FF;X
-L0D7426: db $FF;X
-L0D7427: db $FD;X
-L0D7428: db $FF;X
-L0D7429: db $FF;X
-L0D742A: db $FF;X
-L0D742B: db $FF;X
-L0D742C: db $FB;X
-L0D742D: db $FF;X
-L0D742E: db $FF;X
-L0D742F: db $FF;X
-L0D7430: db $FF;X
-L0D7431: db $FF;X
-L0D7432: db $FF;X
-L0D7433: db $FF;X
-L0D7434: db $FF;X
-L0D7435: db $FF;X
-L0D7436: db $FF;X
-L0D7437: db $FF;X
-L0D7438: db $FF;X
-L0D7439: db $FF;X
-L0D743A: db $FF;X
-L0D743B: db $FF;X
-L0D743C: db $FF;X
-L0D743D: db $FF;X
-L0D743E: db $FF;X
-L0D743F: db $FF;X
-L0D7440: db $FF;X
-L0D7441: db $FF;X
-L0D7442: db $FF;X
-L0D7443: db $FF;X
-L0D7444: db $FF;X
-L0D7445: db $FF;X
-L0D7446: db $FF;X
-L0D7447: db $FF;X
-L0D7448: db $FF;X
-L0D7449: db $FF;X
-L0D744A: db $FF;X
-L0D744B: db $FF;X
-L0D744C: db $FF;X
-L0D744D: db $FF;X
-L0D744E: db $FF;X
-L0D744F: db $FF;X
-L0D7450: db $FF;X
-L0D7451: db $FF;X
-L0D7452: db $FF;X
-L0D7453: db $FF;X
-L0D7454: db $FF;X
-L0D7455: db $FF;X
-L0D7456: db $FF;X
-L0D7457: db $FF;X
-L0D7458: db $FF;X
-L0D7459: db $FF;X
-L0D745A: db $FF;X
-L0D745B: db $FF;X
-L0D745C: db $FF;X
-L0D745D: db $FF;X
-L0D745E: db $FF;X
-L0D745F: db $FF;X
-L0D7460: db $FE;X
-L0D7461: db $FF;X
-L0D7462: db $FF;X
-L0D7463: db $FF;X
-L0D7464: db $FF;X
-L0D7465: db $FF;X
-L0D7466: db $FF;X
-L0D7467: db $FF;X
-L0D7468: db $FF;X
-L0D7469: db $FF;X
-L0D746A: db $FF;X
-L0D746B: db $FF;X
-L0D746C: db $FF;X
-L0D746D: db $FF;X
-L0D746E: db $FF;X
-L0D746F: db $FF;X
-L0D7470: db $FF;X
-L0D7471: db $FF;X
-L0D7472: db $FF;X
-L0D7473: db $FF;X
-L0D7474: db $FF;X
-L0D7475: db $FF;X
-L0D7476: db $FF;X
-L0D7477: db $FF;X
-L0D7478: db $FF;X
-L0D7479: db $FF;X
-L0D747A: db $FF;X
-L0D747B: db $FF;X
-L0D747C: db $FF;X
-L0D747D: db $FF;X
-L0D747E: db $FF;X
-L0D747F: db $FF;X
-L0D7480: db $48;X
-L0D7481: db $49;X
-L0D7482: db $10;X
-L0D7483: db $15;X
-L0D7484: db $B2;X
-L0D7485: db $00;X
-L0D7486: db $80;X
-L0D7487: db $00;X
-L0D7488: db $84;X
-L0D7489: db $48;X
-L0D748A: db $00;X
-L0D748B: db $09;X
-L0D748C: db $00;X
-L0D748D: db $95;X
-L0D748E: db $82;X
-L0D748F: db $28;X
-L0D7490: db $90;X
-L0D7491: db $20;X
-L0D7492: db $90;X
-L0D7493: db $00;X
-L0D7494: db $08;X
-L0D7495: db $60;X
-L0D7496: db $12;X
-L0D7497: db $15;X
-L0D7498: db $60;X
-L0D7499: db $08;X
-L0D749A: db $10;X
-L0D749B: db $04;X
-L0D749C: db $18;X
-L0D749D: db $C9;X
-L0D749E: db $40;X
-L0D749F: db $00;X
-L0D74A0: db $8A;X
-L0D74A1: db $02;X
-L0D74A2: db $04;X
-L0D74A3: db $5C;X
-L0D74A4: db $0A;X
-L0D74A5: db $00;X
-L0D74A6: db $81;X
-L0D74A7: db $01;X
-L0D74A8: db $30;X
-L0D74A9: db $40;X
-L0D74AA: db $00;X
-L0D74AB: db $A1;X
-L0D74AC: db $48;X
-L0D74AD: db $8B;X
-L0D74AE: db $A8;X
-L0D74AF: db $68;X
-L0D74B0: db $40;X
-L0D74B1: db $08;X
-L0D74B2: db $02;X
-L0D74B3: db $04;X
-L0D74B4: db $A3;X
-L0D74B5: db $08;X
-L0D74B6: db $00;X
-L0D74B7: db $50;X
-L0D74B8: db $42;X
-L0D74B9: db $42;X
-L0D74BA: db $00;X
-L0D74BB: db $00;X
-L0D74BC: db $08;X
-L0D74BD: db $0E;X
-L0D74BE: db $89;X
-L0D74BF: db $00;X
-L0D74C0: db $41;X
-L0D74C1: db $38;X
-L0D74C2: db $8C;X
-L0D74C3: db $00;X
-L0D74C4: db $C1;X
-L0D74C5: db $42;X
-L0D74C6: db $28;X
-L0D74C7: db $00;X
-L0D74C8: db $80;X
-L0D74C9: db $80;X
-L0D74CA: db $60;X
-L0D74CB: db $88;X
-L0D74CC: db $10;X
-L0D74CD: db $18;X
-L0D74CE: db $00;X
-L0D74CF: db $D4;X
-L0D74D0: db $DD;X
-L0D74D1: db $50;X
-L0D74D2: db $00;X
-L0D74D3: db $C1;X
-L0D74D4: db $A2;X
-L0D74D5: db $C0;X
-L0D74D6: db $E1;X
-L0D74D7: db $70;X
-L0D74D8: db $0C;X
-L0D74D9: db $C0;X
-L0D74DA: db $A0;X
-L0D74DB: db $11;X
-L0D74DC: db $00;X
-L0D74DD: db $49;X
-L0D74DE: db $A3;X
-L0D74DF: db $00;X
-L0D74E0: db $40;X
-L0D74E1: db $88;X
-L0D74E2: db $00;X
-L0D74E3: db $54;X
-L0D74E4: db $11;X
-L0D74E5: db $13;X
-L0D74E6: db $00;X
-L0D74E7: db $80;X
-L0D74E8: db $88;X
-L0D74E9: db $A4;X
-L0D74EA: db $10;X
-L0D74EB: db $41;X
-L0D74EC: db $C3;X
-L0D74ED: db $08;X
-L0D74EE: db $24;X
-L0D74EF: db $98;X
-L0D74F0: db $84;X
-L0D74F1: db $10;X
-L0D74F2: db $00;X
-L0D74F3: db $C8;X
-L0D74F4: db $80;X
-L0D74F5: db $88;X
-L0D74F6: db $02;X
-L0D74F7: db $C4;X
-L0D74F8: db $D1;X
-L0D74F9: db $87;X
-L0D74FA: db $82;X
-L0D74FB: db $3E;X
-L0D74FC: db $01;X
-L0D74FD: db $34;X
-L0D74FE: db $04;X
-L0D74FF: db $00;X
-L0D7500: db $FF;X
-L0D7501: db $FF;X
-L0D7502: db $FF;X
-L0D7503: db $FF;X
-L0D7504: db $FF;X
-L0D7505: db $FF;X
-L0D7506: db $FF;X
-L0D7507: db $FF;X
-L0D7508: db $FF;X
-L0D7509: db $FF;X
-L0D750A: db $FF;X
-L0D750B: db $FF;X
-L0D750C: db $FF;X
-L0D750D: db $FE;X
-L0D750E: db $FF;X
-L0D750F: db $FF;X
-L0D7510: db $FF;X
-L0D7511: db $FF;X
-L0D7512: db $FF;X
-L0D7513: db $FF;X
-L0D7514: db $FF;X
-L0D7515: db $FF;X
-L0D7516: db $FF;X
-L0D7517: db $FF;X
-L0D7518: db $FF;X
-L0D7519: db $FF;X
-L0D751A: db $FF;X
-L0D751B: db $FF;X
-L0D751C: db $FF;X
-L0D751D: db $FF;X
-L0D751E: db $FF;X
-L0D751F: db $FF;X
-L0D7520: db $FF;X
-L0D7521: db $FF;X
-L0D7522: db $FF;X
-L0D7523: db $FF;X
-L0D7524: db $FF;X
-L0D7525: db $FF;X
-L0D7526: db $FF;X
-L0D7527: db $FF;X
-L0D7528: db $FF;X
-L0D7529: db $FD;X
-L0D752A: db $FF;X
-L0D752B: db $FF;X
-L0D752C: db $FF;X
-L0D752D: db $FF;X
-L0D752E: db $F7;X
-L0D752F: db $FF;X
-L0D7530: db $FF;X
-L0D7531: db $FF;X
-L0D7532: db $FF;X
-L0D7533: db $FF;X
-L0D7534: db $FF;X
-L0D7535: db $FF;X
-L0D7536: db $FF;X
-L0D7537: db $FD;X
-L0D7538: db $FF;X
-L0D7539: db $FF;X
-L0D753A: db $FF;X
-L0D753B: db $FF;X
-L0D753C: db $FF;X
-L0D753D: db $FF;X
-L0D753E: db $DF;X
-L0D753F: db $DF;X
-L0D7540: db $FF;X
-L0D7541: db $FF;X
-L0D7542: db $FF;X
-L0D7543: db $FF;X
-L0D7544: db $FF;X
-L0D7545: db $FF;X
-L0D7546: db $FF;X
-L0D7547: db $FF;X
-L0D7548: db $FF;X
-L0D7549: db $BF;X
-L0D754A: db $EF;X
-L0D754B: db $FF;X
-L0D754C: db $FF;X
-L0D754D: db $FF;X
-L0D754E: db $FF;X
-L0D754F: db $FF;X
-L0D7550: db $FB;X
-L0D7551: db $FF;X
-L0D7552: db $FF;X
-L0D7553: db $FF;X
-L0D7554: db $FF;X
-L0D7555: db $FF;X
-L0D7556: db $FF;X
-L0D7557: db $FF;X
-L0D7558: db $FF;X
-L0D7559: db $FF;X
-L0D755A: db $FF;X
-L0D755B: db $FF;X
-L0D755C: db $FF;X
-L0D755D: db $FF;X
-L0D755E: db $FF;X
-L0D755F: db $FF;X
-L0D7560: db $FF;X
-L0D7561: db $FF;X
-L0D7562: db $FF;X
-L0D7563: db $FF;X
-L0D7564: db $FF;X
-L0D7565: db $FF;X
-L0D7566: db $FF;X
-L0D7567: db $FF;X
-L0D7568: db $FF;X
-L0D7569: db $FF;X
-L0D756A: db $FF;X
-L0D756B: db $FF;X
-L0D756C: db $FF;X
-L0D756D: db $FF;X
-L0D756E: db $FF;X
-L0D756F: db $FF;X
-L0D7570: db $FF;X
-L0D7571: db $FF;X
-L0D7572: db $FF;X
-L0D7573: db $FF;X
-L0D7574: db $FF;X
-L0D7575: db $FF;X
-L0D7576: db $FF;X
-L0D7577: db $FF;X
-L0D7578: db $FF;X
-L0D7579: db $FF;X
-L0D757A: db $EF;X
-L0D757B: db $FF;X
-L0D757C: db $FF;X
-L0D757D: db $FF;X
-L0D757E: db $FF;X
-L0D757F: db $FD;X
-L0D7580: db $42;X
-L0D7581: db $08;X
-L0D7582: db $20;X
-L0D7583: db $02;X
-L0D7584: db $14;X
-L0D7585: db $60;X
-L0D7586: db $02;X
-L0D7587: db $16;X
-L0D7588: db $11;X
-L0D7589: db $10;X
-L0D758A: db $00;X
-L0D758B: db $C0;X
-L0D758C: db $C0;X
-L0D758D: db $47;X
-L0D758E: db $00;X
-L0D758F: db $60;X
-L0D7590: db $60;X
-L0D7591: db $07;X
-L0D7592: db $04;X
-L0D7593: db $08;X
-L0D7594: db $20;X
-L0D7595: db $20;X
-L0D7596: db $03;X
-L0D7597: db $09;X
-L0D7598: db $00;X
-L0D7599: db $03;X
-L0D759A: db $B0;X
-L0D759B: db $40;X
-L0D759C: db $04;X
-L0D759D: db $08;X
-L0D759E: db $10;X
-L0D759F: db $00;X
-L0D75A0: db $26;X
-L0D75A1: db $12;X
-L0D75A2: db $08;X
-L0D75A3: db $40;X
-L0D75A4: db $43;X
-L0D75A5: db $00;X
-L0D75A6: db $00;X
-L0D75A7: db $AC;X
-L0D75A8: db $32;X
-L0D75A9: db $20;X
-L0D75AA: db $00;X
-L0D75AB: db $08;X
-L0D75AC: db $00;X
-L0D75AD: db $01;X
-L0D75AE: db $C0;X
-L0D75AF: db $89;X
-L0D75B0: db $C0;X
-L0D75B1: db $18;X
-L0D75B2: db $08;X
-L0D75B3: db $DC;X
-L0D75B4: db $03;X
-L0D75B5: db $40;X
-L0D75B6: db $44;X
-L0D75B7: db $00;X
-L0D75B8: db $40;X
-L0D75B9: db $C0;X
-L0D75BA: db $09;X
-L0D75BB: db $17;X
-L0D75BC: db $10;X
-L0D75BD: db $10;X
-L0D75BE: db $00;X
-L0D75BF: db $2A;X
-L0D75C0: db $22;X
-L0D75C1: db $00;X
-L0D75C2: db $22;X
-L0D75C3: db $0D;X
-L0D75C4: db $0B;X
-L0D75C5: db $44;X
-L0D75C6: db $04;X
-L0D75C7: db $11;X
-L0D75C8: db $B6;X
-L0D75C9: db $01;X
-L0D75CA: db $10;X
-L0D75CB: db $00;X
-L0D75CC: db $00;X
-L0D75CD: db $00;X
-L0D75CE: db $43;X
-L0D75CF: db $04;X
-L0D75D0: db $30;X
-L0D75D1: db $24;X
-L0D75D2: db $10;X
-L0D75D3: db $04;X
-L0D75D4: db $00;X
-L0D75D5: db $86;X
-L0D75D6: db $09;X
-L0D75D7: db $10;X
-L0D75D8: db $41;X
-L0D75D9: db $81;X
-L0D75DA: db $04;X
-L0D75DB: db $C4;X
-L0D75DC: db $90;X
-L0D75DD: db $10;X
-L0D75DE: db $85;X
-L0D75DF: db $00;X
-L0D75E0: db $49;X
-L0D75E1: db $00;X
-L0D75E2: db $31;X
-L0D75E3: db $40;X
-L0D75E4: db $33;X
-L0D75E5: db $20;X
-L0D75E6: db $22;X
-L0D75E7: db $00;X
-L0D75E8: db $0C;X
-L0D75E9: db $08;X
-L0D75EA: db $81;X
-L0D75EB: db $08;X
-L0D75EC: db $06;X
-L0D75ED: db $A2;X
-L0D75EE: db $09;X
-L0D75EF: db $18;X
-L0D75F0: db $41;X
-L0D75F1: db $40;X
-L0D75F2: db $65;X
-L0D75F3: db $88;X
-L0D75F4: db $02;X
-L0D75F5: db $24;X
-L0D75F6: db $01;X
-L0D75F7: db $28;X
-L0D75F8: db $8A;X
-L0D75F9: db $46;X
-L0D75FA: db $22;X
-L0D75FB: db $08;X
-L0D75FC: db $08;X
-L0D75FD: db $02;X
-L0D75FE: db $11;X
-L0D75FF: db $02;X
-L0D7600: db $FF;X
-L0D7601: db $FF;X
-L0D7602: db $F7;X
-L0D7603: db $FF;X
-L0D7604: db $FF;X
-L0D7605: db $FF;X
-L0D7606: db $FF;X
-L0D7607: db $FF;X
-L0D7608: db $FF;X
-L0D7609: db $FF;X
-L0D760A: db $FF;X
-L0D760B: db $FF;X
-L0D760C: db $FF;X
-L0D760D: db $FF;X
-L0D760E: db $FF;X
-L0D760F: db $FF;X
-L0D7610: db $FF;X
-L0D7611: db $FF;X
-L0D7612: db $FF;X
-L0D7613: db $FF;X
-L0D7614: db $FF;X
-L0D7615: db $EF;X
-L0D7616: db $FF;X
-L0D7617: db $FF;X
-L0D7618: db $FF;X
-L0D7619: db $FF;X
-L0D761A: db $EF;X
-L0D761B: db $FF;X
-L0D761C: db $FD;X
-L0D761D: db $FF;X
-L0D761E: db $FF;X
-L0D761F: db $FF;X
-L0D7620: db $FF;X
-L0D7621: db $FF;X
-L0D7622: db $FF;X
-L0D7623: db $FF;X
-L0D7624: db $FF;X
-L0D7625: db $FF;X
-L0D7626: db $FF;X
-L0D7627: db $FF;X
-L0D7628: db $FF;X
-L0D7629: db $FF;X
-L0D762A: db $FF;X
-L0D762B: db $FF;X
-L0D762C: db $FF;X
-L0D762D: db $FF;X
-L0D762E: db $FF;X
-L0D762F: db $FF;X
-L0D7630: db $FF;X
-L0D7631: db $FF;X
-L0D7632: db $FF;X
-L0D7633: db $FF;X
-L0D7634: db $FF;X
-L0D7635: db $FF;X
-L0D7636: db $FF;X
-L0D7637: db $FF;X
-L0D7638: db $FF;X
-L0D7639: db $FF;X
-L0D763A: db $FF;X
-L0D763B: db $FF;X
-L0D763C: db $FF;X
-L0D763D: db $FF;X
-L0D763E: db $FF;X
-L0D763F: db $FF;X
-L0D7640: db $FF;X
-L0D7641: db $FF;X
-L0D7642: db $FF;X
-L0D7643: db $FF;X
-L0D7644: db $EF;X
-L0D7645: db $FF;X
-L0D7646: db $FF;X
-L0D7647: db $FF;X
-L0D7648: db $FF;X
-L0D7649: db $FF;X
-L0D764A: db $FF;X
-L0D764B: db $FF;X
-L0D764C: db $FF;X
-L0D764D: db $FF;X
-L0D764E: db $FF;X
-L0D764F: db $FF;X
-L0D7650: db $FF;X
-L0D7651: db $FF;X
-L0D7652: db $FF;X
-L0D7653: db $FE;X
-L0D7654: db $FF;X
-L0D7655: db $FF;X
-L0D7656: db $FF;X
-L0D7657: db $FF;X
-L0D7658: db $FF;X
-L0D7659: db $FF;X
-L0D765A: db $FF;X
-L0D765B: db $FF;X
-L0D765C: db $FF;X
-L0D765D: db $FF;X
-L0D765E: db $FF;X
-L0D765F: db $FF;X
-L0D7660: db $FF;X
-L0D7661: db $FF;X
-L0D7662: db $FF;X
-L0D7663: db $FF;X
-L0D7664: db $FD;X
-L0D7665: db $FF;X
-L0D7666: db $FF;X
-L0D7667: db $FF;X
-L0D7668: db $FF;X
-L0D7669: db $FF;X
-L0D766A: db $FF;X
-L0D766B: db $FF;X
-L0D766C: db $FF;X
-L0D766D: db $FF;X
-L0D766E: db $FF;X
-L0D766F: db $FF;X
-L0D7670: db $FF;X
-L0D7671: db $FE;X
-L0D7672: db $FF;X
-L0D7673: db $FF;X
-L0D7674: db $FF;X
-L0D7675: db $FF;X
-L0D7676: db $FF;X
-L0D7677: db $FF;X
-L0D7678: db $FF;X
-L0D7679: db $FF;X
-L0D767A: db $FF;X
-L0D767B: db $FF;X
-L0D767C: db $FF;X
-L0D767D: db $FF;X
-L0D767E: db $FF;X
-L0D767F: db $FF;X
-L0D7680: db $00;X
-L0D7681: db $10;X
-L0D7682: db $84;X
-L0D7683: db $02;X
-L0D7684: db $05;X
-L0D7685: db $80;X
-L0D7686: db $04;X
-L0D7687: db $80;X
-L0D7688: db $10;X
-L0D7689: db $31;X
-L0D768A: db $10;X
-L0D768B: db $48;X
-L0D768C: db $A0;X
-L0D768D: db $02;X
-L0D768E: db $F0;X
-L0D768F: db $80;X
-L0D7690: db $00;X
-L0D7691: db $C0;X
-L0D7692: db $31;X
-L0D7693: db $47;X
-L0D7694: db $00;X
-L0D7695: db $08;X
-L0D7696: db $08;X
-L0D7697: db $A0;X
-L0D7698: db $02;X
-L0D7699: db $00;X
-L0D769A: db $00;X
-L0D769B: db $07;X
-L0D769C: db $40;X
-L0D769D: db $80;X
-L0D769E: db $80;X
-L0D769F: db $24;X
-L0D76A0: db $1C;X
-L0D76A1: db $04;X
-L0D76A2: db $08;X
-L0D76A3: db $00;X
-L0D76A4: db $08;X
-L0D76A5: db $20;X
-L0D76A6: db $26;X
-L0D76A7: db $03;X
-L0D76A8: db $81;X
-L0D76A9: db $E8;X
-L0D76AA: db $E2;X
-L0D76AB: db $40;X
-L0D76AC: db $00;X
-L0D76AD: db $20;X
-L0D76AE: db $48;X
-L0D76AF: db $40;X
-L0D76B0: db $03;X
-L0D76B1: db $00;X
-L0D76B2: db $00;X
-L0D76B3: db $11;X
-L0D76B4: db $88;X
-L0D76B5: db $00;X
-L0D76B6: db $64;X
-L0D76B7: db $24;X
-L0D76B8: db $20;X
-L0D76B9: db $08;X
-L0D76BA: db $06;X
-L0D76BB: db $00;X
-L0D76BC: db $01;X
-L0D76BD: db $02;X
-L0D76BE: db $00;X
-L0D76BF: db $06;X
-L0D76C0: db $01;X
-L0D76C1: db $80;X
-L0D76C2: db $0D;X
-L0D76C3: db $02;X
-L0D76C4: db $49;X
-L0D76C5: db $32;X
-L0D76C6: db $00;X
-L0D76C7: db $54;X
-L0D76C8: db $10;X
-L0D76C9: db $80;X
-L0D76CA: db $25;X
-L0D76CB: db $40;X
-L0D76CC: db $04;X
-L0D76CD: db $00;X
-L0D76CE: db $01;X
-L0D76CF: db $00;X
-L0D76D0: db $00;X
-L0D76D1: db $0C;X
-L0D76D2: db $40;X
-L0D76D3: db $88;X
-L0D76D4: db $54;X
-L0D76D5: db $20;X
-L0D76D6: db $40;X
-L0D76D7: db $80;X
-L0D76D8: db $30;X
-L0D76D9: db $50;X
-L0D76DA: db $C1;X
-L0D76DB: db $00;X
-L0D76DC: db $C4;X
-L0D76DD: db $01;X
-L0D76DE: db $02;X
-L0D76DF: db $06;X
-L0D76E0: db $00;X
-L0D76E1: db $00;X
-L0D76E2: db $E0;X
-L0D76E3: db $00;X
-L0D76E4: db $00;X
-L0D76E5: db $00;X
-L0D76E6: db $06;X
-L0D76E7: db $88;X
-L0D76E8: db $09;X
-L0D76E9: db $D0;X
-L0D76EA: db $00;X
-L0D76EB: db $08;X
-L0D76EC: db $84;X
-L0D76ED: db $08;X
-L0D76EE: db $A2;X
-L0D76EF: db $14;X
-L0D76F0: db $20;X
-L0D76F1: db $C8;X
-L0D76F2: db $06;X
-L0D76F3: db $00;X
-L0D76F4: db $24;X
-L0D76F5: db $00;X
-L0D76F6: db $40;X
-L0D76F7: db $0D;X
-L0D76F8: db $28;X
-L0D76F9: db $20;X
-L0D76FA: db $C9;X
-L0D76FB: db $01;X
-L0D76FC: db $0C;X
-L0D76FD: db $00;X
-L0D76FE: db $00;X
-L0D76FF: db $36;X
-L0D7700: db $EF;X
-L0D7701: db $FF;X
-L0D7702: db $FF;X
-L0D7703: db $FF;X
-L0D7704: db $FF;X
-L0D7705: db $FF;X
-L0D7706: db $FF;X
-L0D7707: db $FF;X
-L0D7708: db $FF;X
-L0D7709: db $FF;X
-L0D770A: db $FF;X
-L0D770B: db $FF;X
-L0D770C: db $FF;X
-L0D770D: db $FF;X
-L0D770E: db $FF;X
-L0D770F: db $FD;X
-L0D7710: db $FF;X
-L0D7711: db $FF;X
-L0D7712: db $FF;X
-L0D7713: db $FF;X
-L0D7714: db $FF;X
-L0D7715: db $FF;X
-L0D7716: db $FF;X
-L0D7717: db $FF;X
-L0D7718: db $FF;X
-L0D7719: db $FF;X
-L0D771A: db $FF;X
-L0D771B: db $FF;X
-L0D771C: db $FF;X
-L0D771D: db $7F;X
-L0D771E: db $FE;X
-L0D771F: db $FF;X
-L0D7720: db $FF;X
-L0D7721: db $FF;X
-L0D7722: db $EF;X
-L0D7723: db $FF;X
-L0D7724: db $FF;X
-L0D7725: db $FF;X
-L0D7726: db $FB;X
-L0D7727: db $FF;X
-L0D7728: db $FF;X
-L0D7729: db $FF;X
-L0D772A: db $FF;X
-L0D772B: db $FF;X
-L0D772C: db $FF;X
-L0D772D: db $FF;X
-L0D772E: db $FF;X
-L0D772F: db $FE;X
-L0D7730: db $FF;X
-L0D7731: db $FF;X
-L0D7732: db $FF;X
-L0D7733: db $FF;X
-L0D7734: db $FF;X
-L0D7735: db $FF;X
-L0D7736: db $FF;X
-L0D7737: db $FF;X
-L0D7738: db $FF;X
-L0D7739: db $FF;X
-L0D773A: db $FF;X
-L0D773B: db $FF;X
-L0D773C: db $EF;X
-L0D773D: db $FF;X
-L0D773E: db $FF;X
-L0D773F: db $FF;X
-L0D7740: db $FF;X
-L0D7741: db $FF;X
-L0D7742: db $FF;X
-L0D7743: db $FF;X
-L0D7744: db $FF;X
-L0D7745: db $FF;X
-L0D7746: db $FF;X
-L0D7747: db $FF;X
-L0D7748: db $FF;X
-L0D7749: db $FF;X
-L0D774A: db $FF;X
-L0D774B: db $FF;X
-L0D774C: db $FF;X
-L0D774D: db $FF;X
-L0D774E: db $FF;X
-L0D774F: db $FF;X
-L0D7750: db $FF;X
-L0D7751: db $FF;X
-L0D7752: db $FF;X
-L0D7753: db $FF;X
-L0D7754: db $FF;X
-L0D7755: db $FF;X
-L0D7756: db $FF;X
-L0D7757: db $FF;X
-L0D7758: db $FF;X
-L0D7759: db $FF;X
-L0D775A: db $FF;X
-L0D775B: db $FF;X
-L0D775C: db $FF;X
-L0D775D: db $FF;X
-L0D775E: db $FF;X
-L0D775F: db $FF;X
-L0D7760: db $FF;X
-L0D7761: db $FF;X
-L0D7762: db $FF;X
-L0D7763: db $FF;X
-L0D7764: db $FF;X
-L0D7765: db $FF;X
-L0D7766: db $FF;X
-L0D7767: db $FF;X
-L0D7768: db $FF;X
-L0D7769: db $FF;X
-L0D776A: db $FF;X
-L0D776B: db $FF;X
-L0D776C: db $FF;X
-L0D776D: db $FF;X
-L0D776E: db $FF;X
-L0D776F: db $FF;X
-L0D7770: db $FF;X
-L0D7771: db $FF;X
-L0D7772: db $FF;X
-L0D7773: db $FF;X
-L0D7774: db $FF;X
-L0D7775: db $FF;X
-L0D7776: db $FF;X
-L0D7777: db $FF;X
-L0D7778: db $FF;X
-L0D7779: db $FF;X
-L0D777A: db $FF;X
-L0D777B: db $FF;X
-L0D777C: db $FF;X
-L0D777D: db $FF;X
-L0D777E: db $FF;X
-L0D777F: db $FF;X
-L0D7780: db $0C;X
-L0D7781: db $80;X
-L0D7782: db $02;X
-L0D7783: db $83;X
-L0D7784: db $81;X
-L0D7785: db $00;X
-L0D7786: db $10;X
-L0D7787: db $20;X
-L0D7788: db $12;X
-L0D7789: db $91;X
-L0D778A: db $00;X
-L0D778B: db $02;X
-L0D778C: db $40;X
-L0D778D: db $90;X
-L0D778E: db $60;X
-L0D778F: db $00;X
-L0D7790: db $20;X
-L0D7791: db $20;X
-L0D7792: db $04;X
-L0D7793: db $00;X
-L0D7794: db $24;X
-L0D7795: db $10;X
-L0D7796: db $00;X
-L0D7797: db $40;X
-L0D7798: db $01;X
-L0D7799: db $00;X
-L0D779A: db $B9;X
-L0D779B: db $00;X
-L0D779C: db $02;X
-L0D779D: db $60;X
-L0D779E: db $38;X
-L0D779F: db $C0;X
-L0D77A0: db $00;X
-L0D77A1: db $24;X
-L0D77A2: db $10;X
-L0D77A3: db $00;X
-L0D77A4: db $07;X
-L0D77A5: db $10;X
-L0D77A6: db $04;X
-L0D77A7: db $32;X
-L0D77A8: db $08;X
-L0D77A9: db $00;X
-L0D77AA: db $28;X
-L0D77AB: db $80;X
-L0D77AC: db $01;X
-L0D77AD: db $10;X
-L0D77AE: db $30;X
-L0D77AF: db $A6;X
-L0D77B0: db $48;X
-L0D77B1: db $03;X
-L0D77B2: db $08;X
-L0D77B3: db $00;X
-L0D77B4: db $68;X
-L0D77B5: db $02;X
-L0D77B6: db $10;X
-L0D77B7: db $91;X
-L0D77B8: db $40;X
-L0D77B9: db $30;X
-L0D77BA: db $B8;X
-L0D77BB: db $05;X
-L0D77BC: db $00;X
-L0D77BD: db $40;X
-L0D77BE: db $12;X
-L0D77BF: db $09;X
-L0D77C0: db $20;X
-L0D77C1: db $11;X
-L0D77C2: db $00;X
-L0D77C3: db $B8;X
-L0D77C4: db $38;X
-L0D77C5: db $02;X
-L0D77C6: db $01;X
-L0D77C7: db $93;X
-L0D77C8: db $20;X
-L0D77C9: db $20;X
-L0D77CA: db $10;X
-L0D77CB: db $10;X
-L0D77CC: db $11;X
-L0D77CD: db $00;X
-L0D77CE: db $40;X
-L0D77CF: db $24;X
-L0D77D0: db $01;X
-L0D77D1: db $40;X
-L0D77D2: db $00;X
-L0D77D3: db $A0;X
-L0D77D4: db $A4;X
-L0D77D5: db $00;X
-L0D77D6: db $00;X
-L0D77D7: db $84;X
-L0D77D8: db $02;X
-L0D77D9: db $0E;X
-L0D77DA: db $01;X
-L0D77DB: db $C0;X
-L0D77DC: db $09;X
-L0D77DD: db $00;X
-L0D77DE: db $05;X
-L0D77DF: db $00;X
-L0D77E0: db $02;X
-L0D77E1: db $10;X
-L0D77E2: db $06;X
-L0D77E3: db $00;X
-L0D77E4: db $C0;X
-L0D77E5: db $18;X
-L0D77E6: db $02;X
-L0D77E7: db $02;X
-L0D77E8: db $10;X
-L0D77E9: db $02;X
-L0D77EA: db $20;X
-L0D77EB: db $08;X
-L0D77EC: db $C8;X
-L0D77ED: db $02;X
-L0D77EE: db $09;X
-L0D77EF: db $41;X
-L0D77F0: db $14;X
-L0D77F1: db $00;X
-L0D77F2: db $10;X
-L0D77F3: db $02;X
-L0D77F4: db $90;X
-L0D77F5: db $88;X
-L0D77F6: db $40;X
-L0D77F7: db $10;X
-L0D77F8: db $27;X
-L0D77F9: db $21;X
-L0D77FA: db $02;X
-L0D77FB: db $10;X
-L0D77FC: db $84;X
-L0D77FD: db $22;X
-L0D77FE: db $09;X
-L0D77FF: db $90;X
+IF SKIP_JUNK == 0
+	INCLUDE "src/align_junk/L0D72F5.asm"
+ENDC
 ; =============== END OF ALIGN JUNK ===============
 
 ; =============== INPUT DEMO DATA ($80 bytes each) ===============
@@ -10139,1284 +9097,6 @@ INCBIN "data/lvl/c22/demo.bin"
 INCBIN "data/lvl/c18/demo.bin"
 
 ; ================ END OF BANK =================
-
-L0D7B00: db $BE;X
-L0D7B01: db $F7;X
-L0D7B02: db $FF;X
-L0D7B03: db $FB;X
-L0D7B04: db $FF;X
-L0D7B05: db $FF;X
-L0D7B06: db $DC;X
-L0D7B07: db $7B;X
-L0D7B08: db $D7;X
-L0D7B09: db $FD;X
-L0D7B0A: db $53;X
-L0D7B0B: db $C7;X
-L0D7B0C: db $FF;X
-L0D7B0D: db $BE;X
-L0D7B0E: db $3F;X
-L0D7B0F: db $5D;X
-L0D7B10: db $FF;X
-L0D7B11: db $FF;X
-L0D7B12: db $FF;X
-L0D7B13: db $7D;X
-L0D7B14: db $6F;X
-L0D7B15: db $36;X
-L0D7B16: db $F5;X
-L0D7B17: db $7F;X
-L0D7B18: db $FB;X
-L0D7B19: db $DF;X
-L0D7B1A: db $FF;X
-L0D7B1B: db $3A;X
-L0D7B1C: db $EB;X
-L0D7B1D: db $FF;X
-L0D7B1E: db $F7;X
-L0D7B1F: db $96;X
-L0D7B20: db $EF;X
-L0D7B21: db $C7;X
-L0D7B22: db $5D;X
-L0D7B23: db $DE;X
-L0D7B24: db $F7;X
-L0D7B25: db $8F;X
-L0D7B26: db $77;X
-L0D7B27: db $4E;X
-L0D7B28: db $FF;X
-L0D7B29: db $6F;X
-L0D7B2A: db $FF;X
-L0D7B2B: db $BE;X
-L0D7B2C: db $ED;X
-L0D7B2D: db $FE;X
-L0D7B2E: db $CF;X
-L0D7B2F: db $DD;X
-L0D7B30: db $DE;X
-L0D7B31: db $BE;X
-L0D7B32: db $FF;X
-L0D7B33: db $BD;X
-L0D7B34: db $AF;X
-L0D7B35: db $8B;X
-L0D7B36: db $FD;X
-L0D7B37: db $CF;X
-L0D7B38: db $AF;X
-L0D7B39: db $E7;X
-L0D7B3A: db $DF;X
-L0D7B3B: db $FE;X
-L0D7B3C: db $FF;X
-L0D7B3D: db $7F;X
-L0D7B3E: db $87;X
-L0D7B3F: db $3E;X
-L0D7B40: db $F7;X
-L0D7B41: db $7F;X
-L0D7B42: db $FF;X
-L0D7B43: db $7C;X
-L0D7B44: db $7E;X
-L0D7B45: db $F6;X
-L0D7B46: db $77;X
-L0D7B47: db $FF;X
-L0D7B48: db $37;X
-L0D7B49: db $B1;X
-L0D7B4A: db $FF;X
-L0D7B4B: db $B6;X
-L0D7B4C: db $FF;X
-L0D7B4D: db $9F;X
-L0D7B4E: db $F5;X
-L0D7B4F: db $9F;X
-L0D7B50: db $EF;X
-L0D7B51: db $D3;X
-L0D7B52: db $FF;X
-L0D7B53: db $FE;X
-L0D7B54: db $BF;X
-L0D7B55: db $EF;X
-L0D7B56: db $4B;X
-L0D7B57: db $FF;X
-L0D7B58: db $FE;X
-L0D7B59: db $7F;X
-L0D7B5A: db $9F;X
-L0D7B5B: db $EF;X
-L0D7B5C: db $FC;X
-L0D7B5D: db $7D;X
-L0D7B5E: db $FF;X
-L0D7B5F: db $77;X
-L0D7B60: db $7F;X
-L0D7B61: db $CF;X
-L0D7B62: db $2F;X
-L0D7B63: db $FF;X
-L0D7B64: db $9F;X
-L0D7B65: db $FF;X
-L0D7B66: db $3F;X
-L0D7B67: db $A5;X
-L0D7B68: db $7F;X
-L0D7B69: db $27;X
-L0D7B6A: db $FE;X
-L0D7B6B: db $BF;X
-L0D7B6C: db $DF;X
-L0D7B6D: db $77;X
-L0D7B6E: db $FF;X
-L0D7B6F: db $E9;X
-L0D7B70: db $FF;X
-L0D7B71: db $77;X
-L0D7B72: db $77;X
-L0D7B73: db $F7;X
-L0D7B74: db $E5;X
-L0D7B75: db $D7;X
-L0D7B76: db $6C;X
-L0D7B77: db $FF;X
-L0D7B78: db $BC;X
-L0D7B79: db $BF;X
-L0D7B7A: db $BB;X
-L0D7B7B: db $A6;X
-L0D7B7C: db $FF;X
-L0D7B7D: db $74;X
-L0D7B7E: db $9F;X
-L0D7B7F: db $3F;X
-L0D7B80: db $00;X
-L0D7B81: db $00;X
-L0D7B82: db $04;X
-L0D7B83: db $00;X
-L0D7B84: db $00;X
-L0D7B85: db $04;X
-L0D7B86: db $00;X
-L0D7B87: db $00;X
-L0D7B88: db $00;X
-L0D7B89: db $80;X
-L0D7B8A: db $04;X
-L0D7B8B: db $00;X
-L0D7B8C: db $00;X
-L0D7B8D: db $00;X
-L0D7B8E: db $00;X
-L0D7B8F: db $01;X
-L0D7B90: db $00;X
-L0D7B91: db $00;X
-L0D7B92: db $00;X
-L0D7B93: db $00;X
-L0D7B94: db $00;X
-L0D7B95: db $00;X
-L0D7B96: db $00;X
-L0D7B97: db $00;X
-L0D7B98: db $00;X
-L0D7B99: db $00;X
-L0D7B9A: db $00;X
-L0D7B9B: db $00;X
-L0D7B9C: db $00;X
-L0D7B9D: db $00;X
-L0D7B9E: db $08;X
-L0D7B9F: db $00;X
-L0D7BA0: db $00;X
-L0D7BA1: db $00;X
-L0D7BA2: db $24;X
-L0D7BA3: db $00;X
-L0D7BA4: db $00;X
-L0D7BA5: db $40;X
-L0D7BA6: db $00;X
-L0D7BA7: db $00;X
-L0D7BA8: db $01;X
-L0D7BA9: db $00;X
-L0D7BAA: db $00;X
-L0D7BAB: db $00;X
-L0D7BAC: db $00;X
-L0D7BAD: db $00;X
-L0D7BAE: db $00;X
-L0D7BAF: db $00;X
-L0D7BB0: db $10;X
-L0D7BB1: db $00;X
-L0D7BB2: db $00;X
-L0D7BB3: db $00;X
-L0D7BB4: db $00;X
-L0D7BB5: db $00;X
-L0D7BB6: db $00;X
-L0D7BB7: db $00;X
-L0D7BB8: db $00;X
-L0D7BB9: db $00;X
-L0D7BBA: db $00;X
-L0D7BBB: db $00;X
-L0D7BBC: db $00;X
-L0D7BBD: db $00;X
-L0D7BBE: db $08;X
-L0D7BBF: db $00;X
-L0D7BC0: db $00;X
-L0D7BC1: db $40;X
-L0D7BC2: db $00;X
-L0D7BC3: db $00;X
-L0D7BC4: db $01;X
-L0D7BC5: db $10;X
-L0D7BC6: db $00;X
-L0D7BC7: db $00;X
-L0D7BC8: db $00;X
-L0D7BC9: db $00;X
-L0D7BCA: db $00;X
-L0D7BCB: db $00;X
-L0D7BCC: db $00;X
-L0D7BCD: db $00;X
-L0D7BCE: db $00;X
-L0D7BCF: db $00;X
-L0D7BD0: db $00;X
-L0D7BD1: db $00;X
-L0D7BD2: db $40;X
-L0D7BD3: db $00;X
-L0D7BD4: db $18;X
-L0D7BD5: db $00;X
-L0D7BD6: db $00;X
-L0D7BD7: db $02;X
-L0D7BD8: db $00;X
-L0D7BD9: db $00;X
-L0D7BDA: db $00;X
-L0D7BDB: db $00;X
-L0D7BDC: db $02;X
-L0D7BDD: db $00;X
-L0D7BDE: db $10;X
-L0D7BDF: db $00;X
-L0D7BE0: db $00;X
-L0D7BE1: db $00;X
-L0D7BE2: db $00;X
-L0D7BE3: db $00;X
-L0D7BE4: db $00;X
-L0D7BE5: db $20;X
-L0D7BE6: db $00;X
-L0D7BE7: db $00;X
-L0D7BE8: db $02;X
-L0D7BE9: db $00;X
-L0D7BEA: db $08;X
-L0D7BEB: db $04;X
-L0D7BEC: db $00;X
-L0D7BED: db $00;X
-L0D7BEE: db $00;X
-L0D7BEF: db $00;X
-L0D7BF0: db $00;X
-L0D7BF1: db $00;X
-L0D7BF2: db $40;X
-L0D7BF3: db $00;X
-L0D7BF4: db $40;X
-L0D7BF5: db $00;X
-L0D7BF6: db $00;X
-L0D7BF7: db $00;X
-L0D7BF8: db $01;X
-L0D7BF9: db $00;X
-L0D7BFA: db $00;X
-L0D7BFB: db $20;X
-L0D7BFC: db $00;X
-L0D7BFD: db $00;X
-L0D7BFE: db $00;X
-L0D7BFF: db $00;X
-L0D7C00: db $FF;X
-L0D7C01: db $FF;X
-L0D7C02: db $FF;X
-L0D7C03: db $FF;X
-L0D7C04: db $FF;X
-L0D7C05: db $FF;X
-L0D7C06: db $FF;X
-L0D7C07: db $FF;X
-L0D7C08: db $FF;X
-L0D7C09: db $FF;X
-L0D7C0A: db $FF;X
-L0D7C0B: db $FF;X
-L0D7C0C: db $FF;X
-L0D7C0D: db $FF;X
-L0D7C0E: db $FF;X
-L0D7C0F: db $FF;X
-L0D7C10: db $FF;X
-L0D7C11: db $FF;X
-L0D7C12: db $FF;X
-L0D7C13: db $FF;X
-L0D7C14: db $FF;X
-L0D7C15: db $FF;X
-L0D7C16: db $FF;X
-L0D7C17: db $FF;X
-L0D7C18: db $FF;X
-L0D7C19: db $FF;X
-L0D7C1A: db $FF;X
-L0D7C1B: db $FF;X
-L0D7C1C: db $FF;X
-L0D7C1D: db $FF;X
-L0D7C1E: db $FF;X
-L0D7C1F: db $FF;X
-L0D7C20: db $FF;X
-L0D7C21: db $FF;X
-L0D7C22: db $FF;X
-L0D7C23: db $FF;X
-L0D7C24: db $FF;X
-L0D7C25: db $FF;X
-L0D7C26: db $FF;X
-L0D7C27: db $FF;X
-L0D7C28: db $FF;X
-L0D7C29: db $FF;X
-L0D7C2A: db $FF;X
-L0D7C2B: db $FF;X
-L0D7C2C: db $FF;X
-L0D7C2D: db $FF;X
-L0D7C2E: db $FF;X
-L0D7C2F: db $FF;X
-L0D7C30: db $FF;X
-L0D7C31: db $FF;X
-L0D7C32: db $FF;X
-L0D7C33: db $FF;X
-L0D7C34: db $FD;X
-L0D7C35: db $FF;X
-L0D7C36: db $FF;X
-L0D7C37: db $FF;X
-L0D7C38: db $FF;X
-L0D7C39: db $FF;X
-L0D7C3A: db $FF;X
-L0D7C3B: db $FF;X
-L0D7C3C: db $FF;X
-L0D7C3D: db $FF;X
-L0D7C3E: db $FF;X
-L0D7C3F: db $FF;X
-L0D7C40: db $FF;X
-L0D7C41: db $FF;X
-L0D7C42: db $FF;X
-L0D7C43: db $FF;X
-L0D7C44: db $FF;X
-L0D7C45: db $FF;X
-L0D7C46: db $FF;X
-L0D7C47: db $FF;X
-L0D7C48: db $FF;X
-L0D7C49: db $FF;X
-L0D7C4A: db $FF;X
-L0D7C4B: db $FF;X
-L0D7C4C: db $FF;X
-L0D7C4D: db $FF;X
-L0D7C4E: db $FF;X
-L0D7C4F: db $FF;X
-L0D7C50: db $FF;X
-L0D7C51: db $FE;X
-L0D7C52: db $7F;X
-L0D7C53: db $FF;X
-L0D7C54: db $FF;X
-L0D7C55: db $FF;X
-L0D7C56: db $FF;X
-L0D7C57: db $FF;X
-L0D7C58: db $FF;X
-L0D7C59: db $FF;X
-L0D7C5A: db $FF;X
-L0D7C5B: db $FF;X
-L0D7C5C: db $FD;X
-L0D7C5D: db $FF;X
-L0D7C5E: db $FF;X
-L0D7C5F: db $FF;X
-L0D7C60: db $7F;X
-L0D7C61: db $FF;X
-L0D7C62: db $FF;X
-L0D7C63: db $FF;X
-L0D7C64: db $FF;X
-L0D7C65: db $FF;X
-L0D7C66: db $DF;X
-L0D7C67: db $DF;X
-L0D7C68: db $FF;X
-L0D7C69: db $FF;X
-L0D7C6A: db $FF;X
-L0D7C6B: db $FF;X
-L0D7C6C: db $FF;X
-L0D7C6D: db $FF;X
-L0D7C6E: db $FF;X
-L0D7C6F: db $FF;X
-L0D7C70: db $FF;X
-L0D7C71: db $FF;X
-L0D7C72: db $FF;X
-L0D7C73: db $FF;X
-L0D7C74: db $FF;X
-L0D7C75: db $FF;X
-L0D7C76: db $FF;X
-L0D7C77: db $FF;X
-L0D7C78: db $FF;X
-L0D7C79: db $FF;X
-L0D7C7A: db $FF;X
-L0D7C7B: db $FF;X
-L0D7C7C: db $FF;X
-L0D7C7D: db $FF;X
-L0D7C7E: db $FF;X
-L0D7C7F: db $FE;X
-L0D7C80: db $98;X
-L0D7C81: db $10;X
-L0D7C82: db $44;X
-L0D7C83: db $08;X
-L0D7C84: db $01;X
-L0D7C85: db $03;X
-L0D7C86: db $00;X
-L0D7C87: db $80;X
-L0D7C88: db $08;X
-L0D7C89: db $80;X
-L0D7C8A: db $01;X
-L0D7C8B: db $C4;X
-L0D7C8C: db $80;X
-L0D7C8D: db $21;X
-L0D7C8E: db $C0;X
-L0D7C8F: db $24;X
-L0D7C90: db $46;X
-L0D7C91: db $20;X
-L0D7C92: db $88;X
-L0D7C93: db $08;X
-L0D7C94: db $40;X
-L0D7C95: db $00;X
-L0D7C96: db $00;X
-L0D7C97: db $10;X
-L0D7C98: db $10;X
-L0D7C99: db $09;X
-L0D7C9A: db $0A;X
-L0D7C9B: db $0A;X
-L0D7C9C: db $40;X
-L0D7C9D: db $00;X
-L0D7C9E: db $00;X
-L0D7C9F: db $21;X
-L0D7CA0: db $02;X
-L0D7CA1: db $00;X
-L0D7CA2: db $26;X
-L0D7CA3: db $50;X
-L0D7CA4: db $04;X
-L0D7CA5: db $20;X
-L0D7CA6: db $08;X
-L0D7CA7: db $32;X
-L0D7CA8: db $30;X
-L0D7CA9: db $04;X
-L0D7CAA: db $00;X
-L0D7CAB: db $41;X
-L0D7CAC: db $00;X
-L0D7CAD: db $00;X
-L0D7CAE: db $01;X
-L0D7CAF: db $00;X
-L0D7CB0: db $14;X
-L0D7CB1: db $00;X
-L0D7CB2: db $81;X
-L0D7CB3: db $80;X
-L0D7CB4: db $00;X
-L0D7CB5: db $81;X
-L0D7CB6: db $42;X
-L0D7CB7: db $18;X
-L0D7CB8: db $10;X
-L0D7CB9: db $58;X
-L0D7CBA: db $46;X
-L0D7CBB: db $09;X
-L0D7CBC: db $01;X
-L0D7CBD: db $01;X
-L0D7CBE: db $18;X
-L0D7CBF: db $00;X
-L0D7CC0: db $44;X
-L0D7CC1: db $08;X
-L0D7CC2: db $2A;X
-L0D7CC3: db $10;X
-L0D7CC4: db $40;X
-L0D7CC5: db $40;X
-L0D7CC6: db $40;X
-L0D7CC7: db $00;X
-L0D7CC8: db $40;X
-L0D7CC9: db $20;X
-L0D7CCA: db $90;X
-L0D7CCB: db $82;X
-L0D7CCC: db $80;X
-L0D7CCD: db $10;X
-L0D7CCE: db $00;X
-L0D7CCF: db $B0;X
-L0D7CD0: db $80;X
-L0D7CD1: db $C1;X
-L0D7CD2: db $49;X
-L0D7CD3: db $08;X
-L0D7CD4: db $04;X
-L0D7CD5: db $E0;X
-L0D7CD6: db $49;X
-L0D7CD7: db $15;X
-L0D7CD8: db $98;X
-L0D7CD9: db $A0;X
-L0D7CDA: db $90;X
-L0D7CDB: db $40;X
-L0D7CDC: db $10;X
-L0D7CDD: db $41;X
-L0D7CDE: db $10;X
-L0D7CDF: db $18;X
-L0D7CE0: db $25;X
-L0D7CE1: db $04;X
-L0D7CE2: db $80;X
-L0D7CE3: db $09;X
-L0D7CE4: db $03;X
-L0D7CE5: db $20;X
-L0D7CE6: db $00;X
-L0D7CE7: db $45;X
-L0D7CE8: db $19;X
-L0D7CE9: db $20;X
-L0D7CEA: db $90;X
-L0D7CEB: db $40;X
-L0D7CEC: db $80;X
-L0D7CED: db $06;X
-L0D7CEE: db $40;X
-L0D7CEF: db $A4;X
-L0D7CF0: db $30;X
-L0D7CF1: db $00;X
-L0D7CF2: db $7A;X
-L0D7CF3: db $40;X
-L0D7CF4: db $20;X
-L0D7CF5: db $0E;X
-L0D7CF6: db $04;X
-L0D7CF7: db $08;X
-L0D7CF8: db $02;X
-L0D7CF9: db $00;X
-L0D7CFA: db $A0;X
-L0D7CFB: db $81;X
-L0D7CFC: db $80;X
-L0D7CFD: db $90;X
-L0D7CFE: db $41;X
-L0D7CFF: db $08;X
-L0D7D00: db $FF;X
-L0D7D01: db $FF;X
-L0D7D02: db $FF;X
-L0D7D03: db $FF;X
-L0D7D04: db $FF;X
-L0D7D05: db $FF;X
-L0D7D06: db $FF;X
-L0D7D07: db $FF;X
-L0D7D08: db $FF;X
-L0D7D09: db $FF;X
-L0D7D0A: db $FF;X
-L0D7D0B: db $FF;X
-L0D7D0C: db $FF;X
-L0D7D0D: db $FF;X
-L0D7D0E: db $FF;X
-L0D7D0F: db $EF;X
-L0D7D10: db $FF;X
-L0D7D11: db $FF;X
-L0D7D12: db $FF;X
-L0D7D13: db $FF;X
-L0D7D14: db $FF;X
-L0D7D15: db $FF;X
-L0D7D16: db $FF;X
-L0D7D17: db $FF;X
-L0D7D18: db $FF;X
-L0D7D19: db $FF;X
-L0D7D1A: db $FF;X
-L0D7D1B: db $FF;X
-L0D7D1C: db $FF;X
-L0D7D1D: db $FF;X
-L0D7D1E: db $FF;X
-L0D7D1F: db $FB;X
-L0D7D20: db $FF;X
-L0D7D21: db $FF;X
-L0D7D22: db $FF;X
-L0D7D23: db $FF;X
-L0D7D24: db $FF;X
-L0D7D25: db $FF;X
-L0D7D26: db $FF;X
-L0D7D27: db $FF;X
-L0D7D28: db $FF;X
-L0D7D29: db $FF;X
-L0D7D2A: db $FF;X
-L0D7D2B: db $FF;X
-L0D7D2C: db $FF;X
-L0D7D2D: db $FF;X
-L0D7D2E: db $FF;X
-L0D7D2F: db $FF;X
-L0D7D30: db $FF;X
-L0D7D31: db $FF;X
-L0D7D32: db $FF;X
-L0D7D33: db $FF;X
-L0D7D34: db $FF;X
-L0D7D35: db $FF;X
-L0D7D36: db $EF;X
-L0D7D37: db $F7;X
-L0D7D38: db $FF;X
-L0D7D39: db $FF;X
-L0D7D3A: db $FF;X
-L0D7D3B: db $FF;X
-L0D7D3C: db $FF;X
-L0D7D3D: db $FF;X
-L0D7D3E: db $FF;X
-L0D7D3F: db $FF;X
-L0D7D40: db $FF;X
-L0D7D41: db $FF;X
-L0D7D42: db $FF;X
-L0D7D43: db $FF;X
-L0D7D44: db $FF;X
-L0D7D45: db $FF;X
-L0D7D46: db $FB;X
-L0D7D47: db $FF;X
-L0D7D48: db $FF;X
-L0D7D49: db $FF;X
-L0D7D4A: db $FF;X
-L0D7D4B: db $FF;X
-L0D7D4C: db $FF;X
-L0D7D4D: db $FF;X
-L0D7D4E: db $FF;X
-L0D7D4F: db $FF;X
-L0D7D50: db $FF;X
-L0D7D51: db $FF;X
-L0D7D52: db $FF;X
-L0D7D53: db $FF;X
-L0D7D54: db $FF;X
-L0D7D55: db $FF;X
-L0D7D56: db $FF;X
-L0D7D57: db $DF;X
-L0D7D58: db $FF;X
-L0D7D59: db $FF;X
-L0D7D5A: db $FF;X
-L0D7D5B: db $FF;X
-L0D7D5C: db $FF;X
-L0D7D5D: db $FF;X
-L0D7D5E: db $FF;X
-L0D7D5F: db $FF;X
-L0D7D60: db $FF;X
-L0D7D61: db $FF;X
-L0D7D62: db $FF;X
-L0D7D63: db $FF;X
-L0D7D64: db $FF;X
-L0D7D65: db $FF;X
-L0D7D66: db $FF;X
-L0D7D67: db $FF;X
-L0D7D68: db $FF;X
-L0D7D69: db $FF;X
-L0D7D6A: db $FF;X
-L0D7D6B: db $FF;X
-L0D7D6C: db $FF;X
-L0D7D6D: db $FF;X
-L0D7D6E: db $FF;X
-L0D7D6F: db $FF;X
-L0D7D70: db $FF;X
-L0D7D71: db $FF;X
-L0D7D72: db $FF;X
-L0D7D73: db $FF;X
-L0D7D74: db $FF;X
-L0D7D75: db $BF;X
-L0D7D76: db $FF;X
-L0D7D77: db $FF;X
-L0D7D78: db $FF;X
-L0D7D79: db $FF;X
-L0D7D7A: db $FF;X
-L0D7D7B: db $FF;X
-L0D7D7C: db $FF;X
-L0D7D7D: db $FF;X
-L0D7D7E: db $FF;X
-L0D7D7F: db $FF;X
-L0D7D80: db $12;X
-L0D7D81: db $20;X
-L0D7D82: db $11;X
-L0D7D83: db $02;X
-L0D7D84: db $94;X
-L0D7D85: db $44;X
-L0D7D86: db $40;X
-L0D7D87: db $85;X
-L0D7D88: db $00;X
-L0D7D89: db $08;X
-L0D7D8A: db $03;X
-L0D7D8B: db $45;X
-L0D7D8C: db $00;X
-L0D7D8D: db $01;X
-L0D7D8E: db $00;X
-L0D7D8F: db $02;X
-L0D7D90: db $40;X
-L0D7D91: db $30;X
-L0D7D92: db $50;X
-L0D7D93: db $15;X
-L0D7D94: db $3E;X
-L0D7D95: db $00;X
-L0D7D96: db $5A;X
-L0D7D97: db $57;X
-L0D7D98: db $01;X
-L0D7D99: db $00;X
-L0D7D9A: db $14;X
-L0D7D9B: db $D1;X
-L0D7D9C: db $41;X
-L0D7D9D: db $00;X
-L0D7D9E: db $10;X
-L0D7D9F: db $00;X
-L0D7DA0: db $84;X
-L0D7DA1: db $08;X
-L0D7DA2: db $2C;X
-L0D7DA3: db $40;X
-L0D7DA4: db $00;X
-L0D7DA5: db $0A;X
-L0D7DA6: db $08;X
-L0D7DA7: db $11;X
-L0D7DA8: db $00;X
-L0D7DA9: db $68;X
-L0D7DAA: db $80;X
-L0D7DAB: db $10;X
-L0D7DAC: db $44;X
-L0D7DAD: db $40;X
-L0D7DAE: db $41;X
-L0D7DAF: db $20;X
-L0D7DB0: db $C3;X
-L0D7DB1: db $04;X
-L0D7DB2: db $20;X
-L0D7DB3: db $C0;X
-L0D7DB4: db $AA;X
-L0D7DB5: db $40;X
-L0D7DB6: db $4C;X
-L0D7DB7: db $00;X
-L0D7DB8: db $A5;X
-L0D7DB9: db $84;X
-L0D7DBA: db $20;X
-L0D7DBB: db $40;X
-L0D7DBC: db $10;X
-L0D7DBD: db $11;X
-L0D7DBE: db $02;X
-L0D7DBF: db $81;X
-L0D7DC0: db $82;X
-L0D7DC1: db $90;X
-L0D7DC2: db $00;X
-L0D7DC3: db $01;X
-L0D7DC4: db $0C;X
-L0D7DC5: db $02;X
-L0D7DC6: db $00;X
-L0D7DC7: db $86;X
-L0D7DC8: db $20;X
-L0D7DC9: db $70;X
-L0D7DCA: db $84;X
-L0D7DCB: db $10;X
-L0D7DCC: db $60;X
-L0D7DCD: db $56;X
-L0D7DCE: db $20;X
-L0D7DCF: db $04;X
-L0D7DD0: db $81;X
-L0D7DD1: db $07;X
-L0D7DD2: db $01;X
-L0D7DD3: db $08;X
-L0D7DD4: db $A2;X
-L0D7DD5: db $50;X
-L0D7DD6: db $01;X
-L0D7DD7: db $00;X
-L0D7DD8: db $00;X
-L0D7DD9: db $20;X
-L0D7DDA: db $00;X
-L0D7DDB: db $40;X
-L0D7DDC: db $06;X
-L0D7DDD: db $00;X
-L0D7DDE: db $3A;X
-L0D7DDF: db $00;X
-L0D7DE0: db $75;X
-L0D7DE1: db $12;X
-L0D7DE2: db $30;X
-L0D7DE3: db $10;X
-L0D7DE4: db $44;X
-L0D7DE5: db $80;X
-L0D7DE6: db $40;X
-L0D7DE7: db $00;X
-L0D7DE8: db $50;X
-L0D7DE9: db $68;X
-L0D7DEA: db $01;X
-L0D7DEB: db $20;X
-L0D7dec: db $04;X
-L0D7DED: db $16;X
-L0D7DEE: db $00;X
-L0D7DEF: db $00;X
-L0D7DF0: db $01;X
-L0D7DF1: db $40;X
-L0D7DF2: db $40;X
-L0D7DF3: db $04;X
-L0D7DF4: db $24;X
-L0D7DF5: db $00;X
-L0D7DF6: db $00;X
-L0D7DF7: db $04;X
-L0D7DF8: db $02;X
-L0D7DF9: db $0C;X
-L0D7DFA: db $00;X
-L0D7DFB: db $50;X
-L0D7DFC: db $80;X
-L0D7DFD: db $8A;X
-L0D7DFE: db $88;X
-L0D7DFF: db $20;X
-L0D7E00: db $FF;X
-L0D7E01: db $FF;X
-L0D7E02: db $FF;X
-L0D7E03: db $FF;X
-L0D7E04: db $7F;X
-L0D7E05: db $FF;X
-L0D7E06: db $FF;X
-L0D7E07: db $FF;X
-L0D7E08: db $FF;X
-L0D7E09: db $FF;X
-L0D7E0A: db $FF;X
-L0D7E0B: db $EF;X
-L0D7E0C: db $FF;X
-L0D7E0D: db $FF;X
-L0D7E0E: db $FB;X
-L0D7E0F: db $FF;X
-L0D7E10: db $FF;X
-L0D7E11: db $FF;X
-L0D7E12: db $FF;X
-L0D7E13: db $FF;X
-L0D7E14: db $FF;X
-L0D7E15: db $FF;X
-L0D7E16: db $FF;X
-L0D7E17: db $FF;X
-L0D7E18: db $FF;X
-L0D7E19: db $FF;X
-L0D7E1A: db $FF;X
-L0D7E1B: db $FB;X
-L0D7E1C: db $FF;X
-L0D7E1D: db $FF;X
-L0D7E1E: db $FF;X
-L0D7E1F: db $FF;X
-L0D7E20: db $FF;X
-L0D7E21: db $FF;X
-L0D7E22: db $FF;X
-L0D7E23: db $FF;X
-L0D7E24: db $FF;X
-L0D7E25: db $FF;X
-L0D7E26: db $FF;X
-L0D7E27: db $FB;X
-L0D7E28: db $FF;X
-L0D7E29: db $FF;X
-L0D7E2A: db $FF;X
-L0D7E2B: db $FF;X
-L0D7E2C: db $FF;X
-L0D7E2D: db $FF;X
-L0D7E2E: db $FF;X
-L0D7E2F: db $FF;X
-L0D7E30: db $FF;X
-L0D7E31: db $FF;X
-L0D7E32: db $FF;X
-L0D7E33: db $FF;X
-L0D7E34: db $FF;X
-L0D7E35: db $FE;X
-L0D7E36: db $FF;X
-L0D7E37: db $FB;X
-L0D7E38: db $EF;X
-L0D7E39: db $FF;X
-L0D7E3A: db $FF;X
-L0D7E3B: db $FE;X
-L0D7E3C: db $FF;X
-L0D7E3D: db $FF;X
-L0D7E3E: db $FF;X
-L0D7E3F: db $FF;X
-L0D7E40: db $FF;X
-L0D7E41: db $FF;X
-L0D7E42: db $FF;X
-L0D7E43: db $FF;X
-L0D7E44: db $FF;X
-L0D7E45: db $FF;X
-L0D7E46: db $FF;X
-L0D7E47: db $FF;X
-L0D7E48: db $FF;X
-L0D7E49: db $FF;X
-L0D7E4A: db $FF;X
-L0D7E4B: db $BF;X
-L0D7E4C: db $FF;X
-L0D7E4D: db $FF;X
-L0D7E4E: db $FF;X
-L0D7E4F: db $FF;X
-L0D7E50: db $DF;X
-L0D7E51: db $FF;X
-L0D7E52: db $FF;X
-L0D7E53: db $FF;X
-L0D7E54: db $7F;X
-L0D7E55: db $DF;X
-L0D7E56: db $FF;X
-L0D7E57: db $FF;X
-L0D7E58: db $FF;X
-L0D7E59: db $FF;X
-L0D7E5A: db $FF;X
-L0D7E5B: db $FF;X
-L0D7E5C: db $FF;X
-L0D7E5D: db $FF;X
-L0D7E5E: db $FF;X
-L0D7E5F: db $FF;X
-L0D7E60: db $FF;X
-L0D7E61: db $FF;X
-L0D7E62: db $FF;X
-L0D7E63: db $FF;X
-L0D7E64: db $FF;X
-L0D7E65: db $FF;X
-L0D7E66: db $FF;X
-L0D7E67: db $FF;X
-L0D7E68: db $FF;X
-L0D7E69: db $FF;X
-L0D7E6A: db $FF;X
-L0D7E6B: db $FF;X
-L0D7E6C: db $BF;X
-L0D7E6D: db $FF;X
-L0D7E6E: db $FF;X
-L0D7E6F: db $FF;X
-L0D7E70: db $FF;X
-L0D7E71: db $FF;X
-L0D7E72: db $FF;X
-L0D7E73: db $DF;X
-L0D7E74: db $FD;X
-L0D7E75: db $FE;X
-L0D7E76: db $FF;X
-L0D7E77: db $FF;X
-L0D7E78: db $FF;X
-L0D7E79: db $FF;X
-L0D7E7A: db $BF;X
-L0D7E7B: db $FD;X
-L0D7E7C: db $FF;X
-L0D7E7D: db $FF;X
-L0D7E7E: db $FF;X
-L0D7E7F: db $FF;X
-L0D7E80: db $BD;X
-L0D7E81: db $40;X
-L0D7E82: db $C5;X
-L0D7E83: db $2A;X
-L0D7E84: db $C4;X
-L0D7E85: db $2C;X
-L0D7E86: db $00;X
-L0D7E87: db $54;X
-L0D7E88: db $40;X
-L0D7E89: db $00;X
-L0D7E8A: db $00;X
-L0D7E8B: db $04;X
-L0D7E8C: db $08;X
-L0D7E8D: db $0E;X
-L0D7E8E: db $91;X
-L0D7E8F: db $15;X
-L0D7E90: db $A4;X
-L0D7E91: db $F0;X
-L0D7E92: db $80;X
-L0D7E93: db $10;X
-L0D7E94: db $AC;X
-L0D7E95: db $CE;X
-L0D7E96: db $04;X
-L0D7E97: db $B0;X
-L0D7E98: db $83;X
-L0D7E99: db $60;X
-L0D7E9A: db $22;X
-L0D7E9B: db $00;X
-L0D7E9C: db $80;X
-L0D7E9D: db $16;X
-L0D7E9E: db $8C;X
-L0D7E9F: db $10;X
-L0D7EA0: db $2C;X
-L0D7EA1: db $18;X
-L0D7EA2: db $40;X
-L0D7EA3: db $21;X
-L0D7EA4: db $03;X
-L0D7EA5: db $85;X
-L0D7EA6: db $4D;X
-L0D7EA7: db $DC;X
-L0D7EA8: db $08;X
-L0D7EA9: db $94;X
-L0D7EAA: db $0F;X
-L0D7EAB: db $46;X
-L0D7EAC: db $13;X
-L0D7EAD: db $F4;X
-L0D7EAE: db $82;X
-L0D7EAF: db $0A;X
-L0D7EB0: db $A4;X
-L0D7EB1: db $64;X
-L0D7EB2: db $C1;X
-L0D7EB3: db $54;X
-L0D7EB4: db $40;X
-L0D7EB5: db $04;X
-L0D7EB6: db $01;X
-L0D7EB7: db $E4;X
-L0D7EB8: db $15;X
-L0D7EB9: db $86;X
-L0D7EBA: db $94;X
-L0D7EBB: db $55;X
-L0D7EBC: db $00;X
-L0D7EBD: db $11;X
-L0D7EBE: db $1C;X
-L0D7EBF: db $00;X
-L0D7EC0: db $61;X
-L0D7EC1: db $39;X
-L0D7EC2: db $46;X
-L0D7EC3: db $02;X
-L0D7EC4: db $20;X
-L0D7EC5: db $02;X
-L0D7EC6: db $C2;X
-L0D7EC7: db $40;X
-L0D7EC8: db $13;X
-L0D7EC9: db $04;X
-L0D7ECA: db $10;X
-L0D7ECB: db $80;X
-L0D7ECC: db $E0;X
-L0D7ECD: db $55;X
-L0D7ECE: db $6C;X
-L0D7ECF: db $9C;X
-L0D7ED0: db $D0;X
-L0D7ED1: db $08;X
-L0D7ED2: db $21;X
-L0D7ED3: db $30;X
-L0D7ED4: db $7C;X
-L0D7ED5: db $A0;X
-L0D7ED6: db $52;X
-L0D7ED7: db $51;X
-L0D7ED8: db $20;X
-L0D7ED9: db $00;X
-L0D7EDA: db $F0;X
-L0D7EDB: db $43;X
-L0D7EDC: db $20;X
-L0D7EDD: db $EB;X
-L0D7EDE: db $45;X
-L0D7EDF: db $01;X
-L0D7EE0: db $09;X
-L0D7EE1: db $80;X
-L0D7EE2: db $18;X
-L0D7EE3: db $04;X
-L0D7EE4: db $00;X
-L0D7EE5: db $40;X
-L0D7EE6: db $00;X
-L0D7EE7: db $C8;X
-L0D7EE8: db $80;X
-L0D7EE9: db $10;X
-L0D7EEA: db $52;X
-L0D7EEB: db $05;X
-L0D7EEC: db $10;X
-L0D7EED: db $2B;X
-L0D7EEE: db $E0;X
-L0D7EEF: db $86;X
-L0D7EF0: db $1A;X
-L0D7EF1: db $21;X
-L0D7EF2: db $03;X
-L0D7EF3: db $0E;X
-L0D7EF4: db $41;X
-L0D7EF5: db $B0;X
-L0D7EF6: db $21;X
-L0D7EF7: db $11;X
-L0D7EF8: db $B0;X
-L0D7EF9: db $5D;X
-L0D7EFA: db $35;X
-L0D7EFB: db $42;X
-L0D7EFC: db $02;X
-L0D7EFD: db $80;X
-L0D7EFE: db $80;X
-L0D7EFF: db $8A;X
-L0D7F00: db $FF;X
-L0D7F01: db $FF;X
-L0D7F02: db $FF;X
-L0D7F03: db $FD;X
-L0D7F04: db $FF;X
-L0D7F05: db $FF;X
-L0D7F06: db $FF;X
-L0D7F07: db $FF;X
-L0D7F08: db $FF;X
-L0D7F09: db $FF;X
-L0D7F0A: db $FF;X
-L0D7F0B: db $FF;X
-L0D7F0C: db $BF;X
-L0D7F0D: db $FF;X
-L0D7F0E: db $FF;X
-L0D7F0F: db $FF;X
-L0D7F10: db $FF;X
-L0D7F11: db $FF;X
-L0D7F12: db $DF;X
-L0D7F13: db $FF;X
-L0D7F14: db $FF;X
-L0D7F15: db $EF;X
-L0D7F16: db $EF;X
-L0D7F17: db $FF;X
-L0D7F18: db $FF;X
-L0D7F19: db $BF;X
-L0D7F1A: db $FF;X
-L0D7F1B: db $FF;X
-L0D7F1C: db $FF;X
-L0D7F1D: db $FF;X
-L0D7F1E: db $FF;X
-L0D7F1F: db $FF;X
-L0D7F20: db $FF;X
-L0D7F21: db $FF;X
-L0D7F22: db $FD;X
-L0D7F23: db $FF;X
-L0D7F24: db $FF;X
-L0D7F25: db $FF;X
-L0D7F26: db $FF;X
-L0D7F27: db $FF;X
-L0D7F28: db $FE;X
-L0D7F29: db $FF;X
-L0D7F2A: db $FF;X
-L0D7F2B: db $7F;X
-L0D7F2C: db $FF;X
-L0D7F2D: db $EF;X
-L0D7F2E: db $FF;X
-L0D7F2F: db $FF;X
-L0D7F30: db $7F;X
-L0D7F31: db $FF;X
-L0D7F32: db $FF;X
-L0D7F33: db $FF;X
-L0D7F34: db $FF;X
-L0D7F35: db $FF;X
-L0D7F36: db $DF;X
-L0D7F37: db $FF;X
-L0D7F38: db $FF;X
-L0D7F39: db $FF;X
-L0D7F3A: db $FF;X
-L0D7F3B: db $FF;X
-L0D7F3C: db $FF;X
-L0D7F3D: db $FF;X
-L0D7F3E: db $FF;X
-L0D7F3F: db $FB;X
-L0D7F40: db $EF;X
-L0D7F41: db $EF;X
-L0D7F42: db $FF;X
-L0D7F43: db $FF;X
-L0D7F44: db $FF;X
-L0D7F45: db $FF;X
-L0D7F46: db $FF;X
-L0D7F47: db $FF;X
-L0D7F48: db $FF;X
-L0D7F49: db $FF;X
-L0D7F4A: db $FF;X
-L0D7F4B: db $FF;X
-L0D7F4C: db $FF;X
-L0D7F4D: db $FF;X
-L0D7F4E: db $FF;X
-L0D7F4F: db $FF;X
-L0D7F50: db $FF;X
-L0D7F51: db $FF;X
-L0D7F52: db $BF;X
-L0D7F53: db $F7;X
-L0D7F54: db $FF;X
-L0D7F55: db $FF;X
-L0D7F56: db $FF;X
-L0D7F57: db $FF;X
-L0D7F58: db $FF;X
-L0D7F59: db $FF;X
-L0D7F5A: db $FF;X
-L0D7F5B: db $DF;X
-L0D7F5C: db $FF;X
-L0D7F5D: db $FF;X
-L0D7F5E: db $FF;X
-L0D7F5F: db $FF;X
-L0D7F60: db $FF;X
-L0D7F61: db $FF;X
-L0D7F62: db $FF;X
-L0D7F63: db $FF;X
-L0D7F64: db $FF;X
-L0D7F65: db $FF;X
-L0D7F66: db $FE;X
-L0D7F67: db $EF;X
-L0D7F68: db $FF;X
-L0D7F69: db $FF;X
-L0D7F6A: db $FF;X
-L0D7F6B: db $EF;X
-L0D7F6C: db $FF;X
-L0D7F6D: db $DF;X
-L0D7F6E: db $FF;X
-L0D7F6F: db $FF;X
-L0D7F70: db $FF;X
-L0D7F71: db $FF;X
-L0D7F72: db $FF;X
-L0D7F73: db $FF;X
-L0D7F74: db $FF;X
-L0D7F75: db $FF;X
-L0D7F76: db $FF;X
-L0D7F77: db $FF;X
-L0D7F78: db $FD;X
-L0D7F79: db $FF;X
-L0D7F7A: db $FF;X
-L0D7F7B: db $FF;X
-L0D7F7C: db $FF;X
-L0D7F7D: db $FF;X
-L0D7F7E: db $FF;X
-L0D7F7F: db $FF;X
-L0D7F80: db $A0;X
-L0D7F81: db $7E;X
-L0D7F82: db $0E;X
-L0D7F83: db $53;X
-L0D7F84: db $38;X
-L0D7F85: db $60;X
-L0D7F86: db $0F;X
-L0D7F87: db $90;X
-L0D7F88: db $29;X
-L0D7F89: db $21;X
-L0D7F8A: db $00;X
-L0D7F8B: db $47;X
-L0D7F8C: db $39;X
-L0D7F8D: db $04;X
-L0D7F8E: db $84;X
-L0D7F8F: db $47;X
-L0D7F90: db $6C;X
-L0D7F91: db $04;X
-L0D7F92: db $5B;X
-L0D7F93: db $3A;X
-L0D7F94: db $D0;X
-L0D7F95: db $03;X
-L0D7F96: db $80;X
-L0D7F97: db $10;X
-L0D7F98: db $A9;X
-L0D7F99: db $00;X
-L0D7F9A: db $60;X
-L0D7F9B: db $85;X
-L0D7F9C: db $21;X
-L0D7F9D: db $7C;X
-L0D7F9E: db $01;X
-L0D7F9F: db $13;X
-L0D7FA0: db $C6;X
-L0D7FA1: db $30;X
-L0D7FA2: db $C4;X
-L0D7FA3: db $CB;X
-L0D7FA4: db $41;X
-L0D7FA5: db $80;X
-L0D7FA6: db $00;X
-L0D7FA7: db $02;X
-L0D7FA8: db $90;X
-L0D7FA9: db $08;X
-L0D7FAA: db $A9;X
-L0D7FAB: db $82;X
-L0D7FAC: db $04;X
-L0D7FAD: db $C7;X
-L0D7FAE: db $29;X
-L0D7FAF: db $28;X
-L0D7FB0: db $31;X
-L0D7FB1: db $22;X
-L0D7FB2: db $00;X
-L0D7FB3: db $09;X
-L0D7FB4: db $A9;X
-L0D7FB5: db $4E;X
-L0D7FB6: db $00;X
-L0D7FB7: db $29;X
-L0D7FB8: db $03;X
-L0D7FB9: db $41;X
-L0D7FBA: db $05;X
-L0D7FBB: db $20;X
-L0D7FBC: db $3C;X
-L0D7FBD: db $22;X
-L0D7FBE: db $03;X
-L0D7FBF: db $15;X
-L0D7FC0: db $81;X
-L0D7FC1: db $92;X
-L0D7FC2: db $4A;X
-L0D7FC3: db $21;X
-L0D7FC4: db $05;X
-L0D7FC5: db $C1;X
-L0D7FC6: db $80;X
-L0D7FC7: db $80;X
-L0D7FC8: db $A1;X
-L0D7FC9: db $21;X
-L0D7FCA: db $04;X
-L0D7FCB: db $89;X
-L0D7FCC: db $C1;X
-L0D7FCD: db $04;X
-L0D7FCE: db $00;X
-L0D7FCF: db $87;X
-L0D7FD0: db $40;X
-L0D7FD1: db $2F;X
-L0D7FD2: db $04;X
-L0D7FD3: db $C1;X
-L0D7FD4: db $20;X
-L0D7FD5: db $02;X
-L0D7FD6: db $04;X
-L0D7FD7: db $09;X
-L0D7FD8: db $08;X
-L0D7FD9: db $5D;X
-L0D7FDA: db $26;X
-L0D7FDB: db $D1;X
-L0D7FDC: db $21;X
-L0D7FDD: db $81;X
-L0D7FDE: db $01;X
-L0D7FDF: db $89;X
-L0D7FE0: db $28;X
-L0D7FE1: db $02;X
-L0D7FE2: db $20;X
-L0D7FE3: db $14;X
-L0D7FE4: db $41;X
-L0D7FE5: db $64;X
-L0D7FE6: db $48;X
-L0D7FE7: db $26;X
-L0D7FE8: db $83;X
-L0D7FE9: db $9D;X
-L0D7FEA: db $80;X
-L0D7FEB: db $73;X
-L0D7FEC: db $01;X
-L0D7FED: db $00;X
-L0D7FEE: db $80;X
-L0D7FEF: db $11;X
-L0D7FF0: db $02;X
-L0D7FF1: db $80;X
-L0D7FF2: db $24;X
-L0D7FF3: db $40;X
-L0D7FF4: db $07;X
-L0D7FF5: db $45;X
-L0D7FF6: db $01;X
-L0D7FF7: db $4A;X
-L0D7FF8: db $05;X
-L0D7FF9: db $55;X
-L0D7FFA: db $2C;X
-L0D7FFB: db $0C;X
-L0D7FFC: db $40;X
-L0D7FFD: db $11;X
-L0D7FFE: db $A1;X
-L0D7FFF: db $88;X
+IF SKIP_JUNK == 0
+	INCLUDE "src/align_junk/L0D7B00.asm"
+ENDC

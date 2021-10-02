@@ -293,12 +293,6 @@ ActInit_Default_ItemUsed:
 ; =============== ActS_DefaultStand ===============
 ; This subroutine contains the main code for default actors when they stand still.
 ActS_DefaultStand:
-
-	; [BUG] This never despawn actors after a certain amount of time.
-	;		This is fine for the key, but not for the 10coin.
-	;       As a result, it's possible to have 10coins fall off, have them spin in place
-	;		and not despawn until you manually go off-screen.
-
 	ld   a, [sActSetTimer]	; Timer++
 	inc  a
 	ld   [sActSetTimer], a
@@ -436,6 +430,7 @@ Act_ItemInBox:
 	;
 	;       If an actor despawns on the same block as the item, the
 	;       MSB gets set and the item pops out of the box. Oops!
+	;       Though there isn't really another way to do it differently.
 	call ActColi_GetBlockId_Low		; A = Block ID of what we're over
 	bit  7, a						; Is the MSB set?
 	ret  z							; If not, return
@@ -1747,18 +1742,19 @@ ActS_SpawnCoinFromBlock:
 	; If you're treating fully destroyed breakable blocks as empty (to allow dashing through them uninterrupted),
 	; then the broken value will be a problem.
 	; To fix this, avoid using "ld   bc, -$08" to set the speed:
-	;
-	; ld   a, LOW(-$08)				; Y Speed (Low byte)
-	; ldi  [hl], a			
-	; ld   a, HIGH(-$08)			; Y Speed (High byte)
-	; ldi  [hl], a	
 	
+IF FIX_BUGS == 1
+	ld   a, LOW(-$08)		; Y Speed (Low byte)
+	ldi  [hl], a			
+	ld   a, HIGH(-$08)		; Y Speed (High byte)
+	ldi  [hl], a	
+ELSE	
 	ld   bc, -$08
 	ld   a, c				; Y Speed (Low byte)
 	ldi  [hl], a			
 	ld   a, b				; Y Speed (High byte)
 	ldi  [hl], a
-	;--
+ENDC
 	
 	xor  a
 	ldi  [hl], a			; Timer 5 - Not used
@@ -2849,10 +2845,16 @@ ActInit_SSTeacupBoss:
 	ld   a, +$08
 	ld   [sActSetColiBoxR], a
 	
+IF FIX_BUGS == 1
+	; Setup secondary loading code
+	ld   bc, SubCall_ActInit2_SSTeacupBoss
+	call ActS_SetCodePtr
+ELSE
 	; Setup main code
 	ld   bc, SubCall_Act_SSTeacupBoss
 	call ActS_SetCodePtr
-	
+ENDC
+
 	; This boss moves in the foreground -- there's no visible sprite
 	mActS_SetBlankFrame
 	ld   bc, OBJLstSharedPtrTable_Act_None
@@ -2868,10 +2870,14 @@ ActInit_SSTeacupBoss:
 	; Copy over the tilemaps for the main body
 	; [BUG] Shouldn't have been done here. See comment at ActInit_SSTeacupBoss_SetParallax. 
 	; [POI] Some of these don't seem to be necessary... ClawsDown and Eyes are already in Body
+IF FIX_BUGS == 0
 	call Act_SSTeacupBoss_BGWrite_Body
 	call Act_SSTeacupBoss_BGWrite_BeakOpen
+IF OPTIMIZE == 0
 	call Act_SSTeacupBoss_BGWrite_ClawsDown
 	call Act_SSTeacupBoss_BGWrite_Eyes
+ENDC
+ENDC
 	
 	xor  a
 	ld   [sActSSTeacupBossHitCount], a
@@ -2896,6 +2902,19 @@ ActInit_SSTeacupBoss:
 	ld   c, $50
 	call Act_SSTeacupBoss_MoveRight
 	ret
+IF FIX_BUGS == 1
+; =============== ActInit2_SSTeacupBoss ===============
+; Secondary init mode for writing the tilemaps.
+ActInit2_SSTeacupBoss:
+	; Write boss body
+	call Act_SSTeacupBoss_BGWrite_Body
+	call Act_SSTeacupBoss_BGWrite_BeakOpen
+	
+	; Setup main code
+	ld   bc, SubCall_Act_SSTeacupBoss
+	call ActS_SetCodePtr
+	ret
+ENDC
 ; =============== ActInit_SSTeacupBoss_SetParallax ===============
 ; Initializes the special scroll mode for the SSTeacup Boss room.
 ActInit_SSTeacupBoss_SetParallax:
@@ -2914,21 +2933,31 @@ ActInit_SSTeacupBoss_SetParallax:
 	ld   a, $40					
 	ld   [sActBossParallaxX], a
 	ld   [sParallaxX0], a
-	ld   [sParallaxX1], a
+IF FIX_BUGS == 0
+	ld   [sParallaxX1], a	
+ENDC
 	ld   [sParallaxX2], a
 	ld   a, $50
 	ld   [sActBossParallaxY], a
 	ld   [sParallaxY0], a
+IF FIX_BUGS == 0
 	ld   [sParallaxY1], a
-	ld   [sParallaxY2], a
-	
+ENDC
+	ld   [sParallaxY2], a	
 	; For the ground, copy over the current scroll coords.
 	; These won't ever be changed.
+IF FIX_BUGS == 1
+	ld   a, [sScrollX]
+	ld   [sParallaxX1], a
+	ldh  a, [hScrollY]
+	ld   [sParallaxY1], a
+ELSE
 	ld   a, [sScrollX]
 	ld   [sParallaxX3], a
 	ldh  a, [hScrollY]
 	ld   [sParallaxY3], a
-	
+ENDC
+
 	; [BUG] But a minor one at that.
 	; This is a sligtly questionable use of the useless parallax sections which
 	; can cause screen tearing (during the boss flash) and occasionally glitch lines.
@@ -2942,6 +2971,16 @@ ActInit_SSTeacupBoss_SetParallax:
 	; - Fix the parallax modes. The easy way would be to set LY2 to $01 and LY3 to $03.
 	;	Since the boss generally never goes high enough, any visual glitches will be hidden.
 	;	The correct way would be to use LY1 for the ground and move LY2 and LY3 off-screen.
+IF FIX_BUGS == 1
+	ld   a, $00					; Start sect0 (boss body) at $00
+	ld   [sParallaxNextLY0], a
+	ld   a, $6F					; Start sect1 (ground) at $6F
+	ld   [sParallaxNextLY1], a
+	ld   a, $7F					; Start sect2 (boss body) at $7F
+	ld   [sParallaxNextLY2], a
+	ld   a, $89					; Start sect3 off screen
+	ld   [sParallaxNextLY3], a
+ELSE
 	ld   a, $00					; Start sect0 (boss body) at $00
 	ld   [sParallaxNextLY0], a
 	ld   a, $20					; Start sect1 at $20 (bad)
@@ -2950,6 +2989,8 @@ ActInit_SSTeacupBoss_SetParallax:
 	ld   [sParallaxNextLY2], a
 	ld   a, $6F					; Start sect3 (ground) at $6F
 	ld   [sParallaxNextLY3], a
+ENDC
+
 	; Set scroll mode
 	ld   a, PRX_BOSS0
 	ld   [sParallaxMode], a
@@ -2992,13 +3033,17 @@ Act_SSTeacupBoss_DoHitFlash:
 .copyE0:
 	ld   a, $E0					; Otherwise, hide the boss
 	ld   [sParallaxX0], a
+IF FIX_BUGS == 0
 	ld   [sParallaxX1], a
+ENDC
 	ld   [sParallaxX2], a
 	jr   .end
 .copyNorm:
 	ld   a, [sActBossParallaxX]
 	ld   [sParallaxX0], a
+IF FIX_BUGS == 0
 	ld   [sParallaxX1], a
+ENDC
 	ld   [sParallaxX2], a
 .end:
 	ret
@@ -3232,9 +3277,13 @@ Act_SSTeacupBoss_AnimWingsH:
 Act_SSTeacupBoss_BGWriteGroup_Wind:
 	; [POI] CloseBreak and Eyes aren't necessary since Body contains them already
 	call Act_SSTeacupBoss_BGWrite_Body
+IF OPTIMIZE == 0
 	call Act_SSTeacupBoss_BGWrite_BeakClosed
+ENDC
 	call Act_SSTeacupBoss_BGWrite_ClawsUp
+IF OPTIMIZE == 0
 	call Act_SSTeacupBoss_BGWrite_Eyes
+ENDC
 	ret
 	
 ; =============== Act_SSTeacupBoss_Mode_YArc_Main ===============
@@ -3316,9 +3365,18 @@ Act_SSTeacupBoss_MoveDown:
 	ld   [sActBossParallaxY], a
 	; And update the parallax sections
 	ld   [sParallaxY0], a
+IF FIX_BUGS == 1
+	; If the boss isn't low enough, don't update the second parallax layer.
+	; This prevents incorrect graphics from showing up in sParallaxY2 when the boss gets high enough.
+	cp   a, $40					; A >= $40?
+	jr   nc, .noBelowUpd		; If so, don't update the layer
+ELSE
 	ld   [sParallaxY1], a
+ENDC
+
 	ld   [sParallaxY2], a
 	
+.noBelowUpd:
 	; Sign-extend since ActS_MoveDown goes off a 16bit value
 	ld   a, c
 	sext a
@@ -3338,9 +3396,10 @@ Act_SSTeacupBoss_MoveRight:
 	ld   [sActBossParallaxX], a
 	; And update the parallax sections
 	ld   [sParallaxX0], a
+IF FIX_BUGS == 0
 	ld   [sParallaxX1], a
+ENDC
 	ld   [sParallaxX2], a
-	
 	; Sign-extend since ActS_MoveRight goes off a 16bit value
 	ld   a, c
 	sext a
@@ -3599,7 +3658,9 @@ Act_SSTeacupBoss_SwitchToDead:
 	ld   [sActBossDead], a
 	xor  a
 	ld   [sActHeld], a
+IF OPTIMIZE == 0
 	call ActS_DespawnAllNormExceptCur_Broken
+ENDC
 	ret
 ; =============== Act_SSTeacupBoss_Mode_Dead ===============
 ; This handles the downwards movement after the boss is defeated.
@@ -3626,6 +3687,14 @@ Act_SSTeacupBoss_Mode_Dead:
 ; =============== Act_SSTeacupBoss_SwitchToCoinGame ===============
 ; Sets up the coin game mode.
 Act_SSTeacupBoss_SwitchToCoinGame:
+IF FIX_BUGS == 1
+	; Move the "boss body" parallax sections off-screen
+	; Only required with FIX_BUGS due to the different way sections are handled.
+	ld   a, $E0					
+	ld   [sActBossParallaxX], a
+	ld   [sParallaxX0], a
+	ld   [sParallaxX2], a
+ENDC
 	;--
 	; Set the boss position at exactly $A0.
 	
@@ -3682,24 +3751,45 @@ ENDR
 Act_SSTeacupBoss_BGWrite_WingV0:
 	ld   de, BG_Act_SSTeacupBoss_WingV0
 	;                         VRAM                 X  Y  Count
+IF FIX_BUGS == 1
+	mSSTeacupBoss_BGWriteCall vBGSSTeacupBossWing, 0, 0, 1
+	inc de
+	inc de
+	mSSTeacupBoss_BGWriteCall vBGSSTeacupBossWing, 4, 0, 2
+ELSE
 	mSSTeacupBoss_BGWriteCall vBGSSTeacupBossWing, 0, 0, 2
 	mSSTeacupBoss_BGWriteCall vBGSSTeacupBossWing, 3, 0, 3
+ENDC
 	mSSTeacupBoss_BGWriteCall vBGSSTeacupBossWing, 3, 1, 3
 	mSSTeacupBoss_BGWriteCall vBGSSTeacupBossWing, 3, 2, 3
 	ret
 Act_SSTeacupBoss_BGWrite_WingV1:
 	ld   de, BG_Act_SSTeacupBoss_WingV1
 	;                         VRAM                 X  Y  Count
+IF FIX_BUGS == 1
+	mSSTeacupBoss_BGWriteCall vBGSSTeacupBossWing, 0, 0, 1
+	inc de
+	inc de
+	mSSTeacupBoss_BGWriteCall vBGSSTeacupBossWing, 4, 0, 2
+ELSE
 	mSSTeacupBoss_BGWriteCall vBGSSTeacupBossWing, 0, 0, 2
 	mSSTeacupBoss_BGWriteCall vBGSSTeacupBossWing, 3, 0, 3
+ENDC
 	mSSTeacupBoss_BGWriteCall vBGSSTeacupBossWing, 3, 1, 3
 	mSSTeacupBoss_BGWriteCall vBGSSTeacupBossWing, 3, 2, 3
 	ret
 Act_SSTeacupBoss_BGWrite_WingV2:
 	ld   de, BG_Act_SSTeacupBoss_WingV2
 	;                         VRAM                 X  Y  Count
+IF FIX_BUGS == 1
+	mSSTeacupBoss_BGWriteCall vBGSSTeacupBossWing, 0, 0, 1
+	inc de
+	inc de
+	mSSTeacupBoss_BGWriteCall vBGSSTeacupBossWing, 4, 0, 2
+ELSE
 	mSSTeacupBoss_BGWriteCall vBGSSTeacupBossWing, 0, 0, 2
 	mSSTeacupBoss_BGWriteCall vBGSSTeacupBossWing, 3, 0, 3
+ENDC
 	mSSTeacupBoss_BGWriteCall vBGSSTeacupBossWing, 3, 1, 3
 	mSSTeacupBoss_BGWriteCall vBGSSTeacupBossWing, 3, 2, 3
 	ret
@@ -6200,9 +6290,14 @@ Act_Seal_Track_MoveDown:
 	;		or going below the end of the level. Alternatively, it could be manually despawned.	
 	
 	call ActColi_GetBlockId_Ground
+IF FIX_BUGS == 1
+	cp   a, BLOCKID_INSTAKILL		; Is it a lava block / below the level layout?
+	ret  z							; If so, don't move
+ENDC
 	mSubCall ActBGColi_IsEmptyWaterBlock
 	or   a							; Is there a water block below?
 	ret  nz							; If not (ie: solid) don't move
+	
 	
 	ld   bc, +$01
 	call ActS_MoveDown
@@ -7110,959 +7205,6 @@ OBJLst_Act_BigHeart1: INCBIN "data/objlst/actor/bigheart1.bin"
 GFX_Act_BigHeart: INCBIN "data/gfx/actor/bigheart.bin"
 
 ; =============== END OF BANK ===============
-L0F7C44: db $C1;X
-L0F7C45: db $C1;X
-L0F7C46: db $F3;X
-L0F7C47: db $B2;X
-L0F7C48: db $7B;X
-L0F7C49: db $4B;X
-L0F7C4A: db $7E;X
-L0F7C4B: db $47;X
-L0F7C4C: db $3A;X
-L0F7C4D: db $2F;X
-L0F7C4E: db $17;X
-L0F7C4F: db $1D;X
-L0F7C50: db $17;X
-L0F7C51: db $1C;X
-L0F7C52: db $77;X
-L0F7C53: db $6C;X
-L0F7C54: db $03;X
-L0F7C55: db $03;X
-L0F7C56: db $8F;X
-L0F7C57: db $8D;X
-L0F7C58: db $9E;X
-L0F7C59: db $92;X
-L0F7C5A: db $7E;X
-L0F7C5B: db $E2;X
-L0F7C5C: db $9C;X
-L0F7C5D: db $74;X
-L0F7C5E: db $28;X
-L0F7C5F: db $D8;X
-L0F7C60: db $9E;X
-L0F7C61: db $FE;X
-L0F7C62: db $BF;X
-L0F7C63: db $E1;X
-L0F7C64: db $E3;X
-L0F7C65: db $BF;X
-L0F7C66: db $74;X
-L0F7C67: db $7B;X
-L0F7C68: db $11;X
-L0F7C69: db $1F;X
-L0F7C6A: db $3B;X
-L0F7C6B: db $2E;X
-L0F7C6C: db $7F;X
-L0F7C6D: db $46;X
-L0F7C6E: db $79;X
-L0F7C6F: db $49;X
-L0F7C70: db $F1;X
-L0F7C71: db $B1;X
-L0F7C72: db $C0;X
-L0F7C73: db $C0;X
-L0F7C74: db $3E;X
-L0F7C75: db $E6;X
-L0F7C76: db $18;X
-L0F7C77: db $F8;X
-L0F7C78: db $A8;X
-L0F7C79: db $D8;X
-L0F7C7A: db $DC;X
-L0F7C7B: db $74;X
-L0F7C7C: db $FE;X
-L0F7C7D: db $62;X
-L0F7C7E: db $DE;X
-L0F7C7F: db $52;X
-L0F7C80: db $CF;X
-L0F7C81: db $4D;X
-L0F7C82: db $83;X
-L0F7C83: db $83;X
-L0F7C84: db $00;X
-L0F7C85: db $10;X
-L0F7C86: db $00;X
-L0F7C87: db $00;X
-L0F7C88: db $00;X
-L0F7C89: db $00;X
-L0F7C8A: db $00;X
-L0F7C8B: db $00;X
-L0F7C8C: db $05;X
-L0F7C8D: db $00;X
-L0F7C8E: db $03;X
-L0F7C8F: db $00;X
-L0F7C90: db $80;X
-L0F7C91: db $00;X
-L0F7C92: db $00;X
-L0F7C93: db $00;X
-L0F7C94: db $00;X
-L0F7C95: db $40;X
-L0F7C96: db $00;X
-L0F7C97: db $00;X
-L0F7C98: db $00;X
-L0F7C99: db $00;X
-L0F7C9A: db $08;X
-L0F7C9B: db $40;X
-L0F7C9C: db $00;X
-L0F7C9D: db $03;X
-L0F7C9E: db $00;X
-L0F7C9F: db $60;X
-L0F7CA0: db $40;X
-L0F7CA1: db $10;X
-L0F7CA2: db $00;X
-L0F7CA3: db $00;X
-L0F7CA4: db $00;X
-L0F7CA5: db $00;X
-L0F7CA6: db $08;X
-L0F7CA7: db $08;X
-L0F7CA8: db $80;X
-L0F7CA9: db $00;X
-L0F7CAA: db $00;X
-L0F7CAB: db $00;X
-L0F7CAC: db $40;X
-L0F7CAD: db $80;X
-L0F7CAE: db $40;X
-L0F7CAF: db $00;X
-L0F7CB0: db $40;X
-L0F7CB1: db $00;X
-L0F7CB2: db $02;X
-L0F7CB3: db $01;X
-L0F7CB4: db $00;X
-L0F7CB5: db $00;X
-L0F7CB6: db $02;X
-L0F7CB7: db $08;X
-L0F7CB8: db $00;X
-L0F7CB9: db $08;X
-L0F7CBA: db $20;X
-L0F7CBB: db $08;X
-L0F7CBC: db $00;X
-L0F7CBD: db $20;X
-L0F7CBE: db $00;X
-L0F7CBF: db $00;X
-L0F7CC0: db $00;X
-L0F7CC1: db $40;X
-L0F7CC2: db $24;X
-L0F7CC3: db $00;X
-L0F7CC4: db $00;X
-L0F7CC5: db $00;X
-L0F7CC6: db $00;X
-L0F7CC7: db $00;X
-L0F7CC8: db $00;X
-L0F7CC9: db $04;X
-L0F7CCA: db $00;X
-L0F7CCB: db $40;X
-L0F7CCC: db $00;X
-L0F7CCD: db $04;X
-L0F7CCE: db $00;X
-L0F7CCF: db $05;X
-L0F7CD0: db $00;X
-L0F7CD1: db $00;X
-L0F7CD2: db $12;X
-L0F7CD3: db $00;X
-L0F7CD4: db $50;X
-L0F7CD5: db $00;X
-L0F7CD6: db $48;X
-L0F7CD7: db $03;X
-L0F7CD8: db $00;X
-L0F7CD9: db $02;X
-L0F7CDA: db $00;X
-L0F7CDB: db $00;X
-L0F7CDC: db $04;X
-L0F7CDD: db $00;X
-L0F7CDE: db $08;X
-L0F7CDF: db $00;X
-L0F7CE0: db $00;X
-L0F7CE1: db $00;X
-L0F7CE2: db $08;X
-L0F7CE3: db $00;X
-L0F7CE4: db $00;X
-L0F7CE5: db $A0;X
-L0F7CE6: db $80;X
-L0F7CE7: db $30;X
-L0F7CE8: db $80;X
-L0F7CE9: db $00;X
-L0F7CEA: db $00;X
-L0F7CEB: db $10;X
-L0F7CEC: db $04;X
-L0F7CED: db $08;X
-L0F7CEE: db $10;X
-L0F7CEF: db $80;X
-L0F7CF0: db $00;X
-L0F7CF1: db $00;X
-L0F7CF2: db $00;X
-L0F7CF3: db $00;X
-L0F7CF4: db $00;X
-L0F7CF5: db $80;X
-L0F7CF6: db $00;X
-L0F7CF7: db $00;X
-L0F7CF8: db $80;X
-L0F7CF9: db $10;X
-L0F7CFA: db $00;X
-L0F7CFB: db $08;X
-L0F7CFC: db $00;X
-L0F7CFD: db $40;X
-L0F7CFE: db $00;X
-L0F7CFF: db $80;X
-L0F7D00: db $FF;X
-L0F7D01: db $7F;X
-L0F7D02: db $FF;X
-L0F7D03: db $FF;X
-L0F7D04: db $FF;X
-L0F7D05: db $BF;X
-L0F7D06: db $FF;X
-L0F7D07: db $FF;X
-L0F7D08: db $FF;X
-L0F7D09: db $FF;X
-L0F7D0A: db $FF;X
-L0F7D0B: db $FF;X
-L0F7D0C: db $FD;X
-L0F7D0D: db $BF;X
-L0F7D0E: db $FF;X
-L0F7D0F: db $FE;X
-L0F7D10: db $FF;X
-L0F7D11: db $F7;X
-L0F7D12: db $FF;X
-L0F7D13: db $FF;X
-L0F7D14: db $FF;X
-L0F7D15: db $FF;X
-L0F7D16: db $FF;X
-L0F7D17: db $FF;X
-L0F7D18: db $FD;X
-L0F7D19: db $FF;X
-L0F7D1A: db $FF;X
-L0F7D1B: db $EF;X
-L0F7D1C: db $FF;X
-L0F7D1D: db $FF;X
-L0F7D1E: db $FF;X
-L0F7D1F: db $FF;X
-L0F7D20: db $FF;X
-L0F7D21: db $FF;X
-L0F7D22: db $FF;X
-L0F7D23: db $FB;X
-L0F7D24: db $FF;X
-L0F7D25: db $FD;X
-L0F7D26: db $FF;X
-L0F7D27: db $FF;X
-L0F7D28: db $F7;X
-L0F7D29: db $FF;X
-L0F7D2A: db $FF;X
-L0F7D2B: db $FF;X
-L0F7D2C: db $DF;X
-L0F7D2D: db $FF;X
-L0F7D2E: db $7F;X
-L0F7D2F: db $FF;X
-L0F7D30: db $7F;X
-L0F7D31: db $FF;X
-L0F7D32: db $DF;X
-L0F7D33: db $FB;X
-L0F7D34: db $FF;X
-L0F7D35: db $DE;X
-L0F7D36: db $BD;X
-L0F7D37: db $FF;X
-L0F7D38: db $FF;X
-L0F7D39: db $EF;X
-L0F7D3A: db $FF;X
-L0F7D3B: db $FF;X
-L0F7D3C: db $FF;X
-L0F7D3D: db $FF;X
-L0F7D3E: db $FF;X
-L0F7D3F: db $DF;X
-L0F7D40: db $FF;X
-L0F7D41: db $BF;X
-L0F7D42: db $FF;X
-L0F7D43: db $FF;X
-L0F7D44: db $FF;X
-L0F7D45: db $FF;X
-L0F7D46: db $FE;X
-L0F7D47: db $FF;X
-L0F7D48: db $FF;X
-L0F7D49: db $DF;X
-L0F7D4A: db $FE;X
-L0F7D4B: db $FF;X
-L0F7D4C: db $FF;X
-L0F7D4D: db $FF;X
-L0F7D4E: db $FF;X
-L0F7D4F: db $EF;X
-L0F7D50: db $FF;X
-L0F7D51: db $FE;X
-L0F7D52: db $FF;X
-L0F7D53: db $FF;X
-L0F7D54: db $DF;X
-L0F7D55: db $EB;X
-L0F7D56: db $FF;X
-L0F7D57: db $7F;X
-L0F7D58: db $FF;X
-L0F7D59: db $FF;X
-L0F7D5A: db $F7;X
-L0F7D5B: db $F7;X
-L0F7D5C: db $FF;X
-L0F7D5D: db $F7;X
-L0F7D5E: db $FE;X
-L0F7D5F: db $FF;X
-L0F7D60: db $FF;X
-L0F7D61: db $FF;X
-L0F7D62: db $FF;X
-L0F7D63: db $FF;X
-L0F7D64: db $FF;X
-L0F7D65: db $FF;X
-L0F7D66: db $FF;X
-L0F7D67: db $ED;X
-L0F7D68: db $FF;X
-L0F7D69: db $FF;X
-L0F7D6A: db $FF;X
-L0F7D6B: db $FF;X
-L0F7D6C: db $FF;X
-L0F7D6D: db $F9;X
-L0F7D6E: db $FD;X
-L0F7D6F: db $FF;X
-L0F7D70: db $FF;X
-L0F7D71: db $FF;X
-L0F7D72: db $FF;X
-L0F7D73: db $BF;X
-L0F7D74: db $FF;X
-L0F7D75: db $FF;X
-L0F7D76: db $FF;X
-L0F7D77: db $F7;X
-L0F7D78: db $ED;X
-L0F7D79: db $FE;X
-L0F7D7A: db $FF;X
-L0F7D7B: db $FF;X
-L0F7D7C: db $FF;X
-L0F7D7D: db $E9;X
-L0F7D7E: db $FF;X
-L0F7D7F: db $FF;X
-L0F7D80: db $00;X
-L0F7D81: db $02;X
-L0F7D82: db $00;X
-L0F7D83: db $00;X
-L0F7D84: db $14;X
-L0F7D85: db $00;X
-L0F7D86: db $00;X
-L0F7D87: db $10;X
-L0F7D88: db $10;X
-L0F7D89: db $20;X
-L0F7D8A: db $00;X
-L0F7D8B: db $00;X
-L0F7D8C: db $00;X
-L0F7D8D: db $02;X
-L0F7D8E: db $14;X
-L0F7D8F: db $00;X
-L0F7D90: db $00;X
-L0F7D91: db $30;X
-L0F7D92: db $00;X
-L0F7D93: db $10;X
-L0F7D94: db $00;X
-L0F7D95: db $10;X
-L0F7D96: db $10;X
-L0F7D97: db $00;X
-L0F7D98: db $00;X
-L0F7D99: db $00;X
-L0F7D9A: db $20;X
-L0F7D9B: db $00;X
-L0F7D9C: db $00;X
-L0F7D9D: db $00;X
-L0F7D9E: db $40;X
-L0F7D9F: db $10;X
-L0F7DA0: db $10;X
-L0F7DA1: db $00;X
-L0F7DA2: db $00;X
-L0F7DA3: db $00;X
-L0F7DA4: db $00;X
-L0F7DA5: db $40;X
-L0F7DA6: db $00;X
-L0F7DA7: db $00;X
-L0F7DA8: db $01;X
-L0F7DA9: db $01;X
-L0F7DAA: db $00;X
-L0F7DAB: db $00;X
-L0F7DAC: db $00;X
-L0F7DAD: db $00;X
-L0F7DAE: db $00;X
-L0F7DAF: db $10;X
-L0F7DB0: db $00;X
-L0F7DB1: db $00;X
-L0F7DB2: db $20;X
-L0F7DB3: db $00;X
-L0F7DB4: db $00;X
-L0F7DB5: db $10;X
-L0F7DB6: db $00;X
-L0F7DB7: db $00;X
-L0F7DB8: db $00;X
-L0F7DB9: db $20;X
-L0F7DBA: db $01;X
-L0F7DBB: db $00;X
-L0F7DBC: db $04;X
-L0F7DBD: db $D0;X
-L0F7DBE: db $00;X
-L0F7DBF: db $26;X
-L0F7DC0: db $00;X
-L0F7DC1: db $00;X
-L0F7DC2: db $10;X
-L0F7DC3: db $08;X
-L0F7DC4: db $00;X
-L0F7DC5: db $10;X
-L0F7DC6: db $40;X
-L0F7DC7: db $00;X
-L0F7DC8: db $00;X
-L0F7DC9: db $81;X
-L0F7DCA: db $02;X
-L0F7DCB: db $01;X
-L0F7DCC: db $00;X
-L0F7DCD: db $00;X
-L0F7DCE: db $00;X
-L0F7DCF: db $00;X
-L0F7DD0: db $A0;X
-L0F7DD1: db $00;X
-L0F7DD2: db $00;X
-L0F7DD3: db $00;X
-L0F7DD4: db $00;X
-L0F7DD5: db $06;X
-L0F7DD6: db $40;X
-L0F7DD7: db $01;X
-L0F7DD8: db $80;X
-L0F7DD9: db $00;X
-L0F7DDA: db $10;X
-L0F7DDB: db $02;X
-L0F7DDC: db $04;X
-L0F7DDD: db $00;X
-L0F7DDE: db $80;X
-L0F7DDF: db $84;X
-L0F7DE0: db $00;X
-L0F7DE1: db $01;X
-L0F7DE2: db $00;X
-L0F7DE3: db $02;X
-L0F7DE4: db $00;X
-L0F7DE5: db $00;X
-L0F7DE6: db $00;X
-L0F7DE7: db $04;X
-L0F7DE8: db $00;X
-L0F7DE9: db $84;X
-L0F7DEA: db $08;X
-L0F7DEB: db $00;X
-L0F7dec: db $00;X
-L0F7DED: db $01;X
-L0F7DEE: db $00;X
-L0F7DEF: db $00;X
-L0F7DF0: db $02;X
-L0F7DF1: db $00;X
-L0F7DF2: db $00;X
-L0F7DF3: db $00;X
-L0F7DF4: db $20;X
-L0F7DF5: db $04;X
-L0F7DF6: db $00;X
-L0F7DF7: db $00;X
-L0F7DF8: db $00;X
-L0F7DF9: db $00;X
-L0F7DFA: db $10;X
-L0F7DFB: db $00;X
-L0F7DFC: db $00;X
-L0F7DFD: db $20;X
-L0F7DFE: db $08;X
-L0F7DFF: db $80;X
-L0F7E00: db $FF;X
-L0F7E01: db $DF;X
-L0F7E02: db $F3;X
-L0F7E03: db $FB;X
-L0F7E04: db $FF;X
-L0F7E05: db $FF;X
-L0F7E06: db $EB;X
-L0F7E07: db $FD;X
-L0F7E08: db $FF;X
-L0F7E09: db $FF;X
-L0F7E0A: db $FF;X
-L0F7E0B: db $DF;X
-L0F7E0C: db $FF;X
-L0F7E0D: db $FF;X
-L0F7E0E: db $FF;X
-L0F7E0F: db $FF;X
-L0F7E10: db $FF;X
-L0F7E11: db $7F;X
-L0F7E12: db $EF;X
-L0F7E13: db $DF;X
-L0F7E14: db $FF;X
-L0F7E15: db $FF;X
-L0F7E16: db $FE;X
-L0F7E17: db $FE;X
-L0F7E18: db $FF;X
-L0F7E19: db $FF;X
-L0F7E1A: db $FF;X
-L0F7E1B: db $FF;X
-L0F7E1C: db $FF;X
-L0F7E1D: db $FB;X
-L0F7E1E: db $FF;X
-L0F7E1F: db $FF;X
-L0F7E20: db $FF;X
-L0F7E21: db $7F;X
-L0F7E22: db $FF;X
-L0F7E23: db $FF;X
-L0F7E24: db $FF;X
-L0F7E25: db $FF;X
-L0F7E26: db $FF;X
-L0F7E27: db $FF;X
-L0F7E28: db $FF;X
-L0F7E29: db $FF;X
-L0F7E2A: db $FF;X
-L0F7E2B: db $FD;X
-L0F7E2C: db $F5;X
-L0F7E2D: db $FF;X
-L0F7E2E: db $DB;X
-L0F7E2F: db $FD;X
-L0F7E30: db $FF;X
-L0F7E31: db $F7;X
-L0F7E32: db $FF;X
-L0F7E33: db $FD;X
-L0F7E34: db $FF;X
-L0F7E35: db $FF;X
-L0F7E36: db $F3;X
-L0F7E37: db $FF;X
-L0F7E38: db $FF;X
-L0F7E39: db $FF;X
-L0F7E3A: db $FF;X
-L0F7E3B: db $77;X
-L0F7E3C: db $FF;X
-L0F7E3D: db $FF;X
-L0F7E3E: db $EF;X
-L0F7E3F: db $7F;X
-L0F7E40: db $FF;X
-L0F7E41: db $FF;X
-L0F7E42: db $FE;X
-L0F7E43: db $FF;X
-L0F7E44: db $FF;X
-L0F7E45: db $FE;X
-L0F7E46: db $1F;X
-L0F7E47: db $DF;X
-L0F7E48: db $FF;X
-L0F7E49: db $FF;X
-L0F7E4A: db $BF;X
-L0F7E4B: db $FF;X
-L0F7E4C: db $FF;X
-L0F7E4D: db $FF;X
-L0F7E4E: db $FF;X
-L0F7E4F: db $FF;X
-L0F7E50: db $FF;X
-L0F7E51: db $FF;X
-L0F7E52: db $FF;X
-L0F7E53: db $FF;X
-L0F7E54: db $FF;X
-L0F7E55: db $DF;X
-L0F7E56: db $FF;X
-L0F7E57: db $F7;X
-L0F7E58: db $FF;X
-L0F7E59: db $FF;X
-L0F7E5A: db $DF;X
-L0F7E5B: db $FF;X
-L0F7E5C: db $FF;X
-L0F7E5D: db $7F;X
-L0F7E5E: db $FF;X
-L0F7E5F: db $FF;X
-L0F7E60: db $FF;X
-L0F7E61: db $FF;X
-L0F7E62: db $EF;X
-L0F7E63: db $BF;X
-L0F7E64: db $EF;X
-L0F7E65: db $FF;X
-L0F7E66: db $FF;X
-L0F7E67: db $EF;X
-L0F7E68: db $7F;X
-L0F7E69: db $FF;X
-L0F7E6A: db $FF;X
-L0F7E6B: db $FF;X
-L0F7E6C: db $FF;X
-L0F7E6D: db $EF;X
-L0F7E6E: db $FD;X
-L0F7E6F: db $FF;X
-L0F7E70: db $FF;X
-L0F7E71: db $CF;X
-L0F7E72: db $FF;X
-L0F7E73: db $F7;X
-L0F7E74: db $FF;X
-L0F7E75: db $FF;X
-L0F7E76: db $FF;X
-L0F7E77: db $FF;X
-L0F7E78: db $FF;X
-L0F7E79: db $FE;X
-L0F7E7A: db $DF;X
-L0F7E7B: db $FF;X
-L0F7E7C: db $BF;X
-L0F7E7D: db $FE;X
-L0F7E7E: db $FF;X
-L0F7E7F: db $FF;X
-L0F7E80: db $00;X
-L0F7E81: db $00;X
-L0F7E82: db $74;X
-L0F7E83: db $00;X
-L0F7E84: db $03;X
-L0F7E85: db $C5;X
-L0F7E86: db $01;X
-L0F7E87: db $02;X
-L0F7E88: db $08;X
-L0F7E89: db $81;X
-L0F7E8A: db $00;X
-L0F7E8B: db $20;X
-L0F7E8C: db $00;X
-L0F7E8D: db $00;X
-L0F7E8E: db $70;X
-L0F7E8F: db $60;X
-L0F7E90: db $00;X
-L0F7E91: db $00;X
-L0F7E92: db $82;X
-L0F7E93: db $14;X
-L0F7E94: db $02;X
-L0F7E95: db $10;X
-L0F7E96: db $00;X
-L0F7E97: db $11;X
-L0F7E98: db $40;X
-L0F7E99: db $01;X
-L0F7E9A: db $06;X
-L0F7E9B: db $00;X
-L0F7E9C: db $00;X
-L0F7E9D: db $08;X
-L0F7E9E: db $00;X
-L0F7E9F: db $05;X
-L0F7EA0: db $10;X
-L0F7EA1: db $40;X
-L0F7EA2: db $02;X
-L0F7EA3: db $00;X
-L0F7EA4: db $00;X
-L0F7EA5: db $C0;X
-L0F7EA6: db $08;X
-L0F7EA7: db $E2;X
-L0F7EA8: db $0C;X
-L0F7EA9: db $12;X
-L0F7EAA: db $84;X
-L0F7EAB: db $01;X
-L0F7EAC: db $01;X
-L0F7EAD: db $40;X
-L0F7EAE: db $C0;X
-L0F7EAF: db $94;X
-L0F7EB0: db $08;X
-L0F7EB1: db $8C;X
-L0F7EB2: db $10;X
-L0F7EB3: db $00;X
-L0F7EB4: db $10;X
-L0F7EB5: db $40;X
-L0F7EB6: db $C2;X
-L0F7EB7: db $28;X
-L0F7EB8: db $00;X
-L0F7EB9: db $21;X
-L0F7EBA: db $02;X
-L0F7EBB: db $20;X
-L0F7EBC: db $00;X
-L0F7EBD: db $00;X
-L0F7EBE: db $0C;X
-L0F7EBF: db $00;X
-L0F7EC0: db $00;X
-L0F7EC1: db $10;X
-L0F7EC2: db $02;X
-L0F7EC3: db $00;X
-L0F7EC4: db $41;X
-L0F7EC5: db $42;X
-L0F7EC6: db $04;X
-L0F7EC7: db $58;X
-L0F7EC8: db $20;X
-L0F7EC9: db $81;X
-L0F7ECA: db $10;X
-L0F7ECB: db $00;X
-L0F7ECC: db $00;X
-L0F7ECD: db $40;X
-L0F7ECE: db $80;X
-L0F7ECF: db $40;X
-L0F7ED0: db $08;X
-L0F7ED1: db $82;X
-L0F7ED2: db $C1;X
-L0F7ED3: db $10;X
-L0F7ED4: db $00;X
-L0F7ED5: db $00;X
-L0F7ED6: db $00;X
-L0F7ED7: db $02;X
-L0F7ED8: db $28;X
-L0F7ED9: db $00;X
-L0F7EDA: db $40;X
-L0F7EDB: db $A0;X
-L0F7EDC: db $00;X
-L0F7EDD: db $00;X
-L0F7EDE: db $02;X
-L0F7EDF: db $40;X
-L0F7EE0: db $00;X
-L0F7EE1: db $20;X
-L0F7EE2: db $80;X
-L0F7EE3: db $04;X
-L0F7EE4: db $01;X
-L0F7EE5: db $00;X
-L0F7EE6: db $00;X
-L0F7EE7: db $09;X
-L0F7EE8: db $10;X
-L0F7EE9: db $19;X
-L0F7EEA: db $00;X
-L0F7EEB: db $10;X
-L0F7EEC: db $24;X
-L0F7EED: db $10;X
-L0F7EEE: db $40;X
-L0F7EEF: db $60;X
-L0F7EF0: db $08;X
-L0F7EF1: db $00;X
-L0F7EF2: db $10;X
-L0F7EF3: db $14;X
-L0F7EF4: db $02;X
-L0F7EF5: db $00;X
-L0F7EF6: db $0A;X
-L0F7EF7: db $40;X
-L0F7EF8: db $26;X
-L0F7EF9: db $24;X
-L0F7EFA: db $00;X
-L0F7EFB: db $23;X
-L0F7EFC: db $03;X
-L0F7EFD: db $00;X
-L0F7EFE: db $44;X
-L0F7EFF: db $20;X
-L0F7F00: db $FF;X
-L0F7F01: db $FB;X
-L0F7F02: db $7F;X
-L0F7F03: db $FF;X
-L0F7F04: db $FF;X
-L0F7F05: db $FF;X
-L0F7F06: db $FF;X
-L0F7F07: db $DD;X
-L0F7F08: db $BF;X
-L0F7F09: db $FF;X
-L0F7F0A: db $FF;X
-L0F7F0B: db $FF;X
-L0F7F0C: db $F7;X
-L0F7F0D: db $FD;X
-L0F7F0E: db $FF;X
-L0F7F0F: db $FF;X
-L0F7F10: db $FF;X
-L0F7F11: db $FF;X
-L0F7F12: db $FF;X
-L0F7F13: db $FF;X
-L0F7F14: db $EF;X
-L0F7F15: db $FB;X
-L0F7F16: db $EF;X
-L0F7F17: db $FF;X
-L0F7F18: db $FF;X
-L0F7F19: db $EF;X
-L0F7F1A: db $FF;X
-L0F7F1B: db $FF;X
-L0F7F1C: db $FF;X
-L0F7F1D: db $FF;X
-L0F7F1E: db $BF;X
-L0F7F1F: db $7F;X
-L0F7F20: db $FF;X
-L0F7F21: db $FE;X
-L0F7F22: db $FF;X
-L0F7F23: db $FF;X
-L0F7F24: db $7F;X
-L0F7F25: db $FF;X
-L0F7F26: db $FF;X
-L0F7F27: db $FF;X
-L0F7F28: db $FF;X
-L0F7F29: db $BB;X
-L0F7F2A: db $FF;X
-L0F7F2B: db $FF;X
-L0F7F2C: db $FF;X
-L0F7F2D: db $FF;X
-L0F7F2E: db $FE;X
-L0F7F2F: db $FF;X
-L0F7F30: db $FF;X
-L0F7F31: db $FF;X
-L0F7F32: db $EF;X
-L0F7F33: db $FF;X
-L0F7F34: db $FF;X
-L0F7F35: db $FF;X
-L0F7F36: db $FF;X
-L0F7F37: db $FF;X
-L0F7F38: db $FF;X
-L0F7F39: db $FE;X
-L0F7F3A: db $FF;X
-L0F7F3B: db $EF;X
-L0F7F3C: db $FF;X
-L0F7F3D: db $BE;X
-L0F7F3E: db $FF;X
-L0F7F3F: db $F7;X
-L0F7F40: db $FE;X
-L0F7F41: db $FF;X
-L0F7F42: db $FF;X
-L0F7F43: db $FF;X
-L0F7F44: db $FF;X
-L0F7F45: db $FF;X
-L0F7F46: db $AF;X
-L0F7F47: db $7B;X
-L0F7F48: db $FF;X
-L0F7F49: db $FF;X
-L0F7F4A: db $F7;X
-L0F7F4B: db $EF;X
-L0F7F4C: db $FF;X
-L0F7F4D: db $FB;X
-L0F7F4E: db $F7;X
-L0F7F4F: db $EF;X
-L0F7F50: db $EF;X
-L0F7F51: db $BF;X
-L0F7F52: db $FF;X
-L0F7F53: db $FF;X
-L0F7F54: db $FF;X
-L0F7F55: db $FF;X
-L0F7F56: db $FF;X
-L0F7F57: db $FF;X
-L0F7F58: db $FF;X
-L0F7F59: db $FF;X
-L0F7F5A: db $FF;X
-L0F7F5B: db $FF;X
-L0F7F5C: db $3F;X
-L0F7F5D: db $FB;X
-L0F7F5E: db $FF;X
-L0F7F5F: db $FB;X
-L0F7F60: db $FF;X
-L0F7F61: db $FF;X
-L0F7F62: db $FF;X
-L0F7F63: db $FF;X
-L0F7F64: db $FF;X
-L0F7F65: db $DF;X
-L0F7F66: db $DF;X
-L0F7F67: db $FF;X
-L0F7F68: db $FF;X
-L0F7F69: db $FD;X
-L0F7F6A: db $FE;X
-L0F7F6B: db $FF;X
-L0F7F6C: db $FF;X
-L0F7F6D: db $FF;X
-L0F7F6E: db $DF;X
-L0F7F6F: db $FF;X
-L0F7F70: db $FF;X
-L0F7F71: db $FF;X
-L0F7F72: db $FF;X
-L0F7F73: db $FF;X
-L0F7F74: db $FF;X
-L0F7F75: db $FF;X
-L0F7F76: db $FF;X
-L0F7F77: db $FF;X
-L0F7F78: db $F7;X
-L0F7F79: db $EF;X
-L0F7F7A: db $FF;X
-L0F7F7B: db $FE;X
-L0F7F7C: db $FF;X
-L0F7F7D: db $FF;X
-L0F7F7E: db $EF;X
-L0F7F7F: db $FF;X
-L0F7F80: db $10;X
-L0F7F81: db $20;X
-L0F7F82: db $01;X
-L0F7F83: db $00;X
-L0F7F84: db $84;X
-L0F7F85: db $90;X
-L0F7F86: db $10;X
-L0F7F87: db $80;X
-L0F7F88: db $80;X
-L0F7F89: db $00;X
-L0F7F8A: db $80;X
-L0F7F8B: db $01;X
-L0F7F8C: db $23;X
-L0F7F8D: db $08;X
-L0F7F8E: db $49;X
-L0F7F8F: db $20;X
-L0F7F90: db $01;X
-L0F7F91: db $00;X
-L0F7F92: db $00;X
-L0F7F93: db $00;X
-L0F7F94: db $00;X
-L0F7F95: db $05;X
-L0F7F96: db $00;X
-L0F7F97: db $02;X
-L0F7F98: db $00;X
-L0F7F99: db $00;X
-L0F7F9A: db $08;X
-L0F7F9B: db $20;X
-L0F7F9C: db $00;X
-L0F7F9D: db $80;X
-L0F7F9E: db $02;X
-L0F7F9F: db $04;X
-L0F7FA0: db $80;X
-L0F7FA1: db $81;X
-L0F7FA2: db $04;X
-L0F7FA3: db $01;X
-L0F7FA4: db $00;X
-L0F7FA5: db $80;X
-L0F7FA6: db $01;X
-L0F7FA7: db $00;X
-L0F7FA8: db $C1;X
-L0F7FA9: db $00;X
-L0F7FAA: db $02;X
-L0F7FAB: db $03;X
-L0F7FAC: db $00;X
-L0F7FAD: db $00;X
-L0F7FAE: db $00;X
-L0F7FAF: db $00;X
-L0F7FB0: db $11;X
-L0F7FB1: db $80;X
-L0F7FB2: db $0A;X
-L0F7FB3: db $08;X
-L0F7FB4: db $04;X
-L0F7FB5: db $06;X
-L0F7FB6: db $A1;X
-L0F7FB7: db $00;X
-L0F7FB8: db $00;X
-L0F7FB9: db $02;X
-L0F7FBA: db $07;X
-L0F7FBB: db $10;X
-L0F7FBC: db $08;X
-L0F7FBD: db $00;X
-L0F7FBE: db $00;X
-L0F7FBF: db $00;X
-L0F7FC0: db $01;X
-L0F7FC1: db $00;X
-L0F7FC2: db $80;X
-L0F7FC3: db $22;X
-L0F7FC4: db $00;X
-L0F7FC5: db $83;X
-L0F7FC6: db $00;X
-L0F7FC7: db $00;X
-L0F7FC8: db $00;X
-L0F7FC9: db $80;X
-L0F7FCA: db $64;X
-L0F7FCB: db $24;X
-L0F7FCC: db $21;X
-L0F7FCD: db $10;X
-L0F7FCE: db $01;X
-L0F7FCF: db $80;X
-L0F7FD0: db $00;X
-L0F7FD1: db $29;X
-L0F7FD2: db $00;X
-L0F7FD3: db $00;X
-L0F7FD4: db $04;X
-L0F7FD5: db $85;X
-L0F7FD6: db $06;X
-L0F7FD7: db $00;X
-L0F7FD8: db $00;X
-L0F7FD9: db $20;X
-L0F7FDA: db $40;X
-L0F7FDB: db $80;X
-L0F7FDC: db $02;X
-L0F7FDD: db $80;X
-L0F7FDE: db $10;X
-L0F7FDF: db $20;X
-L0F7FE0: db $80;X
-L0F7FE1: db $08;X
-L0F7FE2: db $21;X
-L0F7FE3: db $00;X
-L0F7FE4: db $00;X
-L0F7FE5: db $00;X
-L0F7FE6: db $00;X
-L0F7FE7: db $00;X
-L0F7FE8: db $00;X
-L0F7FE9: db $03;X
-L0F7FEA: db $2A;X
-L0F7FEB: db $85;X
-L0F7FEC: db $00;X
-L0F7FED: db $00;X
-L0F7FEE: db $02;X
-L0F7FEF: db $80;X
-L0F7FF0: db $00;X
-L0F7FF1: db $46;X
-L0F7FF2: db $00;X
-L0F7FF3: db $0C;X
-L0F7FF4: db $00;X
-L0F7FF5: db $00;X
-L0F7FF6: db $00;X
-L0F7FF7: db $02;X
-L0F7FF8: db $11;X
-L0F7FF9: db $04;X
-L0F7FFA: db $84;X
-L0F7FFB: db $08;X
-L0F7FFC: db $40;X
-L0F7FFD: db $04;X
-L0F7FFE: db $13;X
-L0F7FFF: db $CC;X
+IF SKIP_JUNK == 0
+	INCLUDE "src/align_junk/L0F7C44.asm"
+ENDC

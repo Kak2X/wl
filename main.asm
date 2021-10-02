@@ -4,6 +4,10 @@ INCLUDE "src/constants.asm"
 INCLUDE "src/macro.asm"
 INCLUDE "src/memory.asm"
 
+;IF DEBUG == 1
+;	printt "HEH"
+;ENDC
+
 ; Common code, HomeCall targets (a bit of everything)
 SECTION "bank00", ROM0
 INCLUDE "src/bank00.asm"

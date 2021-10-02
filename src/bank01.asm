@@ -285,8 +285,10 @@ LevelSelect_Do:
 	jr   z, .writeLevelNum
 	;--
 	ld   a, [hl]			; 
+IF TEST == 0
 	cp   a, LVL_LASTVALID	; Are we on the last valid level id?
 	ret  z					; if so, don't increase it more
+ENDC
 	inc  a
 	ld   [hl], a
 	call GetCourseNum
@@ -299,8 +301,10 @@ LevelSelect_Do:
 	jr   z, .writeLevelNum
 	;--
 	ld   a, [hl]
+IF TEST == 0
 	and  a					; Are we on the level Id $00?
 	ret  z					; If so, don't decrement it further
+ENDC
 	dec  a
 	ld   [hl], a
 	call GetCourseNum
@@ -997,6 +1001,9 @@ Mode_LevelClear_InitCourseClr:
 	xor  a
 	ld   [sScrollX], a		; X Scroll = $00
 	ldh  [rSCX], a			; 
+	IF FIX_BUGS == 1
+		ld   [sScrollYOffset], a
+	ENDC
 	ld   a, $08				; Y Scroll = $08
 	ldh  [hScrollY], a
 	ldh  [rSCY], a
@@ -2989,6 +2996,10 @@ Mode_Ending_HatSwitch:
 	
 	; [BUG] The hat switch leaves us in the wrong animation frame.
 	;       It should be set to OBJ_WARIO_IDLE0 now.
+	IF FIX_BUGS == 1
+		ld   a, OBJ_WARIO_IDLE0
+		ld   [sPlLstId], a
+	ENDC
 	
 ; =============== Ending_Give300Coins ===============
 ; Gives out a bonus of 300 coins for defeating the final boss.
@@ -3149,7 +3160,9 @@ Mode_Ending_WalkToReload:
 ; Sets up the fade-out.
 Mode_Ending_WaitReload:
 	call HomeCall_NonGame_WriteWarioOBJLst
+IF OPTIMIZE == 0
 	call Game_SetFinalBossDoorPtr
+ENDC
 	ld   a, [sSubMode]	; Next mode
 	inc  a
 	ld   [sSubMode], a
@@ -3486,7 +3499,11 @@ Ending_TrRoom_WaitNear:
 	; - Duck (treasure in row 3)
 	;
 	; [BUG] Standing frame seems odd for this. Shouldn't it be OBJ_WARIO_HOLDJUMP?
-	ld   a, OBJ_WARIO_HOLD			; Set norm. frame initially
+	IF FIX_BUGS == 1
+		ld   a, OBJ_WARIO_HOLDJUMP
+	ELSE
+		ld   a, OBJ_WARIO_HOLD			; Set norm. frame initially
+	ENDC
 	ld   [sPlLstId], a
 	ld   a, [sExActTreasureRow]
 	cp   a, $02						; Is this treasure in the third row?
@@ -6989,8 +7006,15 @@ Level_Screen_ScrollHorz:
 	;       This should really have only blacklisted the "rebound from wall" action ($0C)
 	;		instead of whitelisting only the standing action.
 	ld   a, [sPlAction]
-	and  a
-	ret  nz
+	IF FIX_BUGS == 1
+		cp   a, PL_ACT_DASHREBOUND	; Are we rebounding off a wall?
+		ret  z						; If so, return (don't scroll)
+		cp   a, PL_ACT_DEAD			; Are we dead?
+		ret  z						; If so, return (don't scroll)
+	ELSE
+		and  a						; Are we standing on the ground? (PL_ACT_STAND)
+		ret  nz						; If not, return (don't scroll)
+	ENDC
 	
 	; How the screen syncs back depends on scrolling mode
 	ld   a, [sLvlScrollMode]
@@ -7019,7 +7043,11 @@ Level_Screen_ScrollHorz:
 	cp   a, $70				; If < $70, don't scroll
 	ret  c
 	ret  z					; Otherwise scroll right
+IF FIX_BUGS == 1
+	jp   .scrollR
+ELSE
 	jr   .scrollR
+ENDC
 ; =============== Level_Screen_ScrollVert ===============
 ; Handles the vertical scrolling of the screen during gameplay.
 Level_Screen_ScrollVert:
@@ -8259,6 +8287,22 @@ Game_HatSwitchAnim_End:
 	ld   a, $01
 	ld   [sSmallWario], a
 .chkBump:
+
+IF FIX_BUGS == 1
+	; If we're underwater, mark that we were performing an action (to avoid spawning a water splash)
+	ld   a, [sPlAction]
+	cp   a, PL_ACT_SWIM			; Are we swimming?
+	jr   z, .inWater			; If so, jump
+	ld   a, [sPlSwimGround]
+	and  a						; Are we walking on ground underwater?
+	jr   z, .noWater			; If *not*, skip
+.inWater:
+	; ld   a, $01				; (not necessary, it'll be != 0 when we get here)
+	ld   [sPlWaterAction], a    ; Mark an underwater action
+.noWater:
+
+ENDC
+
 	; Reset the player action to fix possible Anim2Frame errors.
 	call HomeCall_Pl_HatSwitchAnim_SetNextAction
 	
@@ -8301,6 +8345,28 @@ Game_HatSwitchAnim_End:
 ; =============== Game_HatSwitch_Set*LstId ===============
 ; Sets of subroutines for updating the player sprite, when the powerup switch
 ; involves Small Wario somewhere.
+
+IF FIX_BUGS == 1
+	; Account for collecting a powerup while climbing.
+Game_HatSwitch_SetNormLstId:
+	ld   a, [sPlAction]
+	cp   a, PL_ACT_CLIMB				; Are we climbing?
+	ld   a, OBJ_WARIO_CLIMB0			; A = Sprite ID (special)
+	jr   z, .end						; If so, skip
+	ld   a, OBJ_WARIO_STAND				; A = Sprite ID (normal)
+.end:
+	ld   [sPlLstId], a
+	ret
+Game_HatSwitch_SetSmallLstId:
+	ld   a, [sPlAction]
+	cp   a, PL_ACT_CLIMB				; Are we climbing?		
+	ld   a, OBJ_SMALLWARIO_CLIMB0		; A = Sprite ID (special)
+	jr   z, .end						; If so, skip
+	ld   a, OBJ_SMALLWARIO_STAND		; A = Sprite ID (normal)
+.end:
+	ld   [sPlLstId], a
+	ret
+ELSE
 Game_HatSwitch_SetNormLstId:
 	ld   a, OBJ_WARIO_STAND
 	ld   [sPlLstId], a
@@ -8309,6 +8375,8 @@ Game_HatSwitch_SetSmallLstId:
 	ld   a, OBJ_SMALLWARIO_STAND
 	ld   [sPlLstId], a
 	ret
+ENDC
+
 	
 ; =============== Game_HatSwitchAnim_EndSwitchLoop ===============
 ; This sets the HatSwitchDrawMode which requests the screen update mode 
@@ -8329,6 +8397,34 @@ Game_HatSwitchAnim_EndSwitchLoop:
 ; =============== Game_HatSwitch_Set*HatMode ===============
 ; Sets of subroutines for updating to the respective screen update mode,
 ; for setting the primary set of hat GFX.
+
+
+IF FIX_BUGS == 1
+
+; =============== mSetMainHatMode*HatMode ===============
+; Generates code for versions of Game_HatSwitch_Set*HatMode that account for collecting a powerup while climbing.
+; IN
+; - \1: Hat ID
+mSetMainHatMode: MACRO
+	; When facing back, set the secondary mode instead
+	ld   a, [sPlAction]
+	cp   a, PL_ACT_CLIMB				; Are we climbing?
+	ld   a, \1							;   (A = Hat ID)
+	jr   z, Game_HatSwitch_SetSecFirst	; If so, jump
+	ld   [sScreenUpdateMode], a
+	ret
+ENDM
+
+Game_HatSwitch_SetNormHatMode: mSetMainHatMode SCRUPD_NORMHAT
+Game_HatSwitch_SetBullHatMode: mSetMainHatMode SCRUPD_BULLHAT
+Game_HatSwitch_SetJetHatMode:  mSetMainHatMode SCRUPD_JETHAT
+Game_HatSwitch_SetDragHatMode: mSetMainHatMode SCRUPD_DRAGHAT
+Game_HatSwitch_SetSecFirst:
+	add  a, $04						; SCRUPD_NORMHAT_SEC - SCRUPD_NORMHAT, ...
+	ld   [sScreenUpdateMode], a
+	ret
+
+ELSE
 Game_HatSwitch_SetNormHatMode:
 	ld   a, SCRUPD_NORMHAT
 	ld   [sScreenUpdateMode], a
@@ -8344,7 +8440,9 @@ Game_HatSwitch_SetJetHatMode:
 Game_HatSwitch_SetDragHatMode:
 	ld   a, SCRUPD_DRAGHAT
 	ld   [sScreenUpdateMode], a
-	ret
+	ret			
+ENDC
+
 	
 ; =============== Game_HatSwitchAnim_SetHatSecToEnd ===============
 ; Sets up the screen update mode for copying the secondary hat GFX.
@@ -8352,15 +8450,23 @@ Game_HatSwitch_SetDragHatMode:
 Game_HatSwitchAnim_SetHatSecToEnd:
 	; For any given screen update mode for copying the primary hat GFX,
 	; the correct one for copying the secondary GFX is 4 modes after.
+	
+	; [POI] This is not necessary to do.
+	;       Game_HatSwitchAnim_End already redraws both primary and secondary sets for us later on.
+IF FIX_BUGS == 0
 	ld   a, [sScreenUpdateMode]
 	add  $04 ; SCRUPD_NORMHAT_SEC - SCRUPD_NORMHAT, ...
 	ld   [sScreenUpdateMode], a
+ENDC
+	
+.end:
 	; Increase the frame count (different purpose depending on where it's called)
 	; Note how this is expected to be called when sPlHatSwitchDrawMode == PL_HSD_SEC.
 	ld   a, PL_HSD_END
 	ld   [sPlHatSwitchDrawMode], a
 	ret
 	
+
 ; =============== Game_HatSwitchAnim_FromDragon ===============
 Game_HatSwitchAnim_FromDragon:
 	and  a, $0F
@@ -8370,10 +8476,18 @@ Game_HatSwitchAnim_FromDragon:
 	jr   z, .toBull
 	cp   a, PL_POW_GARLIC
 	jr   z, .toGarlic
+IF FIX_BUGS == 1
+	; with the fixes above, some jr's go out of range...
+.toSmall: 	mHatSwitch_BigToSmall2Ex 	Game_HatSwitch_SetNormLstId, 	Game_HatSwitch_SetSmallLstId,   jp,jr,jp,jp,jp
+.toGarlic: 	mHatSwitch_BigToBigEx 		Game_HatSwitch_SetDragHatMode, 	Game_HatSwitch_SetNormHatMode,  jp,jr,jp,jp,jp ; Ending-only
+ELSE
 .toSmall: 	mHatSwitch_BigToSmall2Ex 	Game_HatSwitch_SetNormLstId, 	Game_HatSwitch_SetSmallLstId,   jp,jr,jp,jr,jr
 .toGarlic: 	mHatSwitch_BigToBigEx 		Game_HatSwitch_SetDragHatMode, 	Game_HatSwitch_SetNormHatMode,  jp,jr,jr,jr,jr ; Ending-only
+ENDC
 .toBull:	mHatSwitch_BigToBigEx 		Game_HatSwitch_SetDragHatMode, 	Game_HatSwitch_SetBullHatMode,  jp,jr,jp,jp,jp 
 .toJet:		mHatSwitch_BigToBig 		Game_HatSwitch_SetDragHatMode, 	Game_HatSwitch_SetJetHatMode
+
+
 
 ; =============== Mode_LevelDoor ===============
 ; Handles door transitions.
@@ -9376,8 +9490,10 @@ SaveSel_EnterPipe:
 	call SaveSel_CopyAllFromSave
 	; [BUG?] The fade out isn't heard properly
 	; since it switches game modes and the music gets cut off
+IF FIX_BUGS == 0
 	ld   a, BGMACT_FADEOUT
 	ld   [sBGMActSet], a
+ENDC
 	jp   Map_SwitchToMap
 .clearSave:
 	; Setup anim
@@ -10537,1036 +10653,6 @@ Demo_Unused_WriteInput:
 	ret
 	
 ; =============== END OF BANK ===============
-L017BF7: db $BA;X
-L017BF8: db $BB;X
-L017BF9: db $AA;X
-L017BFA: db $AA;X
-L017BFB: db $AA;X
-L017BFC: db $AA;X
-L017BFD: db $AA;X
-L017BFE: db $AA;X
-L017BFF: db $AE;X
-L017C00: db $AA;X
-L017C01: db $AA;X
-L017C02: db $AA;X
-L017C03: db $A2;X
-L017C04: db $2A;X
-L017C05: db $AA;X
-L017C06: db $AA;X
-L017C07: db $A2;X
-L017C08: db $A2;X
-L017C09: db $AA;X
-L017C0A: db $AA;X
-L017C0B: db $AA;X
-L017C0C: db $A8;X
-L017C0D: db $8A;X
-L017C0E: db $A8;X
-L017C0F: db $AA;X
-L017C10: db $AA;X
-L017C11: db $AA;X
-L017C12: db $A8;X
-L017C13: db $8A;X
-L017C14: db $A2;X
-L017C15: db $2A;X
-L017C16: db $AA;X
-L017C17: db $A0;X
-L017C18: db $AA;X
-L017C19: db $AA;X
-L017C1A: db $AA;X
-L017C1B: db $8A;X
-L017C1C: db $AA;X
-L017C1D: db $AA;X
-L017C1E: db $AA;X
-L017C1F: db $AA;X
-L017C20: db $AA;X
-L017C21: db $AA;X
-L017C22: db $AA;X
-L017C23: db $AA;X
-L017C24: db $AA;X
-L017C25: db $AA;X
-L017C26: db $AA;X
-L017C27: db $AA;X
-L017C28: db $A8;X
-L017C29: db $A8;X
-L017C2A: db $AA;X
-L017C2B: db $AA;X
-L017C2C: db $AA;X
-L017C2D: db $AA;X
-L017C2E: db $A2;X
-L017C2F: db $A8;X
-L017C30: db $AA;X
-L017C31: db $AA;X
-L017C32: db $AA;X
-L017C33: db $AA;X
-L017C34: db $AA;X
-L017C35: db $A8;X
-L017C36: db $A2;X
-L017C37: db $AA;X
-L017C38: db $AA;X
-L017C39: db $AA;X
-L017C3A: db $AA;X
-L017C3B: db $2A;X
-L017C3C: db $AA;X
-L017C3D: db $A0;X
-L017C3E: db $AA;X
-L017C3F: db $AA;X
-L017C40: db $AA;X
-L017C41: db $A2;X
-L017C42: db $A2;X
-L017C43: db $AA;X
-L017C44: db $AA;X
-L017C45: db $AA;X
-L017C46: db $8A;X
-L017C47: db $AA;X
-L017C48: db $A8;X
-L017C49: db $22;X
-L017C4A: db $AA;X
-L017C4B: db $8A;X
-L017C4C: db $AA;X
-L017C4D: db $2A;X
-L017C4E: db $A2;X
-L017C4F: db $AA;X
-L017C50: db $A8;X
-L017C51: db $AA;X
-L017C52: db $AA;X
-L017C53: db $AA;X
-L017C54: db $AA;X
-L017C55: db $2A;X
-L017C56: db $AA;X
-L017C57: db $AA;X
-L017C58: db $AA;X
-L017C59: db $AA;X
-L017C5A: db $AA;X
-L017C5B: db $A8;X
-L017C5C: db $AA;X
-L017C5D: db $AA;X
-L017C5E: db $AA;X
-L017C5F: db $AA;X
-L017C60: db $2A;X
-L017C61: db $AA;X
-L017C62: db $AA;X
-L017C63: db $AA;X
-L017C64: db $AA;X
-L017C65: db $AA;X
-L017C66: db $AA;X
-L017C67: db $A8;X
-L017C68: db $AA;X
-L017C69: db $8A;X
-L017C6A: db $AA;X
-L017C6B: db $AA;X
-L017C6C: db $AA;X
-L017C6D: db $AA;X
-L017C6E: db $AA;X
-L017C6F: db $AA;X
-L017C70: db $AA;X
-L017C71: db $AA;X
-L017C72: db $AA;X
-L017C73: db $2A;X
-L017C74: db $A8;X
-L017C75: db $AA;X
-L017C76: db $AA;X
-L017C77: db $AA;X
-L017C78: db $AA;X
-L017C79: db $AA;X
-L017C7A: db $AA;X
-L017C7B: db $A8;X
-L017C7C: db $AA;X
-L017C7D: db $AA;X
-L017C7E: db $AA;X
-L017C7F: db $AA;X
-L017C80: db $EA;X
-L017C81: db $AA;X
-L017C82: db $AF;X
-L017C83: db $AA;X
-L017C84: db $AB;X
-L017C85: db $AA;X
-L017C86: db $AE;X
-L017C87: db $AA;X
-L017C88: db $AE;X
-L017C89: db $AA;X
-L017C8A: db $AA;X
-L017C8B: db $AB;X
-L017C8C: db $AA;X
-L017C8D: db $AA;X
-L017C8E: db $AA;X
-L017C8F: db $AA;X
-L017C90: db $AA;X
-L017C91: db $AA;X
-L017C92: db $AA;X
-L017C93: db $AA;X
-L017C94: db $AE;X
-L017C95: db $EA;X
-L017C96: db $AA;X
-L017C97: db $AA;X
-L017C98: db $AA;X
-L017C99: db $AA;X
-L017C9A: db $AA;X
-L017C9B: db $AA;X
-L017C9C: db $AA;X
-L017C9D: db $AA;X
-L017C9E: db $AA;X
-L017C9F: db $AA;X
-L017CA0: db $AA;X
-L017CA1: db $AA;X
-L017CA2: db $EA;X
-L017CA3: db $AA;X
-L017CA4: db $AA;X
-L017CA5: db $AA;X
-L017CA6: db $AA;X
-L017CA7: db $AA;X
-L017CA8: db $AA;X
-L017CA9: db $AA;X
-L017CAA: db $AE;X
-L017CAB: db $EA;X
-L017CAC: db $2A;X
-L017CAD: db $AA;X
-L017CAE: db $AA;X
-L017CAF: db $AA;X
-L017CB0: db $AA;X
-L017CB1: db $AA;X
-L017CB2: db $AA;X
-L017CB3: db $AE;X
-L017CB4: db $AA;X
-L017CB5: db $AA;X
-L017CB6: db $AA;X
-L017CB7: db $AA;X
-L017CB8: db $AA;X
-L017CB9: db $AA;X
-L017CBA: db $AA;X
-L017CBB: db $EA;X
-L017CBC: db $AA;X
-L017CBD: db $AA;X
-L017CBE: db $AB;X
-L017CBF: db $AA;X
-L017CC0: db $AA;X
-L017CC1: db $AA;X
-L017CC2: db $AA;X
-L017CC3: db $AA;X
-L017CC4: db $EA;X
-L017CC5: db $AA;X
-L017CC6: db $AA;X
-L017CC7: db $AA;X
-L017CC8: db $AA;X
-L017CC9: db $AA;X
-L017CCA: db $AA;X
-L017CCB: db $AA;X
-L017CCC: db $EA;X
-L017CCD: db $AA;X
-L017CCE: db $AA;X
-L017CCF: db $AA;X
-L017CD0: db $AA;X
-L017CD1: db $AA;X
-L017CD2: db $EA;X
-L017CD3: db $AA;X
-L017CD4: db $EA;X
-L017CD5: db $AA;X
-L017CD6: db $EA;X
-L017CD7: db $AA;X
-L017CD8: db $AA;X
-L017CD9: db $AA;X
-L017CDA: db $AA;X
-L017CDB: db $EA;X
-L017CDC: db $AB;X
-L017CDD: db $AA;X
-L017CDE: db $AA;X
-L017CDF: db $AA;X
-L017CE0: db $AE;X
-L017CE1: db $AE;X
-L017CE2: db $AA;X
-L017CE3: db $AA;X
-L017CE4: db $AA;X
-L017CE5: db $AA;X
-L017CE6: db $AA;X
-L017CE7: db $AA;X
-L017CE8: db $AA;X
-L017CE9: db $EA;X
-L017CEA: db $AA;X
-L017CEB: db $AA;X
-L017CEC: db $AA;X
-L017CED: db $AA;X
-L017CEE: db $FA;X
-L017CEF: db $EA;X
-L017CF0: db $AA;X
-L017CF1: db $AA;X
-L017CF2: db $AA;X
-L017CF3: db $AE;X
-L017CF4: db $EE;X
-L017CF5: db $AA;X
-L017CF6: db $AA;X
-L017CF7: db $AA;X
-L017CF8: db $AA;X
-L017CF9: db $AA;X
-L017CFA: db $AA;X
-L017CFB: db $AA;X
-L017CFC: db $AA;X
-L017CFD: db $AA;X
-L017CFE: db $AA;X
-L017CFF: db $AA;X
-L017D00: db $AA;X
-L017D01: db $AA;X
-L017D02: db $88;X
-L017D03: db $A0;X
-L017D04: db $82;X
-L017D05: db $AA;X
-L017D06: db $A2;X
-L017D07: db $82;X
-L017D08: db $AA;X
-L017D09: db $AA;X
-L017D0A: db $A8;X
-L017D0B: db $A8;X
-L017D0C: db $AA;X
-L017D0D: db $8A;X
-L017D0E: db $AA;X
-L017D0F: db $AA;X
-L017D10: db $A2;X
-L017D11: db $AA;X
-L017D12: db $AA;X
-L017D13: db $A0;X
-L017D14: db $AA;X
-L017D15: db $AA;X
-L017D16: db $22;X
-L017D17: db $0A;X
-L017D18: db $AA;X
-L017D19: db $AA;X
-L017D1A: db $28;X
-L017D1B: db $A2;X
-L017D1C: db $AA;X
-L017D1D: db $AA;X
-L017D1E: db $AA;X
-L017D1F: db $AA;X
-L017D20: db $8A;X
-L017D21: db $AA;X
-L017D22: db $AA;X
-L017D23: db $28;X
-L017D24: db $A8;X
-L017D25: db $2A;X
-L017D26: db $A8;X
-L017D27: db $AA;X
-L017D28: db $AA;X
-L017D29: db $A2;X
-L017D2A: db $AA;X
-L017D2B: db $0A;X
-L017D2C: db $AA;X
-L017D2D: db $8A;X
-L017D2E: db $AA;X
-L017D2F: db $2A;X
-L017D30: db $8A;X
-L017D31: db $AA;X
-L017D32: db $AA;X
-L017D33: db $8A;X
-L017D34: db $AA;X
-L017D35: db $A8;X
-L017D36: db $AA;X
-L017D37: db $8A;X
-L017D38: db $A2;X
-L017D39: db $AA;X
-L017D3A: db $AA;X
-L017D3B: db $AA;X
-L017D3C: db $AA;X
-L017D3D: db $A2;X
-L017D3E: db $AA;X
-L017D3F: db $A8;X
-L017D40: db $2A;X
-L017D41: db $AA;X
-L017D42: db $AA;X
-L017D43: db $AA;X
-L017D44: db $AA;X
-L017D45: db $82;X
-L017D46: db $A8;X
-L017D47: db $AA;X
-L017D48: db $AA;X
-L017D49: db $A2;X
-L017D4A: db $2A;X
-L017D4B: db $8A;X
-L017D4C: db $AA;X
-L017D4D: db $88;X
-L017D4E: db $8A;X
-L017D4F: db $AA;X
-L017D50: db $2A;X
-L017D51: db $AA;X
-L017D52: db $AA;X
-L017D53: db $AA;X
-L017D54: db $AA;X
-L017D55: db $A2;X
-L017D56: db $AA;X
-L017D57: db $AA;X
-L017D58: db $A8;X
-L017D59: db $A2;X
-L017D5A: db $AA;X
-L017D5B: db $AA;X
-L017D5C: db $A2;X
-L017D5D: db $AA;X
-L017D5E: db $AA;X
-L017D5F: db $22;X
-L017D60: db $AA;X
-L017D61: db $AA;X
-L017D62: db $AA;X
-L017D63: db $8A;X
-L017D64: db $A2;X
-L017D65: db $8A;X
-L017D66: db $AA;X
-L017D67: db $8A;X
-L017D68: db $AA;X
-L017D69: db $2A;X
-L017D6A: db $AA;X
-L017D6B: db $AA;X
-L017D6C: db $AA;X
-L017D6D: db $AA;X
-L017D6E: db $A8;X
-L017D6F: db $A8;X
-L017D70: db $A2;X
-L017D71: db $A8;X
-L017D72: db $AA;X
-L017D73: db $AA;X
-L017D74: db $A8;X
-L017D75: db $AA;X
-L017D76: db $AA;X
-L017D77: db $A2;X
-L017D78: db $AA;X
-L017D79: db $AA;X
-L017D7A: db $AA;X
-L017D7B: db $AA;X
-L017D7C: db $8A;X
-L017D7D: db $AA;X
-L017D7E: db $AA;X
-L017D7F: db $A0;X
-L017D80: db $AE;X
-L017D81: db $AA;X
-L017D82: db $AA;X
-L017D83: db $AA;X
-L017D84: db $AE;X
-L017D85: db $AA;X
-L017D86: db $AA;X
-L017D87: db $AA;X
-L017D88: db $AE;X
-L017D89: db $AA;X
-L017D8A: db $AA;X
-L017D8B: db $AA;X
-L017D8C: db $AA;X
-L017D8D: db $AA;X
-L017D8E: db $AA;X
-L017D8F: db $AA;X
-L017D90: db $AE;X
-L017D91: db $AA;X
-L017D92: db $EA;X
-L017D93: db $AA;X
-L017D94: db $AA;X
-L017D95: db $EA;X
-L017D96: db $AA;X
-L017D97: db $AA;X
-L017D98: db $AA;X
-L017D99: db $AA;X
-L017D9A: db $AA;X
-L017D9B: db $FA;X
-L017D9C: db $AA;X
-L017D9D: db $AA;X
-L017D9E: db $AE;X
-L017D9F: db $EA;X
-L017DA0: db $AA;X
-L017DA1: db $AA;X
-L017DA2: db $AA;X
-L017DA3: db $AA;X
-L017DA4: db $AA;X
-L017DA5: db $AA;X
-L017DA6: db $AA;X
-L017DA7: db $EA;X
-L017DA8: db $EA;X
-L017DA9: db $AA;X
-L017DAA: db $AA;X
-L017DAB: db $AA;X
-L017DAC: db $AA;X
-L017DAD: db $BA;X
-L017DAE: db $AA;X
-L017DAF: db $AA;X
-L017DB0: db $AA;X
-L017DB1: db $EA;X
-L017DB2: db $AA;X
-L017DB3: db $AA;X
-L017DB4: db $AA;X
-L017DB5: db $AE;X
-L017DB6: db $AA;X
-L017DB7: db $AA;X
-L017DB8: db $AA;X
-L017DB9: db $AA;X
-L017DBA: db $AE;X
-L017DBB: db $AA;X
-L017DBC: db $AF;X
-L017DBD: db $EA;X
-L017DBE: db $AA;X
-L017DBF: db $AA;X
-L017DC0: db $AA;X
-L017DC1: db $AA;X
-L017DC2: db $AA;X
-L017DC3: db $AA;X
-L017DC4: db $AA;X
-L017DC5: db $AA;X
-L017DC6: db $EE;X
-L017DC7: db $AA;X
-L017DC8: db $BE;X
-L017DC9: db $AA;X
-L017DCA: db $AA;X
-L017DCB: db $AA;X
-L017DCC: db $AA;X
-L017DCD: db $AA;X
-L017DCE: db $AA;X
-L017DCF: db $AA;X
-L017DD0: db $AA;X
-L017DD1: db $AA;X
-L017DD2: db $AA;X
-L017DD3: db $AA;X
-L017DD4: db $AE;X
-L017DD5: db $AA;X
-L017DD6: db $EA;X
-L017DD7: db $AA;X
-L017DD8: db $AA;X
-L017DD9: db $AA;X
-L017DDA: db $AA;X
-L017DDB: db $AA;X
-L017DDC: db $AA;X
-L017DDD: db $AA;X
-L017DDE: db $AB;X
-L017DDF: db $AA;X
-L017DE0: db $AA;X
-L017DE1: db $AA;X
-L017DE2: db $AA;X
-L017DE3: db $AA;X
-L017DE4: db $AA;X
-L017DE5: db $AA;X
-L017DE6: db $AA;X
-L017DE7: db $AA;X
-L017DE8: db $AA;X
-L017DE9: db $AA;X
-L017DEA: db $AA;X
-L017DEB: db $AA;X
-L017dec: db $AA;X
-L017DED: db $AA;X
-L017DEE: db $AA;X
-L017DEF: db $AA;X
-L017DF0: db $AA;X
-L017DF1: db $AA;X
-L017DF2: db $AA;X
-L017DF3: db $AA;X
-L017DF4: db $AA;X
-L017DF5: db $AA;X
-L017DF6: db $AA;X
-L017DF7: db $AA;X
-L017DF8: db $AA;X
-L017DF9: db $AB;X
-L017DFA: db $AA;X
-L017DFB: db $AA;X
-L017DFC: db $AA;X
-L017DFD: db $AA;X
-L017DFE: db $AA;X
-L017DFF: db $AA;X
-L017E00: db $AA;X
-L017E01: db $AA;X
-L017E02: db $AA;X
-L017E03: db $2A;X
-L017E04: db $AA;X
-L017E05: db $8A;X
-L017E06: db $AA;X
-L017E07: db $2A;X
-L017E08: db $A2;X
-L017E09: db $A2;X
-L017E0A: db $8A;X
-L017E0B: db $8A;X
-L017E0C: db $AA;X
-L017E0D: db $AA;X
-L017E0E: db $AA;X
-L017E0F: db $8A;X
-L017E10: db $AA;X
-L017E11: db $A8;X
-L017E12: db $AA;X
-L017E13: db $AA;X
-L017E14: db $AA;X
-L017E15: db $A8;X
-L017E16: db $AA;X
-L017E17: db $AA;X
-L017E18: db $A8;X
-L017E19: db $AA;X
-L017E1A: db $8A;X
-L017E1B: db $AA;X
-L017E1C: db $A8;X
-L017E1D: db $AA;X
-L017E1E: db $2A;X
-L017E1F: db $A2;X
-L017E20: db $AA;X
-L017E21: db $AA;X
-L017E22: db $AA;X
-L017E23: db $AA;X
-L017E24: db $AA;X
-L017E25: db $AA;X
-L017E26: db $A2;X
-L017E27: db $AA;X
-L017E28: db $82;X
-L017E29: db $AA;X
-L017E2A: db $AA;X
-L017E2B: db $AA;X
-L017E2C: db $AA;X
-L017E2D: db $A2;X
-L017E2E: db $A8;X
-L017E2F: db $AA;X
-L017E30: db $AA;X
-L017E31: db $2A;X
-L017E32: db $AA;X
-L017E33: db $AA;X
-L017E34: db $AA;X
-L017E35: db $80;X
-L017E36: db $A2;X
-L017E37: db $AA;X
-L017E38: db $AA;X
-L017E39: db $AA;X
-L017E3A: db $AA;X
-L017E3B: db $A8;X
-L017E3C: db $A8;X
-L017E3D: db $AA;X
-L017E3E: db $A8;X
-L017E3F: db $22;X
-L017E40: db $A8;X
-L017E41: db $AA;X
-L017E42: db $AA;X
-L017E43: db $A0;X
-L017E44: db $88;X
-L017E45: db $AA;X
-L017E46: db $AA;X
-L017E47: db $8A;X
-L017E48: db $22;X
-L017E49: db $AA;X
-L017E4A: db $AA;X
-L017E4B: db $A2;X
-L017E4C: db $AA;X
-L017E4D: db $A0;X
-L017E4E: db $AA;X
-L017E4F: db $A2;X
-L017E50: db $AA;X
-L017E51: db $A2;X
-L017E52: db $AA;X
-L017E53: db $AA;X
-L017E54: db $8A;X
-L017E55: db $A8;X
-L017E56: db $AA;X
-L017E57: db $8A;X
-L017E58: db $AA;X
-L017E59: db $AA;X
-L017E5A: db $AA;X
-L017E5B: db $AA;X
-L017E5C: db $AA;X
-L017E5D: db $AA;X
-L017E5E: db $AA;X
-L017E5F: db $AA;X
-L017E60: db $2A;X
-L017E61: db $AA;X
-L017E62: db $AA;X
-L017E63: db $AA;X
-L017E64: db $AA;X
-L017E65: db $AA;X
-L017E66: db $A8;X
-L017E67: db $8A;X
-L017E68: db $AA;X
-L017E69: db $AA;X
-L017E6A: db $AA;X
-L017E6B: db $A2;X
-L017E6C: db $8A;X
-L017E6D: db $A2;X
-L017E6E: db $AA;X
-L017E6F: db $AA;X
-L017E70: db $AA;X
-L017E71: db $AA;X
-L017E72: db $AA;X
-L017E73: db $AA;X
-L017E74: db $AA;X
-L017E75: db $AA;X
-L017E76: db $A0;X
-L017E77: db $A2;X
-L017E78: db $AA;X
-L017E79: db $AA;X
-L017E7A: db $AA;X
-L017E7B: db $2A;X
-L017E7C: db $A2;X
-L017E7D: db $AA;X
-L017E7E: db $AA;X
-L017E7F: db $AA;X
-L017E80: db $AA;X
-L017E81: db $AA;X
-L017E82: db $AA;X
-L017E83: db $AE;X
-L017E84: db $AA;X
-L017E85: db $AA;X
-L017E86: db $AA;X
-L017E87: db $AA;X
-L017E88: db $AA;X
-L017E89: db $AA;X
-L017E8A: db $AA;X
-L017E8B: db $AA;X
-L017E8C: db $AA;X
-L017E8D: db $AA;X
-L017E8E: db $AA;X
-L017E8F: db $AA;X
-L017E90: db $AA;X
-L017E91: db $AA;X
-L017E92: db $AA;X
-L017E93: db $AA;X
-L017E94: db $AA;X
-L017E95: db $AA;X
-L017E96: db $AA;X
-L017E97: db $AA;X
-L017E98: db $AE;X
-L017E99: db $AA;X
-L017E9A: db $AA;X
-L017E9B: db $AA;X
-L017E9C: db $AA;X
-L017E9D: db $AA;X
-L017E9E: db $AA;X
-L017E9F: db $AA;X
-L017EA0: db $AA;X
-L017EA1: db $AA;X
-L017EA2: db $AA;X
-L017EA3: db $AA;X
-L017EA4: db $AA;X
-L017EA5: db $AA;X
-L017EA6: db $AA;X
-L017EA7: db $AA;X
-L017EA8: db $AA;X
-L017EA9: db $AA;X
-L017EAA: db $AA;X
-L017EAB: db $AE;X
-L017EAC: db $AA;X
-L017EAD: db $AA;X
-L017EAE: db $AA;X
-L017EAF: db $AE;X
-L017EB0: db $AA;X
-L017EB1: db $AA;X
-L017EB2: db $AE;X
-L017EB3: db $AA;X
-L017EB4: db $AA;X
-L017EB5: db $EA;X
-L017EB6: db $AA;X
-L017EB7: db $AB;X
-L017EB8: db $AA;X
-L017EB9: db $AA;X
-L017EBA: db $AA;X
-L017EBB: db $AA;X
-L017EBC: db $AA;X
-L017EBD: db $AE;X
-L017EBE: db $AA;X
-L017EBF: db $AA;X
-L017EC0: db $EA;X
-L017EC1: db $AE;X
-L017EC2: db $AA;X
-L017EC3: db $AA;X
-L017EC4: db $AA;X
-L017EC5: db $EA;X
-L017EC6: db $AA;X
-L017EC7: db $AA;X
-L017EC8: db $AA;X
-L017EC9: db $AA;X
-L017ECA: db $AB;X
-L017ECB: db $AA;X
-L017ECC: db $AA;X
-L017ECD: db $AA;X
-L017ECE: db $AE;X
-L017ECF: db $AA;X
-L017ED0: db $AA;X
-L017ED1: db $AA;X
-L017ED2: db $AA;X
-L017ED3: db $AA;X
-L017ED4: db $AA;X
-L017ED5: db $AA;X
-L017ED6: db $AA;X
-L017ED7: db $AE;X
-L017ED8: db $AE;X
-L017ED9: db $AA;X
-L017EDA: db $AA;X
-L017EDB: db $AA;X
-L017EDC: db $AA;X
-L017EDD: db $AE;X
-L017EDE: db $AA;X
-L017EDF: db $AE;X
-L017EE0: db $AA;X
-L017EE1: db $AA;X
-L017EE2: db $AA;X
-L017EE3: db $AA;X
-L017EE4: db $AA;X
-L017EE5: db $AA;X
-L017EE6: db $AA;X
-L017EE7: db $AA;X
-L017EE8: db $AA;X
-L017EE9: db $AB;X
-L017EEA: db $AA;X
-L017EEB: db $AA;X
-L017EEC: db $AA;X
-L017EED: db $AE;X
-L017EEE: db $AA;X
-L017EEF: db $AA;X
-L017EF0: db $AA;X
-L017EF1: db $AA;X
-L017EF2: db $AA;X
-L017EF3: db $AA;X
-L017EF4: db $AA;X
-L017EF5: db $AA;X
-L017EF6: db $AA;X
-L017EF7: db $AA;X
-L017EF8: db $AA;X
-L017EF9: db $AA;X
-L017EFA: db $AA;X
-L017EFB: db $AA;X
-L017EFC: db $AA;X
-L017EFD: db $AA;X
-L017EFE: db $AE;X
-L017EFF: db $AA;X
-L017F00: db $AA;X
-L017F01: db $A2;X
-L017F02: db $8A;X
-L017F03: db $AA;X
-L017F04: db $AA;X
-L017F05: db $AA;X
-L017F06: db $A8;X
-L017F07: db $82;X
-L017F08: db $AA;X
-L017F09: db $AA;X
-L017F0A: db $A2;X
-L017F0B: db $8A;X
-L017F0C: db $AA;X
-L017F0D: db $82;X
-L017F0E: db $AA;X
-L017F0F: db $2A;X
-L017F10: db $AA;X
-L017F11: db $AA;X
-L017F12: db $A8;X
-L017F13: db $AA;X
-L017F14: db $A8;X
-L017F15: db $AA;X
-L017F16: db $AA;X
-L017F17: db $A0;X
-L017F18: db $AA;X
-L017F19: db $AA;X
-L017F1A: db $A8;X
-L017F1B: db $A2;X
-L017F1C: db $AA;X
-L017F1D: db $22;X
-L017F1E: db $2A;X
-L017F1F: db $AA;X
-L017F20: db $A2;X
-L017F21: db $A2;X
-L017F22: db $AA;X
-L017F23: db $8A;X
-L017F24: db $28;X
-L017F25: db $AA;X
-L017F26: db $A8;X
-L017F27: db $AA;X
-L017F28: db $82;X
-L017F29: db $A8;X
-L017F2A: db $AA;X
-L017F2B: db $AA;X
-L017F2C: db $A8;X
-L017F2D: db $AA;X
-L017F2E: db $82;X
-L017F2F: db $AA;X
-L017F30: db $AA;X
-L017F31: db $A8;X
-L017F32: db $AA;X
-L017F33: db $AA;X
-L017F34: db $AA;X
-L017F35: db $2A;X
-L017F36: db $8A;X
-L017F37: db $2A;X
-L017F38: db $AA;X
-L017F39: db $AA;X
-L017F3A: db $AA;X
-L017F3B: db $A8;X
-L017F3C: db $8A;X
-L017F3D: db $AA;X
-L017F3E: db $AA;X
-L017F3F: db $AA;X
-L017F40: db $AA;X
-L017F41: db $AA;X
-L017F42: db $A8;X
-L017F43: db $A8;X
-L017F44: db $8A;X
-L017F45: db $AA;X
-L017F46: db $AA;X
-L017F47: db $A8;X
-L017F48: db $AA;X
-L017F49: db $88;X
-L017F4A: db $0A;X
-L017F4B: db $A0;X
-L017F4C: db $AA;X
-L017F4D: db $AA;X
-L017F4E: db $AA;X
-L017F4F: db $8A;X
-L017F50: db $AA;X
-L017F51: db $AA;X
-L017F52: db $AA;X
-L017F53: db $2A;X
-L017F54: db $AA;X
-L017F55: db $2A;X
-L017F56: db $88;X
-L017F57: db $AA;X
-L017F58: db $A2;X
-L017F59: db $AA;X
-L017F5A: db $8A;X
-L017F5B: db $AA;X
-L017F5C: db $2A;X
-L017F5D: db $A8;X
-L017F5E: db $A2;X
-L017F5F: db $88;X
-L017F60: db $AA;X
-L017F61: db $2A;X
-L017F62: db $A2;X
-L017F63: db $A8;X
-L017F64: db $AA;X
-L017F65: db $A2;X
-L017F66: db $22;X
-L017F67: db $2A;X
-L017F68: db $AA;X
-L017F69: db $AA;X
-L017F6A: db $8A;X
-L017F6B: db $A8;X
-L017F6C: db $AA;X
-L017F6D: db $AA;X
-L017F6E: db $AA;X
-L017F6F: db $AA;X
-L017F70: db $AA;X
-L017F71: db $2A;X
-L017F72: db $AA;X
-L017F73: db $A8;X
-L017F74: db $AA;X
-L017F75: db $AA;X
-L017F76: db $8A;X
-L017F77: db $A2;X
-L017F78: db $AA;X
-L017F79: db $2A;X
-L017F7A: db $AA;X
-L017F7B: db $A8;X
-L017F7C: db $AA;X
-L017F7D: db $AA;X
-L017F7E: db $22;X
-L017F7F: db $A8;X
-L017F80: db $AE;X
-L017F81: db $AA;X
-L017F82: db $AA;X
-L017F83: db $AA;X
-L017F84: db $AE;X
-L017F85: db $AA;X
-L017F86: db $AA;X
-L017F87: db $AA;X
-L017F88: db $EA;X
-L017F89: db $AA;X
-L017F8A: db $AA;X
-L017F8B: db $AE;X
-L017F8C: db $AA;X
-L017F8D: db $AE;X
-L017F8E: db $AA;X
-L017F8F: db $AA;X
-L017F90: db $AA;X
-L017F91: db $AA;X
-L017F92: db $AA;X
-L017F93: db $AA;X
-L017F94: db $AA;X
-L017F95: db $EA;X
-L017F96: db $AA;X
-L017F97: db $EA;X
-L017F98: db $AA;X
-L017F99: db $AA;X
-L017F9A: db $AE;X
-L017F9B: db $EA;X
-L017F9C: db $AA;X
-L017F9D: db $AA;X
-L017F9E: db $AA;X
-L017F9F: db $AA;X
-L017FA0: db $EA;X
-L017FA1: db $AA;X
-L017FA2: db $AA;X
-L017FA3: db $AA;X
-L017FA4: db $AA;X
-L017FA5: db $AB;X
-L017FA6: db $AE;X
-L017FA7: db $EE;X
-L017FA8: db $AA;X
-L017FA9: db $EA;X
-L017FAA: db $AA;X
-L017FAB: db $AB;X
-L017FAC: db $AB;X
-L017FAD: db $AA;X
-L017FAE: db $AA;X
-L017FAF: db $AA;X
-L017FB0: db $AE;X
-L017FB1: db $AA;X
-L017FB2: db $EF;X
-L017FB3: db $AE;X
-L017FB4: db $AA;X
-L017FB5: db $AA;X
-L017FB6: db $AA;X
-L017FB7: db $AA;X
-L017FB8: db $AA;X
-L017FB9: db $AA;X
-L017FBA: db $AE;X
-L017FBB: db $AA;X
-L017FBC: db $AA;X
-L017FBD: db $AE;X
-L017FBE: db $AA;X
-L017FBF: db $BB;X
-L017FC0: db $AA;X
-L017FC1: db $AA;X
-L017FC2: db $EA;X
-L017FC3: db $AE;X
-L017FC4: db $AA;X
-L017FC5: db $AA;X
-L017FC6: db $AA;X
-L017FC7: db $AE;X
-L017FC8: db $AA;X
-L017FC9: db $AA;X
-L017FCA: db $AA;X
-L017FCB: db $AA;X
-L017FCC: db $AA;X
-L017FCD: db $AA;X
-L017FCE: db $AA;X
-L017FCF: db $AA;X
-L017FD0: db $AE;X
-L017FD1: db $AA;X
-L017FD2: db $AE;X
-L017FD3: db $AA;X
-L017FD4: db $AA;X
-L017FD5: db $AE;X
-L017FD6: db $AA;X
-L017FD7: db $AA;X
-L017FD8: db $AA;X
-L017FD9: db $EA;X
-L017FDA: db $AA;X
-L017FDB: db $AA;X
-L017FDC: db $AA;X
-L017FDD: db $AA;X
-L017FDE: db $AE;X
-L017FDF: db $EA;X
-L017FE0: db $EA;X
-L017FE1: db $AA;X
-L017FE2: db $AA;X
-L017FE3: db $AA;X
-L017FE4: db $AA;X
-L017FE5: db $AA;X
-L017FE6: db $AA;X
-L017FE7: db $EE;X
-L017FE8: db $AA;X
-L017FE9: db $AA;X
-L017FEA: db $AB;X
-L017FEB: db $AA;X
-L017FEC: db $AA;X
-L017FED: db $AA;X
-L017FEE: db $AA;X
-L017FEF: db $BA;X
-L017FF0: db $AA;X
-L017FF1: db $AA;X
-L017FF2: db $AA;X
-L017FF3: db $AA;X
-L017FF4: db $AA;X
-L017FF5: db $AE;X
-L017FF6: db $AE;X
-L017FF7: db $AA;X
-L017FF8: db $AA;X
-L017FF9: db $EA;X
-L017FFA: db $AA;X
-L017FFB: db $AA;X
-L017FFC: db $AA;X
-L017FFD: db $AA;X
-L017FFE: db $AA;X
-L017FFF: db $AA;X
+IF SKIP_JUNK == 0
+	INCLUDE "src/align_junk/L017BF7.asm"
+ENDC
