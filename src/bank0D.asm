@@ -3092,7 +3092,11 @@ IF FIX_BUGS == 1
 	and  a									; Standing on a solid actor?
 	call z, Level_Scroll_CheckSegScroll		; If not, call
 ELSE
-	call Level_Scroll_CheckSegScrollAlt
+	IF OPTIMIZE == 1
+		call Level_Scroll_CheckSegScroll
+	ELSE
+		call Level_Scroll_CheckSegScrollAlt
+	ENDC
 ENDC
 	;--
 	ld   a, [sScreenShakeTimer]
