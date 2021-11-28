@@ -724,7 +724,7 @@ Game_Add3UP:
 	ld   [sExActOBJX_High], a
 	ld   a, [sPlX_Low]
 	ld   [sExActOBJX_Low], a
-	ld   a, $C4
+	ld   a, OBJ_3UP				; OBJ Frame
 	ld   [sExActOBJLstId], a
 	xor  a
 	ld   [sExActOBJFlags], a
@@ -6116,7 +6116,8 @@ HomeCall_Sound_DoStub: mHomeCallRet Sound_DoStub ; BANK $04
 ; This is similar to Map_WriteOBJLst, but:
 ; - doesn't support flipping entire OBJLst.
 ; - input comes from different addresses.
-; - a value is treated as end separator if it is a multiple of $10
+; - The flags double as end separator if any bit is set in the lower nybble.
+;   This works because the lower nybble is unused in non-CGB mode.
 ;
 ; IN
 ; - DE: Ptr to OBJLst
@@ -6167,15 +6168,16 @@ Static_WriteOBJLst:
 	ldi  [hl], a
 	inc  de
 	
-	; Write the flags as-is
-	; as there's no support here for custom flags
+	; Write the flags as-is as there's no support for custom flags.
+	; (NB: if we were in CGB mode, this value would need to be filtered, see below)
 .writeFlags:
 	ld   a, [de]
 	ldi  [hl], a
 	inc  de
 	
-	and  a, $0F					; Have we reached an end separator?
-	jr   z, .loop				; If not, loop
+	; Check if we hit the end separator.
+	and  a, $0F					; Is there anything in the low nybble of the flags?
+	jr   z, .loop				; If not, it's not an end separator, so loop
 	ret
 	
 ; =============== Static_FinalizeWorkOAM ===============
