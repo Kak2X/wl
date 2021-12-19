@@ -7549,7 +7549,7 @@ Level_Scroll_DoAutoScrollLeft:
 	ret
 .autoLeft:
 	ld   a, [sPlXRel]			
-	cp   a, SCREEN_H - ACT_X_OFFSET	; Is the player near the right screen border?
+	cp   a, SCREEN_H + $08 - ACT_X_OFFSET	; Is the player near the right screen border?
 	ret  c							; If not, return
 	
 	call PlBGColi_DoLeftStub		; If so, handle collision on the left

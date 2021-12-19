@@ -39,7 +39,7 @@ SCREEN_XMAX EQU $60
 SCREEN_YMIN EQU $00
 SCREEN_YMAX EQU $70
 ; screen size
-SCREEN_H EQU $A8
+SCREEN_H EQU $A0
 SCREEN_V EQU $90
 
 ; Number of tiles in tilemap

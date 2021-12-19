@@ -1899,7 +1899,7 @@ Pl_MoveRight:
 	jr   c, .noAutoScroll		; If so, we aren't in an autoscroll/fixed screen mode
 	; In those modes, prevent moving off the right border
 	ld   a, [sPlXRel]
-	cp   a, SCREEN_H - $08
+	cp   a, SCREEN_H
 	ret  nc
 .noAutoScroll:
 	; sPlX += B

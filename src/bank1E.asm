@@ -1417,11 +1417,11 @@ HeartBonus_InitEnemyPos:
 	bit  1, a
 	jr   nz, .closeL
 .farL:
-	ld   a, SCREEN_H
+	ld   a, SCREEN_H+$08
 	ld   [wHeartBonusEnemyX], a
 	ret
 .closeL:
-	ld   a, SCREEN_H-$08
+	ld   a, SCREEN_H
 	ld   [wHeartBonusEnemyX], a
 	ret
 	
@@ -1643,7 +1643,7 @@ HeartBonus_MoveEnemyH:
 .moveR:
 	; Move the enemy right until it's off-screen
 	ld   a, [wHeartBonusEnemyX]
-	cp   a, SCREEN_H+$08			; X == $B0?
+	cp   a, SCREEN_H+$10			; X == $B0?
 	jr   z, .newInitPos				; If so, jump
 	inc  a
 	ld   [wHeartBonusEnemyX], a

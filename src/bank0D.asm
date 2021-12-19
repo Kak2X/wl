@@ -2702,7 +2702,7 @@ Pl_DoCtrl_HardBumpAir:
 	call Level_ScreenLock_DoRight	; Update screen lock
 	ld   b, $01
 	ld   a, [sPlXRel]
-	cp   a, SCREEN_H-$08			; sPlXRel >= $A8?
+	cp   a, SCREEN_H 				; sPlXRel >= $A0?
 	jr   nc, .screenR				; If so, move thr screen too
 	call Pl_MoveRightStub
 	ret
@@ -3610,7 +3610,7 @@ ENDC
 	ld   b, $01
 IF FIX_BUGS == 1
 	ld   a, [sPlXRel]
-	cp   a, SCREEN_H-$08			; sPlXRel >= $A8?
+	cp   a, SCREEN_H 				; sPlXRel >= $A0?
 	jr   nc, .screenR				; If so, move thr screen too
 ENDC
 	call Pl_MoveRightStub
@@ -7455,7 +7455,7 @@ ExAct_WaterSplash:
 ExAct_WaterBubble:
 	; Despawn when going too much offscreen
 	ld   a, [sExActOBJFixX]
-	cp   a, SCREEN_H+$18		; sExActOBJFixX >= $C0?
+	cp   a, SCREEN_H+$20		; sExActOBJFixX >= $C0?
 	jr   nc, .despawn			; If so, despawn it
 	ld   a, [sExActOBJFixY]
 	cp   a, SCREEN_V+$30		; sExActOBJFixY >= $C0?
