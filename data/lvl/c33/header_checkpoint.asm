@@ -4,8 +4,8 @@
 	dw GFX_LevelAnim_07	; Animated tiles GFX
 	dlvl LevelLayoutPtr_C33	; Level Layout ID	
 	dw LevelBlock_Train	; 16x16 Blocks 
-	db $00,$A0	; Player X
-	db $05,$08	; Player Y
+	db $00,$A0	; Player Y
+	db $05,$08	; Player X
 	db OBJ_WARIO_STAND ; OBJLst Frame
 	db $00		; OBJLst Flags (Face Left)
 	db $00,$60	; Scroll Y

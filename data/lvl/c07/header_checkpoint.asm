@@ -4,8 +4,8 @@
 	dw GFX_LevelAnim_08	; Animated tiles GFX
 	dlvl LevelLayoutPtr_C07	; Level Layout ID	
 	dw LevelBlock_StoneCave	; 16x16 Blocks 
-	db $01,$50	; Player X
-	db $0A,$98	; Player Y
+	db $01,$50	; Player Y
+	db $0A,$98	; Player X
 	db OBJ_WARIO_STAND ; OBJLst Frame
 	db OBJLST_XFLIP	; OBJLst Flags (Face Right)
 	db $00,$E0	; Scroll Y

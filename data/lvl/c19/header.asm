@@ -4,8 +4,8 @@
 	dw GFX_LevelAnim_0A	; Animated tiles GFX
 	dlvl LevelLayoutPtr_C19	; Level Layout ID	
 	dw LevelBlock_Ice	; 16x16 Blocks 
-	db $01,$70	; Player X
-	db $01,$48	; Player Y
+	db $01,$70	; Player Y
+	db $01,$48	; Player X
 	db OBJ_WARIO_STAND ; OBJLst Frame
 	db OBJLST_XFLIP	; OBJLst Flags (Face Right)
 	db $00,$E0	; Scroll Y
