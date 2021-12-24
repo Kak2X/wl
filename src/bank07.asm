@@ -497,28 +497,8 @@ mActGroup_CheckBoss: MACRO
 	jp   nz, Level_AutoClearBoss	; If so, jump
 ENDM
 
+INCLUDE "data/lvl/c26/actor_group_init.asm"
 
-ActGroup_C26_Room10:
-	mActGroup C26_Room10
-	mActGroup_CheckTreasure TREASURE_I
-	ret
-ActGroup_C26_Room14:
-	mActGroup C26_Room14
-	ret
-ActGroup_C26_Room16:
-	mActGroup C26_Room16
-	ret
-ActGroup_C26_Room06:
-	mActGroup C26_Room06
-	ret
-ActGroup_C26_Room1C:
-	mActGroup C26_Room1C
-	mActGroup_CheckTreasure TREASURE_I
-	ret
-ActGroup_TreasureI:
-	mActGroup TreasureI
-	mActGroup_Treasure TREASURE_I
-	ret
 ; =============== Level_CheckTreasureStatusStatus ===============
 ; Automatically opens the treasure door if the treasure has been already collected.
 ; This will also prevent the key from spawning.
