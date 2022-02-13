@@ -537,10 +537,18 @@ Demo_GetInput:
 	
 	; Index the current table entry (already multiplied by 2)
 	ld   a, [sDemoInputOffset] 
+IF SKIP_JUNK == 0
 	add  l
+	ld   l, a					; L = Current Entry
+ELSE
+	; "add l" requires the data to be aligned to a $100 boundary.
+	; It won't work if the padding areas are removed.
+	ld   d, $00
+	ld   e, a
+	add  hl, de
+ENDC
 	
 	; Handle the joypad key status
-	ld   l, a					; L = Current Entry
 	ldi  a, [hl] 				; Get the current keypress
 	ld   c, a
 	ldh  a, [hJoyKeys] 			; And update the hJoyKeys and hJoyNewKeys values as it would be done normally
