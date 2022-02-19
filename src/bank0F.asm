@@ -7203,7 +7203,9 @@ OBJLstSharedPtrTable_Act_BigHeart:
 OBJLst_Act_BigHeart0: INCBIN "data/objlst/actor/bigheart0.bin"
 OBJLst_Act_BigHeart1: INCBIN "data/objlst/actor/bigheart1.bin"
 GFX_Act_BigHeart: INCBIN "data/gfx/actor/bigheart.bin"
-
+; [TCRF] Unreferenced spikeball graphics, different from the other spikeballs used by Act_Mole and Act_Penguin.
+;        Did an actor get removed but the graphics were left in?
+GFX_Unused_Act_Spike: INCBIN "data/gfx/actor/unused_spikeball.bin"
 ; =============== END OF BANK ===============
 IF SKIP_JUNK == 0
 	INCLUDE "src/align_junk/L0F7C44.asm"
