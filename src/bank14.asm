@@ -435,7 +435,12 @@ Map_MtTeapotLidUpdateCoords:
 	
 	;--
 	; Do the same for the X coord
+	; [BUG] The wrong address is being used, which only isn't a problem because this is drawn before the screen scrolls.
+IF FIX_BUGS == 1
+	ld   hl, sMapScrollX
+ELSE
 	ld   hl, rSCX
+ENDC
 	ld   a, [sMapMtTeapotLidScrollXLast]
 	sub  a, [hl]
 	ld   b, a

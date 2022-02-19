@@ -165,8 +165,12 @@ Map_OverworldDoWorldClear:
 ; Main code for processing the overworld.
 ;
 Map_Overworld_Do:
+	; [BUG] The OBJLst for these are being written before the screen is scrolled.
+	;       This causes them to desync when scrolling the screen.
+IF FIX_BUGS == 0
 	call HomeCall_Map_MoveMtTeapotLid
 	call HomeCall_Map_Overworld_AnimFlags
+ENDC
 	; free view enter / exit check
 	
 	ldh  a, [hJoyKeys]				; Holding B activates free view mode
@@ -181,6 +185,11 @@ Map_Overworld_Do:
 	call Map_Overworld_DoCtrl
 	call Map_Overworld_AnimTiles
 	call Map_WriteWarioOBJLst
+IF FIX_BUGS == 1
+.writeOBJ:
+	call HomeCall_Map_MoveMtTeapotLid
+	call HomeCall_Map_Overworld_AnimFlags
+ENDC
 	ret
 	
 ;--
@@ -212,7 +221,11 @@ Map_Overworld_Do:
 	call Map_FreeViewCtrl
 	call Map_Overworld_AnimTiles
 	call HomeCall_Map_DrawFreeViewArrows
+IF FIX_BUGS == 1
+	jr   .writeOBJ
+ELSE
 	ret
+ENDC
 .freeViewCheckRet:
 	xor  a
 	ld   [sMapTimer0], a
@@ -227,7 +240,11 @@ Map_Overworld_Do:
 	ld   [sMapNextId], a
 	ld   a, SFX1_0A
 	ld   [sSFX1Set], a
+IF FIX_BUGS == 1
+	jr   .writeOBJ
+ELSE
 	ret
+ENDC
 .freeViewSoftExit:
 	; A soft return simply clears the freeview vars
 	xor  a
