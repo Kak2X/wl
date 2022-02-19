@@ -617,162 +617,162 @@ INCLUDE "data/lvl/c31b/actor_group_init.asm"
 ActCodeDef_Null:
 	mActCodeDef Act_Null, $02, $0F
 ActCodeDef_Goom:
-	mActCodeDef SubCall_ActInit_Goom, $00, $0F
+	mActCodeDefAuto ActInit_Goom, $00
 ActCodeDef_Spark:
-	mActCodeDef SubCall_ActInit_Spark, $00, $0F
+	mActCodeDefAuto ActInit_Spark, $00
 ActCodeDef_BigFruit:
-	mActCodeDef SubCall_ActInit_BigFruit, $A0, $12
+	mActCodeDefAuto ActInit_BigFruit, ACTFLAG_HEAVY|ACTFLAG_NORECOVER
 ActCodeDef_SpikeBall:
-	mActCodeDef SubCall_ActInit_SpikeBall, $A0, $15
+	mActCodeDefAuto ActInit_SpikeBall, ACTFLAG_HEAVY|ACTFLAG_NORECOVER
 ActCodeDef_SpearGoom:
-	mActCodeDef SubCall_ActInit_SpearGoom, $00, $07
+	mActCodeDefAuto ActInit_SpearGoom, $00
 ActCodeDef_Helmut:
-	mActCodeDef SubCall_ActInit_Helmut, $00, $0F
+	mActCodeDefAuto ActInit_Helmut, $00
 ActCodeDef_SSTeacupBoss:
-	mActCodeDef SubCall_ActInit_SSTeacupBoss, $40, $0F
+	mActCodeDefAuto ActInit_SSTeacupBoss, ACTFLAG_ALWAYSHELD
 ActCodeDef_BigCoin:
-	mActCodeDef SubCall_ActInit_BigCoin, $00, $0F
+	mActCodeDefAuto ActInit_BigCoin, $00
 ActCodeDef_PouncerDrop:
-	mActCodeDef SubCall_ActInit_PouncerDrop, $00, $15
+	mActCodeDefAuto ActInit_PouncerDrop, $00
 ActCodeDef_PouncerFollow:
-	mActCodeDef SubCall_ActInit_PouncerFollow, $40, $15
+	mActCodeDefAuto ActInit_PouncerFollow, ACTFLAG_ALWAYSHELD
 ActCodeDef_Driller:
-	mActCodeDef SubCall_ActInit_Driller, $20, $15
+	mActCodeDefAuto ActInit_Driller, ACTFLAG_NORECOVER
 ActCodeDef_Puff:
-	mActCodeDef SubCall_ActInit_Puff, $00, $0F
+	mActCodeDefAuto ActInit_Puff, $00
 ActCodeDef_LavaBubble:
-	mActCodeDef SubCall_ActInit_LavaBubble, $00, $0F
+	mActCodeDefAuto ActInit_LavaBubble, $00
 ActCodeDef_DoorFrame:
-	mActCodeDef SubCall_ActInit_DoorFrame, $00, $15
+	mActCodeDefAuto ActInit_DoorFrame, $00
 ActCodeDef_CoinLock:
-	mActCodeDef SubCall_ActInit_CoinLock, $00, $15
+	mActCodeDefAuto ActInit_CoinLock, $00
 ActCodeDef_CartTrain:
-	mActCodeDef SubCall_ActInit_CartTrain, $00, $15
+	mActCodeDefAuto ActInit_CartTrain, $00
 ActCodeDef_Cart:
-	mActCodeDef SubCall_ActInit_Cart, $00, $15
+	mActCodeDefAuto ActInit_Cart, $00
 ActCodeDef_Wolf:
-	mActCodeDef SubCall_ActInit_Wolf, $80, $15
+	mActCodeDefAuto ActInit_Wolf, ACTFLAG_HEAVY
 ActCodeDef_Penguin:
-	mActCodeDef SubCall_ActInit_Penguin, $80, $15
+	mActCodeDefAuto ActInit_Penguin, ACTFLAG_HEAVY
 ActCodeDef_DD:
-	mActCodeDef SubCall_ActInit_DD, $80, $15
+	mActCodeDefAuto ActInit_DD, ACTFLAG_HEAVY
 ActCodeDef_Checkpoint:
-	mActCodeDef SubCall_ActInit_Checkpoint, $00, $0F
+	mActCodeDefAuto ActInit_Checkpoint, $00
 ActCodeDef_TreasureChestLid:
-	mActCodeDef SubCall_ActInit_TreasureChestLid, $00, $0F
+	mActCodeDefAuto ActInit_TreasureChestLid, $00
 ActCodeDef_TorchFlame:
-	mActCodeDef SubCall_ActInit_TorchFlame, $00, $0F
+	mActCodeDefAuto ActInit_TorchFlame, $00
 ActCodeDef_Treasure:
-	mActCodeDef SubCall_ActInit_Treasure, $00, $0F
+	mActCodeDefAuto ActInit_Treasure, $00
 ActCodeDef_TreasureShine:
-	mActCodeDef SubCall_ActInit_TreasureShine, $00, $0F
+	mActCodeDefAuto ActInit_TreasureShine, $00
 ActCodeDef_SSTeacupBossWatch:
-	mActCodeDef SubCall_ActInit_SSTeacupBossWatch, $20, $18
+	mActCodeDefAuto ActInit_SSTeacupBossWatch, ACTFLAG_NORECOVER
 ActCodeDef_Watch:
-	mActCodeDef SubCall_ActInit_Watch, $20, $18
+	mActCodeDefAuto ActInit_Watch, ACTFLAG_NORECOVER
 ActCodeDef_ChickenDuck:
-	mActCodeDef SubCall_ActInit_ChickenDuck, $00, $17
+	mActCodeDefAuto ActInit_ChickenDuck, $00
 ActCodeDef_MtTeapotBoss:
-	mActCodeDef SubCall_ActInit_MtTeapotBoss, $C0, $17
+	mActCodeDefAuto ActInit_MtTeapotBoss, ACTFLAG_HEAVY|ACTFLAG_ALWAYSHELD
 ActCodeDef_SherbetLandBoss:
-	mActCodeDef SubCall_ActInit_SherbetLandBoss, $40, $17
+	mActCodeDefAuto ActInit_SherbetLandBoss, ACTFLAG_ALWAYSHELD
 ActCodeDef_RiceBeachBoss:
-	mActCodeDef SubCall_ActInit_RiceBeachBoss, $40, $18
+	mActCodeDefAuto ActInit_RiceBeachBoss, ACTFLAG_ALWAYSHELD
 ActCodeDef_ParsleyWoodsBoss:
-	mActCodeDef SubCall_ActInit_ParsleyWoodsBoss, $40, $18
+	mActCodeDefAuto ActInit_ParsleyWoodsBoss, ACTFLAG_ALWAYSHELD
 ActCodeDef_ParsleyWoodsBossGhostGoom:
-	mActCodeDef SubCall_ActInit_ParsleyWoodsBossGhostGoom, $00, $18
+	mActCodeDefAuto ActInit_ParsleyWoodsBossGhostGoom, $00
 ActCodeDef_StoveCanyonBoss:
-	mActCodeDef SubCall_ActInit_StoveCanyonBoss, $40, $18
+	mActCodeDefAuto ActInit_StoveCanyonBoss, ACTFLAG_ALWAYSHELD
 ActCodeDef_StoveCanyonBossEyes:
-	mActCodeDef SubCall_ActInit_StoveCanyonBossEyes, $40, $18
+	mActCodeDefAuto ActInit_StoveCanyonBossEyes, ACTFLAG_ALWAYSHELD
 ActCodeDef_StoveCanyonBossTongue:
-	mActCodeDef SubCall_ActInit_StoveCanyonBossTongue, $40, $18
+	mActCodeDefAuto ActInit_StoveCanyonBossTongue, ACTFLAG_ALWAYSHELD
 ActCodeDef_StoveCanyonBossBall:
-	mActCodeDef SubCall_ActInit_Unused_StoveCanyonBossBall, $20, $18
+	mActCodeDefAuto ActInit_Unused_StoveCanyonBossBall, ACTFLAG_NORECOVER
 ActCodeDef_Floater:
-	mActCodeDef SubCall_ActInit_Floater, $00, $18
+	mActCodeDefAuto ActInit_Floater, $00
 ActCodeDef_KeyLock:
-	mActCodeDef SubCall_ActInit_KeyLock, $00, $18
+	mActCodeDefAuto ActInit_KeyLock, $00
 ActCodeDef_Bridge:
-	mActCodeDef SubCall_ActInit_Bridge, $20, $18
+	mActCodeDefAuto ActInit_Bridge, ACTFLAG_NORECOVER
 ActCodeDef_Snowman:
-	mActCodeDef SubCall_ActInit_Snowman, $00, $02
+	mActCodeDefAuto ActInit_Snowman, $00
 ActCodeDef_BigSwitchBlock:
-	mActCodeDef SubCall_ActInit_BigSwitchBlock, $00, $02
+	mActCodeDefAuto ActInit_BigSwitchBlock, $00
 ActCodeDef_LavaWall:
-	mActCodeDef SubCall_ActInit_LavaWall, $40, $02
+	mActCodeDefAuto ActInit_LavaWall, ACTFLAG_ALWAYSHELD
 ActCodeDef_SyrupCastlePlatformU:
-	mActCodeDef SubCall_ActInit_SyrupCastlePlatformU, $00, $02
+	mActCodeDefAuto ActInit_SyrupCastlePlatformU, $00
 ActCodeDef_SyrupCastlePlatformD:
-	mActCodeDef SubCall_ActInit_SyrupCastlePlatformD, $00, $02
+	mActCodeDefAuto ActInit_SyrupCastlePlatformD, $00
 ActCodeDef_HermitCrab:
-	mActCodeDef SubCall_ActInit_HermitCrab, $00, $02
+	mActCodeDefAuto ActInit_HermitCrab, $00
 ActCodeDef_GhostGoom:
-	mActCodeDef SubCall_ActInit_GhostGoom, $00, $02
+	mActCodeDefAuto ActInit_GhostGoom, $00
 ActCodeDef_Seahorse:
-	mActCodeDef SubCall_ActInit_Seahorse, $00, $02
+	mActCodeDefAuto ActInit_Seahorse, $00
 ActCodeDef_BigItemBox:
-	mActCodeDef SubCall_ActInit_BigItemBox, $00, $02
+	mActCodeDefAuto ActInit_BigItemBox, $00
 ActCodeDef_Bomb:
-	mActCodeDef SubCall_ActInit_Bomb, $00, $02
+	mActCodeDefAuto ActInit_Bomb, $00
 ActCodeDef_CaptainSyrup:
-	mActCodeDef SubCall_ActInit_SyrupCastleBoss, $40, $1B
+	mActCodeDefAuto ActInit_SyrupCastleBoss, ACTFLAG_ALWAYSHELD
 ActCodeDef_Lamp:
-	mActCodeDef SubCall_ActInit_Lamp, $40, $1B
+	mActCodeDefAuto ActInit_Lamp, ACTFLAG_ALWAYSHELD
 ActCodeDef_LampSmoke:
-	mActCodeDef SubCall_ActInit_LampSmoke, $01, $1B
+	mActCodeDefAuto ActInit_LampSmoke, ACTFLAG_UNUSED_NOBUMPKILL
 ; [TCRF] Not used directly
 ActCodeDef_MiniGenie:
-	mActCodeDef SubCall_ActInit_Unused_MiniGenie, $01, $1B
+	mActCodeDefAuto ActInit_Unused_MiniGenie, ACTFLAG_UNUSED_NOBUMPKILL
 ActCodeDef_Pelican:
-	mActCodeDef SubCall_ActInit_Pelican, $00, $1B
+	mActCodeDefAuto ActInit_Pelican, $00
 ActCodeDef_SpikePillarR:
-	mActCodeDef SubCall_ActInit_SpikePillarR, $20, $15
+	mActCodeDefAuto ActInit_SpikePillarR, ACTFLAG_NORECOVER
 ActCodeDef_SpikePillarL:
-	mActCodeDef SubCall_ActInit_SpikePillarL, $20, $15
+	mActCodeDefAuto ActInit_SpikePillarL, ACTFLAG_NORECOVER
 ActCodeDef_SpikePillarU:
-	mActCodeDef SubCall_ActInit_SpikePillarU, $20, $15
+	mActCodeDefAuto ActInit_SpikePillarU, ACTFLAG_NORECOVER
 ActCodeDef_SpikePillarD:
-	mActCodeDef SubCall_ActInit_SpikePillarD, $20, $15
+	mActCodeDefAuto ActInit_SpikePillarD, ACTFLAG_NORECOVER
 ActCodeDef_CoinCrab:
-	mActCodeDef SubCall_ActInit_CoinCrab, $20, $15
+	mActCodeDefAuto ActInit_CoinCrab, ACTFLAG_NORECOVER
 ActCodeDef_StoveCanyonPlatform:
-	mActCodeDef SubCall_ActInit_StoveCanyonPlatform, $00, $1B
+	mActCodeDefAuto ActInit_StoveCanyonPlatform, $00
 ActCodeDef_Togemaru:
-	mActCodeDef SubCall_ActInit_Togemaru, $00, $1B
+	mActCodeDefAuto ActInit_Togemaru, $00
 ActCodeDef_ThunderCloud:
-	mActCodeDef SubCall_ActInit_ThunderCloud, $40, $15
+	mActCodeDefAuto ActInit_ThunderCloud, ACTFLAG_ALWAYSHELD
 ActCodeDef_Mole:
-	mActCodeDef SubCall_ActInit_Mole, $80, $17
+	mActCodeDefAuto ActInit_Mole, ACTFLAG_HEAVY
 ActCodeDef_MoleSpike:
-	mActCodeDef SubCall_ActInit_Unused_MoleSpike, $00, $17
+	mActCodeDefAuto ActInit_Unused_MoleSpike, $00
 ActCodeDef_Croc:
-	mActCodeDef SubCall_ActInit_Croc, $00, $1B
+	mActCodeDefAuto ActInit_Croc, $00
 ActCodeDef_Seal:
-	mActCodeDef SubCall_ActInit_Seal, $00, $0F
+	mActCodeDefAuto ActInit_Seal, $00
 ActCodeDef_BigHeart:
-	mActCodeDef SubCall_ActInit_BigHeart, $00, $0F
+	mActCodeDefAuto ActInit_BigHeart, $00
 ActCodeDef_Spider:
-	mActCodeDef SubCall_ActInit_Spider, $00, $1B
+	mActCodeDefAuto ActInit_Spider, $00
 ActCodeDef_Hedgehog:
-	mActCodeDef SubCall_ActInit_Hedgehog, $00, $15
+	mActCodeDefAuto ActInit_Hedgehog, $00
 ActCodeDef_MoleCutscene:
-	mActCodeDef SubCall_ActInit_MoleCutscene, $00, $17
+	mActCodeDefAuto ActInit_MoleCutscene, $00
 ActCodeDef_FireMissile:
-	mActCodeDef SubCall_ActInit_FireMissile, $00, $1B
+	mActCodeDefAuto ActInit_FireMissile, $00
 ActCodeDef_StickBomb:
-	mActCodeDef SubCall_ActInit_StickBomb, $00, $18
+	mActCodeDefAuto ActInit_StickBomb, $00
 ActCodeDef_Knight:
-	mActCodeDef SubCall_ActInit_Knight, $40, $17
+	mActCodeDefAuto ActInit_Knight, ACTFLAG_ALWAYSHELD
 ActCodeDef_MiniBossLock:
-	mActCodeDef SubCall_ActInit_MiniBossLock, $40, $17
+	mActCodeDefAuto ActInit_MiniBossLock, ACTFLAG_ALWAYSHELD
 ActCodeDef_Fly:
-	mActCodeDef SubCall_ActInit_Fly, $00, $02
+	mActCodeDefAuto ActInit_Fly, $00
 ActCodeDef_ExitSkull:
-	mActCodeDef SubCall_ActInit_ExitSkull, $00, $02
+	mActCodeDefAuto ActInit_ExitSkull, $00
 ActCodeDef_Bat:
-	mActCodeDef SubCall_ActInit_Bat, $00, $12
+	mActCodeDefAuto ActInit_Bat, $00
 
 ; =============== ACTOR SLOTS - CODE DEFS ===============
 ; List of code tables for every room, indexed by actor id in the group.

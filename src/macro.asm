@@ -238,6 +238,16 @@ mActCodeDef: MACRO
 	db \2,\3
 ENDM
 
+; =============== mActCodeDefAuto ===============
+; Defines the init code for actors in the level layout.
+; IN:
+; - 1: Ptr to init code (a SubCall to it must exist in BANK $02)
+; - 2: Actor flags (ACTFLAGB_*)
+mActCodeDefAuto: MACRO
+	dw SubCall_\1
+	db \2,BANK(\1)
+ENDM
+
 
 ; =============== mActColiMask ===============
 ; Generates the player-to-actor collision (bitmask format) for all directions.
