@@ -6892,10 +6892,9 @@ ENDC
 	ret
 	
 ; =============== ActS_CheckOffScreenNoDespawn ===============
-; Performs the off-screen check for an held actor.
-; Calling this prevents the actor from being despawned.
+; Performs the off-screen check for actors which can't be despawned when going off-screen.
 ActS_CheckOffScreenNoDespawn:
-	ld   a, $01
+	ld   a, $01							; Invisible but active at min
 	ld   [sActSetActive_Tmp], a
 	jr   ActS_CheckOffScreen.setRelPos
 ; =============== ActS_CheckOffScreen ===============

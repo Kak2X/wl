@@ -1059,13 +1059,12 @@ sActColiBoxDistanceU EQU $A98A
 sActColiBoxDistanceL EQU $A98B
 sActColiBoxDistanceR EQU $A98C
 
-
 sPlActSolid EQU $A98D ; If set, the player's standing top of a solid actor
 sLvlDoorPtr EQU $A98E ; Set when entering doors (high; low)
 sParallaxMode EQU $A990
 sScrollX_High EQU $A993
 sScrollX EQU $A994 ;
-sActNoChkLY EQU $A995 ; If set, disables the lag reduction feature (for boss rooms only) 
+sBossRoom EQU $A995 ; If set, the current room is handled as a boss room. This disables the lag reduction feature and prevents actors from spawning when scrolling
 s_Unused_LvlBGPriority EQU $A996 ; Only written to with value from header; never read back
 sBGP EQU $A997 ; For levels
 sPlJetDashTimer EQU $A998

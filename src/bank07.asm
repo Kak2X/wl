@@ -629,13 +629,13 @@ ActCodeDef_SpearGoom:
 ActCodeDef_Helmut:
 	mActCodeDefAuto ActInit_Helmut, $00
 ActCodeDef_SSTeacupBoss:
-	mActCodeDefAuto ActInit_SSTeacupBoss, ACTFLAG_ALWAYSHELD
+	mActCodeDefAuto ActInit_SSTeacupBoss, ACTFLAG_NODESPAWNOFFSCREEN
 ActCodeDef_BigCoin:
 	mActCodeDefAuto ActInit_BigCoin, $00
 ActCodeDef_PouncerDrop:
 	mActCodeDefAuto ActInit_PouncerDrop, $00
 ActCodeDef_PouncerFollow:
-	mActCodeDefAuto ActInit_PouncerFollow, ACTFLAG_ALWAYSHELD
+	mActCodeDefAuto ActInit_PouncerFollow, ACTFLAG_NODESPAWNOFFSCREEN
 ActCodeDef_Driller:
 	mActCodeDefAuto ActInit_Driller, ACTFLAG_NORECOVER
 ActCodeDef_Puff:
@@ -673,21 +673,21 @@ ActCodeDef_Watch:
 ActCodeDef_ChickenDuck:
 	mActCodeDefAuto ActInit_ChickenDuck, $00
 ActCodeDef_MtTeapotBoss:
-	mActCodeDefAuto ActInit_MtTeapotBoss, ACTFLAG_HEAVY|ACTFLAG_ALWAYSHELD
+	mActCodeDefAuto ActInit_MtTeapotBoss, ACTFLAG_HEAVY|ACTFLAG_NODESPAWNOFFSCREEN
 ActCodeDef_SherbetLandBoss:
-	mActCodeDefAuto ActInit_SherbetLandBoss, ACTFLAG_ALWAYSHELD
+	mActCodeDefAuto ActInit_SherbetLandBoss, ACTFLAG_NODESPAWNOFFSCREEN
 ActCodeDef_RiceBeachBoss:
-	mActCodeDefAuto ActInit_RiceBeachBoss, ACTFLAG_ALWAYSHELD
+	mActCodeDefAuto ActInit_RiceBeachBoss, ACTFLAG_NODESPAWNOFFSCREEN
 ActCodeDef_ParsleyWoodsBoss:
-	mActCodeDefAuto ActInit_ParsleyWoodsBoss, ACTFLAG_ALWAYSHELD
+	mActCodeDefAuto ActInit_ParsleyWoodsBoss, ACTFLAG_NODESPAWNOFFSCREEN
 ActCodeDef_ParsleyWoodsBossGhostGoom:
 	mActCodeDefAuto ActInit_ParsleyWoodsBossGhostGoom, $00
 ActCodeDef_StoveCanyonBoss:
-	mActCodeDefAuto ActInit_StoveCanyonBoss, ACTFLAG_ALWAYSHELD
+	mActCodeDefAuto ActInit_StoveCanyonBoss, ACTFLAG_NODESPAWNOFFSCREEN
 ActCodeDef_StoveCanyonBossEyes:
-	mActCodeDefAuto ActInit_StoveCanyonBossEyes, ACTFLAG_ALWAYSHELD
+	mActCodeDefAuto ActInit_StoveCanyonBossEyes, ACTFLAG_NODESPAWNOFFSCREEN
 ActCodeDef_StoveCanyonBossTongue:
-	mActCodeDefAuto ActInit_StoveCanyonBossTongue, ACTFLAG_ALWAYSHELD
+	mActCodeDefAuto ActInit_StoveCanyonBossTongue, ACTFLAG_NODESPAWNOFFSCREEN
 ActCodeDef_StoveCanyonBossBall:
 	mActCodeDefAuto ActInit_Unused_StoveCanyonBossBall, ACTFLAG_NORECOVER
 ActCodeDef_Floater:
@@ -701,7 +701,7 @@ ActCodeDef_Snowman:
 ActCodeDef_BigSwitchBlock:
 	mActCodeDefAuto ActInit_BigSwitchBlock, $00
 ActCodeDef_LavaWall:
-	mActCodeDefAuto ActInit_LavaWall, ACTFLAG_ALWAYSHELD
+	mActCodeDefAuto ActInit_LavaWall, ACTFLAG_NODESPAWNOFFSCREEN
 ActCodeDef_SyrupCastlePlatformU:
 	mActCodeDefAuto ActInit_SyrupCastlePlatformU, $00
 ActCodeDef_SyrupCastlePlatformD:
@@ -717,9 +717,9 @@ ActCodeDef_BigItemBox:
 ActCodeDef_Bomb:
 	mActCodeDefAuto ActInit_Bomb, $00
 ActCodeDef_CaptainSyrup:
-	mActCodeDefAuto ActInit_SyrupCastleBoss, ACTFLAG_ALWAYSHELD
+	mActCodeDefAuto ActInit_SyrupCastleBoss, ACTFLAG_NODESPAWNOFFSCREEN
 ActCodeDef_Lamp:
-	mActCodeDefAuto ActInit_Lamp, ACTFLAG_ALWAYSHELD
+	mActCodeDefAuto ActInit_Lamp, ACTFLAG_NODESPAWNOFFSCREEN
 ActCodeDef_LampSmoke:
 	mActCodeDefAuto ActInit_LampSmoke, ACTFLAG_UNUSED_NOBUMPKILL
 ; [TCRF] Not used directly
@@ -742,7 +742,7 @@ ActCodeDef_StoveCanyonPlatform:
 ActCodeDef_Togemaru:
 	mActCodeDefAuto ActInit_Togemaru, $00
 ActCodeDef_ThunderCloud:
-	mActCodeDefAuto ActInit_ThunderCloud, ACTFLAG_ALWAYSHELD
+	mActCodeDefAuto ActInit_ThunderCloud, ACTFLAG_NODESPAWNOFFSCREEN
 ActCodeDef_Mole:
 	mActCodeDefAuto ActInit_Mole, ACTFLAG_HEAVY
 ActCodeDef_MoleSpike:
@@ -764,9 +764,9 @@ ActCodeDef_FireMissile:
 ActCodeDef_StickBomb:
 	mActCodeDefAuto ActInit_StickBomb, $00
 ActCodeDef_Knight:
-	mActCodeDefAuto ActInit_Knight, ACTFLAG_ALWAYSHELD
+	mActCodeDefAuto ActInit_Knight, ACTFLAG_NODESPAWNOFFSCREEN
 ActCodeDef_MiniBossLock:
-	mActCodeDefAuto ActInit_MiniBossLock, ACTFLAG_ALWAYSHELD
+	mActCodeDefAuto ActInit_MiniBossLock, ACTFLAG_NODESPAWNOFFSCREEN
 ActCodeDef_Fly:
 	mActCodeDefAuto ActInit_Fly, $00
 ActCodeDef_ExitSkull:

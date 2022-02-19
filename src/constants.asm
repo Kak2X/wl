@@ -650,13 +650,13 @@ ACTB_NORESPAWN       EQU 7
 ACTFLAGB_UNUSED_NOBUMPKILL EQU 0 ; Prevents the actor from being instakilled by ActS_Unused_StunBumpKill when landing.
 ACTFLAGB_UNUSED_FREEOFFSCREEN EQU 3 ; As soon as the actor goes off-screen, it gets permanently despawned. For some reason, this is done actor-specific instead of using this flag.
 ACTFLAGB_NORECOVER EQU 5 ; Once stunned, the actor stays stunned until it goes off screen
-ACTFLAGB_ALWAYSHELD EQU 6 ; Actor forces itself as being held (for held 10coins)
+ACTFLAGB_NODESPAWNOFFSCREEN EQU 6 ; Actor does not despawn when going off-screen (will remain in mode $01)
 ACTFLAGB_HEAVY EQU 7 ; Actor marked as "heavy"
 
 ACTFLAG_UNUSED_NOBUMPKILL EQU 1 << ACTFLAGB_UNUSED_NOBUMPKILL
 ACTFLAG_UNUSED_FREEOFFSCREEN EQU 1 << ACTFLAGB_UNUSED_FREEOFFSCREEN
 ACTFLAG_NORECOVER EQU 1 << ACTFLAGB_NORECOVER
-ACTFLAG_ALWAYSHELD EQU 1 << ACTFLAGB_ALWAYSHELD
+ACTFLAG_NODESPAWNOFFSCREEN EQU 1 << ACTFLAGB_NODESPAWNOFFSCREEN
 ACTFLAG_HEAVY EQU 1 << ACTFLAGB_HEAVY
 
 ; Actor routines (lower nybble-only)

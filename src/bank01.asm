@@ -8616,7 +8616,7 @@ Mode_LevelDoor_LoadRoom:
 	;
 	ld   a, [sLvlScrollMode]
 	
-	; Disable "lag reduction" feature (+scroll spawning) when entering a boss room.
+	; If we're entering a boss room, set its special flag
 	cp   a, $F0					; ScrollMode >= $FO? (LVLSCROLL_NONE)
 	jr   nc, .bossRoom			; If so, jump
 	
@@ -8650,8 +8650,8 @@ Mode_LevelDoor_LoadRoom:
 	ret  
 	
 .bossRoom:
-	ld   a, $01				; Disable LY check
-	ld   [sActNoChkLY], a
+	ld   a, $01
+	ld   [sBossRoom], a
 	ret
 ; =============== Level_FadeInBG ===============
 ; Handles the fade in for the background tilemap.

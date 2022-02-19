@@ -66,9 +66,8 @@ ENDC
 	ld   [sPlFlags], a
 	
 .chkScrollSpawn:
-	; If the lag reduction feature is disabled (aka we're in a boss room)
-	; prevent actors from spawning when scrolling the screen
-	ld   a, [sActNoChkLY]
+	; If we're in a boss room, prevent actors from spawning when scrolling the screen
+	ld   a, [sBossRoom]
 	or   a
 	jr   nz, .noSpawn
 	call ActS_InitByScroll
@@ -110,8 +109,8 @@ ENDC
 	ld   [sActProcCount], a
 .nextDraw:
 	;--
-	; Perform the lag check again if it isn't disabled
-	ld   a, [sActNoChkLY]
+	; Perform the lag check again if this isn't a boss room
+	ld   a, [sBossRoom]
 	or   a
 	jr   nz, .chkTransparency
 	
@@ -169,8 +168,8 @@ ActS_Execute:
 	jr   z, ActS_Execute_SkipEmptySlot
 	
 	;--
-	; If the lag reduction isn't disabled, check it before executing the actor's code
-	ld   a, [sActNoChkLY]		
+	; If this is a boss room, disable the the lag reduction feature
+	ld   a, [sBossRoom]		
 	or   a
 	jr   nz, .noLagChk
 	
@@ -215,22 +214,28 @@ ActS_Execute:
 	jp   z, ActS_RemoveFromOrigLocation
 	
 	;--
-	; Check if we're holding this actor
-	ld   a, [sActSetOpts]		; Does this actor force itself to be held?
-	bit  ACTFLAGB_ALWAYSHELD, a
-	jr   nz, .held				; If so, hold it
-	
-	ld   a, [sActHeld]			; Are we holding any actor?
+	;
+	; Determine if the actor can be despawned when going off-screen.
+	; There's an option flag for actors to prevent off-screen despawning.
+	; Additionally, held actors will never despawn (which would be an issue if we went off-screen above).
+	;
+
+	; Check if the actor can despawn off-screen
+	ld   a, [sActSetOpts]			; Is the "no despawn" flag set?
+	bit  ACTFLAGB_NODESPAWNOFFSCREEN, a
+	jr   nz, .chkStatusNoDespawn	; If so, jump
+	; Check if we're holding an actor
+	ld   a, [sActHeld]				; Are we holding any actor?
 	or   a						
-	jr   z, .noHeld				; If not, jump
+	jr   z, .chkStatus				; If not, jump
 	; Are we holding exactly this slot?
 	ld   a, [sActHeldSlotNum]	
-	ld   c, a					; C = Held slot
-	ld   a, [sActNumProc]		; A = Current slot
-	cp   a, c					; Are they the same?
-	jr   z, .held				; If so, jump
+	ld   c, a						; C = Held slot
+	ld   a, [sActNumProc]			; A = Current slot
+	cp   a, c						; Are they the same?
+	jr   z, .chkStatusNoDespawn		; If so, jump
 	;--
-.noHeld:
+.chkStatus:
 	; Update the offscreen flag
 	call ActS_CheckOffScreen
 	
@@ -245,14 +250,14 @@ ActS_Execute:
 	cp   a, $01
 	jp   z, ActS_DoOffScreenMisc
 	ret
-.held:
+.chkStatusNoDespawn:
 	; Update the offscreen flag (with despawn option removed)
 	call ActS_CheckOffScreenNoDespawn
 	; If the actor is on-screen, return
 	ld   a, [sActSet]
 	cp   a, $02
 	ret  nc
-	; Otherwise use first anim frame for offscreen held objects
+	; Otherwise force reset the anim
 	xor  a
 	ld   [sActSetOBJLstId], a
 	ret
