@@ -472,8 +472,13 @@ Mode_Level:
 	
 	; [BUG] This is using outdated sLvlScroll* values, which makes the sprites desync when scrolling the screen.
 	;       It should only be done after Level_Screen_ScrollHorz and Level_Screen_ScrollVert are called.
+	
+IF FIX_BUGS == 1
+	; HomeCall_Game_Do sets the variables needed by these
+	call Level_Screen_ScrollHorz
+	call Level_Screen_ScrollVert
+ENDC
 	; Update the scroll registers, making sure to account for the offset
-IF FIX_BUGS == 0
 	ld   a, [sLvlScrollY_Low] ; hScrollY = sLvlScrollY_Low - LVLSCROLL_YOFFSET
 	sub  a, LVLSCROLL_YOFFSET	
 	ldh  [hScrollY], a
@@ -483,26 +488,17 @@ IF FIX_BUGS == 0
 	ld   a, [sLvlScrollX_High]
 	sbc  a, $00					; account for underflow
 	ld   [sScrollX_High], a
-ENDC
+
 	
 	call HomeCall_WriteWarioOBJLst	; Draw player
 	call HomeCall_ExActS_ExecuteAllAndWriteOBJLst	; Draw and execute ExAct
 	ld   a, [sPlHatSwitchTimer]
 	and  a
 	jr   nz, Game_UpdateScreen
-	call HomeCall_PlActColi_Do 							
+	call HomeCall_PlActColi_Do 	
+IF FIX_BUGS == 0	
 	call Level_Screen_ScrollHorz
 	call Level_Screen_ScrollVert
-IF FIX_BUGS == 1
-	ld   a, [sLvlScrollY_Low] ; hScrollY = sLvlScrollY_Low - LVLSCROLL_YOFFSET
-	sub  a, LVLSCROLL_YOFFSET	
-	ldh  [hScrollY], a
-	ld   a, [sLvlScrollX_Low] ; sScrollX = sLvlScrollX_Low - LVLSCROLL_XOFFSET
-	sub  a, LVLSCROLL_XOFFSET
-	ld   [sScrollX], a
-	ld   a, [sLvlScrollX_High]
-	sbc  a, $00					; account for underflow
-	ld   [sScrollX_High], a
 ENDC
 	call Level_Scroll_SetAutoScroll
 Game_UpdateScreen:
