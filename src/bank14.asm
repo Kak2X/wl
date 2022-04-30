@@ -2144,7 +2144,9 @@ Map_Unused_SyrupCastle_WaveTbl:
 Map_SyrupCastle_DoWaveEffect:
 
 IF FIX_BUGS == 1
-	ld   a, [rLY]						; C = LY elapsed
+	ldh  a, [rLY]						; C = LY elapsed
+	cp   a, $80							; < 0?
+	jr   nc, Map_SyrupCastle_DoWaveEffect	; If so, wait since we're still in VBlank
 	ld   c, a
 	ld   a, [sMapSyrupCastleWaveLines]	; B = Number of lines to perform the effect
 	sub  c								; LineCount -= LY
