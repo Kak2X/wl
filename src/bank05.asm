@@ -472,16 +472,16 @@ WriteWarioOBJLst:
 	; NOTE: This is the value used for actor collision.
 	ldh  a, [hScrollY]
 	ld   b, a				; B = ScrollY
-	ld   a, [sPlY_Low]	; A = WarioY
-	add  ACT_Y_OFFSET	; Account for the origin used by sprite mappings.
+	ld   a, [sPlY_Low]		; A = WarioY
+	add  OBJ_OFFSET_Y		; Account for the hardware offset
 	sub  a, b				; Result = WarioY + $10 - ScrollY
 	ld   [sOAMWriteY], a
 	ld   [sPlYRel], a
 	; Calculate the relative X pos
 	ld   a, [sScrollX]
 	ld   b, a				; B = ScrollX
-	ld   a, [sPlX_Low]	; A = WarioX
-	add  ACT_X_OFFSET	; ""
+	ld   a, [sPlX_Low]		; A = WarioX
+	add  OBJ_OFFSET_X		; ""
 	sub  a, b				; Result = WarioX + $08 - ScrollX
 	ld   [sOAMWriteX], a
 	ld   [sPlXRel], a
@@ -546,7 +546,7 @@ WriteExActOBJLst:
 	ldh  a, [hScrollY]		
 	ld   b, a				; B = ScrollY
 	ld   a, [sExActOBJY_Low]; A = ExActY
-	add  ACT_Y_OFFSET	; Account for the origin used by sprite mappings.
+	add  OBJ_OFFSET_Y		; Account for the hardware offset
 	sub  a, b				; Result = ExActY + $10 - ScrollY
 	ld   [sOAMWriteY], a
 	ld   [sExActOBJYRel], a
@@ -554,7 +554,7 @@ WriteExActOBJLst:
 	ld   a, [sScrollX]		
 	ld   b, a				; B = ScrollX
 	ld   a, [sExActOBJX_Low]; A = ExActX
-	add  ACT_X_OFFSET	; ""
+	add  OBJ_OFFSET_X		; ""
 	sub  a, b				; Result = ExActX + $08 - ScrollX
 	ld   [sOAMWriteX], a
 	ld   [sExActOBJXRel], a

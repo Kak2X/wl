@@ -1562,11 +1562,6 @@ LEVEL_BLOCK_VMAX EQU LEVEL_BLOCK_VCOUNT - 1
 LVLSCROLL_YBLOCKOFFSET EQU LVLSCROLL_YOFFSET/BLOCK_HEIGHT
 LVLSCROLL_XBLOCKOFFSET EQU LVLSCROLL_XOFFSET/BLOCK_WIDTH
 
-; Offset for calculating relative player/actor position
-; This places the origin at the bottom-center of the actor
-ACT_Y_OFFSET EQU $10 ; 2 tiles
-ACT_X_OFFSET EQU $08 ; 1 tile
-
 ; Level scroll mode
 LVLSCROLL_SEGSCRL EQU $00
 LVLSCROLL_TRAIN   EQU $01
