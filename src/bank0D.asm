@@ -930,7 +930,7 @@ Game_DoPostHitInvuln:
 	jr   z, .instakill
 	cp   a, $5D					; < $5D ok
 	jr   c, Pl_DoCtrl
-	cp   a, BLOCKID_EMPTY		; >= $60 all empty
+	cp   a, BLOCKID_EMPTY_START	; >= $60 all empty
 	jr   nc, Pl_DoCtrl
 								; < $60 main spike area
 .spike:
@@ -3706,7 +3706,7 @@ IF FIX_FUN_BUGS == 1
 	; [BUG] Fixes ground walking when descending on water.
 	; If we're over a water block, switch to the swim action .
 	; This can only happen if a water current moves us down during a jet dash.
-	cp   a, BLOCKID_WATER		; Block ID < WATER_START?
+	cp   a, BLOCKID_WATER_START	; Block ID < WATER_START?
 	jr   c, .noLandWater   		; If so, jump
 	cp   a, BLOCKID_WATER_END	; Block ID < (first ID after end of water blocks)?
 	jr   c, .landWater			; If so, jump
@@ -7482,7 +7482,7 @@ ExAct_WaterBubble:
 	
 	; $4A is the first water block
 	; If the bubble is colliding with anything before, it should despawn
-	cp   a, BLOCKID_WATER
+	cp   a, BLOCKID_WATER_START
 	jr   c, .despawn
 	; Same for anything >= $5C, which is after the last water block
 	cp   a, BLOCKID_WATER_END

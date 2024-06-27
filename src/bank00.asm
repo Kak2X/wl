@@ -4118,7 +4118,7 @@ ExActBGColi_DragonHatFlame_CheckBlockId:
 	; Perform standard block ID check
 	cp   a, BLOCKID_SOLID_END				; < $28?
 	jp   c, BGColi_Solid					; If so, all fully solid
-	cp   a, BLOCKID_EMPTY					; < $60?
+	cp   a, BLOCKID_EMPTY_START				; < $60?
 	jr   c, .checkDetail					; If so, *check more*
 	jp   BGColi_Empty						; Otherwise, all fully empty
 .checkDetail:
@@ -4394,7 +4394,7 @@ PlBGColi_DoDash_CheckBlock:
 	; Usual rules for handling block collision
 	cp   a, BLOCKID_SOLID_END	; < $28?
 	jr   c, BGColi_Solid		; If so, all solid
-	cp   a, BLOCKID_EMPTY		; < $60?
+	cp   a, BLOCKID_EMPTY_START	; < $60?
 	jr   c, .checkMisc			; If so, it depends
 	jr   BGColi_Empty			; The rest is all empty
 .checkMisc:
@@ -5071,7 +5071,7 @@ PlBGColi_DoGround:
 	cp   a, BLOCKID_SOLID_END		; < $28?
 	jr   c, .coli_solid			; If so, all fully solid
 	
-	cp   a, BLOCKID_EMPTY			; < $60?
+	cp   a, BLOCKID_EMPTY_START		; < $60?
 	jr   c, .checkDetail	; If so, *check more*
 	
 .coli_empty:
@@ -5499,7 +5499,7 @@ PlBGColi_DoTop:
 	cp   a, BLOCKID_SOLID_END
 	jp   c, BGColi_Solid
 	
-	cp   a, BLOCKID_EMPTY		; $28-$5F is mixed
+	cp   a, BLOCKID_EMPTY_START	; $28-$5F is mixed
 	jr   c, .checkDetail
 	
 	xor  a						; >= $60 all empty
@@ -5847,7 +5847,7 @@ PlBGColi_DoHorz:
 PlBGColi_DoHorz_BlockType:
 	cp   a, BLOCKID_SOLID_END	; < $28 for always solid
 	jp   c, BGColi_Solid
-	cp   a, BLOCKID_EMPTY		; in-between is misc
+	cp   a, BLOCKID_EMPTY_START	; in-between is misc
 	jr   c, PlBGColi_DoHorz_CheckType
 	xor  a						; >= $60 for always empty 
 	ret

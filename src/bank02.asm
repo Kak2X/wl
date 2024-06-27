@@ -507,17 +507,17 @@ ActBGColi_IsSolidOnTop:
 	cp   a, BLOCKID_SANDSPIKE
 	jp   z, ActBGColi_Ret0
 
-	cp   a, BLOCKID_WATERHARDBREAK
+	cp   a, BLOCKID_WATERBREAKHARD58
 	jp   z, ActBGColi_Ret1
-	cp   a, BLOCKID_WATERBREAK
+	cp   a, BLOCKID_WATERBREAK58
 	jp   z, ActBGColi_Ret1
-	cp   a, BLOCKID_WATERBREAK2
+	cp   a, BLOCKID_WATERBREAKTODOORTOP
 	jp   z, ActBGColi_Ret1
 	cp   a, BLOCKID_WATERBREAKTODOOR
 	jp   z, ActBGColi_Ret1
 	
 	; The all-solid and all-empty checks got thrown in the middle here
-	cp   a, BLOCKID_EMPTY		; >= $60?
+	cp   a, BLOCKID_EMPTY_START	; >= $60?
 	jp   nc, ActBGColi_Ret0	; If so, jump
 	cp   a, BLOCKID_SOLID_END	; < $28?
 	jp   c, ActBGColi_Ret1		; If so, jump
@@ -527,7 +527,7 @@ ActBGColi_IsSolidOnTop:
 	cp   a, BLOCKID_WATERCUR	; >= $4B?
 	jp   nc, ActBGColi_Ret0	; If so, empty
 	;--
-	cp   a, BLOCKID_COIN		; >= $46?
+	cp   a, BLOCKID_COIN7F		; >= $46?
 	jp   nc, ActBGColi_Ret0	; If so, empty
 	jp   ActBGColi_Ret1		; Rest is solid
 ; =============== ActBGColi_IsEmptyWaterBlock ===============
@@ -539,7 +539,7 @@ ActBGColi_IsSolidOnTop:
 ; - A: If *0*, this is an empty water block
 ActBGColi_IsEmptyWaterBlock:
 	; This returns 0 for blocks:
-	; - BLOCKID_WATER ($4A)
+	; - BLOCKID_WATERITEMBOXHIDE ($4A)
 	; - BLOCKID_WATERCURU ($4C)
 	; - BLOCKID_WATERCURD ($4D)
 	; - BLOCKID_WATERCURL ($4E)
@@ -560,23 +560,23 @@ ActBGColi_IsEmptyWaterBlock:
 	; [BUG] They forgot to check for BLOCKID_WATERDOOR!
 	;       This causes Act_Seal to get stuck if placed between
 	;       the door and a solid wall in C27.
-	cp   a, BLOCKID_WATER				; == $4A
+	cp   a, BLOCKID_WATERITEMBOXHIDE	; == $4A
 	jp   z, ActBGColi_Ret0
 IF FIX_BUGS == 1
 	cp   a, BLOCKID_WATERDOOR			; == $4B
 	jp   z, ActBGColi_Ret0
 ENDC
-	cp   a, BLOCKID_WATERHARDBREAK		; not == $50
+	cp   a, BLOCKID_WATERBREAKHARD58	; not == $50
 	jp   z, ActBGColi_Ret1
-	cp   a, BLOCKID_WATERBREAK			; not == $51
+	cp   a, BLOCKID_WATERBREAK58		; not == $51
 	jp   z, ActBGColi_Ret1
-	cp   a, BLOCKID_WATERBREAK2			; not == $52
+	cp   a, BLOCKID_WATERBREAKTODOORTOP	; not == $52
 	jp   z, ActBGColi_Ret1
 	cp   a, BLOCKID_WATERBREAKTODOOR	; not == $54
 	jp   z, ActBGColi_Ret1
 	cp   a, BLOCKID_WATERCUR			; not < $4C
 	jp   c, ActBGColi_Ret1
-	cp   a, BLOCKID_EMPTY				; not >= 60
+	cp   a, BLOCKID_EMPTY_START			; not >= 60
 	jp   nc, ActBGColi_Ret1
 	jp   ActBGColi_Ret0				; The rest is empty water
 	
@@ -600,7 +600,7 @@ ActBGColi_IsSpikeBlock:
 	jp   z, ActBGColi_Ret1			; 
 	cp   a, BLOCKID_WATERSPIKE		; not < $59
 	jp   c, ActBGColi_Ret0			; 
-	cp   a, BLOCKID_EMPTY			; not >= $60
+	cp   a, BLOCKID_EMPTY_START		; not >= $60
 	jp   nc, ActBGColi_Ret0		; 
 	cp   a, BLOCKID_WATERDOORTOP	; not == $5B
 	jp   z, ActBGColi_Ret0			;
@@ -631,24 +631,24 @@ ActBGColi_IsSolid:
 	jp   z, ActBGColi_Ret0
 	cp   a, BLOCKID_SANDSPIKE
 	jp   z, ActBGColi_Ret0
-	cp   a, BLOCKID_WATERHARDBREAK
+	cp   a, BLOCKID_WATERBREAKHARD58
 	jp   z, ActBGColi_Ret1
-	cp   a, BLOCKID_WATERBREAK
+	cp   a, BLOCKID_WATERBREAK58
 	jp   z, ActBGColi_Ret1
-	cp   a, BLOCKID_WATERBREAK2
+	cp   a, BLOCKID_WATERBREAKTODOORTOP
 	jp   z, ActBGColi_Ret1
 	cp   a, BLOCKID_WATERBREAKTODOOR
 	jp   z, ActBGColi_Ret1
 	
 	; The all-solid and all-empty checks got thrown in the middle here
-	cp   a, BLOCKID_EMPTY		; >= $60?
+	cp   a, BLOCKID_EMPTY_START	; >= $60?
 	jp   nc, ActBGColi_Ret0		; If so, jump
 	cp   a, BLOCKID_SOLID_END	; < $28?
 	jp   c, ActBGColi_Ret1		; If so, jump
 	
 	cp   a, BLOCKID_WATERCUR	; not >= $4C
 	jp   nc, ActBGColi_Ret0
-	cp   a, BLOCKID_COIN		; not < $46
+	cp   a, BLOCKID_COIN7F		; not < $46
 	jp   nc, ActBGColi_Ret0
 	cp   a, $40					; not == $40
 	jp   z, ActBGColi_Ret0
