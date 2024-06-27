@@ -2128,15 +2128,11 @@ Level_ScreenLock_DoBottom:
 	cp   a, HIGH(LEVEL_HEIGHT) - 1		; Are we on a lowest sector of the level?
 	ret  nz								; If not, return
 	
-	; [BUG?] For some reason, freescroll triggers the bottom screen lock a full
-	;        block ($10) above the normal limit.
-	;        Remove the - $10 to show the normal range like in segscrl mode.
+	; [POI] For some reason, freescroll intentionally triggers the bottom screen lock a full
+	;       block ($10) above the normal limit, with the stage scrolling designed for it.
+	;       Remove the $10 to show the full area.
 
-IF FIX_BUGS == 1	
-FREESCROLL_LOW_BORDER EQU ($100-LVLSCROLL_YOFFSET)
-ELSE
 FREESCROLL_LOW_BORDER EQU ($100-LVLSCROLL_YOFFSET)-$10
-ENDC
 
 	ld   a, [sLvlScrollY_Low]		
 	cp   a, FREESCROLL_LOW_BORDER		; Is the screen fully scrolled to the bottom (or over the limit)?
@@ -3769,7 +3765,7 @@ OAMDMACode_End:
 ; -  A: Overwrite with this value
 ; - HL: Start address
 ; -  B: Bytes to overwrite
-ClearRAMRange_Mini:;CR
+ClearRAMRange_Mini:
 	ldi  [hl], a
 	dec  b
 	jr   nz, ClearRAMRange_Mini
@@ -3782,7 +3778,7 @@ ClearRAMRange_Mini:;CR
 ; -  A: Overwrite with this value
 ; - HL: Start address
 ; - BC: Bytes to overwrite
-ClearRAMRange:;C
+ClearRAMRange:
 	ld   d, a 			; Save for later
 	
 	; --
@@ -3796,9 +3792,9 @@ ClearRAMRange:;C
 	inc  b		
 	;--
 
-.noAdd100:;R
+.noAdd100:
 	ld   a, d
-.loop:;R
+.loop:
 	ldi  [hl], a
 	dec  c 				; Decrement the low byte, then check.
 						; When it's 0x00, it becomes 0xFF and counts as 0x100 extra bytes.
@@ -3879,7 +3875,7 @@ Wario_DoDashAfterimages:
 	ld   a, [sPlTimer]	
 	inc  a
 	; Have we reached the end of the table? If so, reset the index.
-	cp   a, (Wario_DashAfterimageTbl_End - Wario_DashAfterimageTbl)
+	cp   a, (Wario_DashAfterimageTbl.end - Wario_DashAfterimageTbl)
 	jr   nz, .setFrame
 	xor  a
 .setFrame:
@@ -3915,7 +3911,7 @@ Wario_DashAfterimageTbl:
 	db -$03
 	db +$00
 	db +$04
-Wario_DashAfterimageTbl_End:
+.end:
 
 ; =============== Wario_PlayWalkSFX ===============
 ; Two subroutines for plays the walking SFX every N number of frames.
