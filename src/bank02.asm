@@ -6106,13 +6106,13 @@ Act_BigSwitchBlock:
 	
 	ld   a, [sActLocalRoutineId]
 	rst  $28
-	dw Act_BigSwitchBlock_Move
+	dw Act_BigSwitchBlock_Idle
 	dw Act_BigSwitchBlock_Stun
 	dw Act_BigSwitchBlock_Alert
 	
-; =============== Act_BigSwitchBlock_Move ===============
+; =============== Act_BigSwitchBlock_Idle ===============
 ; Waits for the player to activate the block.
-Act_BigSwitchBlock_Move:
+Act_BigSwitchBlock_Idle:
 	
 	ld   a, [sActSetRoutineId]
 	and  a, $0F
@@ -6132,7 +6132,6 @@ Act_BigSwitchBlock_Move:
 	
 	xor  a
 	ld   [sActModeTimer], a
-	
 	ld   a, SFX4_02	; Trigger screen shake with appropriate sfx
 	ld   [sSFX4Set], a
 	ld   a, $04
@@ -7903,23 +7902,18 @@ Act_BigItemBox_Idle:
 	
 	xor  a
 	ld   [sActModeTimer], a
+	; [BUG] Hitting the block by dashing underwater glitches the player upwards, softlocking them until time runs out.
+	;       Prevent that from happening by resetting the jet dash timer.
+IF FIX_BUGS
+	ld   [sPlJetDashTimer], a
+ENDC
+
 	ld   a, SFX4_02
 	ld   [sSFX4Set], a
 	ld   a, $04						; Trigger screen shake for 4 frames
 	ld   [sScreenShakeTimer], a
 	ld   a, $01						; Mark as used for the entire level
 	ld   [sActBigItemBoxUsed], a
-IF FIX_BUGS == 1
-	; [BUG] If we hit the box by jetdashing underwater near the bottom of the actor,
-	;       it would cause problems by forcing out Wario of the jet dash in an unsafe way.
-	;ld   a, [sPlAction]
-	;cp   a, PL_ACT_DASHJET			; Are we jetdashing?
-	;ret  nz							; If not, return
-	;xor  a
-	;ld   a, [sPlAction]
-	;ld   a, [sPlJetDashTimer]
-	;mSubCall Pl_SwitchToDashRebound ; If so, end the dash prematurely
-ENDC
 	ret
 	
 ; =============== Act_BigItemBox_Hit ===============
