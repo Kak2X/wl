@@ -6,7 +6,7 @@
 ; OUT
 ; - C: If set (c), the player is to the right of the actor.
 ;      If clear (nc), the player is to the left of the actor. 
-mActGetPlDirHRel: MACRO
+MACRO mActGetPlDirHRel
 	; Add $100 to both of them, to prevent any underflowing
 	ld   a, [sPlX_Low]		; BC = PlX + $100
 	ld   c, a
@@ -1216,7 +1216,7 @@ Act_ParsleyWoodsBoss_IncUSpeed:
 ; - 2: Y Target position
 ; OUT
 ; - A: If 0, we reached the target position (by not moving in any direction)
-mPwBossTarget: MACRO
+MACRO mPwBossTarget
 	ld   d, $00				; Init return value
 	
 	;
@@ -3353,7 +3353,7 @@ GFX_Act_StoveCanyonBoss_Unused_Extra: INCBIN "data/gfx/actor/stovecanyonboss_unu
 ; IN
 ; - 1: Base address
 ; - 2: Rows to draw.
-mStoveCanyonBoss_BGWriteCall: MACRO
+MACRO mStoveCanyonBoss_BGWriteCall
 I = 0
 REPT \2
 	ld   hl, \1 + (BG_TILECOUNT_H * I)
@@ -3395,7 +3395,7 @@ BG_Act_StoveCanyonBoss_MouthOpen: INCBIN "data/bg/level/stovecanyonboss_mouthope
 ; IN
 ; - BC: Ptr to tilemap
 ; - HL: Destination in VRAM
-mStoveCanyonBoss_BGWrite: MACRO
+MACRO mStoveCanyonBoss_BGWrite
 	mWaitForNewHBlank
 	ld   a, [bc]		; A = Tile ID
 	inc  bc				; TilemapPtr++

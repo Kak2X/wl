@@ -439,7 +439,7 @@ Level_ActLayoutPtrTable:
 ;
 ; IN
 ; - 1: Room identifier
-mActGroup: MACRO
+MACRO mActGroup
 	ld   a, LOW(ActGroupCodeDef_\1)	; ActorID -> CodePtr Table
 	ld   [sActGroupCodePtrTable], a
 	ld   a, HIGH(ActGroupCodeDef_\1)
@@ -454,7 +454,7 @@ ENDM
 ; which doesn't make any difference at the end, since the treasure check if handled differently there.
 ; IN
 ; - 1: Treasure ID
-mActGroup_Treasure: MACRO
+MACRO mActGroup_Treasure
 	ld   a, \1
 	ld   [sActTreasureId], a
 ENDM
@@ -464,14 +464,14 @@ ENDM
 ; and performs the treasure check room to check a key or treasure door.
 ; IN
 ; - 1: Treasure ID
-mActGroup_CheckTreasure: MACRO
+MACRO mActGroup_CheckTreasure
 	mActGroup_Treasure \1
 	call Level_CheckTreasureStatus
 ENDM
 
 ; =============== mActGroup_OpenExit ===============
 ; Option for a room to have the exit door automatically opened.
-mActGroup_OpenExit: MACRO
+MACRO mActGroup_OpenExit
 	ld   a, LOCK_OPEN
 	ld   [sLvlExitDoor], a
 ENDM
@@ -480,7 +480,7 @@ ENDM
 ; Option for specifying the contents of a big item box.
 ; IN
 ; - 1: Item type
-mActGroup_BigItem: MACRO
+MACRO mActGroup_BigItem
 	ld   a, \1
 	ld   [sActBigItemBoxType], a
 ENDM
@@ -491,7 +491,7 @@ ENDM
 ; IN
 ; - 1: Ptr to map completion bitmask
 ; - 2: Level number
-mActGroup_CheckBoss: MACRO
+MACRO mActGroup_CheckBoss
 	ld   a, [\1]					; Is the boss already completed?
 	bit  \2, a
 	jp   nz, Level_AutoClearBoss	; If so, jump

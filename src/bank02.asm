@@ -16,7 +16,7 @@ ActS_ClearRAM:
 	jr   nz, .loop	; If so, loop
 	ret
 ; =============== mActS_NextProc ===============
-mActS_NextProc: MACRO
+MACRO mActS_NextProc
 	mActS_Next sActLastProc
 ENDM
 
@@ -25,7 +25,7 @@ ENDM
 ; If it reaches the end of the slot count ($07) it will be reset to $00.
 ; IN
 ; - 1: Ptr to slot counter
-mActS_Next: MACRO
+MACRO mActS_Next
 	; sActNumProc = (sActNumProc + 1) % 8
 	ld   a, [\1]
 	inc  a
@@ -1378,7 +1378,7 @@ ActS_FindFirstFreeSlot:
 ; IN
 ; - 1: Shared tbl offset (facing left)
 ; - 2: Shared tbl offset (facing right)
-mActS_SetOBJLstShared: MACRO
+MACRO mActS_SetOBJLstShared
 	; Use the shared parent offset depending on the direction it's facing.
 	; Yes, the game uses different OBJLst depending on the actor's direction,
 	; likely to save on processing time.
@@ -2379,7 +2379,7 @@ ActS_StartStunNormStub:
 ; - 2: Ptr to where the result (collision box pos) is saved
 ; - C: Actor relative coord (X or Y), aka the origin
 ; - E: Some constant which is always $B0
-mSetAbsBoxBound: MACRO
+MACRO mSetAbsBoxBound
 	; Res = ColiSize + Origin - $B0
 	ld   a, [\1]	; Get the box width or height (relative to the origin)
 	add  c		; Add the origin

@@ -188,7 +188,7 @@ Act_Unused_SpawnCustom:
 
 ; =============== mActS_SetOBJLstTableForDefault ===============
 ; This macro generates code for an inline ActS_SetOBJLstTableForDefault.
-mActS_SetOBJLstTableForDefault: MACRO
+MACRO mActS_SetOBJLstTableForDefault
 	; Generate the table index
 	; DE = ((sActSetId & $0F) - 7) * 2
 	ld   a, [sActSetId]
@@ -3729,7 +3729,7 @@ Act_SSTeacupBoss_Mode_CoinGame:
 ; - 2: X offset (in tiles)
 ; - 3: Y offset (in tiles)
 ; - 4: Tiles to copy
-mSSTeacupBoss_BGWriteCall: MACRO
+MACRO mSSTeacupBoss_BGWriteCall
 	ld   hl, \1 + (BG_TILECOUNT_H * \3) + \2
 	call Act_SSTeacupBoss_BGWrite\4
 ENDM
@@ -3875,7 +3875,7 @@ BG_Act_SSTeacupBoss_ClawsUp: INCBIN "data/bg/level/ssteacupboss_clawsup.bin"
 ; IN
 ; - DE: Ptr to tilemap
 ; - HL: Destination in VRAM
-mSSTeacupBoss_BGWrite: MACRO
+MACRO mSSTeacupBoss_BGWrite
 	mWaitForNewHBlank
 	ld   a, [de]		; A = Tile ID
 	inc  de				; TilemapPtr++

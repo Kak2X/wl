@@ -5217,7 +5217,7 @@ Mode_Treasure_InitTrRoom:
 ; IN
 ; - 1: Letter of the treasure.
 ; - 2: Label to bitmask containing this treasure
-mTrRoom_ChkDrawTreasure: MACRO
+MACRO mTrRoom_ChkDrawTreasure
 	ld   a, [\2]
 	bit  TREASUREB_\1, a
 	call nz, TrRoom_DrawTreasure\1
@@ -5228,7 +5228,7 @@ ENDM
 ; IN
 ; - 1: Block ID of the treasure (relative to LevelBlock_TrRoom)
 ; - 2: Ptr to table with 4 VRAM Pointers (one for each 8x8 tile in the standard order)
-mTrRoom_DrawTreasure: MACRO
+MACRO mTrRoom_DrawTreasure
 	ld   a, \1							; Set block ID
 	call Level_Scroll_SetOnlyBlockID	
 	call Level_Scroll_CreateTileIdList	; Get the 4 tiles from that
@@ -5241,7 +5241,7 @@ ENDM
 ; Defines the VRAM tilemap pointers for a 16x16 block (block16).
 ; IN
 ; - 1: Tilemap address for the top-left 8x8 tile.
-dvbgblock: MACRO
+MACRO dvbgblock
 	dwb \1+$00 ; TOP-LEFT
 	dwb \1+$01 ; TOP-RIGHT
 	dwb \1+BG_TILECOUNT_H+$00 ; BOTTOM-LEFT
@@ -5904,7 +5904,7 @@ TrRoom_GetSparklePos:
 ;; - 4: Y Coord of the treasure
 ;; - 5: Fallback letter to check if we didn't collect treasure \1
 ;; - 6: Where to check for the treasure completion status
-;mGetSparklePos: MACRO
+;MACRO mGetSparklePos
 ;	; If we do not have this treasure, check the fallback instead
 ;	ld   a, [\6]					
 ;	bit  TREASUREB_\2, a			; Do we have it?
@@ -7955,7 +7955,7 @@ BG_StatusBar: INCBIN "data/bg/statusbar.bin"
 
 ; =============== mHatSwitch_Timing ===============
 ; Every 4 frames decrements the hat switch timer.
-mHatSwitch_Timing: MACRO
+MACRO mHatSwitch_Timing
 	ld   a, [sTimer]
 	and  a, $03
 	ret  nz
@@ -7969,7 +7969,7 @@ ENDM
 ; IN
 ; - 1: Label to subroutine for setting OBJLst (even timer ticks)
 ; - 2: Label to subroutine for setting OBJLst (odd timer ticks)
-mHatSwitch_BigToSmall: MACRO
+MACRO mHatSwitch_BigToSmall
 	mHatSwitch_BigToSmallEx \1,\2,jp,jp,jp
 ENDM
 
@@ -7981,7 +7981,7 @@ ENDM
 ; - 3: Jump type for Game_HatSwitchAnim_End
 ; - 4: Jump type for \1
 ; - 5: Jump type for \2
-mHatSwitch_BigToSmallEx: MACRO
+MACRO mHatSwitch_BigToSmallEx
 	mHatSwitch_Timing
 	
 	; If it elapsed, reload the final graphics and then cleanup
@@ -8000,7 +8000,7 @@ ENDM
 ; IN
 ; - 1: Label to subroutine for setting OBJLst (even timer ticks)
 ; - 2: Label to subroutine for setting OBJLst (odd timer ticks)
-mHatSwitch_BigToSmall2: MACRO
+MACRO mHatSwitch_BigToSmall2
 	mHatSwitch_BigToSmall2Ex \1,\2,jp,jp,jp,jp,jp
 ENDM
 
@@ -8014,7 +8014,7 @@ ENDM
 ; - 5: Jump type for Game_HatSwitchAnim_EndSwitchLoopNormHat
 ; - 6: Jump type for \1
 ; - 7: Jump type for \2
-mHatSwitch_BigToSmall2Ex: MACRO
+MACRO mHatSwitch_BigToSmall2Ex
 	; If we've already copied both sets, do the main anim effect
 	ld   a, [sPlHatSwitchDrawMode]
 	cp   a, PL_HSD_END							; Anim frame? (+timer decrement)
@@ -8041,7 +8041,7 @@ ENDM
 ; Template macro for switching from Small Wario to another powerup state.
 ; IN
 ; - 1: ScreenUpdate mode for writing the primary GFX set.
-mHatSwitch_SmallToBig: MACRO
+MACRO mHatSwitch_SmallToBig
 	; Since Small Wario doesn't have an hat, we don't need to switch the hat GFX
 	; over and over unlike in other templates.
 	;
@@ -8072,7 +8072,7 @@ ENDM
 ; IN
 ; - 1: Label to subroutine for setting the hat mode (even timer ticks)
 ; - 2: Label to subroutine for setting the hat mode (odd timer ticks)
-mHatSwitch_BigToBig: MACRO
+MACRO mHatSwitch_BigToBig
 	mHatSwitch_BigToBigEx \1,\2, jp,jp,jp,jp,jp
 ENDM
 
@@ -8087,7 +8087,7 @@ ENDM
 ; - 5: Jump type for Game_HatSwitchAnim_EndSwitchLoop
 ; - 6: Jump type for \1
 ; - 7: Jump type for \2
-mHatSwitch_BigToBigEx: MACRO
+MACRO mHatSwitch_BigToBigEx
 	; The first thing we're doing is switching between old and new primary hat GFX
 	; every 4 frames, as timed by the standard mHatSwitch_Timing. 
 	; 
@@ -8416,7 +8416,7 @@ IF FIX_BUGS == 1
 ; Generates code for versions of Game_HatSwitch_Set*HatMode that account for collecting a powerup while climbing.
 ; IN
 ; - \1: Hat ID
-mSetMainHatMode: MACRO
+MACRO mSetMainHatMode
 	; When facing back, set the secondary mode instead
 	ld   a, [sPlAction]
 	cp   a, PL_ACT_CLIMB				; Are we climbing?
@@ -10077,7 +10077,7 @@ OBJLstAnimOff_BombWario:
 ; - 1: Ptr to coordinate table
 ; - 2: Ptr to WorkOAM Slot
 ; - 3: Tile ID used
-mSaveSetBrickPos: MACRO
+MACRO mSaveSetBrickPos
 	; The brick coordinates are stored in a table of Y/X coords.
 	; Index this table.
 	ld   hl, \1

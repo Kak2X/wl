@@ -165,7 +165,7 @@ SaveSel_InitOBJ:
 ; -  1: Ptr to level cleared count (BCD)
 ; -  2: Y coord of text
 ; -  3: X coord of text
-mSetLevelText: MACRO
+MACRO mSetLevelText
 	; Upper digit
 	ld   a, \2		; Y Coord
 	ldi  [hl], a

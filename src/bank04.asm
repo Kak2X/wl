@@ -835,7 +835,7 @@ Sound_CopyWavePattern:
 ; -  2: Ptr to SRAM mirror of the above (destination 2)
 ; -  3: Registers for the sound channel (bytes to copy)
 ; - DE: Ptr to sound data, in the register order. (source data)
-mSound_SetCh: MACRO
+MACRO mSound_SetCh
 	push hl
 	ld   hl, \1	; HL = Ptr to first reg
 	ld   bc, \2	; BC = Ptr to first sound register copy for SFX
@@ -1276,7 +1276,7 @@ Sound_ParseBGMHeader:
 ; -  2: Target label in case the chunk isn't null
 ; OUT:
 ; - HL: Ptr to the sound channel chunk ptr
-mBGMHeader_ChkChunk: MACRO
+MACRO mBGMHeader_ChkChunk
 	ld   a, [\1] 			; HL = Ptr to channel chunk list
 	ld   h, a
 	ld   a, [\1+1]
@@ -1294,7 +1294,7 @@ ENDM
 ; - 2: Ptr to BGMCh?On flag, to allow playback on that sound channel
 ; - 3: Sound channel number
 ;  HL: Ptr to the sound channel chunk ptr
-mBGMHeader_SetCmdTblPtr: MACRO
+MACRO mBGMHeader_SetCmdTblPtr
 	ld   a, \3				; Mark the channel as enabled
 	ld   [\2], a
 	ldi  a, [hl]			; Store to the address the first CmdTbl pointer of the chunk
@@ -4952,7 +4952,7 @@ SFX4_Empty:
 ; 2: rNR43 data
 ; 3: rNR44 data
 ;
-; [TCRF] Table marked with ;X are unused
+; [TCRF] Entries marked with ;X are unused
 ;
 Sound_BGMNoiseTable:
 	db $00,$00,$00,$C0;X ; [TCRF] Unused for the same reason as Sound_BGMPitchTable

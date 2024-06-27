@@ -189,7 +189,7 @@ SaveSel_AnimPipes:
 ; Used by sets of subroutines to flash the level count digits of completed saves.
 ; IN:
 ; - 1: Ptr to left digit (WorkOAM)
-mAnimPipeText: MACRO
+MACRO mAnimPipeText
 	; Every $08 frames...
 	ld   a, [sTimer]
 	and  a, $07
@@ -215,7 +215,7 @@ SaveSel_AnimPipe3Text: mAnimPipeText sSaveDigit4
 ; - 1: Tile ID 0
 ; - 2: Tile ID 1
 ; - 3: Tile ID 2
-mPipeFrame: MACRO
+MACRO mPipeFrame
 	ld   a, [sBGTmpPtr]		; HL = Ptr to pipe in screen update dats
 	ld   h, a
 	ld   a, [sBGTmpPtr+1]
@@ -5595,7 +5595,7 @@ Pl_DoCtrl_TreasureGet:
 ; - E: Some constant which is always $B0
 ; OUT
 ; - A: Collision border position (x or y), relative to the screen.
-mAbsBoxBound: MACRO
+MACRO mAbsBoxBound
 	ld   hl, \1			; HL = Box height in direction (relative to origin)
 	ld   a, [\2]		; A = Actor relative coord (X or Y)
 	add  [hl]		; A = Box + ActRelCoord
@@ -5613,7 +5613,7 @@ ENDM
 ; OUT
 ; - A: Distance between the two borders 
 ;      The smallest the value is, the higher priority it has.
-mActColiChkBorder: MACRO
+MACRO mActColiChkBorder
 	; The lower/higher designation is important.
 	
 	; By checking the opposite corners (right -> left, up -> down...) of two different bounding boxes,
@@ -7207,7 +7207,7 @@ ExAct_DragonHatFlame_SetColiV:
 ; IN
 ; - 1: Left collision border
 ; - 2: Right collision border
-mDragonHatFlame_SetHColi: MACRO
+MACRO mDragonHatFlame_SetHColi
 	ld   a, $01							; Only makes sense when the flame can damage actors
 	ld   [sPlDragonFlameDamage], a
 	ld   a, \1
@@ -7221,7 +7221,7 @@ ENDM
 ; IN
 ; - 1: Normal anim frame
 ; - 2: Frame used for swimming
-mDragonHatFlame_Draw: MACRO
+MACRO mDragonHatFlame_Draw
 	;--
 	; Draw every other frame for a transparency effect
 	ld   a, [sTimer]
@@ -7243,7 +7243,7 @@ ENDM
 
 ; =============== mDragonHatFlame_WaitAnimTimer ===============
 ; Waits for the anim timer to be reset
-mDragonHatFlame_WaitAnimTimer: MACRO
+MACRO mDragonHatFlame_WaitAnimTimer
 	ld   a, [sExActAnimTimer]
 	and  a						; Timer was reset?
 	ret  nz						; If not, return
@@ -7253,7 +7253,7 @@ ENDM
 ; Plays SFX, meant after the anim timer is reset
 ; IN
 ; - 1: SFX4 ID
-mDragonHatFlame_SetSFX: MACRO
+MACRO mDragonHatFlame_SetSFX
 	ld   a, \1
 	ld   [sSFX4Set], a
 ENDM
@@ -7262,7 +7262,7 @@ ENDM
 ; Switches to the next act when the previous steps are repeated a certain amount.
 ; IN
 ; - 1: Full loops to wait for
-mDragonHatFlame_WaitNextAct: MACRO
+MACRO mDragonHatFlame_WaitNextAct
 	ld   a, [sExActTimer]				; sExActTimer++
 	inc  a
 	ld   [sExActTimer], a
@@ -7697,7 +7697,7 @@ ExAct_TreasureGet:
 ; - 1: Target X position for the actor
 ; - 2: Tilemap ptr to the 16x16 block
 ; - 3: Block ID to write to /2.
-mDefTreasurePath: MACRO
+MACRO mDefTreasurePath
 	; Move treasure to the right at 1px/frame
 	ld   a, [sExActOBJFixX]
 	inc  a
@@ -7806,7 +7806,7 @@ ExAct_TrRoom_Sparkle:
 ; IN
 ; - 1: 16x16 fixed block location
 ; - 2: Block ID to write
-mExAct_SwitchHit: MACRO
+MACRO mExAct_SwitchHit
 	; Action sequence
 	ld   a, [sExActRoutineId]
 	dec  a

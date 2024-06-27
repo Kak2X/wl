@@ -739,7 +739,7 @@ Map_C32ClearCutscene_Do:
 ; Generates timer elapse code
 ; IN
 ; - 1: Jump target if the target isn't reached
-mC32Wait: MACRO
+MACRO mC32Wait
 	ld   a, [sMapC32CutsceneTimerTarget]	; B = Timer target
 	ld   b, a
 	ld   a, [sMapC32CutsceneTimer]			; A = Timer
@@ -752,7 +752,7 @@ ENDM
 ; IN
 ; - 1: Target timer value
 ; - 2: Jump target if the target isn't reached
-mC32WaitFix: MACRO
+MACRO mC32WaitFix
 	ld   a, [sMapC32CutsceneTimer]
 	inc  a
 	ld   [sMapC32CutsceneTimer], a
@@ -991,7 +991,7 @@ Map_Ending_Do:
 ;--
 ; Common code snippets used across all acts
 ; The 4 frame delay
-mMapEnding_Timing: MACRO
+MACRO mMapEnding_Timing
 	ld   a, [sMapTimer_Low]
 	and  a, $03
 	ret  nz
@@ -999,7 +999,7 @@ ENDM
 
 ; Animates Mario's helicopter by alternating between two frames
 ; Do not use for the small helicopter OBJ
-mMapEnding_AnimHeli: MACRO
+MACRO mMapEnding_AnimHeli
 	ld   a, [sMapEndingHeliLstId]
 	xor  $01
 	ld   [sMapEndingHeliLstId], a
@@ -2809,7 +2809,7 @@ Map_Overworld_AnimFlags:
 ; IN:
 ; - 1: Starting pointer to flag coord data
 ;
-mMap_UpdateFlagCoords: MACRO
+MACRO mMap_UpdateFlagCoords
 	; Flag coord data is always made of 4 consecutive values.
 	; sMap?FlagY
 	; sMap?FlagScrollYLast                   

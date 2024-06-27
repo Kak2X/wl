@@ -413,7 +413,7 @@ ENDC
 ; IN
 ; - 1: Map completion bitmask id
 ; - 2: Bit number marking the level
-lvlbcomp: MACRO
+MACRO lvlbcomp
 	db (\1 * $10)|(\2)
 ENDM
 
@@ -3353,7 +3353,7 @@ Level_DoBlockSwitch:
 ; - HL: Ptr to block ID in level layout
 ; -  1: New block ID
 ; -  2: Where to jump after the code is executed
-mLvlReplaceBlock: MACRO
+MACRO mLvlReplaceBlock
 	dec  hl			; Rewind from ldi
 	ld   a, [hl]	; Read back the block again
 	and  a, $80		; Filter everything but the actor flag 
@@ -4526,7 +4526,7 @@ BGColi_HitItemBox:
 ; Generates code to check if we're ground pounding on a breakable block.
 ; IN
 ; - 1: Label to subroutine for breaking the block.
-mBGColi_BreakGroundPound: MACRO
+MACRO mBGColi_BreakGroundPound
 	; Is the player ground pounding?
 	ld   a, [sPlLstId]
 	cp   a, OBJ_WARIO_GROUNDPOUND
@@ -4542,7 +4542,7 @@ ENDM
 ; Generates code to check if we can directly break an hard breakable block.
 ; If we're Bull Wario, execution falls through the macro, so this 
 ; should only be placed before invoking mBGColi_BreakToBlockId.
-mBGColi_BreakHardToEmpty: MACRO
+MACRO mBGColi_BreakHardToEmpty
 	; If we aren't Bull Wario, we can't instantly break the block
 	ld   a, [sPlPower]
 	cp   a, PL_POW_BULL
@@ -4555,7 +4555,7 @@ ENDM
 ; - 1: New block ID
 ; - 2: Target non-solid collision when Bull Wario for instabreak (if const TEST == 1)
 ;      Should be COLI_EMPTY or COLI_WATER
-mBGColi_BreakToBlockId: MACRO
+MACRO mBGColi_BreakToBlockId
 	; Get the ptr to the block we're destroying
 	ld   a, [sBlockTopLeftPtr_High]
 	ld   h, a
@@ -5606,7 +5606,7 @@ BGColi_ItemBox:
 ; Generates code to check if we can directly break an hard breakable block.
 ; If we're Bull Wario, execution falls through the macro, so this 
 ; should only be placed before invoking mBGColi_BreakToBlockIdJump.
-mBGColi_BreakHardToEmptyJump: MACRO
+MACRO mBGColi_BreakHardToEmptyJump
 	; If we aren't Bull Wario, we can't instantly break the block
 	ld   a, [sPlPower]
 	cp   a, PL_POW_BULL
@@ -5616,7 +5616,7 @@ ENDM
 ; Generates code for a wrapper for breaking a breakable block.
 ; IN
 ; - 1: Label to subroutine for breaking the block
-mBGColi_BreakToBlockIdJump: MACRO
+MACRO mBGColi_BreakToBlockIdJump
 	xor  a
 	ld   [sPlSwimUpTimer], a
 	jp   \1

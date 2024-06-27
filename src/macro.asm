@@ -6,7 +6,7 @@
 ; IN
 ; - 1: A label from a bank != 0.
 ;
-mHomeCall: MACRO
+MACRO mHomeCall
 	; Save currently loaded bank
 	ld a, [sROMBank]
 	push af
@@ -23,7 +23,7 @@ mHomeCall: MACRO
 ENDM
 
 ; Commonly used in bank00
-mHomeCallRet: MACRO
+MACRO mHomeCallRet
 	mHomeCall \1
 	ret
 ENDM
@@ -35,21 +35,21 @@ ENDM
 ; IN
 ; - 1: A label from a bank != 0.
 ;
-mSubCall: MACRO
+MACRO mSubCall
 	ld   d, BANK(\1)
 	ld   hl, \1
 	call SubCall
 ENDM
 
 ; Shorthand for subroutines which call SubCall and return
-mSubCallRet: MACRO
+MACRO mSubCallRet
 	mSubCall \1
 	ret
 ENDM
 
 ; =============== mWaitHBlankEnd ===============
 ; Waits for the current HBlank to finish, if we're in one.
-mWaitForHBlankEnd: MACRO
+MACRO mWaitForHBlankEnd
 .waitHBlankEnd_\@:
 	ldh  a, [rSTAT]
 	and  a, $03
@@ -57,7 +57,7 @@ mWaitForHBlankEnd: MACRO
 ENDM
 ; =============== mWaitHBlank ===============
 ; Waits for the HBlank period.
-mWaitForHBlank: MACRO
+MACRO mWaitForHBlank
 .waitHBlank_\@:
 	ldh  a, [rSTAT]
 	and  a, $03
@@ -65,7 +65,7 @@ mWaitForHBlank: MACRO
 ENDM
 ; =============== mWaitForNewHBlank ===============
 ; Waits for the start of a new HBlank period.
-mWaitForNewHBlank: MACRO
+MACRO mWaitForNewHBlank
 	; If we're in HBlank already, wait for it to finish
 	mWaitForHBlankEnd
 	; Then wait for the HBlank proper
@@ -75,13 +75,13 @@ ENDM
 
 ; =============== mIncludeMultiInt ===============
 ; Shorthand for including Overworld animated GFX
-mIncludeMultiInt: MACRO
+MACRO mIncludeMultiInt
 	mIncludeMultiIntCust \1, 8, 8
 ENDM
 
 ; =============== mIncludeMultiInt6 ===============
 ; Shorthand for including Rice Beach animated GFX
-mIncludeMultiInt6: MACRO
+MACRO mIncludeMultiInt6
 	mIncludeMultiIntCust \1, 6, 8
 ENDM
 
@@ -94,7 +94,7 @@ ENDM
 ; - 1: The file to include
 ; - 2: Number of frames in the graphic
 ; - 3: Size of each frame in bytes
-mIncludeMultiIntCust: MACRO
+MACRO mIncludeMultiIntCust
 I = 0
 REPT \3
 J = 0
@@ -121,13 +121,13 @@ ENDM
 
 ; =============== dwb ===============
 ; Shorthand for big-endian pointers.
-dwb: MACRO
+MACRO dwb
 	db HIGH(\1),LOW(\1)
 ENDM
 
 ; =============== dp ===============
 ; Shorthand for data pointers
-dp: MACRO
+MACRO dp
 	db BANK(\1)
 	dw \1
 ENDM
@@ -137,7 +137,7 @@ ENDM
 ; IN:
 ; - 1: Y coord
 ; - 2: X coord
-dc: MACRO
+MACRO dc
 	; Make sure the nybbles are in range for this
 assert HIGH(\1) < $10
 assert HIGH(\2) < $10
@@ -150,7 +150,7 @@ ENDM
 ; Generates a level ID for use in a level/room header.
 ; IN:
 ; - 1: Label to a level pointer (LevelLayoutPtr_*)
-dlvl: MACRO
+MACRO dlvl
 	db BANK(\1)	   ; Bank number
 	db LOW(\1 / 2) ; ID of the entry in the level pointer table, which is at 
 	               ; the *very beginning* of every bank containing level layouts.
@@ -161,7 +161,7 @@ ENDM
 ; Shorthand for generating the high byte of a value when doing sign-extension
 ; IN
 ; - 1: Register to use
-sext: MACRO
+MACRO sext
 	; Shifting right 7 times duplicates the MSB over the entire value.
 	; This basically gives out either $FF or $00.
 REPT 7
@@ -176,13 +176,13 @@ ENDM
 ; IN:
 ; - 1: Ptr to GFX data
 ; - 2: Tile count
-mActGFXDef: MACRO
+MACRO mActGFXDef
 	dp \1
 	db \2
 ENDM
 ; =============== mActGFX_End ===============
 ; Marks the end of an ActGroupGFX table.
-mActGFX_End: MACRO
+MACRO mActGFX_End
 	db $00,$00,$00,$FF
 ENDM
 
@@ -192,7 +192,7 @@ ENDM
 ; - 1: Ptr to init code (Bank $02)
 ; - 2: Actor flags (ACTFLAGB_*)
 ; - 3: Bank number for (initial?) OBJLst
-mActCodeDef: MACRO
+MACRO mActCodeDef
 	dw \1
 	db \2,\3
 ENDM
@@ -202,7 +202,7 @@ ENDM
 ; IN:
 ; - 1: Ptr to init code (a SubCall to it must exist in BANK $02)
 ; - 2: Actor flags (ACTFLAGB_*)
-mActCodeDefAuto: MACRO
+MACRO mActCodeDefAuto
 	dw SubCall_\1
 	db \2,BANK(\1)
 ENDM
@@ -222,7 +222,7 @@ ENDM
 ; - 4: Collision type for DOWN border
 ; OUT
 ; - COLI: Calculated result
-mActColiMask: MACRO
+MACRO mActColiMask
 COLI = \1<<ACTCOLIMB_R|\2<<ACTCOLIMB_L|\3<<ACTCOLIMB_U|\4<<ACTCOLIMB_D
 ENDM
 
@@ -230,7 +230,7 @@ ENDM
 ; Sets the specified OBJLst for the currently processed actor.
 ; IN
 ; - 1: Ptr to OBJLstPtrTable
-mActOBJLstPtrTable: MACRO
+MACRO mActOBJLstPtrTable
 	push bc
 	ld   bc, \1
 	call ActS_SetOBJLstPtr
@@ -240,7 +240,7 @@ ENDM
 ; =============== mActS_SetBlankFrame ===============
 ; Switches the OBJLst for the current actor to the empty one.
 ; Used to hide the actor.
-mActS_SetBlankFrame: MACRO
+MACRO mActS_SetBlankFrame
 	mActOBJLstPtrTable OBJLstPtrTable_Act_None
 ENDM
 
@@ -251,7 +251,7 @@ ENDM
 ; IN
 ; - 1: Ptr to OBJLstPtrTable to use when facing left
 ; - 2: Ptr to OBJLstPtrTable to use when facing right
-mActOBJLstPtrTableByDir: MACRO
+MACRO mActOBJLstPtrTableByDir
 	mActOBJLstPtrTable \1		; Set the one when facing left first
 	ld   a, [sActSetDir]
 	bit  DIRB_R, a			; Facing right?
@@ -264,7 +264,7 @@ ENDM
 ; Generally this is used for jump arcs, so once set it may increases or decreases over time.
 ; IN
 ; - BC: Downwards speed /frame. If negative, the actor is moved upwards.
-mActSetYSpeed: MACRO
+MACRO mActSetYSpeed
 	ld   bc, \1						
 	ld   a, c						
 	ld   [sActSetYSpeed_Low], a
@@ -278,7 +278,7 @@ ENDM
 ; IN:
 ; - 1: Label to OBJLst ptr table
 ; - E: Slot ID
-mActS_SetOBJBank: MACRO
+MACRO mActS_SetOBJBank
 	ld   a, BANK(\1)		; A = Target bank
 	push hl
 	ld   hl, sActOBJLstBank	; HL = Start of bank table
@@ -291,7 +291,7 @@ ENDM
 ; =============== mActS_RespawnOnOrigPos ===============
 ; Makes the current actor respawn at the original position
 ; instead of the last position before despawning.
-mActS_RespawnOnOrigPos: MACRO
+MACRO mActS_RespawnOnOrigPos
 	ld   hl, sActRespawnTypeTbl	; HL = Ptr to respawn table
 	ld   a, [sActSetId]			; DE = sActSetId (minus MSB)
 	and  a, $7F
@@ -305,7 +305,7 @@ ENDM
 ; =============== mExActS_SetCenterBlock ===============
 ; Shorthand macro for positioning an ExAct in a way that it overlaps a block.
 ; The block's level layout ptr is expected to be in sBlockTopLeftPtr.
-mExActS_SetCenterBlock: MACRO
+MACRO mExActS_SetCenterBlock
 	;--
 	; Set the Y position to start at the lowest point of the block
 	; sExActOBJY = (sBlockTopLeftPtr_High - $C0) * $10 + $0F 
@@ -355,7 +355,7 @@ ENDM
 ; OUT
 ; - BC: Actor Y pos
 ; - DE: Actor X pos
-mActColi_GetBlockId_GetPos: MACRO
+MACRO mActColi_GetBlockId_GetPos
 	; DE = sActSetX
 	ld   hl, sActSetX_Low
 	ld   e, [hl]			; E = X Low
@@ -374,7 +374,7 @@ ENDM
 ; - 1: X Offset
 ; OUT
 ; - DE: Updated actor X pos
-mActColi_GetBlockId_SetXOffset: MACRO
+MACRO mActColi_GetBlockId_SetXOffset
 	; Apply X offset
 	ld   hl, \1		; DE += \1
 	add  hl, de
@@ -388,7 +388,7 @@ ENDM
 ; - 1: Y Offset
 ; OUT
 ; - BC: Updated actor Y pos
-mActColi_GetBlockId_SetYOffset: MACRO
+MACRO mActColi_GetBlockId_SetYOffset
 	ld   hl, \1		; BC += \1
 	add  hl, bc
 	ld   b, h
@@ -403,7 +403,7 @@ ENDM
 ; - DE: Actor X coord
 ; OUT
 ; - HL: Ptr to level layout
-mActColi_GetBlockId_GetLevelLayoutPtr: MACRO
+MACRO mActColi_GetBlockId_GetLevelLayoutPtr
 	; To get the index to the level layout in HL, we're just dividing both coords by 16. (block width & block height)
 	; The X coord goes in L, while the Y coord goes in H.
 	; Since dividing by 16 (>> 4) gets rid of a nybble, and the high nybble of the upper byte
@@ -458,7 +458,7 @@ ENDM
 ; - 1: Ptr to slot number
 ; OUT
 ; - HL: Ptr to the parent actor's slot
-mActSeekToParentSlot: MACRO
+MACRO mActSeekToParentSlot
 	; Create the offset to the slot number.
 	; An actor slot is $20 bytes large, so SlotNum should be multiplied by $20 (<< 5).
 	; A = SlotNum *= $20
@@ -485,7 +485,7 @@ ENDM
 ; - Z: If set, it was the one we're looking for
 ; - C: If set, its ID was >= than what we're looking for. 
 ;      In practice only useful with $07, to check if we were thrown a default actor.
-mActCheckThrownId: MACRO
+MACRO mActCheckThrownId
 	; First of all, extract the slot number from the upper nybble of the routine ID
 	; and convert it to an offset to the slot area.
 	
@@ -509,7 +509,7 @@ ENDM
 ; - 1: Ptr to OBJLst flags value
 ; OUT
 ; - A: Directional value
-mActFlagsToXDir: MACRO
+MACRO mActFlagsToXDir
 	; The direction value doesn't proportionally map to the XFLIP.
 	; They are almost inverted bits, enough for a xor to work.
 	;   XFLIP  DIR
@@ -528,13 +528,13 @@ ENDM
 ; Gets the actor direction value based on the direction the player's facing
 ; IN
 ; - 1: Ptr to OBJLst flags value
-mPlFlagsToXDir: MACRO
+MACRO mPlFlagsToXDir
 	mActFlagsToXDir sPlFlags
 ENDM
 
 ; =============== mSetScreenShakeFor8 ===============
 ; Triggers a screen shake for 8 frames + max 3 extra frames if an existing screen shake is active.
-mSetScreenShakeFor8: MACRO
+MACRO mSetScreenShakeFor8
 	; The initial value of the timer ($08) is specifically picked so that, if added to an existing 
 	; screen shake timer, it won't touch the 3 lowest bits (though only two are kept).
 	
@@ -555,7 +555,7 @@ ENDM
 ; =============== sndend ===============
 ; Marks the end of a command table.
 ; The game will switch to the next one in the chunk.
-sndend: MACRO
+MACRO sndend
 	db BGMCMD_END
 ENDM
 ; =============== sndregex ===============
@@ -566,7 +566,7 @@ ENDM
 ; - 2: Sweep Options (rNR?0)
 ; - 3: Sound Wave Duty/Length (rNR?1)
 ; - 4: Post-parse pitch change command (BGMPP_*)
-sndregex: MACRO
+MACRO sndregex
 	db BGMCMD_SETOPTREG, \1, \2, (\3 | \4)
 ENDM
 ; =============== sndregex3 ===============
@@ -575,7 +575,7 @@ ENDM
 ; IN
 ; - 1: Ptr to Wave data
 ; - 2: Channel volume
-sndregex3: MACRO
+MACRO sndregex3
 	db BGMCMD_SETOPTREG
 	dw \1
 	db \2
@@ -586,7 +586,7 @@ ENDM
 ; IN
 ; - 1: Ptr to the length table
 ; - 2: Channel volume
-sndlentbl: MACRO
+MACRO sndlentbl
 	db BGMCMD_SETLENGTHPTR
 	dw \1
 ENDM
@@ -594,7 +594,7 @@ ENDM
 ; Sets a new index to the currently used BGM length table.
 ; IN
 ; - 1: Index to the length table. Should be $0-$F in range.
-sndlenid: MACRO
+MACRO sndlenid
 	db BGMCMD_SETLENGTHID + \1
 ENDM
 
@@ -602,7 +602,7 @@ ENDM
 ; Sets a new pitch base offset, relative to the song's default pitch option.
 ; IN
 ; - 1: Pitch offset value
-sndpitchbase: MACRO
+MACRO sndpitchbase
 	db BGMCMD_SETPITCH, \1
 ENDM
 
@@ -611,13 +611,13 @@ ENDM
 ; When sndloop is called, it will loop to this location.
 ; IN
 ; - 1: Amount of times to loop
-sndsetloop: MACRO
+MACRO sndsetloop
 	db BGMCMD_SETLOOP, \1
 ENDM
 
 ; =============== sndloop ===============
 ; Sets a new index to the currently used BGM length table.
-sndloop: MACRO
+MACRO sndloop
 	db BGMCMD_LOOP
 ENDM
 
@@ -626,25 +626,25 @@ ENDM
 ; IN
 ; - 1: Must be in range $00-$0A.
 ;      There's no difference between those -- it's just there for having a bit-perfect assembly.
-sndstop: MACRO
+MACRO sndstop
 	db BGMCMD_STOPALL, \1
 ENDM
 
 ; =============== sndstop ===============
 ; Mutes the current sound channel.
-sndmutech: MACRO
+MACRO sndmutech
 	db BGMDATACMD_MUTECH
 ENDM
 
 ; =============== sndhienv ===============
 ; Sets the "high envelope" option for the current sound channel.
-sndhienv: MACRO
+MACRO sndhienv
 	db BGMDATACMD_HIGHENV
 ENDM
 
 ; =============== sndloenv ===============
 ; Sets the "low envelope" option for the current sound channel.
-sndloenv: MACRO
+MACRO sndloenv
 	db BGMDATACMD_LOWENV
 ENDM
 
@@ -666,6 +666,6 @@ ENDM
 ;
 ; IN
 ;   - 1: The table offset
-snddb: MACRO
+MACRO snddb
 	db \1
 ENDM

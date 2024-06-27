@@ -346,7 +346,7 @@ Map_Overworld_EnterSubmap:
 ; IN
 ; - 1: MapId target after fade out
 ; - 2: First level ID
-mSubmapEnter: MACRO
+MACRO mSubmapEnter
 	ld   a, MAP_MODE_FADEOUT
 	ld   [sMapId], a
 	ld   a, \1
@@ -2397,7 +2397,7 @@ Map_SetOpenPathArrows:
 ; IN:
 ; -  1: Start address of source 1bpp data
 ; - HL: Same as above
-mMap_CopyOneGFX: MACRO
+MACRO mMap_CopyOneGFX
 .loop:
 	; Copy the gfx data over
 	ldi  a, [hl]	
@@ -2528,7 +2528,7 @@ GFX_StoveCanyonAnim3: INCBIN "data/gfx/maps/stovecanyon_anim.bin",48,16
 ; IN:
 ; - 1: Start address of source 1bpp data
 ; - 2: VRAM Destination
-mMap_CopyOne1bppGFX: MACRO
+MACRO mMap_CopyOne1bppGFX
 	ld   hl, \1			; HL = Ptr to 1bpp graphics
 	ld   bc, \2			; BC = Ptr to VRAM gfx
 	; NOTE: As each 2bpp tile takes $10 bytes, a 1bpp one logically takes $08
@@ -3023,11 +3023,11 @@ Map_SubmapSetStartPos:
 ; IN
 ; - 1: Y coordinate
 ; - 2: X coordinate
-mSetSubmapEntry: MACRO
+MACRO mSetSubmapEntry
 	mSetSubmapEntr2 \1, \2
 	jr   .setEnterPos
 ENDM
-mSetSubmapEntr2: MACRO
+MACRO mSetSubmapEntr2
 	ld   a, \1
 	ld   b, \2
 ENDM
@@ -3976,7 +3976,7 @@ Map_Submap_WaitLevelStart:
 ; Macro for defining the map id to transition to after entering a level.
 ; IN
 ; - 1: MapId target after fade out
-mLevelEnter: MACRO
+MACRO mLevelEnter
 	ld   a, MAP_MODE_FADEOUT
 	ld   [sMapId], a
 	ld   a, \1
@@ -4949,7 +4949,7 @@ Map_ValidateNewPath:
 ; - 3: Map Completion bitmask
 ; - 4: Map Completion bitmask (high, unused)
 ;
-mMapValidatePath: MACRO
+MACRO mMapValidatePath
 	ld   a, [\3]		; BC = Current map completion
 	ld   c, a
 	ld   a, [\4]
@@ -5118,7 +5118,7 @@ Map_Overworld_IsPathOpen:
 ; - 1: Map Completion bitmask
 ; - 2: Map Completion bitmask (high, unused)
 ;
-mMapIsSubmapOpen: MACRO
+MACRO mMapIsSubmapOpen
 	; Get the mask required to start the path
 	call Map_Submap_GetPathCompletionBitPtr
 	; BC = Map completion bitmask
@@ -5923,7 +5923,7 @@ Map_WriteFullEv_OnLClearEnd:
 	
 ; IN
 ; - 1: The completion bit to check
-mEvChkClr: MACRO
+MACRO mEvChkClr
 	bit  \1, a
 	jr   z, Map_WriteFullEv_OnLClearEnd
 	call Map_WriteFullEv
@@ -6610,7 +6610,7 @@ Map_SetEvOffset:
 ; - 1: Where to jump once the bit is found
 ; OUT
 ; - E: Bit number
-mFindBitNum: MACRO
+MACRO mFindBitNum
 	xor  a
 	ld   d, a	; DE = $00
 	ld   e, a	
@@ -7492,10 +7492,10 @@ Map_SyrupCastle_DoLevelClear:
 ;
 ; Level numbers depend on the bit order in the completion bitmask.
 
-mDefEv: MACRO
+MACRO mDefEv
 \1: dw \1_Tiles, \1_Offsets
 ENDM
-mDefEvNull: MACRO
+MACRO mDefEvNull
 \1: dw Ev_Null,Ev_Null
 ENDM
 

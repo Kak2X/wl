@@ -2913,12 +2913,12 @@ Act_SyrupCastleBoss_BGWrite_Ground:
 ; - 2: X offset (in tiles)
 ; - 3: Y offset (in tiles)
 ; - 4: Tiles to copy
-mAct_SyrupCastleBoss_BGWriteCall: MACRO
+MACRO mAct_SyrupCastleBoss_BGWriteCall
 	ld   hl, \1 + (BG_TILECOUNT_H * \3) + \2
 	call Act_SyrupCastleBoss_BGWrite\4
 ENDM
 ; for first loading only
-mAct_SyrupCastleBoss_BGWriteCall2: MACRO
+MACRO mAct_SyrupCastleBoss_BGWriteCall2
 	ld   hl, \1 + (BG_TILECOUNT_H * \3) + \2
 	call Act_SyrupCastleBoss_BGWrite\4
 	call Act_SyrupCastleBoss_BGWrite\4
@@ -3053,7 +3053,7 @@ BG_Act_SyrupCastleBoss_GenieFootUpR: INCBIN "data/bg/level/syrupcastleboss_genie
 ; - 1: Tiles to copy
 ; - BC: Ptr to tilemap
 ; - HL: Destination in VRAM
-mAct_SyrupCastleBoss_BGWrite: MACRO
+MACRO mAct_SyrupCastleBoss_BGWrite
 	mWaitForNewHBlank
 REPT \1
 	ld   a, [bc]		; A = Tile ID

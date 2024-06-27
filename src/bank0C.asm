@@ -480,7 +480,7 @@ ENDR
 ; Generates code to start a BGM if it isn't already playing.
 ; IN
 ; - 1: BGM Id
-mLvlBGM: MACRO
+MACRO mLvlBGM
 	ld   a, [sBGM]		; Is the BGM playing already?
 	cp   a, \1
 	ret  z				; If so, return
