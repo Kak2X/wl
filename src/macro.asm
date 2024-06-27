@@ -28,11 +28,6 @@ mHomeCallRet: MACRO
 	ret
 ENDM
 
-;mImport: MACRO
-;HomeCall_\1: mHomeCall \1
-;	ret
-;ENDM
-
 ; =============== mSubCall ===============
 ; This macro generates code to call the SubCall subroutine
 ; to execute the specified routine.
@@ -51,11 +46,6 @@ mSubCallRet: MACRO
 	mSubCall \1
 	ret
 ENDM
-
-;mSubImport: MACRO
-;SubCall_\1: mSubCall \1
-;	ret
-;ENDM
 
 ; =============== mWaitHBlankEnd ===============
 ; Waits for the current HBlank to finish, if we're in one.
@@ -116,20 +106,6 @@ I = I + 1
 ENDR
 ENDM
 
-; Not applicable. The 32 byte area isn't always empty.
-;; =============== mIncludeLevelLayout ===============
-;; This macro includes level layout data.
-;; This also generates the requires 32 byte $FF area before the layout proper.
-;;
-;; IN
-;; - 1: The file to include
-;mIncludeLevelLayout: MACRO
-;REPT 32
-;	db $FF
-;ENDR
-;	INCBIN \1
-;ENDM
-
 ; =============== dwb ===============
 ; Shorthand for big-endian pointers.
 dwb: MACRO
@@ -179,36 +155,6 @@ REPT 7
 	sra \1
 ENDR
 ENDM
-
-;; =============== admw ===============
-;; Shorthand for increasing a word value stored in memory.
-;; The addresses must follow the "_Low" and "_High" naming convention.
-;; IN
-;; - 1: Partial label for the address to use
-;; - 2: Amount to add
-;admw: MACRO
-;	ld   a, [\1_Low]		
-;	add  \2				; mem += \2
-;	ld   [\1_Low], a
-;	ld   a, [\1_High]
-;	adc  $00			; account for carry
-;	ld   [\1_High], a
-;ENDM
-;
-;; =============== sbmw ===============
-;; Shorthand for decreasing a word value stored in memory.
-;; The addresses must follow the "_Low" and "_High" naming convention.
-;; IN
-;; - 1: Partial label for the address to use
-;; - 2: Amount to subtract
-;sbmw: MACRO
-;	ld   a, [\1_Low]		
-;	sub  \2				; mem -= \2
-;	ld   [\1_Low], a
-;	ld   a, [\1_High]
-;	sbc  $00			; account for carry
-;	ld   [\1_High], a
-;ENDM
 
 ; =============== ACTOR DEFN ===============
 
