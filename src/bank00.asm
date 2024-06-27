@@ -2129,10 +2129,10 @@ Level_ScreenLock_DoBottom:
 	ret  nz								; If not, return
 	
 	; [POI] For some reason, freescroll intentionally triggers the bottom screen lock a full
-	;       block ($10) above the normal limit, with the stage scrolling designed for it.
-	;       Remove the $10 to show the full area.
+	;       block (BLOCK_HEIGHT) above the normal limit, with the stage scrolling designed for it.
+	;       Remove the -BLOCK_HEIGHT to show the full area.
 
-FREESCROLL_LOW_BORDER EQU ($100-LVLSCROLL_YOFFSET)-$10
+FREESCROLL_LOW_BORDER EQU LOW(LEVEL_HEIGHT - LVLSCROLL_YOFFSET - BLOCK_HEIGHT)
 
 	ld   a, [sLvlScrollY_Low]		
 	cp   a, FREESCROLL_LOW_BORDER		; Is the screen fully scrolled to the bottom (or over the limit)?
@@ -2146,7 +2146,7 @@ FREESCROLL_LOW_BORDER EQU ($100-LVLSCROLL_YOFFSET)-$10
 .checkRemoveUp:
 	; Unmark the upper screen lock only if the screen isn't fully scrolled up
 	ld   a, [sPlY_Low]					
-	cp   a, LVLSCROLL_YOFFSET			; Is the screen still fully scrolled up?
+	cp   a, $00+LVLSCROLL_YOFFSET		; Is the screen still fully scrolled up?
 	ret  c								; If so, don't unmark the scroll lock
 	
 	ld   hl, sLvlScrollLockCur
@@ -2168,9 +2168,9 @@ Level_ScreenLock_DoTop:
 	
 	; Account for hw scroll offset
 	ld   a, [sLvlScrollY_Low]				
-	cp   a, LVLSCROLL_YOFFSET			; Is the screen fully scrolled to the top (or over the limit)?		
+	cp   a, $00+LVLSCROLL_YOFFSET		; Is the screen fully scrolled to the top (or over the limit)?		
 	ret  nc
-	ld   a, LVLSCROLL_YOFFSET			; If so, snap the screen to the top border
+	ld   a, $00+LVLSCROLL_YOFFSET		; If so, snap the screen to the top border
 	ld   [sLvlScrollY_Low], a
 	ld   hl, sLvlScrollLockCur
 	set  DIRB_U, [hl]					; And mark the upper scroll lock
@@ -2875,22 +2875,23 @@ ENDC
 	ENDC
 	
 	; Generate the actual scroll coords from those 
-	; The raw values from the header point to the top-left corner of the screen.
-	; They need to be offsetted to point to (more or less) the center of the screen instead.
+	; The raw values from the header point to the top-left corner of the screen, minus one border block for convenience.
+	; They need to be offsetted to point to the center of the screen instead, to avoid underflow issues during calculations.
+	; ie: sLvlScrollXRaw $0000 -> sLvlScrollX $0058 -> hScrollX $0010
 	;--
 	push hl
 	
 	; Scroll Y
 	ld   a, [sLvlScrollYRaw_Low]
 	ld   l, a						
-	add  $10						; ScrollY = sLvlScrollYRaw_Low + $10			
+	add  BLOCK_HEIGHT							; ScrollY = sLvlScrollYRaw_Low + $10			
 	ldh  [rSCY], a					
 	ldh  [hScrollY], a
 	
 	; LvlScroll Y
 	ld   a, [sLvlScrollYRaw_High]
 	ld   h, a
-	ld   de, $0058					; LvlScroll = sLvlScrollYRaw + $58
+	ld   de, LVLSCROLL_YOFFSET+BLOCK_HEIGHT		; LvlScroll = sLvlScrollYRaw + $58
 	add  hl, de						
 	ld   a, h
 	ld   [sLvlScrollY_High], a
@@ -2900,14 +2901,14 @@ ENDC
 	; Scroll X
 	ld   a, [sLvlScrollXRaw_Low]
 	ld   l, a
-	add  $10						; ScrollX = sLvlScrollX_Low + $10	
+	add  BLOCK_WIDTH							; ScrollX = sLvlScrollX_Low + $10	
 	ldh  [rSCX], a					
 	ld   [sScrollX], a
 	
 	; LvlScroll X
 	ld   a, [sLvlScrollXRaw_High]
 	ld   h, a
-	ld   de, $0060					; LvlScroll = sLvlScrollYRaw + $60
+	ld   de, LVLSCROLL_XOFFSET+BLOCK_WIDTH		; LvlScroll = sLvlScrollYRaw + $60
 	add  hl, de
 	ld   a, h
 	ld   [sLvlScrollX_High], a
@@ -3139,7 +3140,7 @@ Level_LoadRoomData:
 	ld   h, a
 	ld   a, [sLvlScrollYRaw_Low]
 	ld   l, a
-	ld   de, $0058					
+	ld   de, LVLSCROLL_YOFFSET+BLOCK_HEIGHT					
 	add  hl, de
 	ld   a, h						; Save the offsetted scroll value
 	ld   [sLvlScrollY_High], a
@@ -3151,7 +3152,7 @@ Level_LoadRoomData:
 	ld   h, a
 	ld   a, [sLvlScrollXRaw_Low]
 	ld   l, a
-	ld   de, $0060
+	ld   de, LVLSCROLL_XOFFSET+BLOCK_WIDTH
 	add  hl, de
 	ld   a, h						; Save the offsetted scroll value
 	ld   [sLvlScrollX_High], a

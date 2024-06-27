@@ -892,6 +892,8 @@ sROMBank EQU $A8C5 ; Currently loaded ROM bank
 sDemoMode EQU $A8C6 ; 
 sDebugMode EQU $A8C7 ; [TCRF] Enables the hidden debug mode
 
+; Level scroll coordinates, offset to the center of the screen (LVLSCROLL_XOFFSET/LVLSCROLL_YOFFSET) to get around underflow issues.
+; Of course, this means that to get the real hardware scroll position, those must be subtracted to it.
 sLvlScrollY_High EQU $A900
 sLvlScrollY_Low  EQU $A901
 sLvlScrollX_High EQU $A902

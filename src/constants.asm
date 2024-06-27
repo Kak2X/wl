@@ -1539,13 +1539,6 @@ TILEID_GENIE_SOLID_DR EQU $1C
 TILEID_DIGITS EQU $B0 ; Tile ID base for digits in main gameplay
 TILEID_TRROOM_DIGITS EQU $D0 ; Time ID base for digits in treasure room
 
-
-; Difference between the level scroll value
-; and the actual hardware scroll register.
-; HScroll is subtracted by this amount.
-LVLSCROLL_YOFFSET EQU $48
-LVLSCROLL_XOFFSET EQU $50
-
 ; Level size
 LEVEL_WIDTH 	EQU $1000
 LEVEL_HEIGHT 	EQU $0200
@@ -1559,8 +1552,13 @@ LEVEL_BLOCK_HMAX EQU LEVEL_BLOCK_HCOUNT - 1
 LEVEL_BLOCK_VMIN EQU $00
 LEVEL_BLOCK_VMAX EQU LEVEL_BLOCK_VCOUNT - 1
 
-LVLSCROLL_YBLOCKOFFSET EQU LVLSCROLL_YOFFSET/BLOCK_HEIGHT
+; hScroll* = sLvlScroll_* - LVLSCROLL_*OFFSET
+; They picked the center of the screen for this, which gives enough room to avoid underflow during calculations.
+LVLSCROLL_XOFFSET EQU SCREEN_H/2
+LVLSCROLL_YOFFSET EQU SCREEN_V/2
+
 LVLSCROLL_XBLOCKOFFSET EQU LVLSCROLL_XOFFSET/BLOCK_WIDTH
+LVLSCROLL_YBLOCKOFFSET EQU LVLSCROLL_YOFFSET/BLOCK_HEIGHT
 
 ; Level scroll mode
 LVLSCROLL_SEGSCRL EQU $00
@@ -1571,10 +1569,6 @@ LVLSCROLL_AUTOL   EQU $31
 LVLSCROLL_AUTOR2  EQU $40
 LVLSCROLL_NONE    EQU $FF ; Boss mode as well
 LVLSCROLL_CHKAUTO EQU $20
-
-
-AUTOSCROLL_RIGHT EQU $01
-
 
 ; Generic direction indicators
 DIRB_R EQU 0
