@@ -1110,6 +1110,4 @@ OBJLst_SaveSel_Wario_LookBack: INCBIN "data/objlst/saveselect/wario_lookback.bin
 OBJLst_SaveSel_Wario_LookUp: INCBIN "data/objlst/saveselect/wario_lookup.bin"
 
 ; =============== END OF BANK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L057A87.asm"
-ENDC
+	mIncJunk "L057A87"

@@ -7207,6 +7207,4 @@ GFX_Act_BigHeart: INCBIN "data/gfx/actor/bigheart.bin"
 ;        Did an actor get removed but the graphics were left in?
 GFX_Unused_Act_Spike: INCBIN "data/gfx/actor/unused_spikeball.bin"
 ; =============== END OF BANK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L0F7C44.asm"
-ENDC
+	mIncJunk "L0F7C44"

@@ -8960,6 +8960,4 @@ Act_ExitSkull:;I
 OBJLst_Act_ExitSkull: INCBIN "data/objlst/actor/exitskull.bin"
 GFX_Act_ExitSkull: INCBIN "data/gfx/actor/exitskull.bin"
 ; =============== END OF BANK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L027F5C.asm"
-ENDC
+	mIncJunk "L027F5C"

@@ -9087,11 +9087,7 @@ ENDC
 	jr   nz, .waitTransfer
 	ret
 	
-; =============== START OF ALIGN JUNK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L0D72F5.asm"
-ENDC
-; =============== END OF ALIGN JUNK ===============
+	mIncJunk "L0D72F5"
 
 ; =============== INPUT DEMO DATA ($80 bytes each) ===============
 ; Demo format:
@@ -9109,6 +9105,4 @@ INCBIN "data/lvl/c22/demo.bin"
 INCBIN "data/lvl/c18/demo.bin"
 
 ; ================ END OF BANK =================
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L0D7B00.asm"
-ENDC
+	mIncJunk "L0D7B00"

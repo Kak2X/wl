@@ -1639,19 +1639,11 @@ OBJLst_Ending_Wario_WishOpen_Body: INCBIN "data/objlst/ending/wario_wishopen_bod
 OBJLst_Ending_Wario_WishOpen_Eyes: INCBIN "data/objlst/ending/wario_wishopen_eyes.bin"
 ;-----------
 GFXRLE_Title: INCBIN "data/gfx/title.rlc"
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L12675B.asm"
-ENDC
+	mIncJunk "L12675B"
 BGRLE_Title: INCBIN "data/bg/title.rls"
 BGRLE_TitleClouds: INCBIN "data/bg/title_clouds.rls"
 BGRLE_TitleWater: INCBIN "data/bg/title_water.rls"
-
-; =============== START OF ALIGN JUNK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L126856.asm"
-ENDC
-; =============== END OF ALIGN JUNK ===============
-
+	mIncJunk "L126856"
 ; =============== ActInit_Bat ===============
 ; Pretty much like Act_Watch except for graphics and very minor differences.
 ;
@@ -2258,6 +2250,4 @@ OBJLst_Act_BigFruit3: INCBIN "data/objlst/actor/bigfruit3.bin"
 GFX_Act_BigFruit: INCBIN "data/gfx/actor/bigfruit.bin"
 
 ; =============== END OF BANK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L1276D5.asm"
-ENDC
+	mIncJunk "L1276D5"

@@ -13592,6 +13592,4 @@ BGMCmdTable_7FCB:
 	sndloop
 	sndend
 ; =============== END OF BANK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L047FE3.asm"
-ENDC
+	mIncJunk "L047FE3"

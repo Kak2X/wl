@@ -6045,6 +6045,4 @@ GFX_Act_SpikePillarH: INCBIN "data/gfx/actor/spikepillarh.bin"
 GFX_Act_SpikePillarV: INCBIN "data/gfx/actor/spikepillarv.bin"
 
 ; =============== END OF BANK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L157D07.asm"
-ENDC
+	mIncJunk "L157D07"

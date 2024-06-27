@@ -3148,37 +3148,23 @@ Ending_PreCredPlanet_WaitToCredits:
 	
 ; =============== GFX / TILEMAPS ===============
 GFXRLE_EndingA: INCBIN "data/gfx/ending/main_a.rlc"
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L1F68FE.asm"
-ENDC
+	mIncJunk "L1F68FE"
 GFX_Ending_CreditsText: INCBIN "data/gfx/ending/creditstext.bin"
 GFX_Ending_Castle_Planet: INCBIN "data/gfx/ending/castle_planet.bin"
 GFX_Ending_Castle_Pagoda: INCBIN "data/gfx/ending/castle_pagoda.bin"
 BGRLE_Ending_CutsceneNoGenie: INCBIN "data/bg/ending/cutscene_nogenie.rls"
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L1F71A3.asm"
-ENDC
+	mIncJunk "L1F71A3"
 BGRLE_Ending_CutsceneGenie: INCBIN "data/bg/ending/cutscene_genie.rls"
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L1F7277.asm"
-ENDC
+	mIncJunk "L1F7277"
 BGRLE_Ending_Castle_Planet: INCBIN "data/bg/ending/castle_planet.rls"
 BGRLE_Ending_Castle_Big: INCBIN "data/bg/ending/castle_big.rls"
 BGRLE_Ending_Castle_House: INCBIN "data/bg/ending/castle_house.rls"
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L1F7548.asm"
-ENDC
+	mIncJunk "L1F7548"
 BGRLE_Ending_Castle_BirdHouse: INCBIN "data/bg/ending/castle_birdhouse.rls"
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L1F75A5.asm"
-ENDC
+	mIncJunk "L1F75A5"
 BGRLE_Ending_Castle_TreeTrunk: INCBIN "data/bg/ending/castle_treetrunk.rls"
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L1F7622.asm"
-ENDC
+	mIncJunk "L1F7622"
 BGRLE_Ending_Castle_Pagoda: INCBIN "data/bg/ending/castle_pagoda.rls"
 BGRLE_Ending_Ground: INCBIN "data/bg/ending/ground.rls"
 ; =============== END OF BANK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L1F76D4.asm"
-ENDC
+	mIncJunk "L1F76D4"

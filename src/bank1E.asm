@@ -3524,17 +3524,8 @@ CoinBonus_Exit:
 	;--
 	
 GFXRLE_CoinBonus: INCBIN "data/gfx/coinbonus.rlc"
-;-----------
-	db $02;X
-	db $00;X
-	db $00;X
-	db $00;X
-	db $00;X
-	db $00;X
-;-----------
+	mIncJunk "L1E7D61"
 BGRLE_CoinBonus: INCBIN "data/bg/coinbonus/mainbg.rls"
 
 ; =============== END OF BANK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L1E7EC1.asm"
-ENDC
+	mIncJunk "L1E7EC1"

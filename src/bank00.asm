@@ -1,21 +1,7 @@
 ; =============== RESET VECTOR $00 ===============
 	SECTION "Rst00", ROM0[$0000]
 	jp GameInit
-	
-; =============== START OF ALIGN JUNK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L000003.asm"
-ELSE
-	SECTION "Rst08", ROM0[$0008]
-;Rst08:
-	SECTION "Rst10", ROM0[$0010]
-;Rst10:
-	SECTION "Rst18", ROM0[$0018]
-;Rst18:
-	SECTION "Rst20", ROM0[$0020]
-;Rst20:
-ENDC
-; =============== END OF ALIGN JUNK ===============
+	mIncJunk "L000003"
 
 ; =============== RESET VECTOR $28 ===============
 ; This subroutine takes the value in A to index a table of address pointers.
@@ -60,46 +46,19 @@ ELSE
 	ld   l, a		; Set the temp var to the correct register
 ENDC
 	jp   hl			; and jump to it
-
-
-; =============== START OF ALIGN JUNK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L000034.asm"
-ELSE
-	SECTION "Rst38", ROM0[$0038]
-;Rst38:
-ENDC
-; =============== END OF ALIGN JUNK ===============
+	mIncJunk "L000034"
 
 ; =============== VBLANK INTERRUPT ===============
 SECTION "VBlankInt", ROM0[$0040]
 VBlankInt:
 	jp   VBlankHandler
-	
-; =============== START OF ALIGN JUNK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L000043.asm"
-ENDC
-; =============== END OF ALIGN JUNK ===============
+	mIncJunk "L000043"
 
 ; =============== LCDC/STAT INTERRUPT ===============
 SECTION "LCDCInt", ROM0[$0048]
 LCDCInt:
 	jp   LCDCHandler
-	
-; =============== START OF ALIGN JUNK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L00004B.asm"
-ELSE
-	SECTION "TimerInt", ROM0[$0050]
-;TimerInt:
-	SECTION "SerialInt", ROM0[$0058]
-;SerialInt:
-	SECTION "JoypadInt", ROM0[$0060]
-;JoypadInt:
-ENDC
-
-; =============== END OF ALIGN JUNK ===============
+	mIncJunk "L00004B"
 
 ; =============== HW ENTRY POINT ===============
 SECTION "HEADER", ROM0[$0100]
@@ -168,10 +127,10 @@ VBlankHandler:
 	; Because of how code is setup, this is also pointless as ScreenEvent_StaticDo could be just called directly.
 	ld   a, [sROMBank]
 	push af
-	ld   a, $12
-	ld   [sROMBank], a
-	ld   [MBC1RomBank], a
-	call ScreenEvent_StaticDo
+		ld   a, $12
+		ld   [sROMBank], a
+		ld   [MBC1RomBank], a
+		call ScreenEvent_StaticDo
 	pop  af
 	ld   [sROMBank], a
 	ld   [MBC1RomBank], a
@@ -2971,7 +2930,7 @@ ENDC
 	; PLAYER PROPERTIES
 	;
 	; Set the correct properties depending on Wario's powerup status
-	
+		
 	; Index the Ptr table
 	ld   hl, Game_PowerupStatePtrTbl
 	ld   a, [sPlPower]
@@ -6050,13 +6009,7 @@ HomeCall_LoadVRAM_TreasureRoom: mHomeCallRet LoadVRAM_TreasureRoom ; BANK $06
 HomeCall_ActS_Do: mHomeCallRet ActS_Do ; BANK $02
 HomeCall_Map_CheckMapId: mHomeCallRet Map_CheckMapId ; BANK $08
 HomeCall_Map_ScreenEvent: mHomeCallRet Map_ScreenEvent ; BANK $08
-
-; =============== START OF ALIGN JUNK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L0022E4.asm"
-ENDC
-; =============== END OF ALIGN JUNK ===============
-
+	mIncJunk "L0022E4"
 ; =============== DecompressGFX Stubs ===============
 DecompressGFXStub:
 	call DecompressGFX
@@ -6253,12 +6206,7 @@ Static_Pl_WalkAnim:
 	ld   a, OBJ_WARIO_WALK2
 	ld   [wStaticPlLstId], a
 	ret
-	
-; =============== START OF ALIGN JUNK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L002532.asm"
-ENDC
-; =============== END OF ALIGN JUNK ===============
+	mIncJunk "L002532"
 
 ; =============== MAP SCREEN IMPORTS ===============
 HomeCall_LoadGFX_Overworld: mHomeCallRet LoadGFX_Overworld ; BANK $14
@@ -6447,13 +6395,7 @@ OBJLst_MapWarioWalkBack2: INCBIN "data/objlst/map/wario_walkback2.bin"
 OBJLst_MapWarioWaterFront: INCBIN "data/objlst/map/wario_waterfront.bin"
 OBJLst_MapWarioWaterBack: INCBIN "data/objlst/map/wario_waterback.bin"
 OBJLst_MapWarioHide: INCBIN "data/objlst/map/wario_hide.bin"
-
-; =============== START OF ALIGN JUNK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L002CFB.asm"
-ENDC
-; =============== END OF ALIGN JUNK ===============
-
+	mIncJunk "L002CFB"
 SubCall_ActS_SetOBJLstTableForDefault: mSubCallRet ActS_SetOBJLstTableForDefault ; BANK $0F
 ; =============== ActS_GetPlDirHRel ===============
 ; This subroutine gets the player's horizontal position (as a direction value) 
@@ -8570,6 +8512,4 @@ CopyGFX_MultiFrame:
 	ret
 	
 ; =============== END OF BANK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L003BF3.asm"
-ENDC
+	mIncJunk "L003BF3"

@@ -3429,7 +3429,5 @@ BGRLE_ParsleyWoods: INCBIN "data/bg/maps/parsleywoods.rls"
 GFX_OverworldOBJ: INCBIN "data/gfx/maps/overworld_obj.bin"
 .end:
 ; =============== END OF BANK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L147F17.asm"
-ENDC
+	mIncJunk "L147F17"
 

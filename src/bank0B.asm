@@ -37,6 +37,4 @@ LevelBlock_Castle2: INCBIN "data/block16/castle2.bin"
 LevelBlock_SyrupCastleBoss: INCBIN "data/block16/syrupcastleboss.bin"
 LevelBlock_DarkCastle: INCBIN "data/block16/darkcastle.bin"
 ; =============== END OF BANK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L0B6E0A.asm"
-ENDC
+	mIncJunk "L0B6E0A"

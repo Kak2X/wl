@@ -10,6 +10,4 @@ GFX_Level_StoveCanyonBoss: INCBIN "data/gfx/level/level_stovecanyonboss.bin"
 GFX_Level_SSTeacupBoss: INCBIN "data/gfx/level/level_ssteacupboss.bin"
 GFX_Level_SyrupCastleBoss: INCBIN "data/gfx/level/level_syrupcastleboss.bin"
 ; =============== END OF BANK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L1D7000.asm"
-ENDC
+	mIncJunk "L1D7000"

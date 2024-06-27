@@ -4366,6 +4366,4 @@ Act_MiniBossLock_Open:
 OBJLst_Act_MiniBossLock: INCBIN "data/objlst/actor/minibosslock.bin"
 GFX_Act_MiniBossLock: INCBIN "data/gfx/actor/minibosslock.bin"
 ; =============== END OF BANK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L177CCE.asm"
-ENDC
+	mIncJunk "L177CCE"

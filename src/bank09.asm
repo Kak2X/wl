@@ -86,6 +86,4 @@ GFX_SubmapOBJ: INCBIN "data/gfx/maps/submap_obj.bin"
 GFX_SubmapOBJ_End:
 
 ; =============== END OF BANK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L097F32.asm"
-ENDC
+	mIncJunk "L097F32"

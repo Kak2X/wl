@@ -6059,6 +6059,4 @@ Act_Watch_MoveVert:
 	ret
 	
 ; =============== END OF BANK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L187F2F.asm"
-ENDC
+	mIncJunk "L187F2F"

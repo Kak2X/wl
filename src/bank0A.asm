@@ -7,11 +7,7 @@ LevelLayoutPtr_C15: dw LevelLayout_C15
 LevelLayoutPtr_C20: dw LevelLayout_C20
 LevelLayoutPtr_C16: dw LevelLayout_C16
 LevelLayoutPtr_C10: dw LevelLayout_C10
-; =============== START OF ALIGN JUNK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L0A400C.asm"
-ENDC
-; =============== END OF ALIGN JUNK ===============
+	mIncJunk "L0A400C"
 LevelLayout_C26: INCBIN "data/lvl/c26/level_layout.bin"
 LevelLayout_C33: INCBIN "data/lvl/c33/level_layout.bin"
 LevelLayout_C15: INCBIN "data/lvl/c15/level_layout.bin"
@@ -19,6 +15,4 @@ LevelLayout_C20: INCBIN "data/lvl/c20/level_layout.bin"
 LevelLayout_C16: INCBIN "data/lvl/c16/level_layout.bin"
 LevelLayout_C10: INCBIN "data/lvl/c10/level_layout.bin"
 ; =============== END OF BANK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L0A7A02.asm"
-ENDC
+	mIncJunk "L0A7A02"

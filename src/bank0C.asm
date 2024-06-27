@@ -625,6 +625,4 @@ Level_SetBGM:
 	ENDC
 
 ; =============== END OF BANK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L0C7F65.asm"
-ENDC
+	mIncJunk "L0C7F65"

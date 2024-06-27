@@ -106,6 +106,19 @@ I = I + 1
 ENDR
 ENDM
 
+; =============== mIncJunk ===============
+; Generates an include for junk padding data.
+; IN
+; - \1: Filename without extension
+MACRO mIncJunk
+IF LABEL_JUNK
+Padding_\@:
+ENDC
+	IF !SKIP_JUNK
+		INCBIN STRCAT("padding/", \1, ".bin")
+	ENDC
+ENDM
+
 ; =============== dwb ===============
 ; Shorthand for big-endian pointers.
 dwb: MACRO

@@ -12,6 +12,4 @@ GFX_Level_Lava: INCBIN "data/gfx/level/level_lava.bin"
 GFX_Level_Castle: INCBIN "data/gfx/level/level_castle.bin"
 GFX_Level_DarkCastle: INCBIN "data/gfx/level/level_darkcastle.bin"
 ; =============== END OF BANK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L0E7C00.asm"
-ENDC
+	mIncJunk "L0E7C00"

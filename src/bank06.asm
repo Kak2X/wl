@@ -339,6 +339,4 @@ GFX_Level_StoneCave: INCBIN "data/gfx/level/level_stonecave.bin"
 GFXRLE_CourseClr: INCBIN "data/gfx/courseclear.rlc"
 BGRLE_CourseClr: INCBIN "data/bg/courseclear.rls"
 ; =============== END OF BANK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L0679C6.asm"
-ENDC
+	mIncJunk "L0679C6"

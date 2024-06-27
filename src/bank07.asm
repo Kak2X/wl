@@ -1293,12 +1293,7 @@ OBJLst_Act_SpearGoom_StunR1: INCBIN "data/objlst/actor/speargoom_stunr1.bin"
 OBJLst_Act_SpearGoom_StunR2: INCBIN "data/objlst/actor/speargoom_stunr2.bin"
 OBJLst_Act_SpearGoom_Unused_StunAltR: INCBIN "data/objlst/actor/speargoom_unused_stunaltr.bin"
 GFX_Act_SpearGoom: INCBIN "data/gfx/actor/speargoom.bin"
-
-; =============== START OF ALIGN JUNK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L076EB2.asm"
-ENDC
-; =============== END OF ALIGN JUNK ===============
+	mIncJunk "L076EB2"
 
 ActLayout_C26: INCBIN "data/lvl/c26/actor_layout.bin"
 ActLayout_C33: INCBIN "data/lvl/c33/actor_layout.bin"
@@ -1345,6 +1340,4 @@ ActLayout_C06: INCBIN "data/lvl/c06/actor_layout.bin"
 ActLayout_C31B: INCBIN "data/lvl/c31b/actor_layout.bin"
 
 ; =============== END OF BANK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L077F66.asm"
-ENDC
+	mIncJunk "L077F66"

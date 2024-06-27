@@ -5179,6 +5179,4 @@ OBJLst_Act_FireMissile_SolidHit1_R1: INCBIN "data/objlst/actor/firemissile_solid
 GFX_Act_FireMissile: INCBIN "data/gfx/actor/firemissile.bin"
 
 ; =============== END OF BANK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L1B7C49.asm"
-ENDC
+	mIncJunk "L1B7C49"

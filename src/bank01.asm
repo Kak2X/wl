@@ -7151,7 +7151,7 @@ Level_Screen_ScrollVert:
 	ld   [sLvlScrollVAmount], a
 	ret
 	
-; =============== Level_Scroll_AddToRightQueue ===============
+; =============== Level_Scroll_AddTo*Queue ===============
 ; This is a set of subroutines to queue a screen update request for a specific direction.
 ; Note that the request may not be always processed on the same frame.
 ;
@@ -10665,6 +10665,4 @@ Demo_Unused_WriteInput:
 	ret
 	
 ; =============== END OF BANK ===============
-IF SKIP_JUNK == 0
-	INCLUDE "src/align_junk/L017BF7.asm"
-ENDC
+	mIncJunk "L017BF7"
