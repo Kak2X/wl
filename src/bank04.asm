@@ -82,7 +82,7 @@ Sound_StopAllRegs:
 ; =============== Sound_Do ===============
 ; Entry point of the main sound code.
 Sound_Do:
-	ld   a, [sSoundDisable]	; Is sound disabled?
+	ld   a, [sDemoFlag]		; Are we in demo mode?
 	and  a
 	jp   nz, Sound_StopAll	; If so, stop and ignore all sound processing.
 	

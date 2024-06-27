@@ -1727,8 +1727,9 @@ DOORSPEC_NONE EQU $FF
 
 ; Demo mode status
 DEMOMODE_NONE  EQU $00
-DEMOMODE_INIT  EQU $03
-DEMOMODE_LEVEL EQU $04
+; [POI] Suspicious lack of modes $01 and $02, likely DEMOMODE_WAITRECORD and DEMOMODE_RECORD respectively.
+DEMOMODE_WAITPLAYBACK  EQU $03
+DEMOMODE_PLAYBACK EQU $04
 
 ; ============================================================
 ; COURSE CLEAR SCREEN

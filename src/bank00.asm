@@ -514,8 +514,7 @@ Map_LevelIdCompletionAssocTbl:
 ; It copies all data from memory to the the entered save file.
 Save_CopyAllToSave:
 	; Avoid saving the game in demo mode
-	; (sSoundDisable is only set there during level loading)
-	ld   a, [sSoundDisable]
+	ld   a, [sDemoFlag]
 	and  a
 	ret  nz
 	
@@ -3706,11 +3705,11 @@ JoyKeys_Get:
 	or   a, b		; DULRSCBA
 	
 	;--
-	; Check for demo mode (which requires value $04)
+	; Check for demo mode
 	ld   c, a
 	ld   a, [sDemoMode]
-	cp   a, $04					; Are we in demo mode proper?
-	jr   nz, .setKeys			; If not, store the real inputs into the addresses
+	cp   a, DEMOMODE_PLAYBACK	; Are we playing back a demo?
+	jr   nz, .setKeys			; If not, skip ahead as we're using real joypad keys
 	ld   a, c
 	;--
 	
@@ -3725,8 +3724,8 @@ JoyKeys_Get:
 	
 	; Otherwise, end it
 .endDemo:
-	xor  a 										; Enable sound again
-	ld   [sSoundDisable], a
+	xor  a
+	ld   [sDemoFlag], a
 	ld   a, [sDemoId] 							; Increase the demo index (which interestingly persists in SRAM)
 	inc  a
 	ld   [sDemoId], a

@@ -52,12 +52,12 @@ Mode_Title_Intro:
 	xor  a						
 	ld   [sTitleRetVal], a
 	ld   [sStaticScreenMode], a
-	ld   a, DEMOMODE_INIT
+	ld   a, DEMOMODE_WAITPLAYBACK
 	ld   [sDemoMode], a
 	ld   a, PL_POW_GARLIC
 	ld   [sPlPower], a
 	ld   a, $01
-	ld   [sSoundDisable], a
+	ld   [sDemoFlag], a
 	ld   a, BGMACT_FADEOUT
 	ld   [sBGMActSet], a
 	
@@ -377,9 +377,9 @@ Mode_LevelInit_StartLevel:
 	call HomeCall_WriteWarioOBJLst
 	; If we've flagged the demo mode...
 	ld   a, [sDemoMode]
-	cp   a, DEMOMODE_INIT	; Are we waiting for demo mode (DEMOMODE_INIT)?
-	jr   nz, .startLevel	; If not, skip
-	ld   a, DEMOMODE_LEVEL	; Otherwise set demo mode proper
+	cp   a, DEMOMODE_WAITPLAYBACK	; Are we waiting for demo playback?
+	jr   nz, .startLevel			; If not, skip
+	ld   a, DEMOMODE_PLAYBACK		; Otherwise set demo playback proper
 	ld   [sDemoMode], a
 .startLevel:
 	; Switch to the main level
@@ -10602,6 +10602,7 @@ SaveSel_GetSaveDataPtr:
 ; The way this subroutine works (it clears demo mode and plays a SFX when done) suggests a couple of things:
 ; - Levels being hardwired to start in demo mode
 ; - A commented out check during gameplay to call this subroutine if demo mode is active
+; - There used to be two additional demo modes for demo recording, following the pattern for demo playback.
 ;
 Demo_Unused_WriteInput:
 	ld   hl, sDemoWriterBuffer	; HL = Buffer

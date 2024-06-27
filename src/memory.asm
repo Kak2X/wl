@@ -947,7 +947,7 @@ sDemoInputOffset EQU $A929 ; Offset to the demo input table
 sDemoLastKey EQU $A92A ; [TCRF] Keeps track of the last keypress when writing a demo.
 sDemoInputLength EQU $A92B ; Current length of pressed input (to detect when to switch; resets on new input)
 sHighJump EQU $A92C
-sSoundDisable EQU $A92D ; Global sound disable (for demo mode, ...)
+sDemoFlag EQU $A92D ; Demo mode flag, in practice used to prevent saving and disable sounds
 sUnused_BossAlreadyDead EQU $A92E ; [TCRF] Set when entering a boss room when the boss was already defeated. Not read anywhere.
 ; Holds the single digit (0-9 range) when halving the total coin count
 sGameOverCoinDigit0 EQU $A92F
