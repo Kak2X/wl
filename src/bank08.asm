@@ -1649,8 +1649,8 @@ Map_Unused_Overworld_MoveWario:
 ;
 ; There are also impossible off-screen checks can only be triggered with the unused movement test code.
 
-MAP_WX_CENTER EQU $58 ; Center screen Wario X
-MAP_WY_CENTER EQU $60 ; Center screen Wario Y
+DEF MAP_WX_CENTER EQU $58 ; Center screen Wario X
+DEF MAP_WY_CENTER EQU $60 ; Center screen Wario Y
 
 Map_Overworld_MoveWarioLeft:
 	; Use fast Y oscillation since we're moving

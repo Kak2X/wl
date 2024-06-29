@@ -220,7 +220,7 @@ SaveSel_WriteBrickOBJ:
 	ld   hl, sWorkOAM + ($06*$04)
 	
 	; Write the 4 bricks in a column, one 8px below the other
-I = 0
+DEF I = 0
 REPT 4
 	ld   a, $58+I	; Y
 	ldi  [hl], a
@@ -230,7 +230,7 @@ REPT 4
 	ldi  [hl], a
 	ld   a, $00		; Flags
 	ldi  [hl], a
-I = I + $08			
+DEF I = I + $08			
 ENDR
 	
 	;----------

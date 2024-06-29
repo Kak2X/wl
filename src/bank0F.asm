@@ -3740,11 +3740,11 @@ Act_SSTeacupBoss_BGWrite_Body:
 	; Tile IDs written: $58
 	; Each of these defines how many tiles to write in a row.
 	ld   de, BG_Act_SSTeacupBoss_Body				; DE = Ptr to tilemap
-I = 0
+DEF I = 0
 REPT 11
 	;                         VRAM                 X  Y  Count
 	mSSTeacupBoss_BGWriteCall vBGSSTeacupBossBody, 0, I, 8
-I = I + 1
+DEF I = I + 1
 ENDR
 	ret
 	

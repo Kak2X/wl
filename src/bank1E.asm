@@ -859,8 +859,8 @@ CoinBonus_AnimBucket:
 	ld   hl, vBGCoinBonusBucketR
 	
 	; Perform the copy
-BUCKET_WIDTH  EQU $03
-BUCKET_HEIGHT EQU $05
+DEF BUCKET_WIDTH  EQU $03
+DEF BUCKET_HEIGHT EQU $05
 .copyBG:
 	ld   a, $0F ; --
 	ld   b, BUCKET_HEIGHT	; Height: 5 tiles
@@ -1318,7 +1318,7 @@ HeartBonus_InitGame:
 	ld   [sBGMSet], a
 	
 	
-HEARTBONUS_MINPOWERX EQU $0C ; Min X position of the power bar indicator
+DEF HEARTBONUS_MINPOWERX EQU $0C ; Min X position of the power bar indicator
 
 ; =============== HeartBonus_InitNextRound ===============
 ; Sets up the next round for the bonus game.
@@ -2394,8 +2394,8 @@ HeartBonus_LoadBG_NormEasyResults:
 ; This includes the blank space between text.
 HeartBonus_WritePrizesBG:
 	; Needs to write a 4x9 area.
-HBPRIZW EQU $04 ; Width of this tilemap
-HBPRIZH EQU $09 ; Height of this tilemap
+DEF HBPRIZW EQU $04 ; Width of this tilemap
+DEF HBPRIZH EQU $09 ; Height of this tilemap
 
 	ld   hl, vBGHeartBonusResultsPrizes	; HL = Location in the tilemap
 	ld   b, HBPRIZH		; B = Height
@@ -2424,8 +2424,8 @@ HBPRIZH EQU $09 ; Height of this tilemap
 ; This is the letter shown on the top of the sign.
 HeartBonus_WriteDifficultyBG:
 	; Needs to write a 2x2 area.
-HBDIFFW EQU $02 ; Width of this tilemap
-HBDIFFH EQU $02 ; Height of this tilemap
+DEF HBDIFFW EQU $02 ; Width of this tilemap
+DEF HBDIFFH EQU $02 ; Height of this tilemap
 
 	ld   hl, vBGHeartBonusResultsDifficulty	; HL = Location in the tilemap
 	ld   b, HBDIFFH		; B = Height

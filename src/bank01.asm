@@ -608,7 +608,7 @@ Game_PauseDo:
 	and  a
 	jp   z, .end
 	
-DEBUG_FREEROAM_SPEED EQU $03
+DEF DEBUG_FREEROAM_SPEED EQU $03
 	; Where do you want to go?
 	ldh  a, [hJoyKeys]
 	bit  KEYB_RIGHT, a

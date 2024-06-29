@@ -2091,7 +2091,7 @@ Level_ScreenLock_DoBottom:
 	;       block (BLOCK_HEIGHT) above the normal limit, with the stage scrolling designed for it.
 	;       Remove the -BLOCK_HEIGHT to show the full area.
 
-FREESCROLL_LOW_BORDER EQU LOW(LEVEL_HEIGHT - LVLSCROLL_YOFFSET - BLOCK_HEIGHT)
+DEF FREESCROLL_LOW_BORDER EQU LOW(LEVEL_HEIGHT - LVLSCROLL_YOFFSET - BLOCK_HEIGHT)
 
 	ld   a, [sLvlScrollY_Low]		
 	cp   a, FREESCROLL_LOW_BORDER		; Is the screen fully scrolled to the bottom (or over the limit)?

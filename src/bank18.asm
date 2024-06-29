@@ -3354,12 +3354,12 @@ GFX_Act_StoveCanyonBoss_Unused_Extra: INCBIN "data/gfx/actor/stovecanyonboss_unu
 ; - 1: Base address
 ; - 2: Rows to draw.
 MACRO mStoveCanyonBoss_BGWriteCall
-I = 0
+DEF I = 0
 REPT \2
 	ld   hl, \1 + (BG_TILECOUNT_H * I)
 	call Act_StoveCanyonBoss_BGWrite4
 	call Act_StoveCanyonBoss_BGWrite4
-I = I + 1
+DEF I = I + 1
 ENDR
 ENDM
 

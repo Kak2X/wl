@@ -1204,9 +1204,9 @@ sLvlScrollUpdD1X_High                      :db     ; EQU $A9D4
 sLvlScrollUpdD1X_Low                       :db     ; EQU $A9D5
 sStaticScreenMode                          :db     ; EQU $A9D6 ; If set, the current screen is single-screen and unscrollable. Not all are like this.
 sRetVal                                    :db     ; EQU $A9D7 ; Return value for certain nested submodes
-sTitleRetVal                                         EQU sRetVal ; Return value for the title screen code
-sCourseClrBonusEnd                                   EQU sRetVal ; Reminder to switch to the Treasure Room once the bonus games return to the Course Clear screen
-sEndingRetVal                                        EQU sRetVal ; Marks the ending code as being finished
+DEF sTitleRetVal                                     EQU sRetVal ; Return value for the title screen code
+DEF sCourseClrBonusEnd                               EQU sRetVal ; Reminder to switch to the Treasure Room once the bonus games return to the Course Clear screen
+DEF sEndingRetVal                                    EQU sRetVal ; Marks the ending code as being finished
 sPl_Unused_DragonFlameBGColiSolid          :db     ; EQU $A9D8
 sSaveFileError                             :db     ; EQU $A9D9 ; Bitmask with save files marked as bad
 sSaveFileErrorCharId                       :db     ; EQU $A9DA ; Offset to current letter in SAVE FILE RRROR message
@@ -1580,7 +1580,7 @@ DEF wEndLoopsLeft                                    EQU wStaticLoopsLeft ; Coun
 DEF wEndLampRubLoopsLeft                             EQU wStaticLoopsLeft
 
 wStaticTileAnimTimer                       :db     ; EQU $C0AA 
-wHeartBonusTileAnim                                  EQU wStaticTileAnimTimer ; Marks if tile animations should be enabled in the Heart Bonus game
+DEF wHeartBonusTileAnim                              EQU wStaticTileAnimTimer ; Marks if tile animations should be enabled in the Heart Bonus game
 
 wStaticTileAnimTimer2                      :db     ; EQU $C0AB
 DEF wTitleTileAnimTimer                              EQU wStaticTileAnimTimer2

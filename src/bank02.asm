@@ -1094,8 +1094,8 @@ ActS_InitScreenActors:
 	; where sActLevelLayoutOffset points to (more or less) the center area.
 	; 
 	
-ACTLOAD_RANGE_X EQU $0E
-ACTLOAD_RANGE_Y EQU $0B
+DEF ACTLOAD_RANGE_X EQU $0E
+DEF ACTLOAD_RANGE_Y EQU $0B
 	
 	; BC = Top left corner of this area
 	ld   a, [sActLevelLayoutOffset_Low]

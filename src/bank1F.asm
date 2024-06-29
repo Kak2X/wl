@@ -247,8 +247,8 @@ End_Genie_SetHandLAnim:
 .palm:
 	ld   de, BG_End_Genie_HandLPalm
 	
-GENIE_HANDL_WIDTH  EQU $05
-GENIE_HANDL_HEIGHT EQU $04
+DEF GENIE_HANDL_WIDTH  EQU $05
+DEF GENIE_HANDL_HEIGHT EQU $04
 
 .copyBG:
 	ld   hl, vBGEndGenieHandL	; HL = Base offset in tilemap
@@ -300,8 +300,8 @@ End_Genie_SetHandRAnim:
 	ld   de, BG_End_Genie_HandROpen
 	
 	
-GENIE_HANDR_WIDTH  EQU $05
-GENIE_HANDR_HEIGHT EQU $03
+DEF GENIE_HANDR_WIDTH  EQU $05
+DEF GENIE_HANDR_HEIGHT EQU $03
 .copyBG:
 	ld   hl, vBGEndGenieHandR		; HL = Base offset in tilemap
 	ld   b, GENIE_HANDR_HEIGHT		; Height: 3 tiles
@@ -349,8 +349,8 @@ End_SetBalloon:
 .nothing:
 	ld   de, BG_End_Balloon_Null
 	
-BALLOON_WIDTH  EQU $05
-BALLOON_HEIGHT EQU $05
+DEF BALLOON_WIDTH  EQU $05
+DEF BALLOON_HEIGHT EQU $05
 .copyBG:
 	ld   hl, vBGEndBalloon	; HL = Tilemap location
 	ld   b, BALLOON_HEIGHT	; Height: 5 tiles

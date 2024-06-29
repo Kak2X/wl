@@ -95,14 +95,14 @@ ENDM
 ; - 2: Number of frames in the graphic
 ; - 3: Size of each frame in bytes
 MACRO mIncludeMultiIntCust
-I = 0
+DEF I = 0
 REPT \3
-J = 0
+DEF J = 0
 	REPT \2 
 		INCBIN \1,I+J,1
-J = J + \3
+DEF J = J + \3
 	ENDR
-I = I + 1
+DEF I = I + 1
 ENDR
 ENDM
 
@@ -223,7 +223,7 @@ ENDM
 ; OUT
 ; - COLI: Calculated result
 MACRO mActColiMask
-COLI = \1<<ACTCOLIMB_R|\2<<ACTCOLIMB_L|\3<<ACTCOLIMB_U|\4<<ACTCOLIMB_D
+DEF COLI = \1<<ACTCOLIMB_R|\2<<ACTCOLIMB_L|\3<<ACTCOLIMB_U|\4<<ACTCOLIMB_D
 ENDM
 
 ; =============== mActOBJLstPtrTable ===============
