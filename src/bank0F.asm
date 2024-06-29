@@ -203,9 +203,9 @@ MACRO mActS_SetOBJLstTableForDefault
 	add  hl, de
 	; Get the read pointer and use it as OBJLstPtrTable
 	ldi  a, [hl]
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, [hl]
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 ENDM
  
 ; =============== ActS_SetOBJLstTableForDefault ===============
@@ -288,7 +288,7 @@ ActInit_Default_ItemUsed:
 	ret
 .despawn:
 	xor  a
-	ld   [sActSetActive], a
+	ld   [sActSetStatus], a
 	ret
 ; =============== ActS_DefaultStand ===============
 ; This subroutine contains the main code for default actors when they stand still.
@@ -2445,9 +2445,9 @@ Act_Helmut_Main:
 	
 	; Set OBJLst ptr
 	ld   a, LOW(OBJLstPtrTable_Act_Helmut_MoveD)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Helmut_MoveD)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; When the ground is reached, start moving upwards
 	call ActColi_GetBlockId_Ground
@@ -2482,15 +2482,15 @@ Act_Helmut_Main:
 	
 	; Use different OBJLst if we moved up or down
 	ld   a, LOW(OBJLstPtrTable_Act_Helmut_MoveU)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Helmut_MoveU)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	bit  7, b				; MSB set (moving up)?
 	ret  nz					; If so, return
 	ld   a, LOW(OBJLstPtrTable_Act_Helmut_MoveD)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Helmut_MoveD)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	ret
 .topReached:
 	ld   a, SFX4_11
@@ -2684,9 +2684,9 @@ Act_Goom_Move:
 	call ActS_MoveRight
 	
 	ld   a, LOW(OBJLstPtrTable_Act_Goom_WalkL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Goom_WalkL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	;--
 	ret
 .moveR:
@@ -2710,9 +2710,9 @@ Act_Goom_Move:
 	call ActS_MoveRight
 	
 	ld   a, LOW(OBJLstPtrTable_Act_Goom_WalkR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Goom_WalkR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	ret
 ; =============== Act_Goom_SwitchMove ===============
 ; Starts moving the actor in the opposite direction.
@@ -2737,15 +2737,15 @@ Act_Goom_SwitchMove:
 	jr   z, .toL					; If not, use the right frame
 .toR:
 	ld   a, LOW(OBJLstPtrTable_Act_Goom_WalkL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Goom_WalkL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	ret
 .toL:
 	ld   a, LOW(OBJLstPtrTable_Act_Goom_WalkR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Goom_WalkR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	ret
 	
 ; =============== OBJLstSharedPtrTable_Act_Goom ===============
@@ -4099,9 +4099,9 @@ OBJLstPtrTable_ActInit_BigCoin:
 Act_BigCoin:
 	; Force set the correct sprite map table
 	ld   a, LOW(OBJLstPtrTable_BigCoinL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_BigCoinL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	ld   a, [sActSetTimer]	; Timer++
 	inc  a
@@ -4351,9 +4351,9 @@ Act_Checkpoint_Activating:
 Act_Checkpoint_Active:
 	call ActS_IncOBJLstIdEvery8
 	ld   a, LOW(OBJLstPtrTable_Act_Checkpoint_Active)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Checkpoint_Active)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	ret
 	
 OBJLstSharedPtrTable_Act_Checkpoint:
@@ -4529,9 +4529,9 @@ Act_Puff_IdleNoAnim:
 	
 	call ActS_IncOBJLstIdEvery8
 	ld   a, LOW(OBJLstPtrTable_Act_Puff_Idle)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Puff_Idle)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; 1/10th chance of switching to Act_Puff_IdleWithAnim.
 	; This is done to make the idle animation start at random intervals.
@@ -4559,9 +4559,9 @@ Act_Puff_IdleWithAnim:
 	call ActS_IncOBJLstIdEvery8
 	
 	ld   a, LOW(OBJLstPtrTable_Act_Puff_Wave)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Puff_Wave)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Display the 4 frames of animation.
 	; Once we're done, return to the main idle mode.
@@ -4594,9 +4594,9 @@ Act_Puff_Inflate:
 .chkAnim:
 	; Set OBJLst for this animation
 	ld   a, LOW(OBJLstPtrTable_Act_Puff_Inflate)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Puff_Inflate)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Wait until all $0C frames are played
 	ld   a, [sActSetOBJLstId]
@@ -4627,9 +4627,9 @@ Act_Puff_Deflate:
 	call ActS_IncOBJLstIdEvery8
 	
 	ld   a, LOW(OBJLstPtrTable_Act_Puff_Deflate)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Puff_Deflate)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	
 	; Wait until all $0C frames are played
@@ -4820,9 +4820,9 @@ Act_LavaBubble_Main:
 	
 .chkJump:
 	ld   a, LOW(OBJLstPtrTable_Act_LavaBubble)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_LavaBubble)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	call Act_LavaBubble_ChkJump
 	ret
@@ -5023,9 +5023,9 @@ Act_TreasureChestLid_Closed:
 ; =============== Act_TreasureChestLid_Open ===============
 Act_TreasureChestLid_Open:
 	ld   a, LOW(OBJLstPtrTable_Act_TreasureChestLid_Open)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_TreasureChestLid_Open)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	xor  a
 	ld   [sActSetColiType], a
 	ret
@@ -5223,9 +5223,9 @@ Act_Treasure:
 	;
 	
 	ld   a, LOW(OBJLstPtrTable_Act_Treasure)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Treasure)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Every 4 frames increase the anim counter
 	ld   a, [sTimer]
@@ -5245,9 +5245,9 @@ Act_Treasure:
 	ld   a, $01						; Mark a treasure as held (so we can't throw it)
 	ld   [sActHeldTreasure], a
 	ld   a, LOW(OBJLstPtrTable_Act_Treasure)			; ?
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Treasure)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	jp   SubCall_ActS_StartHeldForce
 	
 ; =============== Act_Treasure_SpawnShine ===============
@@ -5431,9 +5431,9 @@ Act_TreasureShine:
 .trackPos:
 
 	ld   a, LOW(OBJLstPtrTable_Act_TreasureShine)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_TreasureShine)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	;
 	; Make the shine use the same position as the treasure
@@ -5532,9 +5532,9 @@ Act_TorchFlame:
 .setOBJLst:
 	; Not sure why that's here
 	ld   a, LOW(OBJLstPtrTable_Act_TorchFlame)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_TorchFlame)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	ret
 	
 OBJLstSharedPtrTable_Act_TorchFlame:
@@ -5649,9 +5649,9 @@ Act_Spark_Main:
 .move:
 	; Weird that it's being set all the time (it's also the only OBJLst this actor has)
 	ld   a, LOW(OBJLstPtrTable_Act_Spark)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Spark)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Every other execution frame...
 	ld   a, [sActSetTimer]
@@ -6090,9 +6090,9 @@ Act_Seal_Idle:
 .moveRight:
 	; Set idle swim anim
 	ld   a, LOW(OBJLstPtrTable_Act_Seal_IdleR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Seal_IdleR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	; If there's a solid block in the way, turn immediately
 	call ActColi_GetBlockId_LowR
 	mSubCall ActBGColi_IsEmptyWaterBlock
@@ -6108,9 +6108,9 @@ Act_Seal_Idle:
 .moveLeft:
 	; Set idle swim anim
 	ld   a, LOW(OBJLstPtrTable_Act_Seal_IdleL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Seal_IdleL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	; If there's a solid block in the way, turn immediately
 	call ActColi_GetBlockId_LowL
 	mSubCall ActBGColi_IsEmptyWaterBlock
@@ -6325,9 +6325,9 @@ Act_Seal_Track_MoveRight:
 	
 	; Set swim/track anim
 	ld   a, LOW(OBJLstPtrTable_Act_Seal_TrackR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Seal_TrackR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Move right 1px
 	ld   bc, +$01
@@ -6355,9 +6355,9 @@ Act_Seal_Track_MoveLeft:
 	
 	; Set swim/track anim
 	ld   a, LOW(OBJLstPtrTable_Act_Seal_TrackL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Seal_TrackL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Move left 1px
 	ld   bc, -$01
@@ -6518,9 +6518,9 @@ Act_Seal_Retreat:
 ; Moves the actor left 1px, setting the proper anim.
 .moveLeft:
 	ld   a, LOW(OBJLstPtrTable_Act_Seal_RetreatL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Seal_RetreatL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; If there isn't a water block in the way, don't move
 	call ActColi_GetBlockId_LowL
@@ -6536,9 +6536,9 @@ Act_Seal_Retreat:
 ; Moves the actor left 1px, setting the proper anim.
 .moveRight:
 	ld   a, LOW(OBJLstPtrTable_Act_Seal_RetreatR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Seal_RetreatR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	; If there isn't a water block in the way, don't move
 	call ActColi_GetBlockId_LowR
 	mSubCall ActBGColi_IsEmptyWaterBlock
@@ -7161,9 +7161,9 @@ Act_BigHeart:
 	call ActS_IncOBJLstIdEvery8
 	
 	ld   a, LOW(OBJLstPtrTable_Act_BigHeart)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_BigHeart)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Until the heart is rising from the big block/ground, make it intangible
 	ld   a, [sActBigHeartPopUpTimer]

@@ -44,9 +44,9 @@ OBJLstPtrTable_Act_DoorFrame:
 Act_DoorFrame:;I
 	; Yeah. Could have been omitted but oh well.
 	ld   a, LOW(OBJLstPtrTable_Act_DoorFrame)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_DoorFrame)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	ret
 	
 OBJLstSharedPtrTable_Act_DoorFrame:
@@ -998,9 +998,9 @@ Act_Wolf_MoveLeft:
 	call ActS_MoveRight
 	
 	ld   a, LOW(OBJLstPtrTable_Act_Wolf_WalkL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Wolf_WalkL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Make the actor face left
 	ld   a, [sActSetDir]
@@ -1033,9 +1033,9 @@ Act_Wolf_MoveRight:
 	call ActS_MoveRight
 	
 	ld   a, LOW(OBJLstPtrTable_Act_Wolf_WalkR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Wolf_WalkR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Make the actor face right
 	ld   a, [sActSetDir]
@@ -1714,9 +1714,9 @@ Act_Penguin_MoveLeft:
 	
 	
 	ld   a, LOW(OBJLstPtrTable_Act_Penguin_WalkL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Penguin_WalkL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Make the actor face left
 	ld   a, [sActSetDir]
@@ -1749,9 +1749,9 @@ Act_Penguin_MoveRight:
 	jr   z, Act_Penguin_SetTurnDelay
 	
 	ld   a, LOW(OBJLstPtrTable_Act_Penguin_WalkR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Penguin_WalkR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Make the actor face right
 	ld   a, [sActSetDir]
@@ -1940,9 +1940,9 @@ Act_PenguinSpikeBall:
 	; Reuse first frame from MoveL animation.
 	; Not a problem since we aren't cycling the animations until the thing moves.
 	ld   a, LOW(OBJLstPtrTable_Act_PenguinSpikeBall_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_PenguinSpikeBall_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; With sActPenguinSpikeTimer starting out at $40,
 	; don't move until the timer elapses.
@@ -2057,9 +2057,9 @@ Act_PenguinSpikeBall_MoveLeft:
 	
 	; Animate in that direction
 	ld   a, LOW(OBJLstPtrTable_Act_PenguinSpikeBall_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_PenguinSpikeBall_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; If the spikeball goes against a solid block, mark as dead
 	call ActColi_GetBlockId_LowL
@@ -2075,9 +2075,9 @@ Act_PenguinSpikeBall_MoveRight:
 	
 	; Animate in that direction
 	ld   a, LOW(OBJLstPtrTable_Act_PenguinSpikeBall_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_PenguinSpikeBall_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; If the spikeball goes against a solid block, mark as dead
 	call ActColi_GetBlockId_LowR
@@ -2586,9 +2586,9 @@ Act_DD_MoveLeft:
 	call ActS_MoveRight
 	
 	ld   a, LOW(OBJLstPtrTable_Act_DD_WalkL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_DD_WalkL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Make the actor face left
 	ld   a, [sActSetDir]
@@ -2620,9 +2620,9 @@ Act_DD_MoveRight:
 	call ActS_MoveRight
 	
 	ld   a, LOW(OBJLstPtrTable_Act_DD_WalkR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_DD_WalkR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Make the actor face right
 	ld   a, [sActSetDir]
@@ -2812,18 +2812,18 @@ Act_DDBoomerang_MoveLeft:
 	ld   bc, -$01
 	call ActS_MoveRight
 	ld   a, LOW(OBJLstPtrTable_Act_DDBoomerang_SpinL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_DDBoomerang_SpinL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	ret
 ; =============== Act_DDBoomerang_MoveRight ===============
 Act_DDBoomerang_MoveRight:
 	ld   bc, +$01
 	call ActS_MoveRight
 	ld   a, LOW(OBJLstPtrTable_Act_DDBoomerang_SpinR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_DDBoomerang_SpinR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	ret
 ; =============== Act_DDBoomerang_MoveVert ===============
 ; Handles the vertical movement arc of the boomerang.
@@ -3211,9 +3211,9 @@ Act_PouncerDrop:
 Act_PouncerDrop_Main:
 	; Override animation always
 	ld   a, LOW(OBJLstPtrTable_Act_PouncerDrop_Angry)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_PouncerDrop_Angry)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Every $10 frames increase the anim frame
 	ld   a, [sTimer]
@@ -3249,9 +3249,9 @@ Act_PouncerDrop_Main:
 ; In this mode, the actor moves up slowly until the target pos is reached.
 Act_PouncerDrop_MoveUp:
 	ld   a, LOW(OBJLstPtrTable_Act_PouncerDrop_Neutral)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_PouncerDrop_Neutral)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Check if we reached the target Y pos, and if so, stop moving for a bit before dropping.
 	ld   a, [sActSetRelY]		; B = Y pos
@@ -3294,9 +3294,9 @@ Act_PouncerDrop_MoveUp:
 Act_PouncerDrop_WaitBeforeDrop:
 	; Set the angry face at first
 	ld   a, LOW(OBJLstPtrTable_Act_PouncerDrop_Angry)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_PouncerDrop_Angry)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Handle the timer...
 	ld   a, [sActPouncerDropPreDropDelay]			; Timer--;
@@ -3307,9 +3307,9 @@ Act_PouncerDrop_WaitBeforeDrop:
 	
 	; Then, if the timer was >= $14, write back the neutral face
 	ld   a, LOW(OBJLstPtrTable_Act_PouncerDrop_Neutral)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_PouncerDrop_Neutral)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	ret
 	
 ; =============== Act_PouncerDrop_WaitAfterDrop ===============
@@ -3514,9 +3514,9 @@ ActInit_PouncerFollow:
 ; =============== Act_PouncerFollow ===============
 Act_PouncerFollow:
 	ld   a, LOW(OBJLstPtrTable_Act_PouncerFollow)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_PouncerFollow)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Every $10 frames increase the anim frame
 	ld   a, [sTimer]
@@ -3908,9 +3908,9 @@ Act_Driller_MoveLeft:
 	ld   bc, -$01
 	call ActS_MoveRight
 	ld   a, LOW(OBJLstPtrTable_Act_Driller_Move)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Driller_Move)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	ret
 	
 ; =============== Act_Driller_MoveRight ===============
@@ -3919,9 +3919,9 @@ Act_Driller_MoveRight:
 	ld   bc, +$01
 	call ActS_MoveRight
 	ld   a, LOW(OBJLstPtrTable_Act_Driller_Move)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Driller_Move)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	ret
 	
 ; =============== Act_Driller_Turn ===============
@@ -4235,9 +4235,9 @@ Act_SpikeBall_MoveLeft:
 ; Sets the initial OBJLstPtrTable when the actor is facing left.
 ActInit_SpikeBall_SetOBJLstPtrTableL:
 	ld   a, LOW(OBJLstPtrTable_Act_SpikeBallL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_SpikeBallL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	ret
 ; =============== Act_SpikeBall_MoveRight ===============
 ; Moves the actor to the right.
@@ -4255,9 +4255,9 @@ Act_SpikeBall_MoveRight:
 ; Sets the initial OBJLstPtrTable when the actor is facing right.
 ActInit_SpikeBall_SetOBJLstPtrTableR:
 	ld   a, LOW(OBJLstPtrTable_Act_SpikeBallR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_SpikeBallR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	ret
 ; =============== Act_SpikeBall_Dead ===============
 ; Kills the spikeball.
@@ -4946,9 +4946,9 @@ Act_ThunderCloud_WaitShoot:
 	ld   [sActSetOBJLstId], a
 .chkSpawn:
 	ld   a, LOW(OBJLstPtrTable_Act_ThunderCloud_Shoot)	; Set anim
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_ThunderCloud_Shoot)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	ld   a, [sActThunderCloudShootTimer]	; Delay--
 	dec  a
@@ -5472,9 +5472,9 @@ Act_Hedgehog_MoveH:
 .moveL:
 	; Set sprite mapping
 	ld   a, LOW(OBJLstPtrTable_Act_Hedgehog_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Hedgehog_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Set left direction
 	ld   a, [sActSetDir]
@@ -5508,9 +5508,9 @@ Act_Hedgehog_MoveH:
 .moveR:
 	; Set sprite mapping
 	ld   a, LOW(OBJLstPtrTable_Act_Hedgehog_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Hedgehog_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 
 	; Set right direction
 	ld   a, [sActSetDir]

@@ -1249,7 +1249,7 @@ CourseClr_CoinBonusPos:
 	ld   a, COURSECLR_RTN_TOHEARTBONUS
 	ld   [sCourseClrMode], a
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   a, OBJ_WARIO_WALK0		; Set walk frame
 	ld   [sPlLstId], a
 	ld   a, OBJLST_XFLIP		; Face right
@@ -1366,7 +1366,7 @@ CourseClr_HeartBonusPos:
 	ld   a, COURSECLR_RTN_TOTRROOM			; Walk to the off-screen right
 	ld   [sCourseClrMode], a
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   a, OBJ_WARIO_WALK0
 	ld   [sPlLstId], a
 	ret
@@ -1389,7 +1389,7 @@ CourseClr_HeartBonusPos:
 	ld   a, COURSECLR_RTN_TOCOINBONUS
 	ld   [sCourseClrMode], a
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   a, OBJ_WARIO_WALK0		; Set walk frame
 	ld   [sPlLstId], a
 	ld   a, $00					; Face left
@@ -1510,7 +1510,7 @@ Mode_LevelClear_TrRoomWait:
 	ld   a, OBJ_WARIO_IDLE0
 	ld   [sPlLstId], a
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   a, GM_LEVELCLEAR_TRCOINCOUNT	; Next mode
 	ld   [sSubMode], a
 	ld   a, BGM_COINVAULT				; Play BGM
@@ -1798,7 +1798,7 @@ Mode_LevelClear_TrRoomIdle:
 	;--
 	; Handle the player animation.
 	;
-	; Until sPlTimer2 elapses, we'll be in the gloat animation (unless we came in with no money).
+	; Until sPlDelayTimer elapses, we'll be in the gloat animation (unless we came in with no money).
 	; After that, we switch to the main idle animation:
 	; - Jump to .initIdleAnim the first time to setup the initial frame.
 	;   This is required to make sure TrRoom_WarioBlink_OBJLstAnimOff is applied in the correct frame.
@@ -1806,11 +1806,11 @@ Mode_LevelClear_TrRoomIdle:
 	;
 	
 	; Check we
-	ld   a, [sPlTimer2]
+	ld   a, [sPlDelayTimer]
 	and  a						; Timer == 0?
 	jr   z, .idleAnim			; If so, we already ended it
 	dec  a						; Timer--
-	ld   [sPlTimer2], a			; Timer == 0?
+	ld   [sPlDelayTimer], a			; Timer == 0?
 	jr   z, .initIdleAnim		; If so, set the new idle anim
 	
 .gloatAnim:
@@ -1823,7 +1823,7 @@ Mode_LevelClear_TrRoomIdle:
 	ld   a, OBJ_TRROOM_WARIO_IDLE0			; Set base frame for TrRoom_WarioBlink_OBJLstAnimOff
 	ld   [sPlLstId], a
 	xor  a									; Clear
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	call HomeCall_NonGame_WriteWarioOBJLst
 	ret
 .idleAnim:
@@ -1843,7 +1843,7 @@ Mode_LevelClear_TrRoomIdle:
 	ld   a, OBJ_WARIO_WALK0			; Prepare for walking-to-left anim
 	ld   [sPlLstId], a
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   [sPlFlags], a
 	ld   a, BGMACT_FADEOUT
 	ld   [sBGMActSet], a
@@ -1917,13 +1917,13 @@ TrRoom_AnimWarioBlink:
 	; entry is an offset to the current animation frame.
 	;
 	ld   hl, TrRoom_WarioBlink_OBJLstAnimOff
-	ld   a, [sPlTimer]		; Index++
+	ld   a, [sPlAnimTimer]		; Index++
 	inc  a
 	cp   a, TrRoom_WarioBlink_OBJLstAnimOff.end-TrRoom_WarioBlink_OBJLstAnimOff	; Out of range?
 	jr   nz, .getOff		; If not, jump
 	xor  a					; Otherwise, reset index
 .getOff:
-	ld   [sPlTimer], a		; Save updated index
+	ld   [sPlAnimTimer], a		; Save updated index
 	ld   e, a
 	ld   d, $00				; DE = Index
 	add  hl, de				; Offset it
@@ -2650,7 +2650,7 @@ Mode_GameOver_TrRoomWait:
 	ld   a, OBJ_TRROOM_WARIO_SHRUG
 	ld   [sPlLstId], a
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   a, BGM_GAMEOVER2			; Set
 	ld   [sBGMSet], a
 	
@@ -2883,7 +2883,7 @@ Mode_GameOver_TrRoomExit:
 .startWalk:
 	; Otherwise, prepare the walk anim
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   [sPlFlags], a
 	ld   a, OBJ_WARIO_WALK0
 	ld   [sPlLstId], a
@@ -2959,7 +2959,7 @@ Mode_Ending_MovePlDown:
 	ld   [sSFX1Set], a
 	xor  a
 	ld   [sPlHatSwitchDrawMode], a
-	ld   [sPlTimer], a	
+	ld   [sPlAnimTimer], a	
 	
 	;
 	; Switch to the standing frame as soon as we hit the ground.
@@ -3057,7 +3057,7 @@ Mode_Ending_WalkToLamp:
 	ret  nz						; Timer == 0 after decreasing it?
 .startWalk:						; If so, setup the walk anim
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   a, OBJ_WARIO_WALK0		; Set 		
 	ld   [sPlLstId], a
 	ret
@@ -3109,7 +3109,7 @@ Mode_Ending_WalkToLamp:
 	ld   a, OBJ_WARIO_HOLDWALK0	; Set holding frame
 	ld   [sPlLstId], a
 	xor  a						; Reset walk timer
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   a, [sSubMode]			; Next submode
 	inc  a
 	ld   [sSubMode], a
@@ -3161,7 +3161,7 @@ Mode_Ending_WalkToReload:
 	ld   [sPlLstId], a
 	
 	xor  a						
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   a, [sSubMode]			; Next mode (fade out)
 	inc  a
 	ld   [sSubMode], a
@@ -3338,7 +3338,7 @@ Ending_TrRoom_WalkInR:
 	ld   [sPlLstId], a
 	;--
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   [sExActTrRoomArrowDespawn], a
 	ld   a, BGM_SHERBETLAND			; Play treasure room -- ending BGM
 	ld   [sBGMSet], a
@@ -3432,7 +3432,7 @@ Ending_TrRoom_SwitchToIdle:
 	ld   a, $01						; Signal out to despawn the flashing arrow
 	ld   [sExActTrRoomArrowDespawn], a
 	ld   a, $80						; Wait for $80 frames in the next mode
-	ld   [sPlTimer2], a
+	ld   [sPlDelayTimer], a
 	ld   a, $02						; Next mode
 	ld   [sEndingTrRoomMode], a
 	ld   a, ENDT_RTN_COINCOUNT		; Start taking out the first treasure by ID next
@@ -3446,19 +3446,19 @@ Ending_TrRoom_WaitRemove:
 	;
 	; Wait $80 frames before removing the current treasure
 	;
-	ld   a, [sPlTimer2]	
+	ld   a, [sPlDelayTimer]	
 	and  a					; Delay == $00?
 	jr   z, .chkRemove		; If so, jump
 	dec  a					; Delay--
 	
 	; The frame before, set the idle animation (from the Gloat one)
-	ld   [sPlTimer2], a		; Delay != $00?
+	ld   [sPlDelayTimer], a		; Delay != $00?
 	ret  nz					; If so, return
 	
 	ld   a, OBJ_WARIO_IDLE0
 	ld   [sPlLstId], a
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ret
 	
 .chkRemove:
@@ -3526,7 +3526,7 @@ Ending_TrRoom_WaitNear:
 	ld   [sPlLstId], a
 .nextMode:
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   a, [sEndingTrRoomMode]
 	inc  a
 	ld   [sEndingTrRoomMode], a
@@ -3561,7 +3561,7 @@ Ending_TrRoom_GrabTreasure:
 	inc  a
 	ld   [sEndingTrRoomMode], a
 	ld   a, $08				; Wait 8 frames before falling down
-	ld   [sPlTimer2], a
+	ld   [sPlDelayTimer], a
 	ret
 .row2:
 	;
@@ -3579,7 +3579,7 @@ Ending_TrRoom_GrabTreasure:
 	inc  a
 	ld   [sEndingTrRoomMode], a
 	ld   a, $08				; Wait 8 frames before falling down
-	ld   [sPlTimer2], a
+	ld   [sPlDelayTimer], a
 	ret
 .row3:
 	;
@@ -3589,7 +3589,7 @@ Ending_TrRoom_GrabTreasure:
 	inc  a
 	ld   [sEndingTrRoomMode], a
 	ld   a, $10
-	ld   [sPlTimer2], a
+	ld   [sPlDelayTimer], a
 	ret
 	
 ; =============== Ending_TrRoom_GetTreasure ===============
@@ -3602,11 +3602,11 @@ Ending_TrRoom_GetTreasure:
 	; When we get here in the jump frame, this is used to give the "delay"
 	; before down, like how it appears during gameplay.
 	;
-	ld   a, [sPlTimer2]
+	ld   a, [sPlDelayTimer]
 	and  a
 	jr   z, .chkMoveDown
 	dec  a
-	ld   [sPlTimer2], a
+	ld   [sPlDelayTimer], a
 	ret
 .chkMoveDown:
 	
@@ -3789,7 +3789,7 @@ Ending_TrRoom_SetNextTreasure:
 	inc  a						; Otherwise, see next treasure
 	ld   [sTreasureId], a
 	xor  a						; Reset timer
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   a, OBJ_WARIO_IDLE0		
 	ld   [sPlLstId], a
 	ld   a, ENDT_RTN_WAITREMOVE	; New mode
@@ -4016,7 +4016,7 @@ Ending_TrRoom_WalkOutL:
 	ret  nz
 .startWalk:
 	xor  a						
-	ld   [sPlTimer], a			; Init timer for walk anim
+	ld   [sPlAnimTimer], a			; Init timer for walk anim
 	ld   [sPlFlags], a			; Face left
 	ld   a, OBJ_WARIO_WALK0		; Set initial frame
 	ld   [sPlLstId], a
@@ -5439,14 +5439,14 @@ Mode_Treasure_TrRoom_WalkInR:
 	ld   [sPlLstId], a
 .nextMode:
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   a, [sTreasureTrRoomMode]		; Next mode
 	inc  a
 	ld   [sTreasureTrRoomMode], a
 	ld   a, BGM_WORLDCLEAR				; Play Treasure Get BGM
 	ld   [sBGMSet], a
 	ld   a, $40							; Allow jump/duck anim to last $40 frames
-	ld   [sPlTimer2], a
+	ld   [sPlDelayTimer], a
 	ret
 	
 ; =============== TrRoom_GetTreasureRowNum ===============
@@ -5496,7 +5496,7 @@ NonGame_Wario_AnimWalk:
 	
 	; Use the anim timer as the index to the offset table
 	ld   hl, OBJLstAnimOff_Wario_Walk
-	ld   a, [sPlTimer]				; Index++
+	ld   a, [sPlAnimTimer]				; Index++
 	inc  a
 	; If we reached the end of the table, reset the index
 	cp   a, (OBJLstAnimOff_Wario_Walk.end - OBJLstAnimOff_Wario_Walk)
@@ -5504,7 +5504,7 @@ NonGame_Wario_AnimWalk:
 	xor  a
 .setFrame:
 	; Index the table
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   e, a				; DE = Index
 	ld   d, $00
 	add  hl, de
@@ -5528,9 +5528,9 @@ Mode_Treasure_TrRoom_PlAction:
 	;
 	; After $40 frames, end this animation
 	;
-	ld   a, [sPlTimer2]		; Timer2--
+	ld   a, [sPlDelayTimer]		; Timer2--
 	dec  a
-	ld   [sPlTimer2], a		; Timer2 == $00?
+	ld   [sPlDelayTimer], a		; Timer2 == $00?
 	jr   z, .nextMode		; If so, jump
 	
 	; During those frames...
@@ -5549,7 +5549,7 @@ Mode_Treasure_TrRoom_PlAction:
 	; First row - Wait $40-$0D frames.
 	;             Then jump up at 2px/frame for $0D frames.
 	;
-	ld   a, [sPlTimer2]		
+	ld   a, [sPlDelayTimer]		
 	cp   a, $0D				; Timer2 >= $0D?
 	ret  nc					; If so, don't move yet
 	ld   a, [sPlYRel]		; Move up 2px/frame
@@ -5563,7 +5563,7 @@ Mode_Treasure_TrRoom_PlAction:
 	; Second row - Wait $40-$05 frames.
 	;              Then jump up at 2px/frame for $0D frames.
 	;
-	ld   a, [sPlTimer2]
+	ld   a, [sPlDelayTimer]
 	cp   a, $05				; Timer2 >= $05?
 	ret  nc					; If so, don't move yet
 	ld   a, [sPlYRel]		; Move up 2px/frame
@@ -5657,7 +5657,7 @@ Mode_Treasure_TrRoom_WaitTreasure:
 	ld   a, OBJ_TRROOM_WARIO_IDLE0	; Visible for one frame only!
 	ld   [sPlLstId], a
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ret
 	
 .nextMode:
@@ -5670,7 +5670,7 @@ Mode_Treasure_TrRoom_WaitTreasure:
 	ld   a, OBJ_WARIO_WALK0		; Init walk anim
 	ld   [sPlLstId], a
 	xor  a
-	ld   [sPlTimer], a			; Init walk anim timer
+	ld   [sPlAnimTimer], a			; Init walk anim timer
 	ld   [sPlFlags], a			; Face left
 	ret
 	
@@ -8968,17 +8968,17 @@ SaveSel_SetAllClearPipes:
 	ld   hl, sSaveAllClear		; Initialize it to $00
 	ld   [hl], $00
 .checkSave1:
-	ld   a, [sSave1AllClear]
+	ld   a, [sSave1+iSaveAllClear]
 	and  a						; Is Save 1 marked as all clear?
 	jr   z, .checkSave2			; If not, skip
 	set  0, [hl]				; Otherwise, mark its bit
 .checkSave2:
-	ld   a, [sSave2AllClear]
+	ld   a, [sSave2+iSaveAllClear]
 	and  a
 	jr   z, .checkSave3
 	set  1, [hl]
 .checkSave3:
-	ld   a, [sSave3AllClear]
+	ld   a, [sSave3+iSaveAllClear]
 	and  a
 	ret  z
 	set  2, [hl]
@@ -9245,7 +9245,7 @@ SaveSel_MoveRightStart:
 	and  a
 	ret  nz
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   a, OBJ_WARIO_WALK0
 	ld   [sPlLstId], a
 	ret
@@ -9276,7 +9276,7 @@ SaveSel_MoveLeftStart:
 	and  a
 	ret  nz
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   a, OBJ_WARIO_WALK0
 	ld   [sPlLstId], a
 	ret
@@ -9299,7 +9299,7 @@ SaveSel_JumpFromBombStart:
 	ld   a, OBJ_WARIO_JUMP
 	ld   [sPlLstId], a
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ret
 	
 ; =============== SaveSel_JumpToBombStart ===============
@@ -9326,7 +9326,7 @@ SaveSel_JumpToBombStart:
 	ld   a, OBJ_WARIO_JUMP
 	ld   [sPlLstId], a
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ret
 	
 ; =============== SaveSel_JumpToBomb ===============
@@ -9457,7 +9457,7 @@ SaveSel_EnterPipe:
 	ld   a, SAVE_PL_ACT_EXITPIPE
 	ld   [sSavePlAct], a
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	; Force left orientation
 	ld   hl, sPlFlags
 	res  5, [hl]
@@ -9514,7 +9514,7 @@ ENDC
 	ld   [sPlLstId], a
 	; Clear bomb wario opt
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   [sSaveBombWario], a
 	ld   a, $01
 	ld   [sNoReset], a
@@ -9734,7 +9734,7 @@ SaveSel_IntroB_Act0:
 	; Update Y pos
 	ld   hl, .warioBumpYTbl
 	ld   d, $00
-	ld   a, [sSaveWarioBumpYPathIndex]
+	ld   a, [sPlBumpYPathIndex]
 	ld   e, a
 	add  hl, de
 	
@@ -9747,23 +9747,23 @@ SaveSel_IntroB_Act0:
 	ld   a, [sPlYRel]		; YRel -= Offset
 	sub  a, b
 	ld   [sPlYRel], a
-	ld   a, [sSaveWarioBumpYPathIndex]
+	ld   a, [sPlBumpYPathIndex]
 	inc  a
-	ld   [sSaveWarioBumpYPathIndex], a
+	ld   [sPlBumpYPathIndex], a
 	ret
 .moveDown:
 	ld   a, [sPlYRel]		; YRel += Offset
 	add  b
 	ld   [sPlYRel], a
-	ld   a, [sSaveWarioBumpYPathIndex]
+	ld   a, [sPlBumpYPathIndex]
 	inc  a						; Have we reached the end of the table?
 	cp   a, $20
 	jr   z, .nextAct
-	ld   [sSaveWarioBumpYPathIndex], a
+	ld   [sPlBumpYPathIndex], a
 	ret
 .nextAct:
 	xor  a
-	ld   [sSaveWarioBumpYPathIndex], a
+	ld   [sPlBumpYPathIndex], a
 	ld   a, [sSaveAnimAct]
 	inc  a
 	ld   [sSaveAnimAct], a
@@ -9931,7 +9931,7 @@ SaveSel_IntroB_Act3:
 	ld   a, OBJ_WARIO_WALK0
 	ld   [sPlLstId], a
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ret
 .moveRight:
 	call NonGame_Wario_AnimWalkFast
@@ -9959,7 +9959,7 @@ SaveSel_IntroB_Act3:
 	ret  nz					; If not, return
 .nextAct:
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   a, OBJ_WARIO_THUMBSUP0
 	ld   [sPlLstId], a
 	ld   a, [sSaveAnimAct]
@@ -10005,7 +10005,7 @@ NonGame_Wario_AnimWalkFast:
 	
 	; Use the anim timer as the index to the offset table
 	ld   hl, OBJLstAnimOff_Wario_Walk
-	ld   a, [sPlTimer]				; Index++
+	ld   a, [sPlAnimTimer]				; Index++
 	inc  a
 	; If we reached the end of the table, reset the index
 	cp   a, (OBJLstAnimOff_Wario_Walk.end - OBJLstAnimOff_Wario_Walk)
@@ -10013,7 +10013,7 @@ NonGame_Wario_AnimWalkFast:
 	xor  a
 .setFrame:
 	; Index the table
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   e, a				; DE = Index
 	ld   d, $00
 	add  hl, de
@@ -10046,7 +10046,7 @@ SaveSel_BombWario_Anim:
 	
 	; Use the anim timer as the index to the offset table
 	ld   hl, OBJLstAnimOff_BombWario
-	ld   a, [sPlTimer]
+	ld   a, [sPlAnimTimer]
 	inc  a
 	; If we reached the end of the table, reset the index
 	cp   a, (OBJLstAnimOff_BombWario.end - OBJLstAnimOff_BombWario)
@@ -10054,7 +10054,7 @@ SaveSel_BombWario_Anim:
 	xor  a
 .setFrame:
 	; Index the table
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   e, a				; DE = Index
 	ld   d, $00
 	add  hl, de

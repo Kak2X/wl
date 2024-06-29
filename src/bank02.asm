@@ -181,7 +181,7 @@ ActS_Execute:
 	;--
 .noLagChk:
 	; Type $03 runs for one frame even if actors are meant to be paused
-	ld   a, [sActSetActive]
+	ld   a, [sActSetStatus]
 	cp   a, $03
 	jr   z, .executeOffScreen
 	; Are all actors paused (and not execute)?
@@ -1512,9 +1512,9 @@ ActS_Held:
 	and  a, $7F								; Filter away no-respawn flag
 	ld   [sActHeldId], a
 	
-	ld   a, [sActSetOBJLstPtrTablePtr_Low]	; Sync OBJLst
+	ld   a, [sActSetOBJLstPtrTablePtr]	; Sync OBJLst
 	ld   [sActHeldOBJLstTablePtr_Low], a
-	ld   a, [sActSetOBJLstPtrTablePtr_High]
+	ld   a, [sActSetOBJLstPtrTablePtr+1]
 	ld   [sActHeldOBJLstTablePtr_High], a
 	ld   a, [sActSetColiType]				; Sync collision type
 	ld   [sActHeldColiType], a
@@ -2533,7 +2533,7 @@ ActHeldOrThrownActColi_Do:
 	
 	; Now HL points to byte $0C of the slot data.
 	; We want to point to the actor ID (byte $10, so $10 - $0C = $04)
-	ld   de, (sActSetId - sActSetOBJLstPtrTablePtr_Low)
+	ld   de, (sActSetId - sActSetOBJLstPtrTablePtr)
 	add  hl, de
 	
 	ldi  a, [hl]					; Read the actor ID
@@ -5557,9 +5557,9 @@ ENDC
 	
 	; Otherwise, continue moving left
 	ld   a, LOW(OBJLstPtrTable_Act_Snowman_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Snowman_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	ld   a, [sActSetDir]
 	and  a, $F0|DIR_D
@@ -5594,9 +5594,9 @@ ENDC
 	
 	; Otherwise, continue moving right
 	ld   a, LOW(OBJLstPtrTable_Act_Snowman_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Snowman_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	ld   a, [sActSetDir]
 	and  a, $F0|DIR_D
@@ -5756,9 +5756,9 @@ Act_SnowmanIce:
 	ret
 .main:
 	ld   a, LOW(OBJLstPtrTable_Act_SnowmanIce)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_SnowmanIce)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	ld   a, [sActSetTimer]		; Timer++
 	inc  a
@@ -5817,9 +5817,9 @@ Act_SnowmanIce:
 	call ActS_MoveRight
 	
 	ld   a, LOW(OBJLstPtrTable_Act_SnowmanIce)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_SnowmanIce)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; If there's a solid block on the left, kill the actor with a jump effect
 	; (without awarding hearts, since this is a projectile)
@@ -5834,9 +5834,9 @@ Act_SnowmanIce:
 	ld   bc, +$01
 	call ActS_MoveRight
 	ld   a, LOW(OBJLstPtrTable_Act_SnowmanIce)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_SnowmanIce)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; If there's a solid block on the right, kill the actor with a jump effect
 	call ActColi_GetBlockId_LowR
@@ -6826,9 +6826,9 @@ Act_HermitCrab_Main:
 	jr   nz, .moveR
 .moveL:
 	ld   a, LOW(OBJLstPtrTable_Act_HermitCrab_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_HermitCrab_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Set left direction
 	ld   a, [sActSetDir]
@@ -6860,9 +6860,9 @@ Act_HermitCrab_Main:
 	
 .moveR:
 	ld   a, LOW(OBJLstPtrTable_Act_HermitCrab_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_HermitCrab_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Set right direction
 	ld   a, [sActSetDir]
@@ -7186,9 +7186,9 @@ Act_GhostGoom_Move_Main:
 	ld   bc, +$01
 	call ActS_MoveRight
 	ld   a, LOW(OBJLstPtrTable_Act_GhostGoom_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_GhostGoom_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	; Spear on the left
 	mActColiMask ACTCOLI_DAMAGE, ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM
 	ld   a, COLI
@@ -7200,9 +7200,9 @@ Act_GhostGoom_Move_Main:
 	ld   bc, -$01
 	call ActS_MoveRight
 	ld   a, LOW(OBJLstPtrTable_Act_GhostGoom_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_GhostGoom_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	; Spear on the right
 	mActColiMask ACTCOLI_NORM, ACTCOLI_DAMAGE, ACTCOLI_NORM, ACTCOLI_NORM
 	ld   a, COLI
@@ -7459,9 +7459,9 @@ Act_Seahorse_MoveUp_MoveLeft:
 	ld   bc, -$01
 	call ActS_MoveRight
 	ld   a, LOW(OBJLstPtrTable_Act_Seahorse_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Seahorse_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	mActColiMask ACTCOLI_NORM, ACTCOLI_DAMAGE, ACTCOLI_NORM, ACTCOLI_NORM
 	ld   a, COLI
@@ -7486,9 +7486,9 @@ Act_Seahorse_MoveUp_MoveRight:
 	call ActS_MoveRight
 	
 	ld   a, LOW(OBJLstPtrTable_Act_Seahorse_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Seahorse_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	mActColiMask ACTCOLI_DAMAGE, ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM
 	ld   a, COLI
@@ -8771,9 +8771,9 @@ Act_Fly_Main:
 Act_Fly_Idle:
 	; Set idle anim
 	ld   a, LOW(OBJLstPtrTable_Act_Fly_Idle)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Fly_Idle)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; [POI] You can duck to avoid getting detected by the fly
 	ld   a, [sPlDuck]
@@ -8952,9 +8952,9 @@ Act_ExitSkull:;I
 	;--
 	; Pointless to do
 	ld   a, LOW(OBJLstPtrTable_Act_ExitSkull)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_ExitSkull)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	;--
 	ret
 OBJLst_Act_ExitSkull: INCBIN "data/objlst/actor/exitskull.bin"

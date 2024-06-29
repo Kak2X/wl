@@ -1071,15 +1071,15 @@ Act_ParsleyWoodsBoss_DoIdleAnimByHDir:
 	and  a, $0F
 	ret  nz
 	ld   a, LOW(OBJLstPtrTable_Act_ParsleyWoodsBoss_IdleL)					; Face left
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_ParsleyWoodsBoss_IdleL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	mActGetPlDirHRel	; Is the player to the right of the actor?
 	ret  nc				; If not, return
 	ld   a, LOW(OBJLstPtrTable_Act_ParsleyWoodsBoss_IdleR)					; Face right
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_ParsleyWoodsBoss_IdleR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	ret
 	
 ; This pair of subroutines handles the actor's vertical and horizontal direction.
@@ -2200,9 +2200,9 @@ Act_ParsleyWoodsBossGhostGoom:
 ; Actor is thrown by the boss, dropping like a coin.
 Act_ParsleyWoodsBossGhostGoom_Intro:
 	ld   a, LOW(OBJLstPtrTable_Act_ParsleyWoodsBossGhostGoom_Coin)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_ParsleyWoodsBossGhostGoom_Coin)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Handle horizontal movement
 	ld   a, [sActSetDir]
@@ -2328,9 +2328,9 @@ Act_ParsleyWoodsBossGhostGoom_Move_Main:
 	call ActS_MoveRight
 	
 	ld   a, LOW(OBJLstPtrTable_Act_ParsleyWoodsBossGhostGoom_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_ParsleyWoodsBossGhostGoom_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	mActColiMask ACTCOLI_DAMAGE, ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM
 	ld   a, COLI
@@ -2344,9 +2344,9 @@ Act_ParsleyWoodsBossGhostGoom_Move_Main:
 	call ActS_MoveRight
 	
 	ld   a, LOW(OBJLstPtrTable_Act_ParsleyWoodsBossGhostGoom_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_ParsleyWoodsBossGhostGoom_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	mActColiMask ACTCOLI_NORM, ACTCOLI_DAMAGE, ACTCOLI_NORM, ACTCOLI_NORM
 	ld   a, COLI
@@ -3656,9 +3656,9 @@ Act_StoveCanyonBossTongue_Hide:
 	xor  a
 	ld   [sActSetColiType], a
 	ld   a, LOW(OBJLstPtrTable_Act_StoveCanyonBoss_Tongue_None)					
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_StoveCanyonBoss_Tongue_None)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	ret
 	
 ; =============== Act_StoveCanyonBossTongue_Disabled ===============
@@ -3719,9 +3719,9 @@ Act_StoveCanyonBossTongue_Enabled:
 	;--
 	
 	ld   a, LOW(OBJLstPtrTable_Act_StoveCanyonBoss_Tongue_Show)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_StoveCanyonBoss_Tongue_Show)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Animate every $10 frames
 	ld   a, [sTimer]
@@ -3897,9 +3897,9 @@ Act_StoveCanyonBossBall_MoveRight:
 	ld   bc, +$01
 	call ActS_MoveRight
 	ld   a, LOW(OBJLstPtrTable_Act_StoveCanyonBoss_Ball_FireR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_StoveCanyonBoss_Ball_FireR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	ret
 	
 ; =============== Act_StoveCanyonBossBall_MoveLeft ===============
@@ -3908,9 +3908,9 @@ Act_StoveCanyonBossBall_MoveLeft:
 	ld   bc, -$01
 	call ActS_MoveRight
 	ld   a, LOW(OBJLstPtrTable_Act_StoveCanyonBoss_Ball_FireL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_StoveCanyonBoss_Ball_FireL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	ret
 	
 ; =============== Act_StoveCanyonBossBall_Safe ===============
@@ -3995,9 +3995,9 @@ Act_StoveCanyonBossBall_Splash:
 	ld   [sActSetColiType], a
 	
 	ld   a, LOW(OBJLstPtrTable_Act_StoveCanyonBoss_Ball_Splash)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_StoveCanyonBoss_Ball_Splash)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	call ActS_IncOBJLstIdEvery8
 	
@@ -5365,9 +5365,9 @@ Act_StickBomb_Idle:
 	ld   [sActLocalRoutineId], a
 	; Set anim
 	ld   a, LOW(OBJLstPtrTable_Act_StickBomb_Idle)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_StickBomb_Idle)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	mActSetYSpeed +$04
 	xor  a						; Clear timer
@@ -5734,9 +5734,9 @@ Act_SSTeacupBossWatch_Main:
 ; Moves the actor left 1px, updating the collision box as needed.
 Act_SSTeacupBossWatch_MoveRight:
 	ld   a, LOW(OBJLstPtrTable_Act_Watch_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Watch_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	ld   bc, +$01
 	call ActS_MoveRight
@@ -5755,9 +5755,9 @@ Act_SSTeacupBossWatch_MoveRight:
 ; Moves the actor right 1px, updating the collision box as needed.
 Act_SSTeacupBossWatch_MoveLeft:
 	ld   a, LOW(OBJLstPtrTable_Act_Watch_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Watch_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	ld   bc, -$01
 	call ActS_MoveRight
@@ -6005,9 +6005,9 @@ Act_Watch_Attack:
 ; Moves the actor right 1px, updating the collision box as needed.
 Act_Watch_MoveRight:
 	ld   a, LOW(OBJLstPtrTable_Act_Watch_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Watch_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	ld   bc, +$01
 	call ActS_MoveRight
@@ -6021,9 +6021,9 @@ Act_Watch_MoveRight:
 ; Moves the actor left 1px, updating the collision box as needed.
 Act_Watch_MoveLeft:
 	ld   a, LOW(OBJLstPtrTable_Act_Watch_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Watch_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	ld   bc, -$01
 	call ActS_MoveRight
 	

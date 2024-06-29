@@ -1088,9 +1088,9 @@ Act_SpearGoom_SetMove:
 .moveL:
 	; Set sprite mapping
 	ld   a, LOW(OBJLstPtrTable_Act_SpearGoom_WalkL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_SpearGoom_WalkL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Set left direction
 	ld   a, [sActSetDir]
@@ -1137,9 +1137,9 @@ Act_SpearGoom_SetMove:
 .moveR:
 	; Set sprite mapping
 	ld   a, LOW(OBJLstPtrTable_Act_SpearGoom_WalkR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_SpearGoom_WalkR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Set right direction
 	ld   a, [sActSetDir]

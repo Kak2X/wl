@@ -51,17 +51,17 @@ Intro_WriteOBJ:
 ; Writes Wario's sprite mappings to OAM.
 Intro_WriteWarioOBJLst:
 	; Set X / Y parameters
-	ld   a, [wIntroWarioX]
+	ld   a, [wStaticPlX]
 	ld   [sOAMWriteX], a
-	ld   a, [wIntroWarioY]
+	ld   a, [wStaticPlY]
 	ld   [sOAMWriteY], a
 	
 	; The subroutine to write OBJLst used in the title screen does not support special flags!
 	; So we pick different sprite mappings sets for the different orientations.
-	ld   a, [wIntroWarioFlags]	; Is the horizontal flip bit set?
+	ld   a, [wStaticPlFlags]	; Is the horizontal flip bit set?
 	bit  STATIC_OBJLSTB_XFLIP, a
 	jr   nz, .rightPos			; If so, use alternate mappings
-	ld   a, [wIntroWarioLstId]
+	ld   a, [wStaticPlLstId]
 	rst  $28
 	dw Title_Ret
 	dw Intro_WarioFrame_BoatRow0L
@@ -77,7 +77,7 @@ Intro_WriteWarioOBJLst:
 
 .rightPos:
 	; Alternate mappings with Wario facing right
-	ld   a, [wIntroWarioLstId]
+	ld   a, [wStaticPlLstId]
 	rst  $28
 	dw Title_Ret
 	dw Intro_WarioFrame_BoatRow0R
@@ -269,15 +269,15 @@ Title_InitVars:
 	xor  a
 	ld   [wIntroAct], a
 	ld   [wIntroWaterOscillationTimer], a
-	ld   [wIntroWarioAnimTimer], a
+	ld   [wStaticPlAnimTimer], a
 	ld   [wIntroActTimer], a
 	ld   [wTitleActTimer], a
-	ld   [wIntroWarioLstId], a
+	ld   [wStaticPlLstId], a
 	ld   [wIntroShipLstId], a
 	ld   [wIntroWaterSplash], a
-	ld   [wIntroWarioFlags], a
+	ld   [wStaticPlFlags], a
 	ld   a, $B8
-	ld   [wIntroWarioX], a
+	ld   [wStaticPlX], a
 	ld   a, $D0
 	ld   [wIntroShipX], a
 	
@@ -569,9 +569,9 @@ Intro_CutsceneAct03:
 	ret  nz
 	
 	ld   a, INTRO_WOF_BOATROW0		; Show Wario
-	ld   [wIntroWarioLstId], a
+	ld   [wStaticPlLstId], a
 	ld   a, $80					; Facing left
-	ld   [wIntroWarioFlags], a
+	ld   [wStaticPlFlags], a
 	ld   a, $04
 	ld   [wIntroAct], a
 	ret
@@ -582,14 +582,14 @@ Intro_CutsceneAct04:
 	call Intro_AnimWarioRow
 	ld   b, $C8
 	call Intro_MoveWarioLeft
-	ld   a, [wIntroWarioX]	; Wait until Wario goes fully off-screen to the left
+	ld   a, [wStaticPlX]	; Wait until Wario goes fully off-screen to the left
 	cp   a, $C8
 	ret  nz
 	
 	xor  a
-	ld   [wIntroWarioAnimTimer], a
-	ld   [wIntroWarioLstId], a		; Hide Wario to not show the movement done by Intro_MoveWarioRight
-	ld   [wIntroWarioFlags], a		; since we start 8 px to the right of Act5's target pos
+	ld   [wStaticPlAnimTimer], a
+	ld   [wStaticPlLstId], a		; Hide Wario to not show the movement done by Intro_MoveWarioRight
+	ld   [wStaticPlFlags], a		; since we start 8 px to the right of Act5's target pos
 	ld   a, INTRO_SOF_DUCKPANICR
 	ld   [wIntroShipLstId], a
 	ld   a, $05
@@ -639,21 +639,21 @@ Intro_CutsceneAct05:
 	xor  a
 	ld   [wIntroActTimer], a
 	ld   a, INTRO_WOF_BOATROW0		; Show Wario
-	ld   [wIntroWarioLstId], a	
+	ld   [wStaticPlLstId], a	
 	ld   a, $C8					; Set back the correct pos (since we've moved while hidden)
-	ld   [wIntroWarioX], a
+	ld   [wStaticPlX], a
 	ld   a, INTRO_SOF_DUCKPANICR
 	ld   [wIntroShipLstId], a
 	jr   .moveShipRight			; Move the ship to proceed
 .chkNextAct:
 	; Wait for Wario to go off-screen right
-	ld   a, [wIntroWarioX]
+	ld   a, [wStaticPlX]
 	cp   a, $C0
 	ret  nz
 	; Set next act
 	xor  a
-	ld   [wIntroWarioAnimTimer], a
-	ld   [wIntroWarioLstId], a
+	ld   [wStaticPlAnimTimer], a
+	ld   [wStaticPlLstId], a
 	ld   a, INTRO_SOF_DUCKPANICL
 	ld   [wIntroShipLstId], a
 	ld   a, $06
@@ -698,7 +698,7 @@ Intro_CutsceneAct06_ChkNextAct:
 	xor  a
 	ld   [wIntroActTimer], a
 	ld   a, INTRO_WOF_BOATROW0
-	ld   [wIntroWarioLstId], a
+	ld   [wStaticPlLstId], a
 	ld   a, $07
 	ld   [wIntroAct], a
 	ret
@@ -713,10 +713,10 @@ Intro_CutsceneAct07:
 	bit  0, a
 	call z, Intro_MoveShipLeft
 	; Move Wario 2px/frame to the right (loop back from right border to left)
-	ld   a, [wIntroWarioX]
+	ld   a, [wStaticPlX]
 	inc  a
 	inc  a
-	ld   [wIntroWarioX], a
+	ld   [wStaticPlX], a
 	;--
 	cp   a, $2E			; When Wario hits the ship
 	jr   z, .nextAct
@@ -726,13 +726,13 @@ Intro_CutsceneAct07:
 	jp   Intro_AnimWarioRow	
 .useDash:
 	ld   a, INTRO_WOF_BOATDASH
-	ld   [wIntroWarioLstId], a
+	ld   [wStaticPlLstId], a
 	ret
 .nextAct:
 	ld   a, SFX1_1E
 	ld   [sSFX1Set], a
 	xor  a
-	ld   [wIntroWarioAnimTimer], a
+	ld   [wStaticPlAnimTimer], a
 	ld   [wIntroActTimer], a
 	ld   a, INTRO_SOF_DUCKHIT
 	ld   [wIntroShipLstId], a
@@ -904,7 +904,7 @@ Intro_CutsceneAct0E:
 	xor  a
 	ld   [wIntroActTimer1], a
 	ld   a, INTRO_WOF_BOATSTAND
-	ld   [wIntroWarioLstId], a
+	ld   [wStaticPlLstId], a
 	ld   a, $0F
 	ld   [wIntroAct], a
 	ret
@@ -939,7 +939,7 @@ Intro_CutsceneAct0F:
 	xor  a
 	ld   [wIntroActTimer1], a
 	ld   a, INTRO_WOF_JUMP
-	ld   [wIntroWarioLstId], a
+	ld   [wStaticPlLstId], a
 	ld   a, $10
 	ld   [wIntroAct], a
 	ret
@@ -948,8 +948,8 @@ Intro_CutsceneAct0F:
 ; Makes Wario jump on the ship.
 Intro_CutsceneAct10:
 	
-	; wIntroWarioAnimTimer reused as table index
-	ld   a, [wIntroWarioAnimTimer]	; Gone past the end of the table?
+	; wStaticPlAnimTimer reused as table index
+	ld   a, [wStaticPlAnimTimer]	; Gone past the end of the table?
 	cp   a, (Intro_WarioJumpYTbl_End - Intro_WarioJumpYTbl)
 	jr   z, .nextAct				; If so, switch to next act
 	;--
@@ -958,25 +958,25 @@ Intro_CutsceneAct10:
 	; - A table of Y coords for Wario's Y pos
 	; - Incrementing Wario'x X pos by 1 every frame
 	
-	ld   c, a						; BC = wIntroWarioAnimTimer
+	ld   c, a						; BC = wStaticPlAnimTimer
 	inc  a
-	ld   [wIntroWarioAnimTimer], a
+	ld   [wStaticPlAnimTimer], a
 	ld   hl, Intro_WarioJumpYTbl	; HL = Table of Y coords
 	ld   b, $00
 	add  hl, bc						; Index the table
 	ld   a, [hl]
-	ld   [wIntroWarioY], a
-	ld   a, [wIntroWarioX]
+	ld   [wStaticPlY], a
+	ld   a, [wStaticPlX]
 	inc  a
-	ld   [wIntroWarioX], a
+	ld   [wStaticPlX], a
 	ret
 .nextAct:
 	ld   a, SFX1_01				; Not using the normal land SFX for some reason
 	ld   [sSFX1Set], a
 	xor  a
-	ld   [wIntroWarioAnimTimer], a
+	ld   [wStaticPlAnimTimer], a
 	ld   a, INTRO_WOF_STAND
-	ld   [wIntroWarioLstId], a
+	ld   [wStaticPlLstId], a
 	ld   a, $03							; Deterines how many times to do a full cycle of the thumbs up anim
 	ld   [wIntroWarioAnimCycleLeft], a	
 	ld   a, $11
@@ -995,9 +995,9 @@ Intro_WarioJumpYTbl_End:
 ; Performs the thumbs up animation the amount of times specified by wIntroWarioAnimCycleLeft.
 Intro_CutsceneAct11:
 	; Cycle frame between $00-$E1
-	ld   a, [wIntroWarioAnimTimer]
+	ld   a, [wStaticPlAnimTimer]
 	inc  a
-	ld   [wIntroWarioAnimTimer], a
+	ld   [wStaticPlAnimTimer], a
 	
 	; Main Wario thumbs up anim timing loop
 	cp   a, $5A
@@ -1011,36 +1011,36 @@ Intro_CutsceneAct11:
 	ret  nz
 .resetTimer:
 	xor  a
-	ld   [wIntroWarioAnimTimer], a
+	ld   [wStaticPlAnimTimer], a
 .frontFrame:
 	ld   a, INTRO_WOF_FRONT
-	ld   [wIntroWarioLstId], a
+	ld   [wStaticPlLstId], a
 	ret
 .thumbsUpFrame:
 	ld   a, INTRO_WOF_THUMBSUP
-	ld   [wIntroWarioLstId], a
+	ld   [wStaticPlLstId], a
 	ret
 .thumbsUpFrame2:
 	ld   a, INTRO_WOF_THUMBSUP2
-	ld   [wIntroWarioLstId], a
+	ld   [wStaticPlLstId], a
 	ld   a, [wIntroWarioAnimCycleLeft]	; CyclesLeft--;
 	dec  a								
 	ld   [wIntroWarioAnimCycleLeft], a	; Are there any anim cycles left? 
 	ret  nz								; If so, return
 .nextAct:
 	xor  a								
-	ld   [wIntroWarioAnimTimer], a
+	ld   [wStaticPlAnimTimer], a
 	ld   a, $12
 	ld   [wIntroAct], a
 	ret
 ; =============== Intro_CutsceneAct12 ===============
 ; Delays for $B9 frames before starting the fade out to demo mode.
 Intro_CutsceneAct12:
-	ld   a, [wIntroWarioAnimTimer]
+	ld   a, [wStaticPlAnimTimer]
 	cp   a, $B9
 	jr   z, .nextAct
 	inc  a
-	ld   [wIntroWarioAnimTimer], a
+	ld   [wStaticPlAnimTimer], a
 	ret
 .nextAct:
 	ld   a, $13
@@ -1093,14 +1093,14 @@ Title_SwitchToDemo:
 ; Performs Wario's rowing anim in the intro.
 Intro_AnimWarioRow:
 	; Ignore if Wario isn't visible
-	ld   a, [wIntroWarioLstId]
+	ld   a, [wStaticPlLstId]
 	cp   a, INTRO_WOF_NONE
 	ret  z
 	
 	; Switch frames depending on the anim timer
-	ld   a, [wIntroWarioAnimTimer]
+	ld   a, [wStaticPlAnimTimer]
 	inc  a
-	ld   [wIntroWarioAnimTimer], a
+	ld   [wStaticPlAnimTimer], a
 	cp   a, $04
 	jr   z, .frame3
 	cp   a, $0A
@@ -1110,19 +1110,19 @@ Intro_AnimWarioRow:
 	ret
 .frame3:
 	ld   a, INTRO_WOF_BOATROW2
-	ld   [wIntroWarioLstId], a
+	ld   [wStaticPlLstId], a
 	ret
 .frame2:
 	ld   a, SFX1_1C
 	ld   [sSFX1Set], a
 	ld   a, INTRO_WOF_BOATROW1
-	ld   [wIntroWarioLstId], a
+	ld   [wStaticPlLstId], a
 	ret
 .frame1:
 	xor  a
-	ld   [wIntroWarioAnimTimer], a
+	ld   [wStaticPlAnimTimer], a
 	ld   a, INTRO_WOF_BOATROW0
-	ld   [wIntroWarioLstId], a
+	ld   [wStaticPlLstId], a
 	ret
 	
 ; =============== Intro_MoveWarioRight ===============
@@ -1132,7 +1132,7 @@ Intro_AnimWarioRow:
 Intro_MoveWarioRight:
 	; Determine how many times to move Wario
 	; alternate between 1 and 2 times every other frame
-	ld   a, [wIntroWarioAnimTimer]
+	ld   a, [wStaticPlAnimTimer]
 	bit  0, a
 	jr   nz, .tim2
 .tim1:
@@ -1143,11 +1143,11 @@ Intro_MoveWarioRight:
 	
 .moveWario:
 	; Move Wario to the left the specified amount of times
-	ld   a, [wIntroWarioX]	; Reached the target pos?
+	ld   a, [wStaticPlX]	; Reached the target pos?
 	cp   a, b
 	ret  z					; If so, return
 	inc  a					; Move right
-	ld   [wIntroWarioX], a
+	ld   [wStaticPlX], a
 	dec  c					; Completed movement?
 	jr   nz, .moveWario		; If not, loop
 	ret
@@ -1159,7 +1159,7 @@ Intro_MoveWarioRight:
 Intro_MoveWarioLeft:
 	; Determine how many times to move Wario
 	; alternate between 1 and 2 times every other frame
-	ld   a, [wIntroWarioAnimTimer]
+	ld   a, [wStaticPlAnimTimer]
 	bit  0, a
 	jr   nz, .tim2
 .tim1:
@@ -1170,11 +1170,11 @@ Intro_MoveWarioLeft:
 	
 .moveWario:
 	; Move Wario to the left the specified amount of times
-	ld   a, [wIntroWarioX]	; Have we reached the target pos?
+	ld   a, [wStaticPlX]	; Have we reached the target pos?
 	cp   a, b
 	ret  z					; If so, return
 	dec  a					; Move left
-	ld   [wIntroWarioX], a
+	ld   [wStaticPlX], a
 	dec  c					; Moved completely?
 	jr   nz, .moveWario		; If not, loop
 	ret
@@ -1216,7 +1216,7 @@ Title_AnimWaterGFX:
 ; Oscillates Wario's Y coord for the waterline effect when not jumping.
 Intro_OscillateWarioY:
 	; Don't perform the effect for the jumping frame
-	ld   a, [wIntroWarioLstId]
+	ld   a, [wStaticPlLstId]
 	cp   a, INTRO_WOF_JUMP
 	ret  z
 	;--
@@ -1231,30 +1231,30 @@ Intro_OscillateWarioY:
 	; - If Frame < INTRO_WOF_STAND, Wario's on his boat.
 	; - Otherwise, he's on the top of the ship.
 	; The boat oscillates less than the ship, which is why there's a difference.
-	ld   a, [wIntroWarioLstId]
+	ld   a, [wStaticPlLstId]
 	cp   a, $07					; Is it >= INTRO_WOF_STAND?
 	jr   nc, .highPosShip		; If so, jump
 .highPosBoat:
 	ld   a, $78
-	ld   [wIntroWarioY], a
+	ld   [wStaticPlY], a
 	ret
 .highPosShip:
 	ld   a, $6A
-	ld   [wIntroWarioY], a
+	ld   [wStaticPlY], a
 	ret
 	
 .lowPos:
 	; Same here
-	ld   a, [wIntroWarioLstId]
+	ld   a, [wStaticPlLstId]
 	cp   a, $07
 	jr   nc, .lowPosShip
 .lowPosBoat:
 	ld   a, $77
-	ld   [wIntroWarioY], a
+	ld   [wStaticPlY], a
 	ret
 .lowPosShip:
 	ld   a, $68
-	ld   [wIntroWarioY], a
+	ld   [wStaticPlY], a
 	ret
 	
 ; =============== Intro_OscillateShipY ===============
@@ -1817,9 +1817,9 @@ Act_Bat_MoveVert:
 ; Moves the actor right 1px.
 Act_Bat_MoveRight:
 	ld   a, LOW(OBJLstPtrTable_Act_Bat_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Bat_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	ld   bc, +$01
 	call ActS_MoveRight
 	ret
@@ -1827,9 +1827,9 @@ Act_Bat_MoveRight:
 ; Moves the actor left 1px.
 Act_Bat_MoveLeft:;C
 	ld   a, LOW(OBJLstPtrTable_Act_Bat_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Bat_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	ld   bc, -$01
 	call ActS_MoveRight
 	ret
@@ -2079,9 +2079,9 @@ Act_BigFruit_MoveLeft:
 ; Sets the initial OBJLstPtrTable when the actor is facing left.
 ActInit_BigFruit_SetOBJLstPtrTableL:
 	ld   a, LOW(OBJLstPtrTable_Act_BigFruitL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_BigFruitL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	ret
 	
 ; =============== Act_BigFruit_MoveRight ===============
@@ -2099,9 +2099,9 @@ Act_BigFruit_MoveRight:
 ; Sets the initial OBJLstPtrTable when the actor is facing right.
 ActInit_BigFruit_SetOBJLstPtrTableR:
 	ld   a, LOW(OBJLstPtrTable_Act_BigFruitR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_BigFruitR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	ret
 	
 ; =============== Act_BigFruit_Unused_EndPath ===============

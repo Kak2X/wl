@@ -209,9 +209,9 @@ Act_ChickenDuck_MoveRight:
 	ret  nz
 	
 	ld   a, LOW(OBJLstPtrTable_Act_ChickenDuck_FlyR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_ChickenDuck_FlyR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	ld   bc, +$01
 	call ActS_MoveRight
@@ -230,9 +230,9 @@ Act_ChickenDuck_MoveLeft:
 	ret  nz
 	
 	ld   a, LOW(OBJLstPtrTable_Act_ChickenDuck_FlyL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_ChickenDuck_FlyL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	ld   bc, -$01
 	call ActS_MoveRight
@@ -1352,9 +1352,9 @@ Act_MtTeapotBoss_HoldPl:
 ; Makes the boss walk right until reaching the end of the solid platform.
 .moveRight:
 	ld   a, LOW(OBJLstPtrTable_Act_MtTeapotBoss_HoldWalkR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_MtTeapotBoss_HoldWalkR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Check if we've reached the end of the platform.
 	;
@@ -1379,9 +1379,9 @@ Act_MtTeapotBoss_HoldPl:
 ; Makes the boss walk left until reaching the end of the solid platform.
 .moveLeft:
 	ld   a, LOW(OBJLstPtrTable_Act_MtTeapotBoss_HoldWalkL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_MtTeapotBoss_HoldWalkL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	ld   a, [sActSetRelX]
 	cp   a, $48					; ActX <= $48?
@@ -2829,9 +2829,9 @@ Act_Mole_MoveLeft:
 	call ActS_MoveRight
 	
 	ld   a, LOW(OBJLstPtrTable_Act_Mole_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Mole_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Make the actor face left
 	ld   a, [sActSetDir]
@@ -2864,9 +2864,9 @@ Act_Mole_MoveRight:
 	call ActS_MoveRight
 	
 	ld   a, LOW(OBJLstPtrTable_Act_Mole_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Mole_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Make the actor face right
 	ld   a, [sActSetDir]
@@ -3542,9 +3542,9 @@ Act_MoleCutscene_TurnMulti:
 .turnAnim:
 	; Between frames $3C - $59, do the turn animation
 	ld   a, LOW(OBJLstPtrTable_Act_MoleCutscene_Turn)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_MoleCutscene_Turn)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	;--
 	; [TCRF] This... does nothing at all. Half-removed leftover?
@@ -3946,9 +3946,9 @@ Act_Knight_MoveLeft:
 	ret  nz								; If not, return
 	; Bump the player when hitting the shield
 	ld   a, LOW(OBJLstPtrTable_Act_Knight_WalkL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Knight_WalkL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	mActColiMask ACTCOLI_NORM, ACTCOLI_BUMP, ACTCOLI_DAMAGE, ACTCOLI_NORM
 	ld   a, COLI
 	ld   [sActSetColiType], a
@@ -3970,9 +3970,9 @@ Act_Knight_MoveRight:
 	or   a								; RoutineId == KNI_RTN_WALK?
 	ret  nz								; If not, return
 	ld   a, LOW(OBJLstPtrTable_Act_Knight_WalkR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Knight_WalkR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	; Bump the player when hitting the shield
 	mActColiMask ACTCOLI_BUMP, ACTCOLI_NORM, ACTCOLI_DAMAGE, ACTCOLI_NORM
 	ld   a, COLI
@@ -4037,9 +4037,9 @@ Act_Knight_ChargeLeft:
 	
 	; Set charge anim, with the spike on the left
 	ld   a, LOW(OBJLstPtrTable_Act_Knight_ChargeL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Knight_ChargeL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	; Damage player on the left side
 	; Note that we can't actually hit him from behind -- he moves too fast.
 	mActColiMask ACTCOLI_NORM, ACTCOLI_DAMAGE, ACTCOLI_DAMAGE, ACTCOLI_NORM
@@ -4059,9 +4059,9 @@ Act_Knight_ChargeRight:
 	
 	; Set charge anim, with the spike on the right
 	ld   a, LOW(OBJLstPtrTable_Act_Knight_ChargeR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Knight_ChargeR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	; Damage player on the right side
 	mActColiMask ACTCOLI_DAMAGE, ACTCOLI_NORM, ACTCOLI_DAMAGE, ACTCOLI_NORM
 	ld   a, COLI
@@ -4130,16 +4130,16 @@ Act_Knight_Hit:
 	ret  nz
 	
 	ld   a, LOW(OBJLstPtrTable_Act_Knight_ChargeL)					; When facing left
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Knight_ChargeL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	ld   a, [sActSetDir]
 	bit  DIRB_L, a			; Facing left?
 	ret  nz					; If so, return
 	ld   a, LOW(OBJLstPtrTable_Act_Knight_ChargeR)					; When facing right
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Knight_ChargeR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	ret
 	
 ; =============== Act_Knight_SwitchToDead ===============

@@ -156,9 +156,9 @@ Act_Lamp_Unused_SwitchToFall:
 Act_Lamp_Fall:
 	; Set spinning anim
 	ld   a, LOW(OBJLstPtrTable_Act_Lamp_Spin)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Lamp_Spin)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Animate sprite mapping
 	call ActS_IncOBJLstIdEvery8
@@ -201,9 +201,9 @@ Act_Lamp_Main:
 .setFrame:
 	; Set idle anim
 	ld   a, LOW(OBJLstPtrTable_Act_Lamp_Spin)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Lamp_Spin)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Pickable on all sides
 	mActColiMask ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM
@@ -372,9 +372,9 @@ Act_Lamp_Thrown:
 	;
 	; Force spinning anim
 	ld   a, LOW(OBJLstPtrTable_Act_Lamp_Spin)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Lamp_Spin)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	; Animate spin every 8 frames
 	call ActS_IncOBJLstIdEvery8
 	
@@ -421,9 +421,9 @@ Act_Lamp_Thrown:
 	
 	; We're in this animation already -- not necessary to this set again
 	ld   a, LOW(OBJLstPtrTable_Act_Lamp_Spin)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Lamp_Spin)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Roll the dice for the small cloud to spawn.
 	call Rand
@@ -625,9 +625,9 @@ Act_LampSmoke_Move:
 	; Make the smoke visible.
 	; Could have been placed in Act_LampSmoke_InitMove...
 	ld   a, LOW(OBJLstPtrTable_Act_LampSmoke)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_LampSmoke)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	;--
 	
 	; Animate every $10 frames
@@ -664,7 +664,7 @@ ENDC
 	ld   a, LAMPSMOKE_RTN_HIDE2			; Not needed
 	ld   [sActLampSmokeRoutineId], a
 	xor  a								; Delete from level
-	ld   [sActSetActive], a
+	ld   [sActSetStatus], a
 	ret
 
 ; =============== Act_Lamp_SpawnCloudPlatform ===============
@@ -880,9 +880,9 @@ Act_MiniGenie_RiseUp:
 	
 	; Use cloud anim
 	ld   a, LOW(OBJLstPtrTable_Act_MiniGenie_Cloud)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_MiniGenie_Cloud)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Rise up 0.25px/frame
 	ld   a, [sActSetTimer]
@@ -1423,9 +1423,9 @@ Act_SyrupCastleBoss_Intro_Lay:
 	;--
 	; Set bed lay anim
 	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_Lay)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_Lay)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	xor  a										; Clear anim counter
 	ld   [sActSetOBJLstId], a
 .wait:
@@ -1445,9 +1445,9 @@ Act_SyrupCastleBoss_Intro_Stand:
 	jr   nc, .wait
 	;--
 	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_Stand)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_Stand)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	xor  a
 	ld   [sActSetOBJLstId], a
 .wait:
@@ -1468,9 +1468,9 @@ Act_SyrupCastleBoss_Intro_MoveDown:
 	;--
 	; [POI] Not necessary, the last mode set this already
 	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_Stand)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_Stand)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	xor  a
 	ld   [sActSetOBJLstId], a
 .wait:
@@ -1497,9 +1497,9 @@ Act_SyrupCastleBoss_Intro_LampTouch:
 	jr   nc, .waitMode
 	;--
 	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_StandRub)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_StandRub)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	xor  a
 	ld   [sActSetOBJLstId], a
 .waitMode:
@@ -1533,9 +1533,9 @@ Act_SyrupCastleBoss_Intro_LampTouch2:
 	jr   nc, .wait
 	;--
 	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_DuckRub)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_DuckRub)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	xor  a
 	ld   [sActSetOBJLstId], a
 .wait:
@@ -1560,9 +1560,9 @@ Act_SyrupCastleBoss_Intro_LampFlash:
 	jr   nc, .wait
 	;--
 	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_Stand)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_Stand)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	xor  a
 	ld   [sActSetOBJLstId], a
 .wait:
@@ -1588,9 +1588,9 @@ Act_SyrupCastleBoss_Intro_ShowSmoke:
 	jr   nc, .chkSmoke
 	;--
 	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_StandOpen)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_StandOpen)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	xor  a
 	ld   [sActSetOBJLstId], a
 .chkSmoke:
@@ -1666,9 +1666,9 @@ Act_SyrupCastleBoss_Intro_JumpToGenie:
 	;--
 	; Setup jump anim
 	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_JumpFrontL)					
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_JumpFrontL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	xor  a
 	ld   [sActSetOBJLstId], a
 .doJumpAnim:
@@ -1695,9 +1695,9 @@ Act_SyrupCastleBoss_Intro_MoveGenieUp:
 .setObjLst:
 	; Set sprite for standing on the genie
 	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_Syrup_StandOpen_Copy)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_Syrup_StandOpen_Copy)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	xor  a							; Reset anim
 	ld   [sActSetOBJLstId], a
 .move:
@@ -1748,9 +1748,9 @@ Act_SyrupCastleBoss_Intro_LayOnGenie:
 	; The "on-genie" sprites are basically the upper half of the standing sprites.
 	; They have less data, so it's convenient to use them to save time.
 	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_OnGenieArmWave)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_OnGenieArmWave)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	xor  a
 	ld   [sActSetOBJLstId], a
 .wait:
@@ -1771,9 +1771,9 @@ Act_SyrupCastleBoss_Ending_Angry:
 .setAnim:
 	; Set initial anim
 	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_Dead)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_Dead)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	xor  a
 	ld   [sActSetOBJLstId], a
 .wait:
@@ -1800,9 +1800,9 @@ Act_SyrupCastleBoss_Ending_Stand:
 .setAnim:
 	; Set the stand anim
 	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_Stand)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_Stand)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	xor  a
 	ld   [sActSetOBJLstId], a
 .wait:
@@ -1828,9 +1828,9 @@ Act_SyrupCastleBoss_Ending_Jump:
 	jr   nc, .move							; If so, skip
 .setAnim:
 	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_JumpSideR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_JumpSideR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	xor  a
 	ld   [sActSetOBJLstId], a
 .move:
@@ -1873,9 +1873,9 @@ Act_SyrupCastleBoss_Ending_ThrowBomb:
 	jr   nc, .move
 .setAnim:
 	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_Bomb)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_Bomb)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	xor  a
 	ld   [sActSetOBJLstId], a
 	
@@ -1918,9 +1918,9 @@ Act_SyrupCastleBoss_Ending_WaitBomb:
 .setAnim:
 	; [POI] Not necessary
 	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_Bomb)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_Bomb)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	xor  a
 	ld   [sActSetOBJLstId], a
 	
@@ -3601,9 +3601,9 @@ Act_Pelican_MoveLeft:
 	call ActS_MoveRight
 	; Use the swimming anim
 	ld   a, LOW(OBJLstPtrTable_Act_Pelican_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Pelican_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	ret
 	
 ; =============== Act_Pelican_MoveLeft ===============
@@ -3619,9 +3619,9 @@ Act_Pelican_MoveRight:
 	call ActS_MoveRight
 	; Use the swimming anim
 	ld   a, LOW(OBJLstPtrTable_Act_Pelican_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Pelican_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	ret
 	
 ; =============== Act_Pelican_MoveV ===============
@@ -4483,9 +4483,9 @@ Act_Croc_MoveLeft:
 	call ActS_MoveRight
 	; Set swim anim
 	ld   a, LOW(OBJLstPtrTable_Act_Croc_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Croc_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	ret
 	
 ; =============== Act_Croc_MoveRight ===============
@@ -4501,9 +4501,9 @@ Act_Croc_MoveRight:
 	call ActS_MoveRight
 	; Set swim anim
 	ld   a, LOW(OBJLstPtrTable_Act_Croc_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Croc_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	ret
 	
 ; =============== Act_Croc_MoveV ===============
@@ -4724,9 +4724,9 @@ Act_Spider_Main:
 Act_Spider_MoveUp:
 	; Set animation
 	ld   a, LOW(OBJLstPtrTable_Act_Spider_MoveU)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Spider_MoveU)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	
 	; Every other frame...
 	ld   a, [sActSetTimer]
@@ -4752,9 +4752,9 @@ Act_Spider_MoveUp:
 Act_Spider_MoveDown:
 	; Set animation
 	ld   a, LOW(OBJLstPtrTable_Act_Spider_MoveD)
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, HIGH(OBJLstPtrTable_Act_Spider_MoveD)
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	; Every other frame...
 	ld   a, [sActSetTimer]
 	and  a, $01

@@ -127,7 +127,7 @@ VBlankHandler:
 	; Because of how code is setup, this is also pointless as ScreenEvent_StaticDo could be just called directly.
 	ld   a, [sROMBank]
 	push af
-		ld   a, $12
+		ld   a, BANK(Title_AnimWaterGFX) ; BANK $12
 		ld   [sROMBank], a
 		ld   [MBC1RomBank], a
 		call ScreenEvent_StaticDo
@@ -173,21 +173,21 @@ LCDCHandler:
 ; Performs the game initiation
 ; Performing a soft reset will cause a jump to here.
 GameInit:
-	di					; Prevent interrupts from firing
-	ld   sp, $AFFF		; Set up stack pointer
-	ld   a, $0A			; Enable SRAM
+	di						; Prevent interrupts from firing
+	ld   sp, sStack_End-1	; Set up stack pointer
+	ld   a, $0A				; Enable SRAM
 	ld   [$0000], a
 
 ;
 ; Clear RAM range sActSet-$E000 with $00
 ; This will clear everything in RAM except for SRAM data
 	xor  a				
-	ld   hl, sActSet		; HL = Starting address
-	ld   bc, $3F00		; BC = Bytes to clear
+	ld   hl, sSaveData_End			; HL = Starting address
+	ld   bc, WRAM_End-sSaveData_End	; BC = Bytes to clear
 .clearCRAM:
-	ldi  [hl], a		; Overwrite byte
+	ldi  [hl], a			; Overwrite byte
 ;--
-	dec  c				; BC--
+	dec  c					; BC--
 	jr   nz, .clearCRAM
 	dec  b
 	jr   nz, .clearCRAM
@@ -1502,7 +1502,7 @@ Level_GetTreasureDoorPtr:
 	ld   [sPlLstId], a
 	;--
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	pop  af
 	ld   [sROMBank], a
 	ld   [MBC1RomBank], a
@@ -2240,7 +2240,7 @@ Pl_StartDeathAnim:
 	;--
 	; Set death anim
 	ld   a, $80
-	ld   [s_X_A984_Timer], a
+	ld   [sPlDelayTimer], a
 	ld   a, PL_ACT_DEAD
 	ld   [sPlAction], a
 	ld   a, $01
@@ -2415,7 +2415,7 @@ Pl_SwitchToHardBumpAir:
 	ld   [sPlNewAction], a
 	xor  a
 	
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   [sPlBGColiLadderType], a
 	ld   [sPlSuperJump], a
 IF IMPROVE == 0
@@ -3447,7 +3447,7 @@ Level_DoBlockSwitchType1:
 ; This is done during room transitions after copying over the 16x16 blocks,
 ; since those only contain the un-active switch definition.
 Level_UseActiveSwitchBlock:
-	ld   hl, sLevelBlock_Switch2
+	ld   hl, sLevelBlock_Switch0T0
 	ld   a, TILE_SWITCH				; First tile ID with switch
 	ldi  [hl], a
 	inc  a
@@ -3457,7 +3457,7 @@ Level_UseActiveSwitchBlock:
 	inc  a
 	ld   [hl], a
 	
-	ld   hl, sLevelBlock_Switch0
+	ld   hl, sLevelBlock_Switch0T1
 	ld   a, TILE_SWITCH
 	ldi  [hl], a
 	inc  a
@@ -3467,7 +3467,7 @@ Level_UseActiveSwitchBlock:
 	inc  a
 	ld   [hl], a
 	
-	ld   hl, sLevelBlock_Switch1
+	ld   hl, sLevelBlock_Unused_Switch1T1
 	ld   a, TILE_SWITCH
 	ldi  [hl], a
 	inc  a
@@ -3708,7 +3708,9 @@ JoyKeys_Get:
 ; ========================================
 ; OAMDMA routine.
 ; Copied in HRAM during init (don't use this directly).
-OAMDMACode:                             
+OAMDMACode:
+LOAD "OAMDMA", HRAM[$FFB6]
+hOAMDMA:
 	ld   a, $AF 	; Start DMA copy from WorkOAM (0xAF00) to OAM
 	ldh  [rDMA], a
 	ld   a, $28 	; Wait 0x28 ticks
@@ -3716,6 +3718,7 @@ OAMDMACode:
 	dec  a
 	jr   nz, .wait
 	ret
+ENDL
 OAMDMACode_End:	
 ; =============== ClearRAMRange_Mini ===============
 ; Lightweight RAM clear subroutine.
@@ -3832,14 +3835,14 @@ Level_CopyAnimGFX:
 Wario_DoDashAfterimages:
 	ld   hl, Wario_DashAfterimageTbl
 	; Index++
-	ld   a, [sPlTimer]	
+	ld   a, [sPlAnimTimer]	
 	inc  a
 	; Have we reached the end of the table? If so, reset the index.
 	cp   a, (Wario_DashAfterimageTbl.end - Wario_DashAfterimageTbl)
 	jr   nz, .setFrame
 	xor  a
 .setFrame:
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	; Offset the table
 	ld   e, a				; DE = Tbl index
 	ld   d, $00
@@ -6590,9 +6593,9 @@ ActS_ClearRoutineId:
 ; - BC: Ptr to OBJLstPtrTable
 ActS_SetOBJLstPtr:
 	ld   a, c
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, b
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	xor  a
 	ld   [sActSetOBJLstId], a
 	ret
@@ -6833,7 +6836,7 @@ ENDC
 ; Performs the off-screen check for actors which can't be despawned when going off-screen.
 ActS_CheckOffScreenNoDespawn:
 	ld   a, $01							; Invisible but active at min
-	ld   [sActSetActive_Tmp], a
+	ld   [sActSetStatus_Tmp], a
 	jr   ActS_CheckOffScreen.setRelPos
 ; =============== ActS_CheckOffScreen ===============
 ; Performs the off-screen check for the currently loaded actor.
@@ -6862,7 +6865,7 @@ ActS_CheckOffScreen:
 	jr   z, ActS_CheckOffScreenNoDespawn
 .noKeyHeld:
 	xor  a
-	ld   [sActSetActive_Tmp], a
+	ld   [sActSetStatus_Tmp], a
 .setRelPos:
 	; Calculate the relative X/Y positions
 	; These will be used for performing the off-screen check
@@ -6930,8 +6933,8 @@ ActS_CheckOffScreen:
 	ld   [sActSetRelY], a
 	
 	; Copy (default?) active status
-	ld   a, [sActSetActive_Tmp]
-	ld   [sActSetActive], a
+	ld   a, [sActSetStatus_Tmp]
+	ld   [sActSetStatus], a
 	
 	;--
 	
@@ -7009,7 +7012,7 @@ ActS_CheckOffScreen:
 .isActive:
 	; If we got here, the actor is definitely active
 	ld   a, $01
-	ld   [sActSetActive], a
+	ld   [sActSetStatus], a
 	; Check if it's actually on-screen (so we can avoid drawing it if it isn't)
 	; Required ActXRel range: $FFF0-$00C0
 	ld   a, [sActSetRelX]
@@ -7023,7 +7026,7 @@ ActS_CheckOffScreen:
 	ret  nc
 .isOnScreen:
 	ld   a, $02
-	ld   [sActSetActive], a
+	ld   [sActSetStatus], a
 	ret
 	
 ; =============== ActS_GetPlDistance ===============
@@ -7508,7 +7511,7 @@ ActS_InitToSlot:
 	;       Note that this gets overwritten almost immediately as soon as the game performs
 	;       an off-screen check on the actor the next frame.
 	ld   a, $03
-	ld   [sActSetActive], a
+	ld   [sActSetStatus], a
 	
 	call ActS_CopyFromSet
 	ret
@@ -7739,9 +7742,9 @@ ActS_LoadAndWriteOBJLst:
 	ldi  a, [hl]
 	ld   [sActSetRelX], a
 	ldi  a, [hl]
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ldi  a, [hl]
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	inc  hl
 	ldi  a, [hl]
 	ld   [sActSetOBJLstId], a
@@ -7769,9 +7772,9 @@ ActS_LoadAndWriteOBJLst:
 	;@@
 	
 	; Index the OBJLst ptr table
-	ld   a, [sActSetOBJLstPtrTablePtr_Low]		; DE = Ptr to OBJLst pointer table
+	ld   a, [sActSetOBJLstPtrTablePtr]		; DE = Ptr to OBJLst pointer table
 	ld   e, a
-	ld   a, [sActSetOBJLstPtrTablePtr_High]
+	ld   a, [sActSetOBJLstPtrTablePtr+1]
 	ld   d, a
 	ld   a, [sActSetOBJLstId]				; HL = sActSetOBJLstId * 2
 	add  a
@@ -8207,9 +8210,9 @@ ActS_SetIndexedOBJLstPtrTable:
 	add  hl, bc								; Offset it with BC
 	; Set the indexed pointer as OBJLstPtrTable.
 	ldi  a, [hl]
-	ld   [sActSetOBJLstPtrTablePtr_Low], a
+	ld   [sActSetOBJLstPtrTablePtr], a
 	ld   a, [hl]
-	ld   [sActSetOBJLstPtrTablePtr_High], a
+	ld   [sActSetOBJLstPtrTablePtr+1], a
 	; Reset the OBJLstId 
 	xor  a
 	ld   [sActSetOBJLstId], a

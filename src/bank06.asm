@@ -68,7 +68,7 @@ NonGame_PlInit:
 	ld   a, OBJLST_XFLIP	; Face right
 	ld   [sPlFlags], a
 	xor  a					; Reset timer
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ret
 	
 ; =============== Treasure_TrRoom_PlInit ===============
@@ -90,7 +90,7 @@ NonGame_PlInitHold:
 	ld   a, OBJLST_XFLIP	; Face right
 	ld   [sPlFlags], a
 	xor  a					; Reset timer
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ret
 	
 ; =============== ExActS_SpawnTreasureGet ===============
@@ -204,9 +204,9 @@ SaveSel_InitLevelTextOBJ:
 	; For all files, write the level text
 	
 	;                             VAR    Y    X
-	mSetLevelText sSave1LevelsCleared, $90, $1C
-	mSetLevelText sSave2LevelsCleared, $90, $3C
-	mSetLevelText sSave3LevelsCleared, $90, $5C
+	mSetLevelText sSave1+iSaveLevelsCleared, $90, $1C
+	mSetLevelText sSave2+iSaveLevelsCleared, $90, $3C
+	mSetLevelText sSave3+iSaveLevelsCleared, $90, $5C
 	
 	; We wrote 6 digits ($18 bytes)
 	ld   a, ($00+$06)*$04
@@ -305,7 +305,7 @@ SaveSel_InitWarioOBJLst:
 	ld   a, $20
 	ld   [sPlFlags], a
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ret
 ; =============== LoadVRAM_CourseClr ===============
 LoadVRAM_CourseClr:

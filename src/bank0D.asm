@@ -53,7 +53,7 @@ Pl_SwitchToJump:
 	ld   [sPlNewAction], a
 	; Reset vars
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	; [BUG] Resetting the jump table index allows you to start a new jump while in the air.
 	;       This isn't correct since this is called when already in the air.
 IF FIX_FUN_BUGS == 0
@@ -1079,7 +1079,7 @@ Pl_GrabLadder:
 ; This subroutine switches to the climbing action.
 Pl_SetClimbAction:
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   [sPlJumpYPathIndex], a
 	ld   a, PL_ACT_CLIMB
 	ld   [sPlAction], a
@@ -1153,7 +1153,7 @@ Pl_DoCtrl_Stand_CheckB:
 ; This subroutine switches to the duck action.
 Pl_SetDuckAction:
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   a, PL_ACT_DUCK
 	ld   [sPlAction], a
 	ld   a, $01
@@ -1205,7 +1205,7 @@ Pl_SetMoveAction:
 	ld   a, $01
 	ld   [sPlNewAction], a
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	
 	;--
 	; [POI] We never get here anyway if the timer is active.
@@ -1401,7 +1401,7 @@ Pl_SetGrab2Action:
 	ld   a, $01
 	ld   [sPlNewAction], a
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	
 	; Pick the correct player anim depending on big/small status
 IF FIX_BUGS == 1
@@ -1719,7 +1719,7 @@ Pl_DoCtrl_Duck:
 .end:
 	; If we got here, we're standing still while ducking
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	
 	ld   a, OBJ_WARIO_DUCK		; Set main frame
 	ld   [sPlLstId], a
@@ -1746,7 +1746,7 @@ Pl_DoCtrl_Climb:
 	jr   z, .switchToStand				; If so, switch to the stand action
 	
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	call Level_Scroll_CheckSegScroll	; Scroll the screen when needed
 	and  a								; Did we do it?
 	ret  nz								; If so, return
@@ -2264,7 +2264,7 @@ Pl_SwimGroundWalk_SetDuck:
 	ld   [sPlDuck], a
 	xor  a
 	ld   [sPlBGColiSolidReadOnly], a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   a, OBJ_WARIO_DUCK
 	ld   [sPlLstId], a
 	jr   Pl_SwimGroundWalk_DoStandColi
@@ -2283,7 +2283,7 @@ Pl_StartSwimWalkLeft:
 ; =============== Pl_StartSwimWalk ===============
 Pl_StartSwimWalk:
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   a, OBJ_WARIO_WALK0		; Set initial frame (when big)
 	ld   [sPlLstId], a
 	ld   a, PL_SGM_WALK			; Set ground mode
@@ -3236,7 +3236,7 @@ ENDC
 	jr   nz, Pl_SwitchToSand
 	;--
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   [sPlDuck], a
 	ld   hl, sPlFlags
 	res  OBJLSTB_OBP1, [hl]
@@ -3300,7 +3300,7 @@ ENDC
 ; Handle the switching to the quicksand action.
 Pl_SwitchToSand:
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   [sPlJumpYPathIndex], a
 	ld   [sPlBumpYPathIndex], a
 	ld   [sPlDuck], a
@@ -3348,11 +3348,11 @@ Pl_DoCtrl_Dead:
 	
 	; Wait until the timer elapses.
 	; When elapsed, reset the coin count back to 0, then move the player.
-	ld   a, [sPlTimer2]
+	ld   a, [sPlDelayTimer]
 	and  a					; Is the timer elapsed?
 	jr   z, .move			; If so, jump
 	dec  a					; Timer--
-	ld   [sPlTimer2], a		; Did the timer just elapse?
+	ld   [sPlDelayTimer], a		; Did the timer just elapse?
 	ret  nz					; If not, return
 	; Reset the coin count
 	xor  a
@@ -3532,7 +3532,7 @@ IF IMPROVE == 0
 	ld   [sPlMovingJump], a
 ENDC
 	ld   [sPlJetDashTimer], a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   [sPlGroundDashTimer], a
 	ld   a, PL_ACT_DASHREBOUND
 	ld   [sPlAction], a
@@ -3545,7 +3545,7 @@ Pl_SwitchToDashJump:
 	ld   a, OBJ_WARIO_DASHJUMP
 	ld   [sPlLstId], a
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   [sPlJumpYPathIndex], a
 	ld   [sPlBumpYPathIndex], a
 	ld   a, PL_ACT_DASHJUMP
@@ -3997,15 +3997,15 @@ Pl_DoCtrl_DuckActGrab:
 	jr   z, .noHeavy			; If not, jump
 	ld   b, $30					; B = Delay for heavy actors
 .noHeavy:
-	ld   a, [sPlTimer2]
+	ld   a, [sPlDelayTimer]
 	inc  a						; Timer++;
-	ld   [sPlTimer2], a
+	ld   [sPlDelayTimer], a
 	cp   a, b					; Does the timer match the required value?
 	ret  nz						; If not, return
 	
 	; Reset timer and return to the correct action
 	xor  a
-	ld   [sPlTimer2], a
+	ld   [sPlDelayTimer], a
 	ld   a, [sPlDuck]
 	and  a
 	jp   nz, Pl_SetDuckAction
@@ -4021,8 +4021,8 @@ Pl_StartThrowAction:
 	ld   [sPlNewAction], a
 	
 	xor  a
-	ld   [sPlTimer2], a
-	ld   [sPlTimer], a
+	ld   [sPlDelayTimer], a
+	ld   [sPlAnimTimer], a
 	
 	; Set the correct player anim for throwing.
 	ld   a, [sSmallWario]
@@ -4048,15 +4048,15 @@ Pl_StartThrowAction:
 Pl_DoCtrl_Throw:
 	; The anim frame for throwing is set when the game switches to the throw action.
 	; Now we pause for 4 frames, which freezes the player in that anim.
-	ld   a, [sPlTimer2]
+	ld   a, [sPlDelayTimer]
 	inc  a
-	ld   [sPlTimer2], a
+	ld   [sPlDelayTimer], a
 	cp   a, $04
 	ret  nz
 	; Once we're done, unfreeze the player by returning to the correct action
 	xor  a
-	ld   [sPlTimer2], a
-	ld   [sPlTimer], a
+	ld   [sPlDelayTimer], a
+	ld   [sPlAnimTimer], a
 	ld   a, [sPlDuck]
 	and  a						; Are we ducking?
 	jp   nz, Pl_SetDuckAction	; If so, jump
@@ -4457,13 +4457,13 @@ Pl_WalkAnimOBJLst:
 	;--
 	; Update the player OBJLstId
 	ld   hl, OBJLstAnimOff_WarioWalk	
-	ld   a, [sPlTimer]	; Index++			
+	ld   a, [sPlAnimTimer]	; Index++			
 	inc  a
 	cp   a, OBJLstAnimOff_WarioWalk.end-OBJLstAnimOff_WarioWalk	; Have we reached the end of the table?
 	jr   nz, .noReset		; If not, jump
 	xor  a					; Otherwise, reset the index
 .noReset:
-	ld   [sPlTimer], a	; DE = sPlTimer
+	ld   [sPlAnimTimer], a	; DE = sPlAnimTimer
 	ld   e, a
 	ld   d, $00
 	add  hl, de				; Offset the anim table
@@ -4477,14 +4477,14 @@ OBJLstAnimOff_WarioWalk:
 Pl_WalkAnimOBJLst_Small:
 	; Same thing for Small Wario
 	ld   hl, OBJLstAnimOff_SmallWarioWalk
-	ld   a, [sPlTimer]		; Timer++
+	ld   a, [sPlAnimTimer]		; Timer++
 	inc  a
 	; Reset if we reached the end of the table
 	cp   a, OBJLstAnimOff_SmallWarioWalk.end-OBJLstAnimOff_SmallWarioWalk
 	jr   nz, .noReset
 	xor  a
 .noReset:
-	ld   [sPlTimer], a	; DE = sPlTimer
+	ld   [sPlAnimTimer], a	; DE = sPlAnimTimer
 	ld   e, a
 	ld   d, $00
 	add  hl, de				; Offset the anim table
@@ -4694,7 +4694,7 @@ Pl_StartActionB_Garlic:
 	ld   a, OBJ_WARIO_DASH0			; Set initial frame
 	ld   [sPlLstId], a
 	xor  a							; Reset timers
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   [sPlDuck], a
 	ld   a, PL_ACT_DASH
 	ld   [sPlAction], a
@@ -4901,7 +4901,7 @@ Pl_IdleAnim:
 	jr   nz, .noStandReset
 	
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   a, OBJ_WARIO_STAND
 	ld   [sPlLstId], a
 	;--
@@ -4910,20 +4910,20 @@ Pl_IdleAnim:
 	ld   hl, OBJLstAnimOff_WarioIdle		; HL = Ptr to anim offset table
 	
 	; Update the idle frame timer, which will be treated as as index
-	; sPlTimer = ((sPlTimer+1) & $1C) (+8 on folliwing loops)
-	ld   a, [sPlTimer]	
+	; sPlAnimTimer = ((sPlAnimTimer+1) & $1C) (+8 on folliwing loops)
+	ld   a, [sPlAnimTimer]	
 	inc  a
 	cp   a, (OBJLstAnimOff_WarioIdle.end-OBJLstAnimOff_WarioIdle) ; Did we reach the end of the table?
 	jr   nz, .noTimerReset	; If not, jump
 	ld   a, $08				; If so, reset the index back to $08 (skipping the initial delay)
 .noTimerReset:
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	
 	ld   e, a				; Index the offset table
 	ld   d, $00
 	add  hl, de
 	
-	ld   a, [sPlLstId]	; sPlLstId += OBJLstAnimOff_WarioIdle[sPlTimer]
+	ld   a, [sPlLstId]	; sPlLstId += OBJLstAnimOff_WarioIdle[sPlAnimTimer]
 	add  [hl]
 	ld   [sPlLstId], a
 	ret
@@ -4944,25 +4944,25 @@ Pl_IdleAnim:
 	cp   a, OBJ_SMALLWARIO_HOLD
 	jr   nz, .noStandResetS
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   a, OBJ_SMALLWARIO_STAND
 	ld   [sPlLstId], a
 .noStandResetS:
 	; Index the anim offsets table
 	; Once we go past it, reset the index to $00
 	ld   hl, OBJLstAnimOff_SmallWarioIdle
-	ld   a, [sPlTimer]	; Index++
+	ld   a, [sPlAnimTimer]	; Index++
 	inc  a
 	cp   a, (OBJLstAnimOff_SmallWarioIdle.end-OBJLstAnimOff_SmallWarioIdle)
 	jr   nz, .noTimerResetS
 	xor  a
 .noTimerResetS:
-	ld   [sPlTimer], a	; Index it
+	ld   [sPlAnimTimer], a	; Index it
 	ld   e, a
 	ld   d, $00
 	add  hl, de
 	
-	ld   a, [sPlLstId]	; sPlLstId += OBJLstAnimOff_SmallWarioIdle[sPlTimer]
+	ld   a, [sPlLstId]	; sPlLstId += OBJLstAnimOff_SmallWarioIdle[sPlAnimTimer]
 	add  [hl]
 	ld   [sPlLstId], a
 	ret
@@ -5000,7 +5000,7 @@ Pl_SwitchToStand:
 	;--
 	; Reset everything
 	xor  a
-	ld   [sPlTimer], a
+	ld   [sPlAnimTimer], a
 	ld   [sPlDuck], a
 	ld   [sPlGroundDashTimer], a
 	ld   [sPlJetDashTimer], a
@@ -5545,13 +5545,13 @@ Pl_DoCtrl_TreasureGet:
 	ld   a, OBJ_WARIO_HOLD		; Set anim frame
 	ld   [sPlLstId], a
 	ld   a, $E0					; Set delay before fading out to treasure screen
-	ld   [sPlTimer2], a
+	ld   [sPlDelayTimer], a
 	ret
 .ground:
 	; Wait until the timer is elapsed
-	ld   a, [sPlTimer2]
+	ld   a, [sPlDelayTimer]
 	dec  a
-	ld   [sPlTimer2], a
+	ld   [sPlDelayTimer], a
 	ret  nz
 	
 	;--
@@ -7864,13 +7864,13 @@ ENDM
 
 ; =============== ExAct_Switch0Type0Hit ===============
 ; ID: $0E
-ExAct_Switch0Type0Hit: mExAct_SwitchHit sLevelBlock_Switch2, BLOCKID_SWITCH0T0
+ExAct_Switch0Type0Hit: mExAct_SwitchHit sLevelBlock_Switch0T0, BLOCKID_SWITCH0T0
 ; =============== ExAct_Switch0Type1Hit ===============
 ; ID: $0F
-ExAct_Switch0Type1Hit: mExAct_SwitchHit sLevelBlock_Switch0, BLOCKID_SWITCH0T1
+ExAct_Switch0Type1Hit: mExAct_SwitchHit sLevelBlock_Switch0T1, BLOCKID_SWITCH0T1
 ; =============== ExAct_Unused_Switch1Type0Hit ===============
 ; ID: $10
-ExAct_Unused_Switch1Type0Hit: mExAct_SwitchHit sLevelBlock_Switch1, BLOCKID_UNUSED_SWITCH1T1
+ExAct_Unused_Switch1Type0Hit: mExAct_SwitchHit sLevelBlock_Unused_Switch1T1, BLOCKID_UNUSED_SWITCH1T1
 
 ; =============== ExAct_BounceBlockHit ===============
 ; ID: $11

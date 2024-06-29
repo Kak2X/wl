@@ -659,6 +659,12 @@ ACTFLAG_NORECOVER EQU 1 << ACTFLAGB_NORECOVER
 ACTFLAG_NODESPAWNOFFSCREEN EQU 1 << ACTFLAGB_NODESPAWNOFFSCREEN
 ACTFLAG_HEAVY EQU 1 << ACTFLAGB_HEAVY
 
+; Actor Slot Status
+ATV_INACTIVE      EQU $00 ; Actor isn't active, slot is free to be reused
+ATV_OFFSCREEN     EQU $01 ; Active, but off-screen (not drawn)
+ATV_ONSCREEN      EQU $02 ; Active, on-screen
+ATV_ONSCREENONCE  EQU $03 ; Active for one frame to let the actor being drawn when freeroaming (which otherwise disables actors) 
+
 ; Actor routines (lower nybble-only)
 ; Upper nybble is reused for the bump direction.
 ACTRTN_MAIN EQU $00	; Normal routine -- the rest are "special"
@@ -674,8 +680,8 @@ ACTRTN_SPEC_09 EQU $09 ; Grabbed (Treasure-only)
 
 ; Standard OBJLst parent table offsets
 ; In pairs since different data is used for actors facing left/right.
-ACTOLP_UNUSED0L EQU $00*2 ; $00 ; Unused stun frame
-ACTOLP_UNUSED0R EQU $01*2 ; $02 ; 
+ACTOLP_UNUSED_BUMPL EQU $00*2 ; $00 ; [TCRF] Was used in earlier builds when bumping against actors.
+ACTOLP_UNUSED_BUMPR EQU $01*2 ; $02 ; 
 ACTOLP_RECOVERL EQU $02*2 ; $04 ; Actor recovering from stun
 ACTOLP_RECOVERR EQU $03*2 ; $06 ;
 ACTOLP_STUNL EQU $04*2 ; $08 ; Actor stunned / killed
@@ -1523,6 +1529,7 @@ LVLCLEAR_FINALEXITTOMAP EQU $04 ; Fades out to the map screen
 ;
 BG_BLOCK_WIDTH EQU $02 ; Tiles for a block
 BG_BLOCK_HEIGHT EQU $02
+BG_BLOCK_LENGTH EQU BG_BLOCK_WIDTH*BG_BLOCK_HEIGHT
 BG_BLOCKCOUNT_H EQU BG_TILECOUNT_H / 2
 BG_BLOCKCOUNT_V EQU BG_TILECOUNT_V / 2
 
@@ -1547,6 +1554,7 @@ BLOCK_HEIGHT    EQU $10
 
 LEVEL_BLOCK_HCOUNT EQU (LEVEL_WIDTH / BLOCK_WIDTH)
 LEVEL_BLOCK_VCOUNT EQU (LEVEL_HEIGHT / BLOCK_HEIGHT)
+LEVEL_LAYOUT_LENGTH EQU (LEVEL_BLOCK_HCOUNT*LEVEL_BLOCK_VCOUNT) ; $2000
 LEVEL_BLOCK_HMIN EQU $00
 LEVEL_BLOCK_HMAX EQU LEVEL_BLOCK_HCOUNT - 1
 LEVEL_BLOCK_VMIN EQU $00
