@@ -428,6 +428,28 @@ Mode_LevelInit_StartLevel:
 	ld   [sParallaxX1], a
 	ret  
 
+IF FIX_BUGS == 1
+; =============== Game_CalcPlRelPos ===============
+; Calculates the player's relative Y position, used for actor collision.
+; This "fixes" a chicken/egg problem related to PlActColi_LoopSearch using outdated values.
+Game_CalcPlRelPos:
+	; Calculate the relative Y pos.
+	; NOTE: This is the value used for actor collision.
+	ldh  a, [hScrollY]
+	ld   b, a			; B = ScrollY
+	ld   a, [sPlY_Low]	; A = WarioY
+	add  OBJ_OFFSET_Y	; Account for the origin used by sprite mappings.
+	sub  a, b			; Result = WarioY + $10 - ScrollY
+	ld   [sPlYRel], a
+	; Calculate the relative X pos
+	ld   a, [sScrollX]
+	ld   b, a			; B = ScrollX
+	ld   a, [sPlX_Low]	; A = WarioX
+	add  OBJ_OFFSET_X	; ""
+	sub  a, b			; Result = WarioX + $08 - ScrollX
+	ld   [sPlXRel], a
+	ret
+ENDC
 ; =============== Mode_Level ===============
 Mode_Level:
 	call Game_CheckTogglePause
@@ -474,6 +496,33 @@ Mode_Level:
 	;       It should only be done after Level_Screen_ScrollHorz and Level_Screen_ScrollVert are called.
 	
 IF FIX_BUGS == 1
+
+	ld   a, [sPlHatSwitchTimer]
+	and  a
+	jr   nz, .noWorkaround
+	
+	; Workaround caused by the new screen update order.
+	; Since the player/screen is scrolled earlier but actors aren't processed until the end,
+	; they use old relative position values which can break the actor top-solid handling.
+	; Calculate the old version of sPlYRel/sPlXRel, and use those to determine collision detection.
+	ld   a, [sPlYRel]
+	ld   b, a
+	ld   a, [sPlXRel]
+	ld   c, a
+	push bc
+		call Game_CalcPlRelPos
+		call HomeCall_PlActColi_Do 
+	pop  bc
+	ld   a, b
+	ld   [sPlYRel], a
+	ld   a, c
+	ld   [sPlXRel], a
+	
+.noWorkaround:
+	;
+	; Now calculate the new versions of sPlYRel/sPlXRel
+	;
+
 	; HomeCall_Game_Do sets the variables needed by these
 	call Level_Screen_ScrollHorz
 	call Level_Screen_ScrollVert
@@ -495,8 +544,9 @@ ENDC
 	ld   a, [sPlHatSwitchTimer]
 	and  a
 	jr   nz, Game_UpdateScreen
+
+IF FIX_BUGS == 0
 	call HomeCall_PlActColi_Do 	
-IF FIX_BUGS == 0	
 	call Level_Screen_ScrollHorz
 	call Level_Screen_ScrollVert
 ENDC
