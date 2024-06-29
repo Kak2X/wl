@@ -287,7 +287,7 @@ ActInit_Default_ItemUsed:
 	ld   [sActSetOpts], a
 	ret
 .despawn:
-	xor  a
+	xor  a ; ATV_INACTIVE
 	ld   [sActSetStatus], a
 	ret
 ; =============== ActS_DefaultStand ===============
@@ -475,7 +475,7 @@ Act_ItemInBox:
 	cp   a, LOCK_OPEN			; Is the key lock open?
 	jr   nz, .spawnOk			; If not, skip
 	xor  a						; Otherwise, don't spawn the key
-	ld   [sActSet], a
+	ld   [sActSetStatus], a
 	ret
 .spawnOk:
 	ld   a, $01
@@ -1053,7 +1053,7 @@ Act_StunStar:
 	cp   a, $3C					; Timer < $3C?
 	ret  c						; If so, return
 	xor  a						; Otherwise, despawn stars
-	ld   [sActSet], a
+	ld   [sActSetStatus], a
 	ret
 	
 OBJLst_Act_StunStar0: INCBIN "data/objlst/actor/stunstar0.bin"
@@ -1216,9 +1216,9 @@ OBJLstSharedTablePtr_Act_HeartInvincible:
 ; =============== Act_HeartInvincible ===============
 Act_HeartInvincible:
 	call ActS_CheckOffScreen	; Update offscreen status
-	ld   a, [sActSet]
-	cp   a, $02					; Is it visible and active? >= $02?
-	jr   c, .despawn				; If not, despawn it
+	ld   a, [sActSetStatus]
+	cp   a, ATV_ONSCREEN		; Is it visible and active? >= $02?
+	jr   c, .despawn			; If not, despawn it
 	
 	; Every 4 frames increase the anim frame
 	ld   a, [sTimer]
@@ -1239,7 +1239,7 @@ Act_HeartInvincible:
 	ret  c						; If not, return
 .despawn:
 	xor  a						; Otherwise, hard despawn it
-	ld   [sActSet], a
+	ld   [sActSetStatus], a
 	ret
 	
 ; =============== ActS_CoinGame ===============
@@ -1319,7 +1319,7 @@ assert BANK(OBJLstPtrTable_Act_Coin) == BANK(OBJLstPtrTable_Act_10Coin), "OBJLst
 	;--
 	
 .spawnAct:
-	ld   a, [sActSet]			; Copy over activity status (this is $02 in practice)
+	ld   a, [sActSetStatus]		; Copy over activity status (this is ATV_ONSCREEN in practice)
 	ldi  [hl], a
 	
 	ld   a, [sLvlScrollX_Low]	; X = LvlScrollX
@@ -1457,7 +1457,7 @@ ActS_SpawnCoinFromDash:
 .found:
 	mActS_SetOBJBank OBJLstPtrTable_Act_Coin
 	
-	ld   a, [sActSet]			; Activity status
+	ld   a, [sActSetStatus]		; Activity status
 	ldi  [hl], a
 	
 	ld   a, [sActSetX_Low]		; X = sActSetX
@@ -1562,7 +1562,7 @@ ActS_Spawn10Coin:
 	jr   .nextSlot
 .found:
 	mActS_SetOBJBank OBJLstPtrTable_Act_10Coin
-	ld   a, [sActSet]			; Activity status
+	ld   a, [sActSetStatus]		; Activity status
 	ldi  [hl], a
 	
 	ld   a, [sActSetX_Low]		; X = sActSetX
@@ -1792,11 +1792,11 @@ Act_Coin:
 	
 	; If the coin goes off-screen, despawn it
 	call ActS_CheckOffScreen		; Update offscreen status
-	ld   a, [sActSet]
-	cp   a, $02						; Is it visible and active? (>= $02)
+	ld   a, [sActSetStatus]
+	cp   a, ATV_ONSCREEN			; Is it visible and active? (>= $02)
 	jr   nc, Act_Coin_ChkAnimSpeed	; If so, jump
 	xor  a							; Otherwise free the slot
-	ld   [sActSet], a
+	ld   [sActSetStatus], a
 	; No ret here?
 	
 Act_Coin_ChkAnimSpeed:
@@ -1997,7 +1997,7 @@ Act_Coin_MoveVert:
 	cp   a, $78					; Did we stay on the ground for more than $77 frames?
 	ret  c						; If so, return
 	xor  a						; Otherwise, despawn the coin
-	ld   [sActSet], a
+	ld   [sActSetStatus], a
 	ret
 	
 ; =============== Act_CoinGame_Coin ===============
@@ -2010,18 +2010,18 @@ Act_Coin_MoveVert:
 ; spawner continuously tries to fill all actor slots.
 ;
 ; See also: Act_Coin
-Act_CoinGame_Coin:;I
+Act_CoinGame_Coin:
 	ld   a, [sActSetTimer]		; sActSetTimer++
 	inc  a
 	ld   [sActSetTimer], a
 	
 	; If the coin goes off-screen, despawn it
 	call ActS_CheckOffScreen	; Update offscreen status
-	ld   a, [sActSet]			
-	cp   a, $02					; Is it visible and active? (>= $02)
+	ld   a, [sActSetStatus]			
+	cp   a, ATV_ONSCREEN		; Is it visible and active? (>= $02)
 	jr   nc, Act_CoinGame_Coin_ChkAnimSpeed	; If so, jump
 	xor  a						; Otherwise free the slot
-	ld   [sActSet], a
+	ld   [sActSetStatus], a
 	
 Act_CoinGame_Coin_ChkAnimSpeed:
 	;
@@ -2186,7 +2186,7 @@ Act_CoinGame_Coin_MoveVert:
 	cp   a, $64						; Did we stay on the ground for more than $63 frames? (less time than the normal coin)
 	ret  c							; If so, return
 	xor  a							; Otherwise, despawn the coin
-	ld   [sActSet], a
+	ld   [sActSetStatus], a
 	ret
 	
 ; =============== Act_CoinGame_Coin_MoveRight ===============
@@ -5450,7 +5450,7 @@ Act_TreasureShine:
 	
 	; Copy over the...
 	ldi  a, [hl]							; ...active status							
-	ld   [sActSet], a
+	ld   [sActSetStatus], a
 	ldi  a, [hl]							; X Pos
 	ld   [sActSetX_Low], a
 	ldi  a, [hl]
@@ -6579,11 +6579,11 @@ Act_SealSpear:
 ;		The actor could have been spawned with the sActSetOpts flag ACTFLAGB_UNUSED_FREEOFFSCREEN.
 Act_SealSpear_CheckOffScreen:
 	call ActS_CheckOffScreen	; Update offscreen status
-	ld   a, [sActSet]
-	cp   a, $02					; Is the actor visible & active?
+	ld   a, [sActSetStatus]
+	cp   a, ATV_ONSCREEN		; Is the actor visible & active?
 	ret  nc						; If so, return
 	xor  a						; Otherwise, despawn it
-	ld   [sActSet], a
+	ld   [sActSetStatus], a
 	ret
 ; =============== Act_SealSpear_WallHit ===============
 ; Stops the spear once it hits a wall.
@@ -6604,7 +6604,7 @@ Act_SealSpear_WaitDespawn:;R
 ; =============== Act_SealSpear_Despawn ===============
 Act_SealSpear_Despawn:
 	xor  a
-	ld   [sActSet], a
+	ld   [sActSetStatus], a
 	ret
 ; =============== Act_SealSpear_MoveLeft ===============
 ; Moves the spear left 2px/frame until it reaches a solid block.

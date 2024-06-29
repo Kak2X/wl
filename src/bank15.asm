@@ -1191,11 +1191,11 @@ Act_WolfKnife:
 ;		The actor could have been spawned with the sActSetOpts flag ACTFLAGB_UNUSED_FREEOFFSCREEN.
 Act_WolfKnife_CheckOffScreen:
 	call ActS_CheckOffScreen	; Update offscreen status
-	ld   a, [sActSet]
-	cp   a, $02					; Is the actor visible & active?
+	ld   a, [sActSetStatus]
+	cp   a, ATV_ONSCREEN		; Is the actor visible & active?
 	ret  nc						; If so, return
 	xor  a						; Otherwise, despawn it
-	ld   [sActSet], a
+	ld   [sActSetStatus], a
 	ret
 ; =============== Act_WolfKnife_WallHit ===============
 ; Stops the knife once it hits a wall.
@@ -1217,7 +1217,7 @@ Act_WolfKnife_WaitDespawn:
 	ret  c							; If so, return
 Act_WolfKnife_Despawn:
 	xor  a
-	ld   [sActSet], a
+	ld   [sActSetStatus], a
 	ret
 	
 ; =============== Act_WolfKnife_MoveLeft ===============
@@ -2044,11 +2044,11 @@ Act_PenguinSpikeBall_Move:
 ;		The actor could have been spawned with the sActSetOpts flag ACTFLAGB_UNUSED_FREEOFFSCREEN.
 Act_PenguinSpikeBall_CheckOffScreen:
 	call ActS_CheckOffScreen	; Update offscreen status
-	ld   a, [sActSet]
-	cp   a, $02					; Is the actor visible & active?
+	ld   a, [sActSetStatus]
+	cp   a, ATV_ONSCREEN		; Is the actor visible & active?
 	ret  nc						; If so, return
 	xor  a						; Otherwise, despawn it
-	ld   [sActSet], a
+	ld   [sActSetStatus], a
 	ret
 ; =============== Act_PenguinSpikeBall_MoveLeft ===============
 Act_PenguinSpikeBall_MoveLeft:
@@ -2796,16 +2796,16 @@ Act_DDBoomerang:
 ;		The actor could have been spawned with the sActSetOpts flag ACTFLAGB_UNUSED_FREEOFFSCREEN.
 Act_DDBoomerang_CheckOffScreen:
 	call ActS_CheckOffScreen	; Update offscreen status
-	ld   a, [sActSet]
-	cp   a, $02					; Is the actor visible & active?
+	ld   a, [sActSetStatus]
+	cp   a, ATV_ONSCREEN		; Is the actor visible & active?
 	ret  nc						; If so, return
 	xor  a						; Otherwise, despawn it
-	ld   [sActSet], a
+	ld   [sActSetStatus], a
 	ret
 ; =============== Act_DDBoomerang_Despawn ===============
 Act_DDBoomerang_Despawn:
 	xor  a
-	ld   [sActSet], a
+	ld   [sActSetStatus], a
 	ret
 ; =============== Act_DDBoomerang_MoveLeft ===============
 Act_DDBoomerang_MoveLeft:
@@ -3534,8 +3534,8 @@ Act_PouncerFollow:
 	; To save on time, if the actor is off-screen, make it intangible 
 	xor  a							; Clear collision
 	ld   [sActSetColiType], a
-	ld   a, [sActSet]				; Read status
-	cp   a, $02						; Is it visible & active?
+	ld   a, [sActSetStatus]			; Read status
+	cp   a, ATV_ONSCREEN			; Is it visible & active?
 	jr   c, Act_PouncerFollow_Main	; If not, jump
 	ld   a, ACTCOLI_BIGBLOCK		; Otherwise set the real collision
 	ld   [sActSetColiType], a
@@ -3681,8 +3681,8 @@ Act_PouncerFollow_MoveUp:
 	call ActS_MoveDown
 	
 	; If the player is standing on top, make him move up as well.
-	ld   a, [sActSet]
-	cp   a, $02					; Is the actor visible?
+	ld   a, [sActSetStatus]
+	cp   a, ATV_ONSCREEN		; Is the actor visible?
 	ret  c						; If not, we can't be standing on it
 	ld   b, $01					; B = Px to move up
 	ld   a, [sActSetRoutineId]
@@ -3703,8 +3703,8 @@ Act_PouncerFollow_MoveRight:
 	
 	; If the player is standing on top, make him move right as well.
 	; Curiously, this uses ActS_PlStand_MoveRight, which does not allow a custom speed.
-	ld   a, [sActSet]
-	cp   a, $02					; Is the actor visible?
+	ld   a, [sActSetStatus]
+	cp   a, ATV_ONSCREEN		; Is the actor visible?
 	ret  c						; If not, we can't be standing on it
 	ld   a, [sActSetRoutineId]
 	and  a, $0F
@@ -3723,8 +3723,8 @@ Act_PouncerFollow_MoveDown:
 	call ActS_MoveDown
 	
 	; If the player is standing on top, make him move down as well.
-	ld   a, [sActSet]
-	cp   a, $02					; Is the actor visible?
+	ld   a, [sActSetStatus]
+	cp   a, ATV_ONSCREEN		; Is the actor visible?
 	ret  c						; If not, we can't be standing on it
 	ld   b, $01					; B = Px to move down
 	ld   a, [sActSetRoutineId]
@@ -4846,8 +4846,8 @@ Act_ThunderCloud:
 	
 	;--
 	; If the actor isn't visible, reset the animation
-	ld   a, [sActSet]			; Read active status?
-	cp   a, $02					; Is it visible & active?
+	ld   a, [sActSetStatus]		; Read active status?
+	cp   a, ATV_ONSCREEN		; Is it visible & active?
 	jr   z, .incTimer			; If so, jump
 	xor  a
 	ld   [sActSetOBJLstId], a
@@ -5248,7 +5248,7 @@ ENDC
 	jp   SubCall_ActS_StartStarKill_NoHeart
 .despawn:
 	xor  a
-	ld   [sActSet], a
+	ld   [sActSetStatus], a
 	ret
 	
 ; =============== ActInit_Hedgehog ===============

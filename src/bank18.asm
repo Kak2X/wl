@@ -3959,11 +3959,11 @@ Act_StoveCanyonBossBall_Safe_Main:
 	; Permanently despawn once off-screen.
 	; (the built-in flag could have been used... again)
 	call ActS_CheckOffScreen	; Update offscreen status
-	ld   a, [sActSet]
-	cp   a, $02					; Is the actor visible?
+	ld   a, [sActSetStatus]
+	cp   a, ATV_ONSCREEN		; Is the actor visible?
 	ret  nc						; If so, return
 	xor  a						; Otherwise, despawn it
-	ld   [sActSet], a
+	ld   [sActSetStatus], a
 	ret
 	
 ; =============== Act_StoveCanyonBossBall_SwitchToSplash ===============	
@@ -4009,7 +4009,7 @@ Act_StoveCanyonBossBall_Splash:
 	cp   a, $38									; Timer < $38?
 	ret  c										; If so, return
 	xor  a
-	ld   [sActSet], a
+	ld   [sActSetStatus], a
 	ret
 	
 OBJLstSharedPtrTable_Act_StoveCanyonBoss_Ball:
@@ -4718,7 +4718,7 @@ Act_FloaterArrow:
 	ret
 .despawn:
 	xor  a
-	ld   [sActSet], a
+	ld   [sActSetStatus], a
 	ret
 	
 OBJLstPtrTable_Act_FloaterArrow_R:
@@ -4985,11 +4985,11 @@ OBJLstPtrTable_Act_Bridge:
 Act_Bridge:
 	; Delete the actor when it goes off-screen.
 	call ActS_CheckOffScreen	
-	ld   a, [sActSet]
-	cp   a, $02				; Visible & active?
+	ld   a, [sActSetStatus]
+	cp   a, ATV_ONSCREEN	; Visible & active?
 	jr   nc, .main			; If so, skip
 	xor  a					; Otherwise delete from level
-	ld   [sActSet], a
+	ld   [sActSetStatus], a
 	ret
 	
 .main:
@@ -5586,7 +5586,7 @@ Act_StickBomb_Explode:
 	cp   a, $04
 	ret  c
 	xor  a
-	ld   [sActSet], a
+	ld   [sActSetStatus], a
 	ret
 .setColi:
 	mActColiMask ACTCOLI_DAMAGE, ACTCOLI_DAMAGE, ACTCOLI_DAMAGE, ACTCOLI_DAMAGE
@@ -5995,11 +5995,11 @@ Act_Watch_Attack:
 	; Instadespawn as soon as it goes off screen.
 	; This could have been done through ACTFLAGB_UNUSED_FREEOFFSCREEN.
 	call ActS_CheckOffScreen
-	ld   a, [sActSet]		; Read status
-	cp   a, $02				; Is it visible & active?
+	ld   a, [sActSetStatus]	; Read status
+	cp   a, ATV_ONSCREEN	; Is it visible & active?
 	ret  nc					; If so, return
 	xor  a					; Otherwise, free the slot
-	ld   [sActSet], a
+	ld   [sActSetStatus], a
 	ret
 ; =============== Act_Watch_MoveRight ===============
 ; Moves the actor right 1px, updating the collision box as needed.

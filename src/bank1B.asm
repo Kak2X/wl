@@ -663,7 +663,7 @@ ENDC
 	; [TCRF] We never get here.
 	ld   a, LAMPSMOKE_RTN_HIDE2			; Not needed
 	ld   [sActLampSmokeRoutineId], a
-	xor  a								; Delete from level
+	xor  a ; ATV_INACTIVE				; Delete from level
 	ld   [sActSetStatus], a
 	ret
 
@@ -2413,11 +2413,11 @@ Act_SyrupCastleBossFireball_OnGround:
 	; Permanently despawn once off-screen.
 	; (the built-in flag could have been used... again)
 	call ActS_CheckOffScreen	; Update offscreen status
-	ld   a, [sActSet]			
-	cp   a, $02					; Is the actor visible?
+	ld   a, [sActSetStatus]			
+	cp   a, ATV_ONSCREEN		; Is the actor visible?
 	jr   nc, .chkMove			; If so, jump
 	xor  a						; Otherwise, despawn it
-	ld   [sActSet], a
+	ld   [sActSetStatus], a
 	ret
 	
 .chkMove:
@@ -3742,8 +3742,8 @@ Act_Pelican_UnderwaterYPath:
 ; These bombs spawn in their thrown state, with an active countdown.
 Act_Pelican_SpawnBomb:
 	; Do not spawn bombs when off-screen
-	ld   a, [sActSet]
-	cp   a, $02
+	ld   a, [sActSetStatus]
+	cp   a, ATV_ONSCREEN
 	ret  nz
 	
 	; Find an empty slot

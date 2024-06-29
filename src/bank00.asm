@@ -6835,7 +6835,7 @@ ENDC
 ; =============== ActS_CheckOffScreenNoDespawn ===============
 ; Performs the off-screen check for actors which can't be despawned when going off-screen.
 ActS_CheckOffScreenNoDespawn:
-	ld   a, $01							; Invisible but active at min
+	ld   a, ATV_OFFSCREEN						; Invisible but active at min
 	ld   [sActSetStatus_Tmp], a
 	jr   ActS_CheckOffScreen.setRelPos
 ; =============== ActS_CheckOffScreen ===============
@@ -6864,7 +6864,7 @@ ActS_CheckOffScreen:
 	; A key should never be despawned by off-screen, so its default status is $01
 	jr   z, ActS_CheckOffScreenNoDespawn
 .noKeyHeld:
-	xor  a
+	xor  a ; ATV_INACTIVE
 	ld   [sActSetStatus_Tmp], a
 .setRelPos:
 	; Calculate the relative X/Y positions
@@ -7011,7 +7011,7 @@ ActS_CheckOffScreen:
 	ret  nz
 .isActive:
 	; If we got here, the actor is definitely active
-	ld   a, $01
+	ld   a, ATV_OFFSCREEN
 	ld   [sActSetStatus], a
 	; Check if it's actually on-screen (so we can avoid drawing it if it isn't)
 	; Required ActXRel range: $FFF0-$00C0
@@ -7025,7 +7025,7 @@ ActS_CheckOffScreen:
 	cp   a, $C0
 	ret  nc
 .isOnScreen:
-	ld   a, $02
+	ld   a, ATV_ONSCREEN
 	ld   [sActSetStatus], a
 	ret
 	
@@ -7510,7 +7510,7 @@ ActS_InitToSlot:
 	;       
 	;       Note that this gets overwritten almost immediately as soon as the game performs
 	;       an off-screen check on the actor the next frame.
-	ld   a, $03
+	ld   a, ATV_ONSCREENONCE
 	ld   [sActSetStatus], a
 	
 	call ActS_CopyFromSet

@@ -163,8 +163,8 @@ ActS_Execute_SkipEmptySlot:
 ; =============== ActS_Execute ===============
 ActS_Execute:
 	; Is the slot empty?
-	ld   a, [sActSet]
-	or   a
+	ld   a, [sActSetStatus]
+	or   a					; == ATV_INACTIVE?
 	jr   z, ActS_Execute_SkipEmptySlot
 	
 	;--
@@ -182,7 +182,7 @@ ActS_Execute:
 .noLagChk:
 	; Type $03 runs for one frame even if actors are meant to be paused
 	ld   a, [sActSetStatus]
-	cp   a, $03
+	cp   a, ATV_ONSCREENONCE
 	jr   z, .executeOffScreen
 	; Are all actors paused (and not execute)?
 	ld   a, [sPauseActors]
@@ -191,8 +191,8 @@ ActS_Execute:
 	;--
 	jr   .execute
 .executeOffScreen:
-	ld   a, $01
-	ld   [sActSet], a
+	ld   a, ATV_OFFSCREEN
+	ld   [sActSetStatus], a
 .execute:
 	call ActS_JumpToCodePtr
 	mActS_NextProc
@@ -209,8 +209,8 @@ ActS_Execute:
 	;
 
 	; Did the actor despawn? (slow now considered empty)
-	ld   a, [sActSet]
-	or   a
+	ld   a, [sActSetStatus]
+	or   a 								; == ATV_INACTIVE?
 	jp   z, ActS_RemoveFromOrigLocation
 	
 	;--
@@ -241,12 +241,12 @@ ActS_Execute:
 	
 	; Did the off-screen check mark the actor as a "free slot"?
 	; If so, save its coords before the slot gets reused
-	ld   a, [sActSet]
-	or   a
+	ld   a, [sActSetStatus]
+	or   a ; ATV_INACTIVE
 	jr   z, ActS_SavePos	
 	
 	; If the actor is off-screen (but active) handle some misc options
-	ld   a, [sActSet]
+	ld   a, [sActSetStatus]
 	cp   a, $01
 	jp   z, ActS_DoOffScreenMisc
 	ret
@@ -254,11 +254,11 @@ ActS_Execute:
 	; Update the offscreen flag (with despawn option removed)
 	call ActS_CheckOffScreenNoDespawn
 	; If the actor is on-screen, return
-	ld   a, [sActSet]
-	cp   a, $02
+	ld   a, [sActSetStatus]
+	cp   a, ATV_ONSCREEN
 	ret  nc
 	; Otherwise force reset the anim
-	xor  a
+	xor  a ; ATV_INACTIVE
 	ld   [sActSetOBJLstId], a
 	ret
 ; =============== ActS_SavePos ===============
@@ -467,8 +467,8 @@ ActS_DoOffScreenMisc:
 	ld   [sActSetOBJLstId], a
 	ret
 .unused_despawn:
-	xor  a
-	ld   [sActSet], a
+	xor  a ; ATV_INACTIVE
+	ld   [sActSetStatus], a
 	ret
 ; =============== ActBGColi_IsSolidOnTop_Coin ===============
 ; Variant of ActBGColi_IsSolidOnTop used for coins only.
@@ -965,8 +965,8 @@ ActS_SaveAllPos:
 	;--
 	; Do this for all 7 actor slots.
 	call ActS_CopyToSet		
-	ld   a, [sActSet]			
-	or   a						; Is this a free slot?
+	ld   a, [sActSetStatus]			
+	or   a 						; Is this a free slot? (!= ATV_INACTIVE?)
 	call nz, ActS_SavePos		; If not, process it
 	call ActS_CopyFromSet
 	;--
@@ -1764,7 +1764,7 @@ ActS_Held:
 ; Forcibly removes the currently held actor from the level.
 ActS_Held_ForceDelete:
 	xor  a
-	ld   [sActSet], a			; Permadespawn
+	ld   [sActSetStatus], a		; Permadespawn
 	ld   [sActHeld], a			
 	ld   [sActSetColiType], a	
 	ret
@@ -3085,11 +3085,11 @@ ActS_DoJumpDead:
 	
 	; Despawn the actor if it ends up offscreen
 	call ActS_CheckOffScreen		; Update offscreen status
-	ld   a, [sActSet]
-	cp   a, $02						; Is the actor visible (and active)?
+	ld   a, [sActSetStatus]
+	cp   a, ATV_ONSCREEN			; Is the actor visible (and active)?
 	ret  nc							; If so, jump
-	xor  a							; Otherwise, permanently despawn it
-	ld   [sActSet], a
+	xor  a ; ATV_INACTIVE			; Otherwise, permanently despawn it
+	ld   [sActSetStatus], a
 	ret
 	
 ; =============== ActS_OnPlColiBelow ===============
@@ -3424,8 +3424,8 @@ ActS_StarKill:
 	srl  a
 	cp   a, $04		; Have we increased the frame 4 times?
 	ret  c			; If not, return
-	xor  a			; Otherwise, despawn the actor
-	ld   [sActSet], a
+	xor  a ; ATV_INACTIVE	; Otherwise, despawn the actor
+	ld   [sActSetStatus], a
 	ret
 
 ; =============== ActS_DashKill ===============
@@ -3472,11 +3472,11 @@ ActS_DashKill:
 	; Note that other code may save it back in the actor layout.
 	; ie: Entering a door before the actor goes off screen "revives" it.
 	call ActS_CheckOffScreen			; Update offscreen status
-	ld   a, [sActSet]
-	cp   a, $02							; Is the actor visible and active?
+	ld   a, [sActSetStatus]
+	cp   a, ATV_ONSCREEN				; Is the actor visible and active?
 	ret  nc								; If so, return
-	xor  a								; Otherwise, mark the slot as free.
-	ld   [sActSet], a
+	xor  a ; ATV_INACTIVE				; Otherwise, mark the slot as free.
+	ld   [sActSetStatus], a
 	ret
 ; =============== ActS_DashKill_Move* ===============
 ; Horizontal movement subroutines for an actor when dash attacked.
@@ -4454,26 +4454,7 @@ ActS_StunDefault_Main:
 	ld   [sActSetY_Low], a
 	
 	; [BUG] This should not be set when the actor is a 10-coin.
-	;       Otherwise, the coin will indefinitely spin in-place.
-	
-	
-;IF FIX_BUGS == 1
-;	;--
-;	ld   b, a				; Save A
-;	ld   a, [sActSetId]
-;	cp   a, ACT_KEY			; Are we holding a key?
-;	jr   z, .noCheck		; If so, skip
-;	ld   a, b				; Restore A
-;		
-;	ld   a, [sActCoinGroundTimer]
-;	cp   a, $78					; Did we stay on the ground for more than $77 frames?
-;	ret  c						; If so, return
-;	xor  a						; Otherwise, despawn the coin
-;	ld   [sActSet], a
-;	;--
-;.noCheck:
-;ENDC
-	
+	;       Otherwise, the coin will indefinitely spin in-place.	
 IF FIX_BUGS == 1
 	ld   bc, SubCall_ActS_DefaultStand		; Set code ptr for key
 	ld   a, [sActSetId]
@@ -5748,11 +5729,11 @@ Act_SnowmanIce:
 	; Permadespawn once it goes off-screen
 	; Again, could have spawned with ACTFLAG_UNUSED_FREEOFFSCREEN
 	call ActS_CheckOffScreen	; Update offscreen status
-	ld   a, [sActSet]
-	cp   a, $02					; Is it visible & active?
+	ld   a, [sActSetStatus]
+	cp   a, ATV_ONSCREEN		; Is it visible & active?
 	jr   nc, .main				; If so, jump
-	xor  a						; Otherwise, free the slot
-	ld   [sActSet], a
+	xor  a ; ATV_INACTIVE		; Otherwise, free the slot
+	ld   [sActSetStatus], a
 	ret
 .main:
 	ld   a, LOW(OBJLstPtrTable_Act_SnowmanIce)
@@ -6268,9 +6249,9 @@ Act_LavaWall:
 	
 	xor  a						; Intangible by default
 	ld   [sActSetColiType], a
-	ld   a, [sActSet]
-	cp   a, $02					; Is the actor not visible? (< $02)
-	jr   c, Act_LavaWall_Main				; If so, skip
+	ld   a, [sActSetStatus]
+	cp   a, ATV_ONSCREEN		; Is the actor not visible? (< $02)
+	jr   c, Act_LavaWall_Main	; If so, skip
 	mActColiMask ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM
 	ld   a, COLI
 	ld   [sActSetColiType], a
@@ -6433,8 +6414,8 @@ Act_LavaWall_SetBlocks:
 	; As soon as the OBJ become aligned to the 8x8 grid, we write the 8x8 tile for a lava block
 	; immediately on the tile to the left.
 	
-	ld   a, [sActSet]
-	cp   a, $02					; Is the actor visible?
+	ld   a, [sActSetStatus]
+	cp   a, ATV_ONSCREEN		; Is the actor visible?
 	jr   c, .nextBlock			; If not, skip
 	
 	;##
@@ -7263,11 +7244,11 @@ Act_GhostGoom_Stun:
 	;--
 	; Permanently despawn the actor once it goes off-screen in this state.
 	call ActS_CheckOffScreen
-	ld   a, [sActSet]
-	cp   a, $02					; Visible & active?
+	ld   a, [sActSetStatus]
+	cp   a, ATV_ONSCREEN		; Visible & active?
 	ret  nc						; If so, return
-	xor  a
-	ld   [sActSet], a
+	xor  a ; ATV_INACTIVE
+	ld   [sActSetStatus], a
 	ret
 	;--
 	
@@ -8278,8 +8259,8 @@ Act_Bomb_WaitExplode:
 	
 ; =============== Act_Bomb_Explode ===============
 Act_Bomb_Explode:
-	ld   a, [sActSet]
-	cp   a, $02							; Is the bomb on-screen?
+	ld   a, [sActSetStatus]
+	cp   a, ATV_ONSCREEN				; Is the bomb on-screen?
 	jr   nz, Act_Bomb_Explode_Offscreen	; If not, jump
 	
 	; When 
@@ -8309,8 +8290,8 @@ Act_Bomb_Explode:
 	ld   a, [sActSetOBJLstId]
 	cp   a, $0F					; Is the animation over?
 	ret  c						; If not, return
-	xor  a						; Otherwise, delete actor
-	ld   [sActSet], a
+	xor  a ; ATV_INACTIVE		; Otherwise, delete actor
+	ld   [sActSetStatus], a
 	ret
 	
 ; =============== Act_Bomb_Explode_Offscreen ===============
@@ -8335,7 +8316,7 @@ Act_Bomb_Explode_Offscreen:
 	;--
 	; [POI] We don't actually get here, since the actor doesn't explode off-screen.
 	xor  a						; Otherwise, delete actor
-	ld   [sActSet], a
+	ld   [sActSetStatus], a
 	ret
 	;--
 	

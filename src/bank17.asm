@@ -2997,8 +2997,8 @@ ActInit_Unused_MoleSpike:
 ; =============== Act_Mole_SpawnSpike ===============
 Act_Mole_SpawnSpike:
 	; Don't spawn the spike if the actor isn't visible
-	ld   a, [sActSet]
-	cp   a, $02
+	ld   a, [sActSetStatus]
+	cp   a, ATV_ONSCREEN
 	ret  nz
 	
 	; Find an empty slot
@@ -3297,7 +3297,7 @@ Act_MoleSpike_Hold:
 	ret
 Act_MoleSpike_Despawn:
 	xor  a
-	ld   [sActSet], a
+	ld   [sActSetStatus], a
 	ret
 	
 ; =============== Act_MoleSpike_Hold_*Path ===============
@@ -3788,7 +3788,7 @@ Act_MoleCutscene_Walk:
 	ret
 .despawn:
 	xor  a
-	ld   [sActSet], a
+	ld   [sActSetStatus], a
 	ret
 	
 ; =============== ActInit_Knight ===============
