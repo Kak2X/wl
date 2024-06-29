@@ -42,7 +42,7 @@ Map_Overworld_BridgeAutoMove:
 ;       it's done immediately before the path starts, so the player has a chance to break it 
 ;       by holding B when the game returns to the overworld.
 ;       This cancels the automatic movement, causing Wario to stay on the Bridge.
-IF FIX_BUGS == 0
+IF !FIX_BUGS
 	xor  a
 	ld   [sMapBridgeAutoMove], a
 ENDC
@@ -167,7 +167,7 @@ Map_OverworldDoWorldClear:
 Map_Overworld_Do:
 	; [BUG] The OBJLst for these are being written before the screen is scrolled.
 	;       This causes them to desync when scrolling the screen.
-IF FIX_BUGS == 0
+IF !FIX_BUGS
 	call HomeCall_Map_MoveMtTeapotLid
 	call HomeCall_Map_Overworld_AnimFlags
 ENDC
@@ -185,7 +185,7 @@ ENDC
 	call Map_Overworld_DoCtrl
 	call Map_Overworld_AnimTiles
 	call Map_WriteWarioOBJLst
-IF FIX_BUGS == 1
+IF FIX_BUGS
 .writeOBJ:
 	call HomeCall_Map_MoveMtTeapotLid
 	call HomeCall_Map_Overworld_AnimFlags
@@ -221,7 +221,7 @@ ENDC
 	call Map_FreeViewCtrl
 	call Map_Overworld_AnimTiles
 	call HomeCall_Map_DrawFreeViewArrows
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	jr   .writeOBJ
 ELSE
 	ret
@@ -240,7 +240,7 @@ ENDC
 	ld   [sMapNextId], a
 	ld   a, SFX1_0A
 	ld   [sSFX1Set], a
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	jr   .writeOBJ
 ELSE
 	ret
@@ -4006,7 +4006,7 @@ Map_OnPathEnd:
 	
 	xor  a								; Use front frame
 	ld   [sMapWarioAnimId], a
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	ld   [sMapBridgeAutoMove], a
 ENDC
 	ld   a, $07							; Set slower anim speed
@@ -5166,7 +5166,7 @@ Map_GetPathCompletionBitPtr:
 	;       or if the broken path control value causes a softlock.
 	
 	ld   a, [sMapPathDirSel]
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	bit  KEYB_RIGHT, a
 	jr   nz, .right
 ENDC

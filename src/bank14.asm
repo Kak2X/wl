@@ -453,7 +453,7 @@ Map_WriteMtTeapotLidOBJLst:
 ; the difference is added to the lid's coordinates.
 Map_MtTeapotLidUpdateCoords:
 
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	; This does the same thing, without the listed bug below
 	mMap_UpdateOBJCoords sMapMtTeapotLidY
 ELSE
@@ -511,7 +511,7 @@ Map_MtTeapotLidSetPos2:
 	; Do the same for the X pos
 	ld   a, $55						; Absolute X Value
 	; [BUG] Wrong value here too
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	ld   hl, sMapScrollX
 ELSE
 	ld   hl, rSCX
@@ -2180,7 +2180,7 @@ Map_Unused_SyrupCastle_WaveTbl:
 
 Map_SyrupCastle_DoWaveEffect:
 
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	ldh  a, [rLY]						; C = LY elapsed
 	cp   a, $80							; < 0?
 	jr   nc, Map_SyrupCastle_DoWaveEffect	; If so, wait since we're still in VBlank

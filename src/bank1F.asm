@@ -1023,7 +1023,7 @@ Ending_DoWaveEffect:
 .loop:
 	; [BUG] There's no HBlank check anywhere here, which causes the wave effect to be imprecise,
 	;       since LY may change in the middle of the loop.
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	mWaitForHBlank
 ENDC
 	
@@ -1100,7 +1100,7 @@ ENDC
 
 	; If we've reached the end of the frame, wait in that subroutine.
 	ldh  a, [rLY]
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	cp   a, LY_VBLANK-$01
 ELSE
 	cp   a, LY_VBLANK+$06

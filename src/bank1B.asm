@@ -89,7 +89,7 @@ Act_Lamp:
 	dw Act_Lamp_Hold
 	dw Act_Lamp_Thrown
 	dw Act_Lamp_HeldNoThrow
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	dw Act_Lamp_InitMain
 ENDC
 	
@@ -179,7 +179,7 @@ Act_Lamp_Fall:
 	mActOBJLstPtrTable OBJLstPtrTable_Act_Lamp_Idle
 	ret
 	
-IF FIX_BUGS == 1
+IF FIX_BUGS
 ; =============== Act_Lamp_InitMain ===============
 ; Mode $08: Prepares the jump to the idle mode.
 Act_Lamp_InitMain:
@@ -654,7 +654,7 @@ Act_LampSmoke_Move:
 	ld   a, [sActSetTimer2]		; Timer2++
 	inc  a
 	ld   [sActSetTimer2], a		
-IF FIX_BUGS == 1	
+IF FIX_BUGS	
 	cp   a, $10					; Timer2 > $40?
 ELSE
 	cp   a, $40					; Timer2 > $40?
@@ -1609,14 +1609,14 @@ Act_SyrupCastleBoss_Intro_ShowSmoke:
 Act_SyrupCastleBoss_Intro_LoadGenie:
 	ld   a, $B4
 	ld   [sPlFreezeTimer], a
-IF FIX_BUGS == 0
+IF !FIX_BUGS
 	ld   a, LAMPSMOKE_RTN_HIDE
 	ld   [sActLampSmokeRoutineId], a
 ENDC
 	; This is the only real point this lamp mode is used.
 	; It could have been avoided by placing the lamp aligned to solid ground.
 	; [BUG] This also causes the lamp to tilt for 2 frames, though it's barely visible.
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	ld   a, LAMP_RTN_INITMAIN
 ELSE
 	ld   a, LAMP_RTN_FALL
@@ -3212,7 +3212,7 @@ Act_SyrupCastleBoss_LoadGFXGenieAndDoWaveEffect:
 	
 	; [BUG] Same bug as Act_SyrupCastleBoss_DoWaveEffectSoft about the lack of HBlank checks.
 .loop:
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	mWaitForNewHBlank
 ENDC
 	;--
@@ -3244,7 +3244,7 @@ ENDC
 	
 	; If we aren't in VBlank yet, execute the effect again.
 	ldh  a, [rLY]
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	cp   a, LY_VBLANK-1		
 	jr   c, .loop
 ELSE
@@ -3300,7 +3300,7 @@ Act_SyrupCastleBoss_DoWaveEffectSoft:
 	;       the loop check to avoid waiting for HBlank during VBlank (which would freeze the game).
 	;		LY_VBLANK-1 is a good value to account for any inaccuracies.
 .loop:
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	mWaitForNewHBlank
 ENDC
 	; Calculate the *scanline-based* table index for this specific row.
@@ -3347,7 +3347,7 @@ ENDC
 	
 	; If we aren't in VBlank yet, execute the effect again.
 	ldh  a, [rLY]
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	cp   a, LY_VBLANK-1		
 	jr   c, .loop
 ELSE
@@ -3371,7 +3371,7 @@ Act_SyrupCastleBoss_DoWaveEffect_WaitEndFrame:
 	ldh  a, [rLY]		
 	cp   a, LY_VBLANK+1		
 	; [BUG] This makes no sense. Was it supposed to be "jr c" instead?
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	jr   c, .wait
 ELSE
 	jr   z, .wait

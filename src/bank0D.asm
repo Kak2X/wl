@@ -56,10 +56,10 @@ Pl_SwitchToJump:
 	ld   [sPlAnimTimer], a
 	; [BUG] Resetting the jump table index allows you to start a new jump while in the air.
 	;       This isn't correct since this is called when already in the air.
-IF FIX_FUN_BUGS == 0
+IF !FIX_FUN_BUGS
 	ld   [sPlJumpYPathIndex], a
 ENDC
-IF IMPROVE == 0
+IF !IMPROVE
 	ld   [sPlMovingJump], a
 ENDC
 	ld   [sPlGroundDashTimer], a
@@ -537,7 +537,7 @@ Demo_GetInput:
 	
 	; Index the current table entry (already multiplied by 2)
 	ld   a, [sDemoInputOffset] 
-IF SKIP_JUNK == 0
+IF !SKIP_JUNK
 	add  l
 	ld   l, a					; L = Current Entry
 ELSE
@@ -868,7 +868,7 @@ Game_DoScreenShake:
 	xor  a						; End the screen shake effect
 	ld   [sPlScreenShake], a
 	
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	ret
 ELSE
 	;--
@@ -974,7 +974,7 @@ Pl_DoCtrl:
 ; =============== Pl_DoCtrl_Stand ===============
 Pl_DoCtrl_Stand:
 
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	ld   a, [sPlActSolid]
 	and  a								; Standing on a solid actor?
 	call z, Level_Scroll_CheckSegScroll	; If not, call
@@ -1404,7 +1404,7 @@ Pl_SetGrab2Action:
 	ld   [sPlAnimTimer], a
 	
 	; Pick the correct player anim depending on big/small status
-IF FIX_BUGS == 1
+IF FIX_BUGS
 		ld   a, [sSmallWario]	
 		and  a					; Are we small Wario?
 		jr   nz, .plSmall		; If so, jump
@@ -1480,7 +1480,7 @@ Pl_DoCtrl_Walk_CheckMain:
 	; Start a (moving) jump when pressing A
 	ldh  a, [hJoyNewKeys]
 	bit  KEYB_A, a
-IF IMPROVE == 1
+IF IMPROVE
 	jp   nz, Pl_StartJump
 ELSE
 	jp   nz, Pl_StartMovingJump
@@ -1774,7 +1774,7 @@ Pl_DoCtrl_Climb:
 	call Pl_AnimClimb
 	
 	
-IF FIX_FUN_BUGS == 1
+IF FIX_FUN_BUGS
 	; Reorganized to work with the ladder body being set as COLI_EMPTY.
 	
 	; Even when not moving, always check what we're over
@@ -1817,7 +1817,7 @@ ENDC
 	jp   Pl_SwitchToStand
 	
 .noVMove:
-IF FIX_FUN_BUGS == 1
+IF FIX_FUN_BUGS
 	; Reorganized to work with the ladder body being set as COLI_EMPTY.
 	
 	; Even when not moving, always check what we're over
@@ -1855,7 +1855,7 @@ ENDC
 	jp   nz, Pl_AirMoveRight
 	jp   Pl_AirMoveLeft
 	
-IF IMPROVE == 0
+IF !IMPROVE
 	; =============== Pl_StartMovingJump ===============
 	; This subroutine starts a jump from the ground when walking.
 	; This one sets a flag that allows horizontal movement by just holding A,
@@ -1942,7 +1942,7 @@ Pl_StartJetDashWater:
 	xor  a						; Unmark the ground swim action
 	ld   [sPlSwimGround], a
 	
-IF IMPROVE == 0
+IF !IMPROVE
 	; If there isn't a solid block above, jet dashing moves the player upwards by 2px.
 	; This is very likely done to (badly) mask a collision bug which is easy to fix anyway.
 	ld   a, $01
@@ -2513,7 +2513,7 @@ Pl_DoCtrl_Jump:
 	call PlBGColi_CheckLadderLow	
 	and  a					; Colliding with a ladder block?
 	jr   z, .main			; If not, jump
-IF IMPROVE == 0
+IF !IMPROVE
 	xor  a					; If so, end the jump
 	ld   [sPlMovingJump], a
 ENDC
@@ -2534,7 +2534,7 @@ ENDC
 	bit  KEYB_LEFT, a
 	jp   nz, Pl_AirMoveLeft
 	
-IF IMPROVE == 1
+IF IMPROVE
 	; Moving jumps suck
 	ret
 ELSE
@@ -2632,7 +2632,7 @@ Pl_DoCtrl_HardBumpGround:
 	; [BUG] This doesn't explicitly set the OBJLst frame to OBJ_WARIO_DUCKWALK.
 	;       Because of this, when holding LEFT/RIGHT after a ground bump,
 	;		the game does Anim2Frame with incorrect frames. (alternates between OBJ_WARIO_BUMPAIR and OBJ_WARIO_SWIM2)
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	ld   a, OBJ_WARIO_DUCKWALK
 	ld   [sPlLstId], a
 ENDC
@@ -2944,7 +2944,7 @@ Pl_JumpSubY2:
 	ld   c, b				; Save for later
 	call PlBGColi_DoTop		; Handle top collision
 	cp   a, COLI_WATER		; Is there a water/sand block?
-IF IMPROVE == 1
+IF IMPROVE
 	jr   z, .startSwim
 ELSE
 	jp   z, Pl_SwitchToSwim	; If so, try to swim on it (not that it works)
@@ -2975,7 +2975,7 @@ ENDC
 	inc  a
 	ld   [sPlJumpYPathIndex], a
 	ret
-IF IMPROVE == 1
+IF IMPROVE
 .startSwim:
     ;ld   a, [sPlSand]
 	;and  a						; Did we hit a sand block?
@@ -3049,7 +3049,7 @@ Pl_JumpAddY:
 	jr   z, .setAnim
 	
 	xor  a
-IF IMPROVE == 0
+IF !IMPROVE
 	ld   [sPlMovingJump], a
 ENDC
 	ld   [sPlJumpYPathIndex], a
@@ -3067,7 +3067,7 @@ ENDC
 	ld   a, SFX1_21				; Play SFX
 	ld   [sSFX1Set], a
 	xor  a								; Reset vars
-IF IMPROVE == 0
+IF !IMPROVE
 	ld   [sPlMovingJump], a
 ENDC
 	ld   [sPlJumpYPathIndex], a
@@ -3095,12 +3095,12 @@ ENDC
 	; [BUG] This doesn't take into account the "standing on actor" flag.
 	;       As a result, ground pounding on a solid actor (ie: coin lock) near the top of the screen
 	;		will cause the screen to scroll upwards, which is wrong.
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	ld   a, [sPlActSolid]
 	and  a									; Standing on a solid actor?
 	call z, Level_Scroll_CheckSegScroll		; If not, call
 ELSE
-	IF OPTIMIZE == 1
+	IF OPTIMIZE
 		call Level_Scroll_CheckSegScroll
 	ELSE
 		call Level_Scroll_CheckSegScrollAlt
@@ -3128,7 +3128,7 @@ ENDC
 	;       to destroy all of them in one go. At most, three blocks can be destroyed.
 	;
 	;    Pl_SwitchToStand2 should be called instead.
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	jp   Pl_SwitchToStand2
 ELSE
 	jp   Pl_SwitchToStand
@@ -3225,7 +3225,7 @@ Pl_SwitchToSwim:
 	cp   a, PL_ACT_DEAD
 	ret  z
 	;--
-IF IMPROVE == 0
+IF !IMPROVE
 	xor  a
 	ld   [sPlMovingJump], a
 ENDC
@@ -3528,7 +3528,7 @@ Pl_SwitchToDashRebound:
 	ld   [sPlLstId], a
 	xor  a
 	ld   [sPlBumpYPathIndex], a
-IF IMPROVE == 0
+IF !IMPROVE
 	ld   [sPlMovingJump], a
 ENDC
 	ld   [sPlJetDashTimer], a
@@ -3601,7 +3601,7 @@ Pl_DoCtrl_DashRebound:
 	ret  z							; don't actually move
 	call Level_ScreenLock_DoLeft
 	ld   b, $01						; Otherwise move left by 1px
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	ld   a, [sPlXRel]			
 	cp   a, $00+$08					; sPlXRel < $08?
 	jr   c, .screenL				; If so, also move the screen
@@ -3616,7 +3616,7 @@ ENDC
 	ret  nz
 	call Level_ScreenLock_DoRight
 	ld   b, $01
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	ld   a, [sPlXRel]
 	cp   a, SCREEN_H 				; sPlXRel >= $A0?
 	jr   nc, .screenR				; If so, move thr screen too
@@ -3624,7 +3624,7 @@ ENDC
 	call Pl_MoveRightStub
 	ret
 	
-IF FIX_BUGS == 1
+IF FIX_BUGS
 .screenL:
 	call Pl_MoveLeftWithScreen
 	ret
@@ -3646,7 +3646,7 @@ ENDC
 	; Check for ground collision type
 	ld   c, b
 	
-IF FIX_FUN_BUGS == 1
+IF FIX_FUN_BUGS
 	; [BUG] Part of a bugfix to prevent walking normally after jetdashing on sand.
 	;       Unlike elsewhere, we don't need to check if we're underwater,
 	;       since we can't dash rebound to begin with in that case.
@@ -3664,7 +3664,7 @@ ENDC
 	jr   nz, .chkLandSolid		; If not (solid block), jump
 	
 	; FIX_FUN_BUGS makes ladder blocks of type COLI_EMPTY, so this needs to be moved here
-IF FIX_FUN_BUGS == 1
+IF FIX_FUN_BUGS
 .chkLadderAsEmpty:
 	; Special case for ladder collision
 	ld   a, [sPlBGColiLadderType]
@@ -3701,7 +3701,7 @@ ENDC
 	and  a
 	ret  nz
 	
-IF FIX_FUN_BUGS == 1
+IF FIX_FUN_BUGS
 	ld   a, [sTmp_A9EE]			; A = Block ID | Restored
 	; [BUG] Fixes ground walking when descending on water.
 	; If we're over a water block, switch to the swim action .
@@ -3739,7 +3739,7 @@ ENDC
 	xor  a
 	ld   [sPlBumpYPathIndex], a
 	ld   [sPlJumpYPathIndex], a
-IF OPTIMIZE == 1
+IF OPTIMIZE
 	call Level_Scroll_CheckSegScroll
 ELSE
 	call Level_Scroll_CheckSegScrollAlt
@@ -3923,7 +3923,7 @@ Pl_DoCtrl_DashJet:
 	;       This is noticeable when jet dashing on quicksand while on the ground,
 	;       since it will let you walk normally on sand. 
 	;       (this needs to be added elsewhere too, like when rebounding off a wall or when descending)
-IF FIX_FUN_BUGS == 1
+IF FIX_FUN_BUGS
 	; Dashing on sand doesn't set sPlWaterAction, so check for the block ID directly
 	call PlBGColi_GetBlockIdLow	; A = Block ID we're over
 	cp   a, BLOCKID_SAND		; Is it a sand block?
@@ -3950,7 +3950,7 @@ ENDC
 	; [BUG] This should check for sPlWaterAction, but it doesn't.
 	;       While partially masked by the game moving the player upwards on underwater jet dashes,
 	;		this allows you to walk normally on ground by making the ground check below detect solid.	
-IF FIX_FUN_BUGS == 1
+IF FIX_FUN_BUGS
 	ld   a, [sPlWaterAction]
 	and  a						; Were we in water?
 	jp   nz, Pl_SwitchToSwim	; If so, switch back to the swim action
@@ -4326,7 +4326,7 @@ Pl_MoveLeftChkSpeed:
 	;		You're meant to always move at normal speed in that state, even when carrying an heavy actor.
 	;		As a result you move right faster than moving left (when holding an heavy actor).
 	
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	; Bull Wario walks at normal speed, even when holding heavy actors
 	ld   a, [sPlPower]
 	cp   a, PL_POW_BULL
@@ -4620,7 +4620,7 @@ Pl_JumpAnim:
 	; Otherwise, keep ducking
 	ld   a, $01
 	ld   [sPlDuck], a
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	jr   .setDuck
 ELSE
 	jr   .setJump	; ...and the bug. Should have jumped to .setDuck
@@ -5004,7 +5004,7 @@ Pl_SwitchToStand:
 	ld   [sPlDuck], a
 	ld   [sPlGroundDashTimer], a
 	ld   [sPlJetDashTimer], a
-IF IMPROVE == 0
+IF !IMPROVE
 	ld   [sPlMovingJump], a
 ENDC
 	ld   [sHighJump], a
@@ -5047,7 +5047,7 @@ Pl_SwitchToStand2:
 	; This isn't very nice (but you can still trigger this anyway since they forgot to account for this in the ground pound...)
 	ld   a, [sPlActSolid]
 	and  a									; Standing on a solid actor?
-IF OPTIMIZE == 1
+IF OPTIMIZE
 	call z, Level_Scroll_CheckSegScroll	; If not, call
 ELSE
 	call z, Level_Scroll_CheckSegScrollAlt	; If not, call
@@ -5158,7 +5158,7 @@ Level_Scroll_CheckSegScroll:
 ; OUT
 ; - A: Scroll direction value
 Level_Scroll_SegScrollDown:
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	ld   a, [sLvlScrollLevel]
 	dec  a
 ELSE
@@ -5182,7 +5182,7 @@ ENDC
 ; OUT
 ; - A: Scroll direction value
 Level_Scroll_SegScrollUp:
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	ld   a, [sLvlScrollLevel]
 	inc  a
 ELSE
@@ -5226,7 +5226,7 @@ Level_Scroll_SegScrollNoChange:
 	ret
 	
 ; Since it's a duplicate subroutine, it can be removed.
-IF OPTIMIZE == 0
+IF !OPTIMIZE
 ; =============== Level_Scroll_CheckSegScrollAlt ===============
 ; Checks if the screen should be scrolled up or down in SEGSCRL mode.
 ; This is identical to Level_Scroll_CheckSegScroll, but is only called after a few actions (like ending a jump).
@@ -6341,7 +6341,7 @@ PlActColiMask_CheckType_Norm:
 	; When jumping on an actor, setup a new normal jump by switching to the "Actor Jump" action.
 	;
 	
-IF IMPROVE == 0
+IF !IMPROVE
 	; Stop any existing "moving jump"
 	xor  a
 	ld   [sPlMovingJump], a
@@ -8972,7 +8972,7 @@ Level_AnimTiles:
 	ld   a, [sGameMode]				
 	cp   a, GM_LEVEL 				; Are we in normal gameplay?
 	jr   z, .animTiles				; If so, animate the tiles
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	cp   a, GM_LEVELENTRANCE 		; Are we exiting the level from the entrance door?
 	jr   z, .animTiles				; If so, animate the tiles
 ENDC

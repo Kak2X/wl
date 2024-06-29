@@ -705,7 +705,7 @@ ActInit_Wolf:
 	;		When it turns, or switches to the "knife throwing" mode, collision fixes itself.
 	;		After the knife is thrown, again it becomes completely safe to touch.
 	;		It isn't a big deal, since this enemy generally switches to the "knife throwing" mode fast enough when the player gets close.
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	ld   a, [sActSetDir]
 	bit  DIRB_R, a
 	jr   nz, .coliR
@@ -2267,7 +2267,7 @@ OBJLstPtrTable_Act_PenguinSpikeBall_MoveL:
 ; [BUG] This is identical to MoveL, but it should have been in reverse-order.
 ;		It's barely noticeable anyway.
 OBJLstPtrTable_Act_PenguinSpikeBall_MoveR:
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	dw OBJLst_Act_PenguinSpikeBall4
 	dw OBJLst_Act_PenguinSpikeBall3
 	dw OBJLst_Act_PenguinSpikeBall2
@@ -4365,7 +4365,7 @@ Act_SpikeBall_CheckDrop:
 	and  a, $F0
 	ld   [sActSetY_Low], a
 	; [BUG] Where does this come from? Aligning to the Y boundary is enough.
-IF FIX_BUGS == 0
+IF !FIX_BUGS
 	ld   bc, -$05	
 	call ActS_MoveDown
 ENDC
@@ -4583,7 +4583,7 @@ Act_CoinCrab_ExitSand:
 	
 	; [BUG] ActS_IncOBJLstIdEvery8 is not called here.
 	;       This makes unused the second frame of OBJLstPtrTable_Act_CoinCrab_Dust.
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	call ActS_IncOBJLstIdEvery8
 ENDC
 	
@@ -5231,7 +5231,7 @@ Act_Thunder:
 	;       To fix this, sActSetRoutineId should be reset before calling SubCall_ActHeldOrThrownActColi_Do
 	ld   a, ACTRTN_03
 	ld   [sActHeldColiRoutineId], a
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	xor  a
 	ld   [sActSetRoutineId], a
 ENDC

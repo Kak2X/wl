@@ -744,7 +744,7 @@ Act_RiceBeachBoss_SetDead:
 	ld   [sSFX1Set], a
 	ld   a, BGM_NONE
 	ld   [sBGMSet], a
-IF OPTIMIZE == 0
+IF !OPTIMIZE
 	call ActS_DespawnAllNormExceptCur_Broken
 ENDC
 	mActOBJLstPtrTableByDir OBJLstPtrTable_Act_RiceBeachBoss_DeadL, OBJLstPtrTable_Act_RiceBeachBoss_DeadR
@@ -1943,7 +1943,7 @@ Act_ParsleyWoodsBoss_SetDead:
 	ld   a, BGM_NONE
 	ld   [sBGMSet], a
 	
-IF OPTIMIZE == 0
+IF !OPTIMIZE
 	call ActS_DespawnAllNormExceptCur_Broken
 ENDC
 	
@@ -2453,7 +2453,7 @@ ActInit_StoveCanyonBoss:
 	ld   [sActSetColiBoxR], a
 	
 	; Setup main code
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	ld   bc, SubCall_ActInit2_StoveCanyonBoss
 	call ActS_SetCodePtr
 ELSE
@@ -2552,7 +2552,7 @@ ENDC
 	ld   c, $40					; Move 4 blocks down, since the intro has it move up from off-screen
 	call Act_StoveCanyonBoss_MoveDown
 	call Act_StoveCanyonBoss_CopyPosToSync
-IF FIX_BUGS == 0
+IF !FIX_BUGS
 	; [BUG] Like with the SSTeacup boss, this should have been done in a separate frame.
 	call Act_StoveCanyonBoss_BGWrite_Body
 ENDC
@@ -2563,7 +2563,7 @@ ENDC
 	ld   [sPlFreezeTimer], a
 	ret
 	
-IF FIX_BUGS == 1
+IF FIX_BUGS
 ; =============== ActInit2_StoveCanyonBoss ===============
 ActInit2_StoveCanyonBoss:
 	call Act_StoveCanyonBoss_BGWrite_Body
@@ -2613,7 +2613,7 @@ Act_StoveCanyonBoss:
 	;       SCBOSS_RTN_DEAD should have been excluded, or at least jumped to Act_StoveCanyonBoss_DoHitFlash instead.
 	ld   a, [sActLocalRoutineId]
 	cp   a, SCBOSS_RTN_DEAD
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	jr   z, .onDead
 ELSE
 	jp   z, Act_StoveCanyonBoss_Dead
@@ -2640,7 +2640,7 @@ ENDC
 	dw Act_StoveCanyonBoss_Main;X
 	dw Act_StoveCanyonBoss_Main
 	dw Act_StoveCanyonBoss_CheckThrown
-IF FIX_BUGS == 1
+IF FIX_BUGS
 .onDead:
 	call Act_StoveCanyonBoss_DoHitFlash
 	jp   Act_StoveCanyonBoss_Dead
@@ -3100,7 +3100,7 @@ Act_StoveCanyonBoss_SwitchToDead:
 	ld   [sSFX1Set], a
 	ld   a, BGM_NONE
 	ld   [sBGMSet], a
-IF OPTIMIZE == 0
+IF !OPTIMIZE
 	call ActS_DespawnAllNormExceptCur_Broken
 ENDC
 	ret
@@ -3513,7 +3513,7 @@ Act_StoveCanyonBossEyes:
 	;       to move the eyes to the right, which is definitely wrong.
 	sub  a, $1E
 	cp   a, b				; ActX - $1E < PlX?
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	jr  nc, .eyesL			; If so, jump
 ELSE
 	jr   c, .eyesR			; If so, jump
@@ -3529,7 +3529,7 @@ ENDC
 	; (add an extra $1E back to account for the one subtracted before)
 	add  $1E+$1E			; A = ActX + $1E
 	cp   a, b				; ActX + $1E > PlX?
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	jr   c, .eyesR			; If so, jump
 ELSE
 	jr   nc, .eyesL			; If so, jump
@@ -3670,7 +3670,7 @@ Act_StoveCanyonBossTongue_Disabled:
 	;        The enable tongue option is meant to be set only by the boss itself.
 	;        If we change it here, it will be set back to $00 by the boss code,
 	;        meaning it ends up opening the mouth only for a few frames.
-IF FIX_BUGS == 0
+IF !FIX_BUGS
 	ld   a, [sActSetTimer]
 	and  a, $FF
 	jr   z, Act_StoveCanyonBossTongue_SwitchToEnabled
@@ -4410,7 +4410,7 @@ Act_Floater_MoveUp:
 	pop  af
 	; [BUG] While it *almost* doesn't matter, this should have really used ActBGColi_IsSolid.
 	;       This makes it impossible to travel through platforms.
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	mSubCall ActBGColi_IsSolid
 ELSE
 	mSubCall ActBGColi_IsSolidOnTop
@@ -4781,7 +4781,7 @@ ActInit_KeyLock:
 	;		What this means is that, after unlocking the lock and respawning the actor,
 	;		the opened lock will be placed slightly higher than it should be.
 	;		This should have been -$19.
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	ld   bc, -$19				; Move lock out of the way
 ELSE
 	ld   bc, -$20				; Move lock out of the way

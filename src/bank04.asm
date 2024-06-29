@@ -398,7 +398,7 @@ Sound_DoCurrentSFX4:
 	; [TCRF] Handler for invalid SFX4 requests.
 .invalid:
 	xor  a
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	ld  [sSFX4], a ; [BUG] should have been sSFX4 instead
 ELSE
 	ld  [$420B], a ; [BUG] should have been sSFX4 instead
@@ -2312,7 +2312,7 @@ Sound_DoBGMPitchCmd_SetPitchBend:
 	ld   a, [sBGMPPCmdPitchIndex]	; Was the timer initialized?
 	and  a
 	jr   nz, .hasTimer				; If so, jump
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	ld   a, $10
 ELSE
 	ld   a, $11						; [BUG] Taking the 'dec a' into account, this initializes it to $10

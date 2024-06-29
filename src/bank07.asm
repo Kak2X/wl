@@ -305,7 +305,7 @@ ENDR
 	;
 	;		Though this can only be triggered if the key isn't thrown -- picking
 	;		the key up corrects this problem.
-IF FIX_BUGS == 1 
+IF FIX_BUGS 
 	ld   a, [sActHeldId]
 	cp   a, ACT_KEY			; Are we holding a key?
 	jr   z, .keyObj			; If so, jump

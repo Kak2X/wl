@@ -285,7 +285,7 @@ LevelSelect_Do:
 	jr   z, .writeLevelNum
 	;--
 	ld   a, [hl]			; 
-IF TEST == 0
+IF !TEST
 	cp   a, LVL_LASTVALID	; Are we on the last valid level id?
 	ret  z					; if so, don't increase it more
 ENDC
@@ -301,7 +301,7 @@ ENDC
 	jr   z, .writeLevelNum
 	;--
 	ld   a, [hl]
-IF TEST == 0
+IF !TEST
 	and  a					; Are we on the level Id $00?
 	ret  z					; If so, don't decrement it further
 ENDC
@@ -428,7 +428,7 @@ Mode_LevelInit_StartLevel:
 	ld   [sParallaxX1], a
 	ret  
 
-IF FIX_BUGS == 1
+IF FIX_BUGS
 ; =============== Game_CalcPlRelPos ===============
 ; Calculates the player's relative Y position, used for actor collision.
 ; This "fixes" a chicken/egg problem related to PlActColi_LoopSearch using outdated values.
@@ -495,7 +495,7 @@ Mode_Level:
 	; [BUG] This is using outdated sLvlScroll* values, which makes the sprites desync when scrolling the screen.
 	;       It should only be done after Level_Screen_ScrollHorz and Level_Screen_ScrollVert are called.
 	
-IF FIX_BUGS == 1
+IF FIX_BUGS
 
 	ld   a, [sPlHatSwitchTimer]
 	and  a
@@ -545,7 +545,7 @@ ENDC
 	and  a
 	jr   nz, Game_UpdateScreen
 
-IF FIX_BUGS == 0
+IF !FIX_BUGS
 	call HomeCall_PlActColi_Do 	
 	call Level_Screen_ScrollHorz
 	call Level_Screen_ScrollVert
@@ -1062,7 +1062,7 @@ Mode_LevelClear_InitCourseClr:
 	xor  a
 	ld   [sScrollX], a		; X Scroll = $00
 	ldh  [rSCX], a			; 
-	IF FIX_BUGS == 1
+	IF FIX_BUGS
 		ld   [sScrollYOffset], a
 	ENDC
 	ld   a, $08				; Y Scroll = $08
@@ -3057,7 +3057,7 @@ Mode_Ending_HatSwitch:
 	
 	; [BUG] The hat switch leaves us in the wrong animation frame.
 	;       It should be set to OBJ_WARIO_IDLE0 now.
-	IF FIX_BUGS == 1
+	IF FIX_BUGS
 		ld   a, OBJ_WARIO_IDLE0
 		ld   [sPlLstId], a
 	ENDC
@@ -3221,7 +3221,7 @@ Mode_Ending_WalkToReload:
 ; Sets up the fade-out.
 Mode_Ending_WaitReload:
 	call HomeCall_NonGame_WriteWarioOBJLst
-IF OPTIMIZE == 0
+IF !OPTIMIZE
 	call Game_SetFinalBossDoorPtr
 ENDC
 	ld   a, [sSubMode]	; Next mode
@@ -3560,7 +3560,7 @@ Ending_TrRoom_WaitNear:
 	; - Duck (treasure in row 3)
 	;
 	; [BUG] Standing frame seems odd for this. Shouldn't it be OBJ_WARIO_HOLDJUMP?
-	IF FIX_BUGS == 1
+	IF FIX_BUGS
 		ld   a, OBJ_WARIO_HOLDJUMP
 	ELSE
 		ld   a, OBJ_WARIO_HOLD			; Set norm. frame initially
@@ -7067,7 +7067,7 @@ Level_Screen_ScrollHorz:
 	;       This should really have only blacklisted the "rebound from wall" action ($0C)
 	;		instead of whitelisting only the standing action.
 	ld   a, [sPlAction]
-	IF FIX_BUGS == 1
+	IF FIX_BUGS
 		cp   a, PL_ACT_DASHREBOUND	; Are we rebounding off a wall?
 		ret  z						; If so, return (don't scroll)
 		cp   a, PL_ACT_DEAD			; Are we dead?
@@ -7104,7 +7104,7 @@ Level_Screen_ScrollHorz:
 	cp   a, $70				; If < $70, don't scroll
 	ret  c
 	ret  z					; Otherwise scroll right
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	jp   .scrollR
 ELSE
 	jr   .scrollR
@@ -8349,7 +8349,7 @@ Game_HatSwitchAnim_End:
 	ld   [sSmallWario], a
 .chkBump:
 
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	; If we're underwater, mark that we were performing an action (to avoid spawning a water splash)
 	ld   a, [sPlAction]
 	cp   a, PL_ACT_SWIM			; Are we swimming?
@@ -8407,7 +8407,7 @@ ENDC
 ; Sets of subroutines for updating the player sprite, when the powerup switch
 ; involves Small Wario somewhere.
 
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	; Account for collecting a powerup while climbing.
 Game_HatSwitch_SetNormLstId:
 	ld   a, [sPlAction]
@@ -8460,7 +8460,7 @@ Game_HatSwitchAnim_EndSwitchLoop:
 ; for setting the primary set of hat GFX.
 
 
-IF FIX_BUGS == 1
+IF FIX_BUGS
 
 ; =============== mSetMainHatMode*HatMode ===============
 ; Generates code for versions of Game_HatSwitch_Set*HatMode that account for collecting a powerup while climbing.
@@ -8514,7 +8514,7 @@ Game_HatSwitchAnim_SetHatSecToEnd:
 	
 	; [POI] This is not necessary to do.
 	;       Game_HatSwitchAnim_End already redraws both primary and secondary sets for us later on.
-IF FIX_BUGS == 0
+IF !FIX_BUGS
 	ld   a, [sScreenUpdateMode]
 	add  $04 ; SCRUPD_NORMHAT_SEC - SCRUPD_NORMHAT, ...
 	ld   [sScreenUpdateMode], a
@@ -8537,7 +8537,7 @@ Game_HatSwitchAnim_FromDragon:
 	jr   z, .toBull
 	cp   a, PL_POW_GARLIC
 	jr   z, .toGarlic
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	; with the fixes above, some jr's go out of range...
 .toSmall: 	mHatSwitch_BigToSmall2Ex 	Game_HatSwitch_SetNormLstId, 	Game_HatSwitch_SetSmallLstId,   jp,jr,jp,jp,jp
 .toGarlic: 	mHatSwitch_BigToBigEx 		Game_HatSwitch_SetDragHatMode, 	Game_HatSwitch_SetNormHatMode,  jp,jr,jp,jp,jp ; Ending-only
@@ -9551,7 +9551,7 @@ SaveSel_EnterPipe:
 	call SaveSel_CopyAllFromSave
 	; [BUG?] The fade out isn't heard properly
 	; since it switches game modes and the music gets cut off
-IF FIX_BUGS == 0
+IF !FIX_BUGS
 	ld   a, BGMACT_FADEOUT
 	ld   [sBGMActSet], a
 ENDC

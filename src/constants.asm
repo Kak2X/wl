@@ -887,7 +887,7 @@ DEF LAMP_RTN_MAIN                            EQU $04 ; Main idle
 DEF LAMP_RTN_HOLD                            EQU $05 ; Holding the lamp
 DEF LAMP_RTN_THROW                           EQU $06 ; Throwing it
 DEF LAMP_RTN_HELDNOTHROW                     EQU $07 ; Ending reload
-IF FIX_BUGS == 1                         
+IF FIX_BUGS                         
 DEF LAMP_RTN_INITMAIN                        EQU $08 ; Custom - switch to $04
 ENDC                                     
                                              

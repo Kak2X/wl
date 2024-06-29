@@ -32,7 +32,7 @@ DynJump:
 	ld   d, $00
 	add  hl, de		; Index the pointer table (HL += Index*2)
 	
-IF OPTIMIZE == 0
+IF !OPTIMIZE
 	; Store the resulting address to HL (using DE as temp reg)
 	ld   e, [hl]	
 	inc  hl
@@ -279,11 +279,10 @@ GameInit:
 	xor  a					
 	ldh  [hJoyNewKeys], a
 	
-	
-IF DEBUG == 1
-		; Auto enable debug mode
-		inc  a
-		ld   [sDebugMode], a
+IF DEBUG
+	; Auto enable debug mode
+	inc  a
+	ld   [sDebugMode], a
 ENDC
 	ei						; Enable the interrupts just before entering the main loop
 	
@@ -336,7 +335,7 @@ MainLoop:
 	;.vBlankDone:
 	;
 .waitVBlank:
-IF OPTIMIZE == 0
+IF !OPTIMIZE
 	ldh  a, [hVBlankDone]
 	and  a
 	jr   z, .waitVBlank
@@ -549,7 +548,7 @@ Save_CopyAllToSave:
 	ld   [sNoReset], a
 	ret
 	
-IF OPTIMIZE == 0
+IF !OPTIMIZE
 ; =============== Game_SetFinalBossDoorPtr ===============
 ; Forces the last entered door to be the final boss door.
 ; [POI] What's the point of this again?
@@ -773,7 +772,7 @@ ExActS_CopySet2ToSet:
 ; OUT
 ; - A: Course number in BCD format
 GetCourseNum:
-IF OPTIMIZE == 1
+IF OPTIMIZE
 		ld   a, [sLevelId]
 		ld   c, a
 		ld   b, $00
@@ -1398,7 +1397,7 @@ ENDR
 	;        this does not account for going into the loopback area.
 	;		 The Y and X positions are assumed to be in range, so they don't get and'ed unlike other places.
 	
-IF FIX_BUGS == 1
+IF FIX_BUGS
 		ld   a, [sPlY_High]		; Y: High nybble	
 		and  a, $01				; (2 sectors max - $200 height)		
 		swap a					; << 4
@@ -1587,14 +1586,14 @@ Pl_SwitchToActBumpAction2:
 Level_ScreenLock_IndexScreen:
 	; Generate the screen number from the high coordinates
 	ld   a, [sLvlScrollY_High]	; high nybble
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	; Keep it in range to make the loopback area use the same locks
 	and  a, $01
 ENDC
 	swap a						; << 4 (Expected range: $0-1)
 	ld   b, a
 	ld   a, [sLvlScrollX_High]	; low nybble (Expected range: $0-F)
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	; Keep it in range to make the loopback area use the same locks
 	and  a, $0F
 ENDC
@@ -2418,7 +2417,7 @@ Pl_SwitchToHardBumpAir:
 	ld   [sPlAnimTimer], a
 	ld   [sPlBGColiLadderType], a
 	ld   [sPlSuperJump], a
-IF IMPROVE == 0
+IF !IMPROVE
 	ld   [sPlMovingJump], a
 ENDC
 
@@ -2628,7 +2627,7 @@ Level_LoadData:
 	ld   l, a				; HL = Ptr to level GFX
 	;#
 	
-IF HEADER_TEST == 1
+IF HEADER_TEST
 	ld   b, BANK(GFX_Level_Sand)
 	ld   hl, GFX_Level_Sand
 ENDC	
@@ -2659,7 +2658,7 @@ ENDC
 	ld   l, a				; HL = Ptr to block GFX
 	;#
 	
-IF HEADER_TEST == 1
+IF HEADER_TEST
 	ld   b, BANK(GFX_LevelShared_03)
 	ld   hl, GFX_LevelShared_03
 ENDC
@@ -2784,7 +2783,7 @@ ENDC
 	ld   h, [hl]
 	ld   l, a
 	;#
-IF HEADER_TEST == 1
+IF HEADER_TEST
 	ld   hl, LevelBlock_StoneCave
 ENDC
 	mHomeCall Level_CopyBlockData ; BANK $0B
@@ -2810,7 +2809,7 @@ ENDC
 	ld   b, $04
 	call CopyBytes
 	
-	IF HEADER_TEST == 1
+	IF HEADER_TEST
 		ld   a, $01
 		ld   [$A911], a
 		ld   a, $E0
@@ -3320,7 +3319,7 @@ Level_LoadRoomData:
 	ret
 ; =============== JumpHL ===============
 JumpHL:
-IF TEST == 1
+IF TEST
 	; quick and dirty "is door valid?" check, which would break on valid levels with invalid doors...
 	ld   a, [sLevelId]
 	cp   a, LVL_LASTVALID+1	; Are we past the last valid level id?
@@ -4164,7 +4163,7 @@ PlBGColi_GetBlockIdLow:
 	ld   [sBlockTopLeftPtr_Low], a
 	
 	; Save the block's Y offset to sBlockTopLeftPtr_High
-IF FIX_FUN_BUGS == 1
+IF FIX_FUN_BUGS
 	; Required for the underwater descending bugfix.
 	; This is a more useful/correct value anyway, since the player is 16px high at the very least.
 	ld   b, $08					
@@ -4391,7 +4390,7 @@ PlBGColi_DoDash_CheckBlock:
 	dw BGColi_Solid ; 3C 
 	dw BGColi_Empty ; 3D ;X
 	dw BGColi_Empty ; 3E 
-IF FIX_FUN_BUGS == 1
+IF FIX_FUN_BUGS
 	dw BGColi_SandSpike ; 3F 
 ELSE
 	dw BGColi_Empty ; 3F 
@@ -4423,7 +4422,7 @@ ENDC
 	dw BGColi_Empty ; 57 
 	dw BGColi_Empty ; 58 
 	
-IF FIX_FUN_BUGS == 1
+IF FIX_FUN_BUGS
 	dw BGColi_WaterSpike ; 59 
 	dw BGColi_WaterSpike ; 5A ;X
 ELSE
@@ -4433,7 +4432,7 @@ ENDC
 
 	dw BGColi_Empty ; 5B 
 	
-IF FIX_FUN_BUGS == 1
+IF FIX_FUN_BUGS
 	dw BGColi_InstaDeath ; 5C 
 	dw BGColi_Spike ; 5D 
 	dw BGColi_Spike ; 5E 
@@ -4556,7 +4555,7 @@ ENDM
 ; Generates code for breaking a breakable block.
 ; IN
 ; - 1: New block ID
-; - 2: Target non-solid collision when Bull Wario for instabreak (if const TEST == 1)
+; - 2: Target non-solid collision when Bull Wario for instabreak (if const TEST)
 ;      Should be COLI_EMPTY or COLI_WATER
 MACRO mBGColi_BreakToBlockId
 	; Get the ptr to the block we're destroying
@@ -4576,7 +4575,7 @@ MACRO mBGColi_BreakToBlockId
 	ld   a, [sTmp_A9EE]				; A  = Block ID
 	call Level_WriteBlockToBG
 	
-IF OPTIMIZE == 0
+IF !OPTIMIZE
 	; [TCRF] Always replaced by a SFX4_0B in ActS_SpawnBlockBreak
 	ld   a, SFX4_0A
 	ld   [sSFX4Set], a
@@ -4585,7 +4584,7 @@ ENDC
 	call ActS_SpawnBlockBreak
 	; Treat the destroyed block as solid.
 	; This prevents the the dash from continuing
-IF TEST == 1
+IF TEST
 	ld   a, [sPlPower]
 	cp   a, PL_POW_BULL		; Are we bull Wario?
 	ld   a, COLI_SOLID
@@ -5233,7 +5232,7 @@ BGColi_Ladder:
 	
 	; [BUG]/[POI] The way collision while climbing was handled required this to be set as a solid block, but it causes some oddities.
 	;             Pl_DoCtrl_Climb needs to be changed too (see section with "FIX_FUN_BUGS").
-IF FIX_FUN_BUGS == 1
+IF FIX_FUN_BUGS
 	ld   a, COLI_EMPTY
 ELSE
 	ld   a, COLI_SOLID
@@ -6514,7 +6513,7 @@ Pl_SetDirRight:
 ; and triggers the "jump dead" routine, which is a better effect than what this was meant to do.
 ; Maybe this was disabled intentionally?
 ;
-IF OPTIMIZE == 0
+IF !OPTIMIZE
 ActS_DespawnAllNormExceptCur_Broken:
 	ld   a, [sActNumProc]	; E = Slot to not despawn
 	ld   e, a
@@ -6776,7 +6775,7 @@ ActS_SyncHeldPos:
 	
 .chkX:
 
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	; When swimming or climbing, place the actor directly above the player
 	ld   a, [sPlAction]
 	cp   a, PL_ACT_SWIM			; Are we swimming?

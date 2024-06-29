@@ -47,7 +47,7 @@ ActS_Do:
 	
 	; After the freeze effect is done, always blank out the pal inversion effect
 	; [BUG] This doesn't check for the game being paused, which leads to a variety of glitches.
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	ld   a, [sPaused]
 	and  a						; Is the game paused?
 	jr   nz, .chkScrollSpawn	; If so, don't decrement the freeze timer
@@ -562,7 +562,7 @@ ActBGColi_IsEmptyWaterBlock:
 	;       the door and a solid wall in C27.
 	cp   a, BLOCKID_WATERITEMBOXHIDE	; == $4A
 	jp   z, ActBGColi_Ret0
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	cp   a, BLOCKID_WATERDOOR			; == $4B
 	jp   z, ActBGColi_Ret0
 ENDC
@@ -1176,7 +1176,7 @@ ActS_InitByRightScroll:
 	ld   a, h		
 	cp   a, HIGH(wLevelLayout_End)		; LayoutPtr >= LayoutEnd?
 	ret  nc								; If so, don't spawn it
-	IF FIX_BUGS == 1
+	IF FIX_BUGS
 		cp   a, HIGH(wLevelLayout)	; LayoutPtr < LayoutStart?
 		ret  c								; If so, don't spawn it
 	ENDC
@@ -1212,7 +1212,7 @@ ActS_InitByLeftScroll:
 	ld   a, h		
 	cp   a, HIGH(wLevelLayout_End)		; LayoutPtr >= LayoutEnd?
 	ret  nc								; If so, don't spawn it
-	IF FIX_BUGS == 1
+	IF FIX_BUGS
 		cp   a, HIGH(wLevelLayout)	; LayoutPtr < LayoutStart?
 		ret  c								; If so, don't spawn it
 	ENDC
@@ -1247,7 +1247,7 @@ ActS_InitByUpScroll:
 	ld   a, h		
 	cp   a, HIGH(wLevelLayout_End)		; LayoutPtr >= LayoutEnd?
 	ret  nc								; If so, don't spawn it
-	IF FIX_BUGS == 1
+	IF FIX_BUGS
 		cp   a, HIGH(wLevelLayout)	; LayoutPtr < LayoutStart?
 		ret  c								; If so, don't spawn it
 	ENDC
@@ -1282,7 +1282,7 @@ ActS_InitByDownScroll:
 	ld   a, h		
 	cp   a, HIGH(wLevelLayout_End)		; LayoutPtr >= LayoutEnd?
 	ret  nc								; If so, don't spawn it
-	IF FIX_BUGS == 1
+	IF FIX_BUGS
 		cp   a, HIGH(wLevelLayout)	; LayoutPtr < LayoutStart?
 		ret  c								; If so, don't spawn it
 	ENDC
@@ -1937,7 +1937,7 @@ ActS_StartThrow:
 	cp   a, PL_ACT_JUMP				; Are we jumping?
 	ret  nz							; If not, return
 	
-	IF FIX_BUGS == 1
+	IF FIX_BUGS
 		; Determine peak value for the jump
 		ld   b, (Pl_JumpYPath.down-Pl_JumpYPath) ; B = Normal jump peak
 		ld   a, [sHighJump]
@@ -3698,7 +3698,7 @@ ActS_SafeDropUnderwater:
 	ld   [sSFX4Set], a
 	ld   a, $01							; Sync DropSpeed to actual value
 	ld   [sActSetYSpeed_Low], a
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	xor  a								; fix for stunning underwater actors	
 	ld   [sActSetYSpeed_High], a
 ENDC
@@ -4455,7 +4455,7 @@ ActS_StunDefault_Main:
 	
 	; [BUG] This should not be set when the actor is a 10-coin.
 	;       Otherwise, the coin will indefinitely spin in-place.	
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	ld   bc, SubCall_ActS_DefaultStand		; Set code ptr for key
 	ld   a, [sActSetId]
 	cp   a, ACT_KEY							; Are we holding a key?
@@ -5129,7 +5129,7 @@ ActS_StunByLevelLayoutPtr:
 ; =============== START OF ACTOR SUBCALL TARGETS ===============
 ; Note that all of those pointing to this bank don't need to be subcalls.
 SubCall_ActInit_SSTeacupBoss: mSubCallRet ActInit_SSTeacupBoss ; BANK $0F
-IF FIX_BUGS == 1
+IF FIX_BUGS
 SubCall_ActInit2_SSTeacupBoss: mSubCallRet ActInit2_SSTeacupBoss ; BANK $0F
 ENDC
 SubCall_Act_SSTeacupBoss: mSubCallRet Act_SSTeacupBoss ; BANK $0F
@@ -5192,7 +5192,7 @@ SubCall_ActInit_ParsleyWoodsBossGhostGoom: mSubCallRet ActInit_ParsleyWoodsBossG
 SubCall_Act_ParsleyWoodsBoss: mSubCallRet Act_ParsleyWoodsBoss ; BANK $18
 SubCall_Act_ParsleyWoodsBossGhostGoom: mSubCallRet Act_ParsleyWoodsBossGhostGoom ; BANK $18
 SubCall_ActInit_StoveCanyonBoss: mSubCallRet ActInit_StoveCanyonBoss ; BANK $18
-IF FIX_BUGS == 1
+IF FIX_BUGS
 SubCall_ActInit2_StoveCanyonBoss: mSubCallRet ActInit2_StoveCanyonBoss ; BANK $18
 ENDC
 SubCall_Act_StoveCanyonBoss: mSubCallRet Act_StoveCanyonBoss ; BANK $18
@@ -5522,7 +5522,7 @@ Act_Snowman_SetTurnDelay:
 Act_Snowman_MoveLeft:
 	; If there's a solid block on the left, turn right
 	call ActColi_GetBlockId_LowL
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	mSubCall ActBGColi_IsSolid
 ELSE
 	mSubCall ActBGColi_IsSolidOnTop ; [BUG] Should be ActBGColi_IsSolid
@@ -5559,7 +5559,7 @@ ENDC
 Act_Snowman_MoveRight:
 	; If there's a solid block on the right, turn left
 	call ActColi_GetBlockId_LowR
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	mSubCall ActBGColi_IsSolid
 ELSE
 	mSubCall ActBGColi_IsSolidOnTop ; [BUG] Should be ActBGColi_IsSolid
@@ -5629,7 +5629,7 @@ Act_Snowman_Shoot:
 	; [BUG] / [TCRF] The animation is being interrupted early.
 	; This value cuts out an extra frame.
 	ld   a, [sActSetOBJLstId]
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	cp   a, $05					; Is the anim. over yet? (or rather, "is this the last valid sprite id?")
 ELSE
 	cp   a, $03					; Is the anim. over yet?
@@ -5847,7 +5847,7 @@ Act_Snowman_SpawnIce:
 	;       always fail since sActSetRoutineId can't ever be $CB.
 	
 	ld   a, l							; Seek to (what should have been) code ptr
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	add  (sActSetCodePtr-sActSet)	
 ELSE
 	add  (sActSetRoutineId-sActSet)	
@@ -5871,7 +5871,7 @@ ENDC
 	dec  d					; Have we searched in all 5 slots?
 	ret  z					; If so, return
 	ld   a, l				; If not, move to the next actor slot
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	add  (sActSet_End-sActSet) - (sActSetCodePtr-sActSet)
 ELSE
 	add  (sActSet_End-sActSet) - (sActSetRoutineId-sActSet)
@@ -8070,7 +8070,7 @@ Act_Bomb_Idle_OnTouch:
 	
 	; [BUG] No check if we're already holding something.
 	;       This means we can hold multiple actors at once, which is buggy.
-	IF FIX_BUGS == 1
+	IF FIX_BUGS
 		ld   a, [sActHeld]
 		and  a							; Are we currrently holding something else?
 		jp   nz, Act_Bomb_WaitExplode	; If so, make it explode but don't hold it
@@ -8102,7 +8102,7 @@ Act_Bomb_Held:
 	ld   a, $02					; Force held flag
 	ld   [sActHeld], a
 	xor  a						; Force light
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	ld   [sActHeldId], a		; We don't need this (only useful to transfer actors between doors, and we can't do that with bombs)
 ENDC
 	ld   [sActHoldHeavy], a
@@ -8149,7 +8149,7 @@ Act_Bomb_SwitchToThrown:
 	ret  nz							; If not, return
 	
 	
-	IF FIX_BUGS == 1
+	IF FIX_BUGS
 		; Determine peak value for the jump
 		ld   b, (Pl_JumpYPath.down-Pl_JumpYPath) ; B = Normal jump peak
 		ld   a, [sHighJump]

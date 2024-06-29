@@ -1743,7 +1743,7 @@ ActS_SpawnCoinFromBlock:
 	; then the broken value will be a problem.
 	; To fix this, avoid using "ld   bc, -$08" to set the speed:
 	
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	ld   a, LOW(-$08)		; Y Speed (Low byte)
 	ldi  [hl], a			
 	ld   a, HIGH(-$08)		; Y Speed (High byte)
@@ -2845,7 +2845,7 @@ ActInit_SSTeacupBoss:
 	ld   a, +$08
 	ld   [sActSetColiBoxR], a
 	
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	; Setup secondary loading code
 	ld   bc, SubCall_ActInit2_SSTeacupBoss
 	call ActS_SetCodePtr
@@ -2870,10 +2870,10 @@ ENDC
 	; Copy over the tilemaps for the main body
 	; [BUG] Shouldn't have been done here. See comment at ActInit_SSTeacupBoss_SetParallax. 
 	; [POI] Some of these don't seem to be necessary... ClawsDown and Eyes are already in Body
-IF FIX_BUGS == 0
+IF !FIX_BUGS
 	call Act_SSTeacupBoss_BGWrite_Body
 	call Act_SSTeacupBoss_BGWrite_BeakOpen
-IF OPTIMIZE == 0
+IF !OPTIMIZE
 	call Act_SSTeacupBoss_BGWrite_ClawsDown
 	call Act_SSTeacupBoss_BGWrite_Eyes
 ENDC
@@ -2902,7 +2902,7 @@ ENDC
 	ld   c, $50
 	call Act_SSTeacupBoss_MoveRight
 	ret
-IF FIX_BUGS == 1
+IF FIX_BUGS
 ; =============== ActInit2_SSTeacupBoss ===============
 ; Secondary init mode for writing the tilemaps.
 ActInit2_SSTeacupBoss:
@@ -2933,20 +2933,20 @@ ActInit_SSTeacupBoss_SetParallax:
 	ld   a, $40					
 	ld   [sActBossParallaxX], a
 	ld   [sParallaxX0], a
-IF FIX_BUGS == 0
+IF !FIX_BUGS
 	ld   [sParallaxX1], a	
 ENDC
 	ld   [sParallaxX2], a
 	ld   a, $50
 	ld   [sActBossParallaxY], a
 	ld   [sParallaxY0], a
-IF FIX_BUGS == 0
+IF !FIX_BUGS
 	ld   [sParallaxY1], a
 ENDC
 	ld   [sParallaxY2], a	
 	; For the ground, copy over the current scroll coords.
 	; These won't ever be changed.
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	ld   a, [sScrollX]
 	ld   [sParallaxX1], a
 	ldh  a, [hScrollY]
@@ -2971,7 +2971,7 @@ ENDC
 	; - Fix the parallax modes. The easy way would be to set LY2 to $01 and LY3 to $03.
 	;	Since the boss generally never goes high enough, any visual glitches will be hidden.
 	;	The correct way would be to use LY1 for the ground and move LY2 and LY3 off-screen.
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	ld   a, $00					; Start sect0 (boss body) at $00
 	ld   [sParallaxNextLY0], a
 	ld   a, $6F					; Start sect1 (ground) at $6F
@@ -3033,7 +3033,7 @@ Act_SSTeacupBoss_DoHitFlash:
 .copyE0:
 	ld   a, $E0					; Otherwise, hide the boss
 	ld   [sParallaxX0], a
-IF FIX_BUGS == 0
+IF !FIX_BUGS
 	ld   [sParallaxX1], a
 ENDC
 	ld   [sParallaxX2], a
@@ -3041,7 +3041,7 @@ ENDC
 .copyNorm:
 	ld   a, [sActBossParallaxX]
 	ld   [sParallaxX0], a
-IF FIX_BUGS == 0
+IF !FIX_BUGS
 	ld   [sParallaxX1], a
 ENDC
 	ld   [sParallaxX2], a
@@ -3277,11 +3277,11 @@ Act_SSTeacupBoss_AnimWingsH:
 Act_SSTeacupBoss_BGWriteGroup_Wind:
 	; [POI] CloseBreak and Eyes aren't necessary since Body contains them already
 	call Act_SSTeacupBoss_BGWrite_Body
-IF OPTIMIZE == 0
+IF !OPTIMIZE
 	call Act_SSTeacupBoss_BGWrite_BeakClosed
 ENDC
 	call Act_SSTeacupBoss_BGWrite_ClawsUp
-IF OPTIMIZE == 0
+IF !OPTIMIZE
 	call Act_SSTeacupBoss_BGWrite_Eyes
 ENDC
 	ret
@@ -3365,7 +3365,7 @@ Act_SSTeacupBoss_MoveDown:
 	ld   [sActBossParallaxY], a
 	; And update the parallax sections
 	ld   [sParallaxY0], a
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	; If the boss isn't low enough, don't update the second parallax layer.
 	; This prevents incorrect graphics from showing up in sParallaxY2 when the boss gets high enough.
 	cp   a, $40					; A >= $40?
@@ -3396,7 +3396,7 @@ Act_SSTeacupBoss_MoveRight:
 	ld   [sActBossParallaxX], a
 	; And update the parallax sections
 	ld   [sParallaxX0], a
-IF FIX_BUGS == 0
+IF !FIX_BUGS
 	ld   [sParallaxX1], a
 ENDC
 	ld   [sParallaxX2], a
@@ -3658,7 +3658,7 @@ Act_SSTeacupBoss_SwitchToDead:
 	ld   [sActBossDead], a
 	xor  a
 	ld   [sActHeld], a
-IF OPTIMIZE == 0
+IF !OPTIMIZE
 	call ActS_DespawnAllNormExceptCur_Broken
 ENDC
 	ret
@@ -3687,7 +3687,7 @@ Act_SSTeacupBoss_Mode_Dead:
 ; =============== Act_SSTeacupBoss_SwitchToCoinGame ===============
 ; Sets up the coin game mode.
 Act_SSTeacupBoss_SwitchToCoinGame:
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	; Move the "boss body" parallax sections off-screen
 	; Only required with FIX_BUGS due to the different way sections are handled.
 	ld   a, $E0					
@@ -3751,7 +3751,7 @@ ENDR
 Act_SSTeacupBoss_BGWrite_WingV0:
 	ld   de, BG_Act_SSTeacupBoss_WingV0
 	;                         VRAM                 X  Y  Count
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	mSSTeacupBoss_BGWriteCall vBGSSTeacupBossWing, 0, 0, 1
 	inc de
 	inc de
@@ -3766,7 +3766,7 @@ ENDC
 Act_SSTeacupBoss_BGWrite_WingV1:
 	ld   de, BG_Act_SSTeacupBoss_WingV1
 	;                         VRAM                 X  Y  Count
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	mSSTeacupBoss_BGWriteCall vBGSSTeacupBossWing, 0, 0, 1
 	inc de
 	inc de
@@ -3781,7 +3781,7 @@ ENDC
 Act_SSTeacupBoss_BGWrite_WingV2:
 	ld   de, BG_Act_SSTeacupBoss_WingV2
 	;                         VRAM                 X  Y  Count
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	mSSTeacupBoss_BGWriteCall vBGSSTeacupBossWing, 0, 0, 1
 	inc de
 	inc de
@@ -6290,7 +6290,7 @@ Act_Seal_Track_MoveDown:
 	;		or going below the end of the level. Alternatively, it could be manually despawned.	
 	
 	call ActColi_GetBlockId_Ground
-IF FIX_BUGS == 1
+IF FIX_BUGS
 	cp   a, BLOCKID_INSTAKILL		; Is it a lava block / below the level layout?
 	ret  z							; If so, don't move
 ENDC

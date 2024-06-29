@@ -2208,7 +2208,7 @@ Act_BigFruit_CheckDrop:
 	ld   a, [sActSetY_Low]		; Align actor to block Y boundary
 	and  a, $F0
 	ld   [sActSetY_Low], a
-IF FIX_BUGS == 0
+IF !FIX_BUGS
 	; [BUG] Where does this come from? Aligning to the Y boundary is enough.
 	ld   bc, -$05				
 	call ActS_MoveDown

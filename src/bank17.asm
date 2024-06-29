@@ -1200,7 +1200,7 @@ Act_MtTeapotBoss_SetDead:
 	ld   a, BGM_NONE
 	ld   [sBGMSet], a
 	
-IF OPTIMIZE == 0
+IF !OPTIMIZE
 	call ActS_DespawnAllNormExceptCur_Broken
 ENDC
 	

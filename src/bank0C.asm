@@ -495,7 +495,7 @@ ENDM
 ;
 ; This maps all level IDs to their assigned BGM.
 Level_SetBGM:
-	IF OPTIMIZE == 1
+	IF OPTIMIZE
 		; Consumes less bytes (and doesn't crash the game when loading an invalid level)
 		
 		;--
@@ -503,7 +503,7 @@ Level_SetBGM:
 		; Index the music assignment table by level ID and store the result to B.
 		;
 		ld   a, [sLevelId]		; Get level id
-		IF TEST == 1
+		IF TEST
 			cp   a, LVL_LASTVALID+1	; Are we trying to index past the end of the table?
 			ret  nc					; if so, don't set any BGM
 		ENDC
