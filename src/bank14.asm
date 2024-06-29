@@ -317,6 +317,35 @@ OBJLst_MapArrowDown:  INCBIN "data/objlst/map/arrow_down.bin"
 OBJLst_MapArrowLeft:  INCBIN "data/objlst/map/arrow_left.bin"
 OBJLst_MapArrowRight: INCBIN "data/objlst/map/arrow_right.bin"
 OBJLst_MapBlinkDot:   INCBIN "data/objlst/map/leveldot.bin"
+
+; =============== mMap_UpdateOBJCoords ===============
+; Generates code to update the relative coordinates of a specific overworld object.
+; IN:
+; - 1: Starting pointer to OBJ coord data
+MACRO mMap_UpdateOBJCoords
+	; Object coord data is always made of 4 consecutive values.
+	; sMap*Y
+	; sMap*ScrollYLast                   
+	; sMap*ScrollXLast                      
+	; sMap*X  
+
+	; Update Y
+	ld   hl, sMapScrollY							; HL = Current Map Scroll coordinate
+	ld   bc, \1+1 ;sMapRiceBeachFlagScrollYLast		; BC = Previous Map Scroll coordinate (local copy for the object)
+	ld   de, \1   ;sMapRiceBeachFlagY				; DE = Object coordinate (to update)
+	call Map_UpdateOBJRelCoord
+	; Update X
+	ld   hl, sMapScrollX
+	ld   bc, \1+2 ;sMapRiceBeachFlagScrollXLast
+	ld   de, \1+3 ;sMapRiceBeachFlagX
+	call Map_UpdateOBJRelCoord
+	; Update the previous scroll coordinate to match
+	ld   a, [sMapScrollY]
+	ld   [\1+1], a ; sMapRiceBeachFlagScrollYLast
+	ld   a, [sMapScrollX]
+	ld   [\1+2], a ; sMapRiceBeachFlagScrollXLast
+	ret
+ENDM
 	
 ; =============== Map_MoveMtTeapotLid ===============
 ; Writes and animates the mappings for the Mt.Teapot lid with the correct oscillation mode.
@@ -423,6 +452,12 @@ Map_WriteMtTeapotLidOBJLst:
 ; A pair of memory addresses is used to keep track of the previous scroll positions --
 ; the difference is added to the lid's coordinates.
 Map_MtTeapotLidUpdateCoords:
+
+IF FIX_BUGS == 1
+	; This does the same thing, without the listed bug below
+	mMap_UpdateOBJCoords sMapMtTeapotLidY
+ELSE
+
 	; Get the Y screen scroll amount compared to the last frame
 	ld   hl, sMapScrollY
 	ld   a, [sMapMtTeapotLidScrollYLast]	
@@ -436,11 +471,7 @@ Map_MtTeapotLidUpdateCoords:
 	;--
 	; Do the same for the X coord
 	; [BUG] The wrong address is being used, which only isn't a problem because this is drawn before the screen scrolls.
-IF FIX_BUGS == 1
-	ld   hl, sMapScrollX
-ELSE
 	ld   hl, rSCX
-ENDC
 	ld   a, [sMapMtTeapotLidScrollXLast]
 	sub  a, [hl]
 	ld   b, a
@@ -455,6 +486,7 @@ ENDC
 	ld   a, [sMapScrollX]
 	ld   [sMapMtTeapotLidScrollXLast], a
 	ret
+ENDC
 
 ; =============== Map_MtTeapotLidSetPosCutscene ===============
 ; Used to set the initial position of Mt.Teapot's lid when the Mt.Teapot cutscene starts.
@@ -478,7 +510,12 @@ Map_MtTeapotLidSetPos2:
 	ld   [sMapMtTeapotLidScrollYLast], a
 	; Do the same for the X pos
 	ld   a, $55						; Absolute X Value
+	; [BUG] Wrong value here too
+IF FIX_BUGS == 1
+	ld   hl, sMapScrollX
+ELSE
 	ld   hl, rSCX
+ENDC
 	sub  a, [hl]
 	ld   [sMapMtTeapotLidX], a
 	ld   a, [hl]
@@ -2801,48 +2838,15 @@ Map_Overworld_AnimFlags:
 	call Map_SetFlagOBJLstId
 	call Map_Unused_SyrupCastle_WriteFlagOBJLst
 	ret
-	
-; =============== Map_RiceBeach_UpdateFlagCoords ===============
-; Sets of subroutines to update the relative coordinates of a specific flag.
-;
-; Each subroutine follows the same template, as seen in the next macro.
-; IN:
-; - 1: Starting pointer to flag coord data
-;
-MACRO mMap_UpdateFlagCoords
-	; Flag coord data is always made of 4 consecutive values.
-	; sMap?FlagY
-	; sMap?FlagScrollYLast                   
-	; sMap?FlagScrollXLast                      
-	; sMap?FlagX  
 
-	; Update Y
-	ld   hl, sMapScrollY							; HL = Current Map Scroll coordinate
-	ld   bc, \1+1 ;sMapRiceBeachFlagScrollYLast		; BC = Previous Map Scroll coordinate (local copy for flag)
-	ld   de, \1   ;sMapRiceBeachFlagY				; DE = Flag coordinate (to update)
-	call Map_UpdateOBJRelCoord
-	; Update X
-	ld   hl, sMapScrollX
-	ld   bc, \1+2 ;sMapRiceBeachFlagScrollXLast
-	ld   de, \1+3 ;sMapRiceBeachFlagX
-	call Map_UpdateOBJRelCoord
-	; Update the previous scroll coordinate to match
-	ld   a, [sMapScrollY]
-	ld   [\1+1], a ; sMapRiceBeachFlagScrollYLast
-	ld   a, [sMapScrollX]
-	ld   [\1+2], a ; sMapRiceBeachFlagScrollXLast
-	ret
-ENDM
-
-
-Map_RiceBeach_UpdateFlagCoords: mMap_UpdateFlagCoords sMapRiceBeachFlagY
-Map_MtTeapot_UpdateFlagCoords: mMap_UpdateFlagCoords sMapMtTeapotFlagY
-Map_StoveCanyon_UpdateFlagCoords: mMap_UpdateFlagCoords sMapStoveCanyonFlagY
-Map_SSTeacup_UpdateFlagCoords: mMap_UpdateFlagCoords sMapSSTeacupFlagY
-Map_ParsleyWoods_UpdateFlagCoords: mMap_UpdateFlagCoords sMapParsleyWoodsFlagY
-Map_SherbetLand_UpdateFlagCoords: mMap_UpdateFlagCoords sMapSherbetLandFlagY
+Map_RiceBeach_UpdateFlagCoords: mMap_UpdateOBJCoords sMapRiceBeachFlagY
+Map_MtTeapot_UpdateFlagCoords: mMap_UpdateOBJCoords sMapMtTeapotFlagY
+Map_StoveCanyon_UpdateFlagCoords: mMap_UpdateOBJCoords sMapStoveCanyonFlagY
+Map_SSTeacup_UpdateFlagCoords: mMap_UpdateOBJCoords sMapSSTeacupFlagY
+Map_ParsleyWoods_UpdateFlagCoords: mMap_UpdateOBJCoords sMapParsleyWoodsFlagY
+Map_SherbetLand_UpdateFlagCoords: mMap_UpdateOBJCoords sMapSherbetLandFlagY
 ; [TCRF] Syrup Castle never has a flag, so this goes unused
-Map_Unused_SyrupCastle_UpdateFlagCoords: mMap_UpdateFlagCoords sMap_Unused_SyrupCastleFlagY
+Map_Unused_SyrupCastle_UpdateFlagCoords: mMap_UpdateOBJCoords sMap_Unused_SyrupCastleFlagY
 
 ; =============== Map_InitWorldClearFlags ===============
 ; Initializes the coordinates and OBJLst for all "world clear flags" in the overworld.
