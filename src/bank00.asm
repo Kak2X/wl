@@ -6885,7 +6885,7 @@ ActS_CheckOffScreen:
 	ld   d, a
 	
 	; XPos += $58 (actor offset)
-	ld   bc, $0058
+	ld   bc, LVLSCROLL_XOFFSET+OBJ_OFFSET_X
 	add  hl, bc
 	
 	; ActX - ScrollX
@@ -6917,6 +6917,7 @@ ActS_CheckOffScreen:
 	ld   a, [sLvlScrollY_High]
 	ld   d, a
 	; YPos += $58 (actor offset)
+	; Reused for the Y scroll, but whatever.
 	add  hl, bc
 	; ActY - ScrollY
 	; HL -= DE
