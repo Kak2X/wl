@@ -1248,9 +1248,9 @@ Act_WolfKnife_MoveRight:
 ; Spawns the knife thrown by the actor.
 Act_Wolf_SpawnKnife:
 	; Find an empty slot
-	ld   hl, sAct		; HL = Actor slot area
-	ld   d, $05			; D = Total slots
-	ld   e, $00			; E = Current slot
+	ld   hl, sAct				; HL = Actor slot area
+	ld   d, ACTSLOT_COUNT_LO	; D = Total slots
+	ld   e, $00					; E = Current slot
 .checkSlot:
 	ld   a, [hl]		; Read active status
 	or   a				; Is the slot marked as active?
@@ -2091,7 +2091,7 @@ Act_PenguinSpikeBall_MoveRight:
 Act_Penguin_SpawnSpikeBall:
 	; Find an empty slot
 	ld   hl, sAct		; HL = Actor slot area
-	ld   d, $05			; D = Total slots
+	ld   d, ACTSLOT_COUNT_LO	; D = Total slots
 	ld   e, $00			; E = Current slot
 .checkSlot:
 	ld   a, [hl]		; Read active status
@@ -2908,9 +2908,9 @@ Act_DDBoomerang_Turn:
 ; Spawns the boomerang thrown by the actor.
 Act_DD_SpawnBoomerang:
 	; Find an empty slot
-	ld   hl, sAct		; HL = Actor slot area
-	ld   d, $05			; D = Total slots
-	ld   e, $00			; E = Current slot
+	ld   hl, sAct				; HL = Actor slot area
+	ld   d, ACTSLOT_COUNT_LO	; D = Total slots
+	ld   e, $00					; E = Current slot
 .checkSlot:
 	ld   a, [hl]		; Read active status
 	or   a				; Is the slot marked as active?
@@ -4325,13 +4325,13 @@ Act_SpikeBall_CheckDrop:
 	ld   [sActSetYSpeed_Low], a
 	;--
 	ret
-.water:;R
+.water:
 	ld   a, $01
 	ld   [sActSetYSpeed_Low], a		; sActSetYSpeed_Low = 1
 	ld   bc, +$01
 	call ActS_MoveDown					; Move down by that
 	ret
-.landed:;R
+.landed:
 	; [POI] This uses of a timer (instead of a flag) for some reason
 	ld   a, [sActSpikeBallLandTimer]
 	inc  a
@@ -5086,9 +5086,9 @@ GFX_Act_ThunderCloud: INCBIN "data/gfx/actor/thundercloud.bin"
 ; =============== Act_ThunderCloud_SpawnThunder ===============
 Act_ThunderCloud_SpawnThunder:
 	; Find an empty slot
-	ld   hl, sAct		; HL = Actor slot area
-	ld   d, $05			; D = Total slots
-	ld   e, $00			; E = Current slot
+	ld   hl, sAct				; HL = Actor slot area
+	ld   d, ACTSLOT_COUNT_LO	; D = Total slots
+	ld   e, $00					; E = Current slot
 .checkSlot:
 	ld   a, [hl]		; Read active status
 	or   a				; Is the slot marked as active?

@@ -71,9 +71,9 @@ Act_ItemInBox_SetDrop:
 ;        Unlike all other spawn subroutines, this one can spawn multiple actor types... and it's broken.
 Act_Unused_SpawnCustom:
 	; Find an empty slot
-	ld   hl, sAct		; HL = Actor slot area
-	ld   d, $07			; D = Total slots
-	ld   e, $00			; E = Current slot
+	ld   hl, sAct			; HL = Actor slot area
+	ld   d, ACTSLOT_COUNT	; D = Total slots
+	ld   e, $00				; E = Current slot
 .checkSlot:
 	ld   a, [hl]		; Read active status
 	or   a				; Is the slot marked as active?
@@ -192,9 +192,9 @@ MACRO mActS_SetOBJLstTableForDefault
 	; Generate the table index
 	; DE = ((sActSetId & $0F) - 7) * 2
 	ld   a, [sActSetId]
-	and  a, $0F				; Filter away no-respawn flag
-	sub  a, $07				; Table starts at the 7th entry
-	add  a					; *2 since this is a ptr table
+	and  a, $0F					; Filter away no-respawn flag
+	sub  a, ACT_DEFAULT_BASE	; Table starts at the 7th entry
+	add  a						; *2 since this is a ptr table
 	ld   e, a				
 	ld   d, $00
 	
@@ -228,7 +228,7 @@ ActColi_SetForDefault:
 	; Since the first 7 actors IDs can't be used for this, the table starts with the entry for ID 7.
 	ld   a, [sActSetId]	; A = (ActorID & $0F) - 7
 	and  a, $0F			; Filter away no-respawn flag
-	sub  a, $07
+	sub  a, ACT_DEFAULT_BASE
 	
 	ld   hl, .table		; HL = Start of table
 	ld   d, $00			; DE = A (Index)
@@ -615,14 +615,14 @@ ActS_Spawn10CoinHeld:
 	or   a
 	ret  nz
 	; Find an empty slot
-	ld   b, $00			; B = Found 10-coins
-	ld   hl, sAct		; HL = Actor slot area
-	ld   d, $07			; D = Slot to search in
-	ld   e, $00			; E = Current slot
+	ld   b, $00				; B = Found 10-coins
+	ld   hl, sAct			; HL = Actor slot area
+	ld   d, ACTSLOT_COUNT	; D = Slot to search in
+	ld   e, $00				; E = Current slot
 .checkSlot:
 	ld   a, [hl]
-	or   a				; Is the slot empty?
-	jr   z, .slotFound	; If so, jump
+	or   a					; Is the slot empty?
+	jr   z, .slotFound		; If so, jump
 	
 .checkCoinLimit:
 	;--
@@ -661,7 +661,7 @@ ActS_Spawn10CoinHeld:
 .slotFound:
 	mActS_SetOBJBank OBJLstPtrTable_Act_10CoinHeld
 	
-	ld   a, $02					; Enabled
+	ld   a, ATV_ONSCREEN		; Enabled
 	ldi  [hl], a
 	ld   a, [sPlX_Low]			; X
 	ldi  [hl], a
@@ -742,9 +742,9 @@ OBJLstSharedPtrTable_Act_10Coin:
 ; Spawns a key held by the player.
 ActS_SpawnKeyHeld:
 	; Find an empty slot
-	ld   hl, sAct		; HL = Actor slot area
-	ld   d, $07			; D = Slots left
-	ld   e, $00			; E = Current slot
+	ld   hl, sAct			; HL = Actor slot area
+	ld   d, ACTSLOT_COUNT	; D = Slots left
+	ld   e, $00				; E = Current slot
 .loop:
 	ld   a, [hl]
 	or   a				; Is the slot empty?
@@ -761,7 +761,7 @@ ActS_SpawnKeyHeld:
 .slotFound:
 	mActS_SetOBJBank OBJLstPtrTable_Act_Key
 	
-	ld   a, $02					; Enabled
+	ld   a, ATV_ONSCREEN		; Enabled
 	ldi  [hl], a
 	ld   a, [sPlX_Low]		; X
 	ldi  [hl], a
@@ -846,13 +846,13 @@ OBJLstSharedPtrTable_Act_Key:
 ; This subroutine expects the "sActSet" (currently executed actor) info to be available,
 ; as well as the slot number of the current actor.
 ActS_SpawnStunStar:
-	ld   hl, sAct			; HL = Actor slot area
-	ld   d, $05				; D = Slots count (normal slots)
-	ld   e, $00				; E = Current slot
+	ld   hl, sAct				; HL = Actor slot area
+	ld   d, ACTSLOT_COUNT_LO	; D = Slots count (normal slots)
+	ld   e, $00					; E = Current slot
 	
 .checkSlot:
-	ld   a, [hl]			; Read active status
-	or   a					; Is the slot free? (status == 0)
+	ld   a, [hl]				; Read active status
+	or   a						; Is the slot free? (status == 0)
 	jr   z, .slotFound			; If so, jump
 	
 	;--
@@ -880,7 +880,7 @@ ActS_SpawnStunStar:
 .slotFound:
 	mActS_SetOBJBank OBJLstPtrTable_Act_StunStar
 	
-	ld   a, $02					; Enabled
+	ld   a, ATV_ONSCREEN		; Enabled
 	ldi  [hl], a
 	ld   a, [sActSetX_Low]		; X = sActSetX
 	ldi  [hl], a
@@ -999,7 +999,7 @@ Act_StunStar:
 	; DE = TrackedSlotNum * $20
 	;      TrackedSlotNum << 5
 	ld   a, [sActStunStarParentSlot]
-	and  a, $07					; Keep in range $00-$07
+	and  a, ACTSLOT_COUNT		; Keep in range $00-$07
 	swap a						; A << 4
 	rlca						; A << 1
 	ld   d, $00					; DE = Index
@@ -1078,12 +1078,12 @@ ActS_SpawnHeartInvincible:
 	;--
 	; Find the first empty slot we can use
 	ld   hl, sAct
-	ld   d, $07		; D = Total slots
-	ld   e, $00		; E = Slot ID
+	ld   d, ACTSLOT_COUNT	; D = Total slots
+	ld   e, $00				; E = Slot ID
 .nextSlot:
-	ld   a, [hl]	; Is this an empty slot?
+	ld   a, [hl]			; Is this an empty slot?
 	or   a
-	jr   z, .slotFound	; If so, use it
+	jr   z, .slotFound		; If so, use it
 	
 	;--
 	; Prevent spawning more than one heart at a time.
@@ -1268,13 +1268,13 @@ ActS_CoinGame:
 	;--
 	; Find a free slot to spawn the coin in.
 	; If the player isn't jumping, this won't give any cooldown time.
-	ld   hl, sAct	; HL = Slot area
-	ld   d, $07		; D = Slots left
-	ld   e, $00		; E = Current slot num 
+	ld   hl, sAct			; HL = Slot area
+	ld   d, ACTSLOT_COUNT	; D = Slots left
+	ld   e, $00				; E = Current slot num 
 .checkSlot:;
-	ld   a, [hl]	; Read status
-	or   a			; Is this slot marked as free?
-	jr   z, .slotFound	; If so, jump
+	ld   a, [hl]			; Read status
+	or   a					; Is this slot marked as free?
+	jr   z, .slotFound		; If so, jump
 .nextSlot:
 	inc  e			; SlotNum++
 	dec  d			; SlotsLeft--
@@ -1439,8 +1439,8 @@ assert BANK(OBJLstPtrTable_Act_Coin) == BANK(OBJLstPtrTable_Act_10Coin), "OBJLst
 ActS_SpawnCoinFromDash:
 	; Find the first empty slot we can use
 	ld   hl, sAct
-	ld   d, $07		; D = Total slots (coins are default actors; so all slots can be used)
-	ld   e, $00		; E = Slot ID
+	ld   d, ACTSLOT_COUNT	; D = Total slots (coins are default actors; so all slots can be used)
+	ld   e, $00				; E = Slot ID
 .nextSlot:
 	ld   a, [hl]	; Is this an empty slot?
 	or   a
@@ -1545,8 +1545,8 @@ ActS_SpawnCoinFromDash:
 ActS_Spawn10Coin:
 	; Find the first empty slot we can use
 	ld   hl, sAct
-	ld   d, $07		; D = Total slots (coins are default actors; so all slots can be used)
-	ld   e, $00		; E = Slot ID
+	ld   d, ACTSLOT_COUNT	; D = Total slots (coins are default actors; so all slots can be used)
+	ld   e, $00				; E = Slot ID
 .nextSlot:
 	ld   a, [hl]	; Is this an empty slot?
 	or   a
@@ -1647,8 +1647,8 @@ ActS_Spawn10Coin:
 ActS_SpawnCoinFromBlock:
 	; Find the first empty slot we can use
 	ld   hl, sAct
-	ld   d, $07		; D = Total slots (coins are default actors; so all slots can be used)
-	ld   e, $00		; E = Slot ID
+	ld   d, ACTSLOT_COUNT	; D = Total slots (coins are default actors; so all slots can be used)
+	ld   e, $00				; E = Slot ID
 .nextSlot:
 	ld   a, [hl]	; Is this an empty slot?
 	or   a
@@ -3412,10 +3412,10 @@ ENDC
 ; Must be called from when executing the Boss actor.
 Act_SSTeacupBoss_SpawnWatch:
 	; Find an empty slot
-	ld   hl, sAct			; HL = Actor slot area
-	ld   d, $05				; D = Slots count (normal slots)
-	ld   e, $00				; E = Current slot
-	ld   c, $00				; C = Existing Watch actors
+	ld   hl, sAct				; HL = Actor slot area
+	ld   d, ACTSLOT_COUNT_LO	; D = Slots count (normal slots)
+	ld   e, $00					; E = Current slot
+	ld   c, $00					; C = Existing Watch actors
 	
 	; Determine the actor ID for what we're trying to spawn.
 	; We need this later to count how many actors were already spawned.
@@ -3477,7 +3477,7 @@ Act_SSTeacupBoss_SpawnWatch:
 	
 	mActS_SetOBJBank OBJLstSharedPtrTable_Act_Watch
 	
-	ld   a, $02					; Enabled
+	ld   a, ATV_ONSCREEN		; Enabled
 	ldi  [hl], a
 	
 	ld   a, [sActSetX_Low]		; X = sActSetX
@@ -3933,9 +3933,9 @@ Act_SSTeacupBoss_BGWrite1:
 ; This is specifically meant to be spawned from another actor.
 ActS_SpawnBigCoin:
 	; Find an empty slot
-	ld   hl, sAct		; HL = Actor slot area
-	ld   d, $05			; D = Total slots (not $07, unlike in ActS_SpawnBigHeart)
-	ld   e, $00			; E = Current slot
+	ld   hl, sAct				; HL = Actor slot area
+	ld   d, ACTSLOT_COUNT_LO	; D = Total slots (not $07, unlike in ActS_SpawnBigHeart)
+	ld   e, $00					; E = Current slot
 .checkSlot:
 	ld   a, [hl]		; Read active status
 	or   a				; Is the slot marked as active?
@@ -3954,7 +3954,7 @@ ActS_SpawnBigCoin:
 .slotFound:
 	mActS_SetOBJBank OBJLstSharedPtrTable_Act_BigCoin
 	
-	ld   a, $02					; Enabled
+	ld   a, ATV_ONSCREEN		; Enabled
 	ldi  [hl], a
 	ld   a, [sActSetX_Low]		; X = sActSetX + $04
 	add  $04
@@ -5034,9 +5034,9 @@ Act_TreasureChestLid_Open:
 ; Spawns the treasure chest after opening the lid.
 Act_TreasureChestLid_SpawnTreasure:
 	; Find an empty slot
-	ld   hl, sAct		; HL = Actor slot area
-	ld   d, $05			; D = Total slots
-	ld   e, $00			; E = Current slot
+	ld   hl, sAct				; HL = Actor slot area
+	ld   d, ACTSLOT_COUNT_LO	; D = Total slots
+	ld   e, $00					; E = Current slot
 .checkSlot:
 	ld   a, [hl]		; Read active status
 	or   a				; Is the slot marked as active?
@@ -5053,7 +5053,7 @@ Act_TreasureChestLid_SpawnTreasure:
 .slotFound:
 	mActS_SetOBJBank OBJLstSharedPtrTable_Act_Treasure
 	
-	ld   a, $02					; Enabled
+	ld   a, ATV_ONSCREEN		; Enabled
 	ldi  [hl], a
 	ld   a, [sActSetX_Low]		; X
 	ldi  [hl], a
@@ -5254,9 +5254,9 @@ Act_Treasure:
 ; Spawns the actor handling the shiny aura around the actual treasure.
 Act_Treasure_SpawnShine:
 	; Find an empty slot
-	ld   hl, sAct		; HL = Actor slot area
-	ld   d, $05			; D = Total slots
-	ld   e, $00			; E = Current slot
+	ld   hl, sAct				; HL = Actor slot area
+	ld   d, ACTSLOT_COUNT_LO	; D = Total slots
+	ld   e, $00					; E = Current slot
 .checkSlot:
 	ld   a, [hl]		; Read active status
 	or   a				; Is the slot marked as active?
@@ -6640,9 +6640,9 @@ Act_SealSpear_MoveRight:
 ; This subroutine spawns the spear thrown by the seal.
 Act_Seal_SpawnSpear:
 	; Find an empty slot
-	ld   hl, sAct		; HL = Actor slot area
-	ld   d, $05			; D = Total slots
-	ld   e, $00			; E = Current slot
+	ld   hl, sAct				; HL = Actor slot area
+	ld   d, ACTSLOT_COUNT_LO	; D = Total slots
+	ld   e, $00					; E = Current slot
 .checkSlot:
 	ld   a, [hl]		; Read active status
 	or   a				; Is the slot marked as active?
@@ -6850,9 +6850,9 @@ LoadGFX_Act_BigHeart:
 ; =============== ActS_SpawnBigHeart ===============
 ActS_SpawnBigHeart:
 	; Find an empty slot
-	ld   hl, sAct		; HL = Actor slot area
-	ld   d, $07			; D = Total slots
-	ld   e, $00			; E = Current slot
+	ld   hl, sAct			; HL = Actor slot area
+	ld   d, ACTSLOT_COUNT	; D = Total slots
+	ld   e, $00				; E = Current slot
 .checkSlot:
 	ld   a, [hl]		; Read active status
 	or   a				; Is the slot marked as active?
@@ -6869,7 +6869,7 @@ ActS_SpawnBigHeart:
 .slotFound:
 	mActS_SetOBJBank OBJLstSharedPtrTable_Act_BigHeart
 	
-	ld   a, $02					; Enabled
+	ld   a, ATV_ONSCREEN		; Enabled
 	ldi  [hl], a
 	ld   a, [sActSetX_Low]		; X = sActSetX
 	ldi  [hl], a
@@ -6958,7 +6958,7 @@ ActS_HeartGame:
 	; Every consecutive frame a heart is spawned.
 	; 
 	ld   hl, sAct					; HL = Slot area
-	ld   d, $07						; D = Slots left
+	ld   d, ACTSLOT_COUNT			; D = Slots left
 	ld   e, $00						; E = Current slot num 
 	ld   c, e						; C = E
 .checkSlot:
@@ -6988,9 +6988,9 @@ ActS_HeartGame:
 	
 	; Otherwise, we can spawn the hearts
 ActS_HeartGame_SpawnHearts:
-	ld   hl, sAct	; HL = Slot area
-	ld   d, $07		; D = Slots left
-	ld   e, $00		; E = Current slot num 
+	ld   hl, sAct			; HL = Slot area
+	ld   d, ACTSLOT_COUNT	; D = Slots left
+	ld   e, $00				; E = Current slot num 
 .checkSlot:
 	ld   a, [hl]	; Read status
 	or   a			; Is this slot marked as free?
@@ -7014,12 +7014,12 @@ ActS_HeartGame_SpawnHearts:
 	;	When the counter reaches $F0, an automatic level completion is triggered.
 	;	(though because of checks above, the timer doesn't get increased when hearts are on-screen)
 	ld   a, [sLvlClearOnDeath]
-	cp   a, $05					; Were 5 hearts spawned already?
+	cp   a, ACTSLOT_COUNT_LO	; Were 5 hearts spawned already? (the low priority actor limit)
 	jp   nc, .noSpawn			; If so, skip
 	
 	mActS_SetOBJBank OBJLstSharedPtrTable_Act_BigHeart
 	
-	ld   a, $02					; Enabled
+	ld   a, ATV_ONSCREEN		; Enabled
 	ldi  [hl], a
 	
 	; Randomize X position

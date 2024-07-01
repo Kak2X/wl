@@ -29,7 +29,7 @@ MACRO mActS_Next
 	; sActNumProc = (sActNumProc + 1) % 8
 	ld   a, [\1]
 	inc  a
-	cp   a, $07
+	cp   a, ACTSLOT_COUNT
 	jr   c, .noWrap\@
 	xor  a
 .noWrap\@:
@@ -97,7 +97,7 @@ ENDC
 	ld   a, [sActProcCount]		; SlotCount++
 	inc  a
 	ld   [sActProcCount], a
-	cp   a, $07					; < $07?
+	cp   a, ACTSLOT_COUNT		; < $07?
 	jr   c, .nextActor			; If so, loop
 	;--
 	
@@ -150,7 +150,7 @@ ENDC
 	inc  a
 	ld   [sActProcCount], a
 	
-	cp   a, $07				; Are we done yet?
+	cp   a, ACTSLOT_COUNT		; Are we done yet?
 	jr   c, .nextDraw			; If not, loop
 	ret
 ; =============== ActS_Execute_SkipEmptySlot ===============
@@ -414,7 +414,7 @@ ActS_SavePos:
 	call ActS_GetIdByLevelLayoutPtr
 	
 	; Avoid overlapping with other default actors
-	cp   a, $07
+	cp   a, ACT_DEFAULT_BASE
 	ret  nc
 	
 	; Save the updated ID
@@ -444,7 +444,7 @@ ActS_RemoveFromOrigLocation:
 	
 	; Avoid removing anything if there's already a default actor on top 
 	; (which will replace ours anyway)
-	cp   a, $07
+	cp   a, ACT_DEFAULT_BASE
 	ret  nc
 	;--
 	
@@ -973,7 +973,7 @@ ActS_SaveAllPos:
 	ld   a, [sActNumProc]	; CurActor++
 	inc  a
 	ld   [sActNumProc], a
-	cp   a, $07				; Processed all 7 actors? (sActNumProc >= 7)
+	cp   a, ACTSLOT_COUNT	; Processed all 7 actors? (sActNumProc >= 7)
 	ret  nc					; If so, return
 	jr   .loop
 	
@@ -1339,10 +1339,10 @@ ActS_FindFirstFreeSlot:
 	; Determine how many slots to search for.
 	; Normal actors have 5 slots.
 	; Default actors have 2 extra slots.
-	ld   c, $05					
+	ld   c, ACTSLOT_COUNT_LO
 	cp   a, ACT_DEFAULT_BASE	; Actor ID < $07?
 	jr   c, .start				; If so, no extra slots
-	ld   c, $07					
+	ld   c, ACTSLOT_COUNT		
 .start:
 	ld   hl, sAct	; HL = Start ptr
 	ld   de, $0020	; DE = Size of actor data
@@ -1468,7 +1468,7 @@ ActS_Held:
 	; We want to be able to hold things like keys or coins when climbing or underwater.
 	ld   a, [sActSetId]			; A = Held actor ID
 	and  a, $7F					; Filter away no-respawn flag
-	cp   a, $07					; Is this a default actor? (ID >= $07)
+	cp   a, ACT_DEFAULT_BASE	; Is this a default actor? (ID >= $07)
 	jr   nc, .chkHeldStop		; If so, ignore the checks
 	
 	ld   a, [sPlAction]
@@ -1561,7 +1561,7 @@ ActS_Held:
 	; Maybe there's other code sets it to the dead routine without accounting for it?
 	ld   a, [sActSetId]
 	and  a, $7F									; Filter away no-respawn flag
-	cp   a, $07									; Is this a default actor?
+	cp   a, ACT_DEFAULT_BASE					; Is this a default actor?
 	jr   nc, .checkStatus						; If so, jump
 	;##
 	ld   a, [sActSetRoutineId]					; Read the routine ID
@@ -1603,7 +1603,7 @@ ActS_Held:
 	
 	ld   a, [sActSetId]			; 
 	and  a, $7F					; Filter away no-respawn flag
-	cp   a, $07					; Is this a default actor?
+	cp   a, ACT_DEFAULT_BASE	; Is this a default actor?
 	jr   nc, .chkGrab			; If so, skip this
 	
 	; Kill non-default actors if they touch a spike/lava block
@@ -1780,9 +1780,9 @@ ActS_StartStun:
 	
 	; Different code is executed for default actors
 	ld   a, [sActSetId]	
-	and  a, $7F			; Filter away no-respawn flag
-	cp   a, $07			; Actor ID >= $07?
-	jr   nc, .defAct	; If so, it's a default actor
+	and  a, $7F					; Filter away no-respawn flag
+	cp   a, ACT_DEFAULT_BASE	; Actor ID >= $07?
+	jr   nc, .defAct			; If so, it's a default actor
 .normAct:
 	ld   bc, SubCall_ActS_Stun
 	call ActS_SetCodePtr
@@ -2184,7 +2184,7 @@ ActS_Throw_Main:
 	ret  z							; If not, return
 	ld   a, [sActSetId]
 	and  a, $7F						; Filter away no-respawn flag
-	cp   a, $07						; Is this a default actor?
+	cp   a, ACT_DEFAULT_BASE		; Is this a default actor?
 	jr   nc, ActS_Throw_LandDefault	; If so, execute the special case for keys and coins
 	jp   ActS_StartJumpDead			; Otherwise, kill it immediately
 	;--
@@ -2447,9 +2447,9 @@ ActHeldOrThrownActColi_Do:
 	jr   z, .nextSlot			; If so, jump
 	
 	; Ignore the actor if it isn't visible and active (as it won't have an origin set)
-	ld   a, [hl]		; Read active status
-	cp   a, $02			; Is the actor visible and active?
-	jr   nz, .nextSlot	; If not, skip
+	ld   a, [hl]			; Read active status
+	cp   a, ATV_ONSCREEN	; Is the actor visible and active?
+	jr   nz, .nextSlot		; If not, skip
 	
 	; Verify that the actor is tangible and isn't a big block
 	ld   de, (sActSetColiType - sActSet) ; Seek to collision type
@@ -2537,7 +2537,7 @@ ActHeldOrThrownActColi_Do:
 	add  hl, de
 	
 	ldi  a, [hl]					; Read the actor ID
-	cp   a, $07						; Is this a default actor (ie: powerups, key, ...)?
+	cp   a, ACT_DEFAULT_BASE		; Is this a default actor (ie: powerups, key, ...)?
 	jr   nc, .nextSlot				; If so, ignore collision
 	
 	;--
@@ -2556,7 +2556,7 @@ ActHeldOrThrownActColi_Do:
 	ld   a, [sActHeldColiRoutineId]	; B = sActHeldColiRoutineId
 	ld   b, a
 	ld   a, [sActNumProc]			; A = sActNumProc << 4
-	and  a, $07
+	and  a, ACTSLOT_COUNT
 	swap a
 	or   a, b						; Merge the values
 	ld   [hl], a					; Set the routine ID
@@ -2566,7 +2566,7 @@ ActHeldOrThrownActColi_Do:
 	ld   b, a						; Save routine ID
 	ld   a, [sActSetId]
 	res  ACTB_NORESPAWN, a			; Filter away respawn flag for ID check
-	cp   a, $07						; Is this a default actor? (ID >= $07?)
+	cp   a, ACT_DEFAULT_BASE		; Is this a default actor? (ID >= $07?)
 	jr   nc, .nextSlot				; If so, skip this
 	ld   a, b						; Restore routine ID
 	ld   [sActSetRoutineId], a		; Set it to the actor we're holding
@@ -2578,7 +2578,7 @@ ActHeldOrThrownActColi_Do:
 	ld   a, [sActTmpCurSlotNum]		; Increase slot number
 	inc  a
 	ld   [sActTmpCurSlotNum], a
-	cp   a, $05						; Have we reached the limit?
+	cp   a, ACTSLOT_COUNT_LO		; Have we reached the limit?
 	jp   c, .checkSlot				; If not, loop
 	ret
 
@@ -4941,10 +4941,10 @@ ActS_SwitchDir_Main:
 	
 	; Otherwise, drop at an increasing vertical speed
 	ld   a, [sActSetYSpeed_Low]		; BC = sActSetYSpeed_Low & $07
-	and  a, $07							; (curiously we're limiting to 7)
+	and  a, $07						; (curiously we're limiting to 7)
 	ld   c, a							
 	ld   b, $00
-	call ActS_MoveDown					; Move down by that
+	call ActS_MoveDown				; Move down by that
 	; Every 4 frames increase the drop speed
 	ld   a, [sActSetTimer]
 	and  a, $03
@@ -5119,10 +5119,10 @@ ActS_StunByLevelLayoutPtr:
 	inc  a
 	ld   [sActStunBProc], a
 	
-	cp   a, $05			; Did we finish handling the 5th slot (the last normal one)
-	ret  nc				; If so, return
+	cp   a, ACTSLOT_COUNT_LO	; Did we finish handling the 5th slot (the last normal one)
+	ret  nc						; If so, return
 	
-	ld   bc, $0020		; Otherwise point to the next actor slot
+	ld   bc, (sActSet_End-sActSet)	; Otherwise point to the next actor slot
 	add  hl, bc
 	jr   .loop
 	
@@ -5829,10 +5829,10 @@ Act_SnowmanIce:
 ; =============== Act_Snowman_SpawnIce ===============
 Act_Snowman_SpawnIce:
 	; Find an empty slot
-	ld   hl, sAct			; HL = Actor slot area
-	ld   d, $05				; D = Slots count (normal slots)
-	ld   e, $00				; E = Current slot
-	ld   c, $00				; C = Existing Act_SnowmanIce actors
+	ld   hl, sAct				; HL = Actor slot area
+	ld   d, ACTSLOT_COUNT_LO	; D = Slots count (normal slots)
+	ld   e, $00					; E = Current slot
+	ld   c, $00					; C = Existing Act_SnowmanIce actors
 .checkSlot:
 	ld   a, [hl]		; Read active status
 	or   a				; Is the slot marked as active?

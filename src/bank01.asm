@@ -782,12 +782,12 @@ StatusBar_HatSwitch:
 	and  a
 	ret  nz
 	
-	ld   a, [sPlPower]	; sPlPower++
+	ld   a, [sPlPower]				; sPlPower++
 	inc  a
 	ld   [sPlPowerSet], a
-	cp   a, $05				; Did we went past the last valid powerup?
+	cp   a, $05						; Did we went past the last valid powerup?
 	jp   nz, Game_InitHatSwitch		; If not, jump
-	xor  a					; Otherwise wrap back to small Wario
+	xor  a							; Otherwise wrap back to small Wario
 	ld   [sPlPowerSet], a
 	jp   Game_InitHatSwitch
 ; =============== Game_DecLevelTime ===============

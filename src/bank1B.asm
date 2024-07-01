@@ -674,9 +674,9 @@ Act_Lamp_SpawnCloudPlatform:
 	;
 	; Check all slots to prevent more than 2 clouds from being active at once.
 	;
-	ld   hl, sAct		; HL = Actor slot area
-	ld   d, $07			; D = Total slots
-	ld   e, $00			; E = Number of clouds
+	ld   hl, sAct			; HL = Actor slot area
+	ld   d, ACTSLOT_COUNT	; D = Total slots
+	ld   e, $00				; E = Number of clouds
 .chkActId:
 	ld   a, l				; Move to the actor id location			
 	add  sActSetId-sActSet
@@ -726,9 +726,9 @@ Act_Lamp_SpawnCloudPlatform:
 	; find a free slot.
 	;
 .getFreeSlot:
-	ld   hl, sAct		; HL = Actor slot area
-	ld   d, $07			; D = Total slots
-	ld   e, $00			; E = Current slot6
+	ld   hl, sAct			; HL = Actor slot area
+	ld   d, ACTSLOT_COUNT	; D = Total slots
+	ld   e, $00				; E = Current slot6
 .checkSlot:
 	ld   a, [hl]		; Read active status
 	or   a				; Is the slot marked as active?
@@ -745,7 +745,7 @@ Act_Lamp_SpawnCloudPlatform:
 .slotFound:
 	mActS_SetOBJBank OBJLstPtrTable_Act_MiniGenie_Cloud
 	
-	ld   a, $02					; Enabled
+	ld   a, ATV_ONSCREEN		; Enabled
 	ldi  [hl], a
 	ld   a, [sActSetX_Low]		; X = sActSetX - $10
 	sub  a, $10
@@ -1076,9 +1076,9 @@ OBJLstPtrTable_Act_MiniGenieProjectile:
 ; =============== Act_MiniGenie_SpawnProjectile ===============
 Act_MiniGenie_SpawnProjectile:
 	; Find an empty slot
-	ld   hl, sAct		; HL = Actor slot area
-	ld   d, $07			; D = Total slots
-	ld   e, $00			; E = Current slot
+	ld   hl, sAct			; HL = Actor slot area
+	ld   d, ACTSLOT_COUNT	; D = Total slots
+	ld   e, $00				; E = Current slot
 .checkSlot:
 	ld   a, [hl]		; Read active status
 	or   a				; Is the slot marked as active?
@@ -2231,10 +2231,10 @@ Act_SyrupCastleBoss_SpawnFireball:
 	call Act_SyrupCastleBoss_BGWrite_GenieFootUpL
 	
 	; Find a free slot
-	ld   hl, sAct		; HL = Actor slot area
-	ld   d, $07			; D = Total slots
-	ld   e, $00			; E = Current slot
-.checkSlot:;R
+	ld   hl, sAct			; HL = Actor slot area
+	ld   d, ACTSLOT_COUNT	; D = Total slots
+	ld   e, $00				; E = Current slot
+.checkSlot:
 	ld   a, [hl]		; Read active status
 	or   a				; Is the slot marked as active?
 	jr   z, .slotFound	; If not, we found a slot
@@ -3747,9 +3747,9 @@ Act_Pelican_SpawnBomb:
 	ret  nz
 	
 	; Find an empty slot
-	ld   hl, sAct		; HL = Actor slot area
-	ld   d, $05			; D = Total slots
-	ld   e, $00			; E = Current slot
+	ld   hl, sAct				; HL = Actor slot area
+	ld   d, ACTSLOT_COUNT_LO	; D = Total slots
+	ld   e, $00					; E = Current slot
 .checkSlot:
 	ld   a, [hl]		; Read active status
 	or   a				; Is the slot marked as active?
@@ -3766,7 +3766,7 @@ Act_Pelican_SpawnBomb:
 .slotFound:
 	mActS_SetOBJBank OBJLstSharedPtrTable_Act_Bomb
 	
-	ld   a, $02					; Enabled
+	ld   a, ATV_ONSCREEN		; Enabled
 	ldi  [hl], a
 	
 	; Position the bomb 8px closer to the beak

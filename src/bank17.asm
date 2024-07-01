@@ -2365,9 +2365,9 @@ Act_SherbetLandBoss_SpawnHat:
 	;--
 	
 	; Find an empty slot
-	ld   hl, sAct		; HL = Actor slot area
-	ld   d, $05			; D = Total slots
-	ld   e, $00			; E = Current slot
+	ld   hl, sAct				; HL = Actor slot area
+	ld   d, ACTSLOT_COUNT_LO	; D = Total slots
+	ld   e, $00					; E = Current slot
 .checkSlot:
 	ld   a, [hl]		; Read active status
 	or   a				; Is the slot marked as active?
@@ -3002,9 +3002,9 @@ Act_Mole_SpawnSpike:
 	ret  nz
 	
 	; Find an empty slot
-	ld   hl, sAct		; HL = Actor slot area
-	ld   d, $05			; D = Total slots
-	ld   e, $00			; E = Current slot
+	ld   hl, sAct				; HL = Actor slot area
+	ld   d, ACTSLOT_COUNT_LO	; D = Total slots
+	ld   e, $00					; E = Current slot
 .checkSlot:
 	ld   a, [hl]		; Read active status
 	or   a				; Is the slot marked as active?
@@ -3122,7 +3122,7 @@ Act_MoleSpike:
 	ld   a, [sActMoleSpikeParentSlot]
 	ld   hl, sAct + 0
 	ld   d, $00
-	and  a, $07
+	and  a, ACTSLOT_COUNT
 	swap a
 	rlca
 	ld   e, a
@@ -3209,7 +3209,7 @@ Act_MoleSpike_Throw:
 	ld   a, [sActMoleSpikeParentSlot]			; A = SlotNum
 	ld   hl, sAct+(sActMoleSpikeAction-sActSet) ; HL = Base value to seek to
 	ld   d, $00						; DE = A * $20 (slot size)
-	and  a, $07						
+	and  a, ACTSLOT_COUNT		
 	swap a
 	rlca
 	ld   e, a
@@ -3623,7 +3623,7 @@ Act_MoleCutscene_SpawnCoin:
 	ld   bc, (sActSet_End-sActSet)	; Move to next slot (HL += $20)
 	add  hl, bc
 	inc  e					; SlotNum++
-	cp   a, $07				; Have we reached the end of the 7 slots?
+	cp   a, ACTSLOT_COUNT	; Have we reached the end of the 7 slots?
 	jr   c, .checkSlot		; If not, check the next one
 	ret ; [POI] We never get here
 .slotFound:

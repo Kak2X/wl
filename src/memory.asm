@@ -488,10 +488,10 @@ ds $0B
 sActStunBProc                              :db     ; EQU $A318 ; Currently processed actor for ActS_StunByLevelLayoutPtr
 sActDummyBlock2                            :db     ; EQU $A319
 sActTileBase                               :db     ; EQU $A31A ; Current starting tile count
-sActTileBaseTbl                            :ds $07 ; EQU $A31B ; List of starting tile counts, for each actor in an actgroup
+sActTileBaseTbl                            :ds ACT_DEFAULT_BASE ; EQU $A31B ; List of starting tile counts, for each actor in an actgroup
 ds $0D
 sActGroupCodePtrTable                      :ds $02 ; EQU $A32F
-sActTileBaseIndexTbl                       :ds $07 ; EQU $A331
+sActTileBaseIndexTbl                       :ds ACT_DEFAULT_BASE ; EQU $A331
 ds $15
 sActHeld                                   :db     ; EQU $A34D ; If an actor is held
 sActHeldId                                 :db     ; EQU $A34E
@@ -499,7 +499,7 @@ sActHeldOBJLstTablePtr_Low                 :db     ; EQU $A34F
 sActHeldOBJLstTablePtr_High                :db     ; EQU $A350
 sActHeldColiType                           :db     ; EQU $A351
 sActHeldTreasure                           :db     ; EQU $A352 ; Marks if we're holding a treasure
-sActColiSaveTbl                            :ds $07*2 ; EQU $A353 ; Table for storing temporary collision types
+sActColiSaveTbl                            :ds ACTSLOT_COUNT*2 ; EQU $A353 ; Table for storing temporary collision types. Mysteriously uses two bytes for each entry, but only the first is used.
 ds $06
 ; -- ActHeldActColi_Do vars --
 ; Absolute collision box values (relative to the screen),
@@ -522,7 +522,7 @@ ds $01
 sLvlSpecClear                              :db     ; EQU $A375 ; Level exit (special)
 sLvlExitDoor                               :db     ; EQU $A376
 sLvlTreasureDoor                           :db     ; EQU $A377
-sActOBJLstBank                             :ds $07 ; EQU $A378
+sActOBJLstBank                             :ds ACTSLOT_COUNT ; EQU $A378 ; Bank numbers for the sprite mapping, for each actor slot.
 ds $03
 sActTreasureId                             :db     ; EQU $A382 ; ID of the treasure the room has
 sActHeldColiRoutineId                      :db     ; EQU $A383 ; Routine ID set when the held actor collides with another actor
@@ -530,7 +530,7 @@ sPlFreezeTimer                             :db     ; EQU $A384 ; Freezes the pla
 sActLastProc                               :db     ; EQU $A385  ; Last processed actor slot
 sActProcCount                              :db     ; EQU $A386 ; Processed actors in the current frame
 sAct_Unused_InitDone                       :db     ; EQU $A387 ; Set to $01 when the actor layout is read, and then after loading an actor group, but never read back
-sActRespawnTypeTbl                         :ds $07 ; EQU $A388 ; Table indexed by actor id. for each entry: 0 -> use last position; 1 -> always use initial
+sActRespawnTypeTbl                         :ds ACT_DEFAULT_BASE ; EQU $A388 ; Table indexed by actor id. for each entry: 0 -> use last position; 1 -> always use initial
 ds $03
 sActHeldKey                                :db     ; EQU $A392
 sActHeldSlotNum                            :db     ; EQU $A393

@@ -1714,10 +1714,10 @@ Act_ParsleyWoodsBoss_Spawn3:
 Act_ParsleyWoodsBoss_SpawnGhostGoom:
 
 	; Find a free slot
-	ld   hl, sAct		; HL = Actor slot area
-	ld   d, $05			; D = Total slots
-	ld   e, $00			; E = Current slot
-	ld   c, $00			; C = Ghosts spawned
+	ld   hl, sAct				; HL = Actor slot area
+	ld   d, ACTSLOT_COUNT_LO	; D = Total slots
+	ld   e, $00					; E = Current slot
+	ld   c, $00					; C = Ghosts spawned
 .checkSlot:
 	ld   a, [hl]		; Read active status
 	or   a				; Is the slot marked as active?
@@ -2958,9 +2958,9 @@ Act_StoveCanyonBoss_WaitBall:
 Act_StoveCanyonBoss_SpawnBall:
 	; Find an empty slot
 	; Also use upper slots because of the multiple actor slots the boss uses
-	ld   hl, sAct		; HL = Actor slot area
-	ld   d, $07			; D = Total slots
-	ld   e, $00			; E = Current slot
+	ld   hl, sAct			; HL = Actor slot area
+	ld   d, ACTSLOT_COUNT	; D = Total slots
+	ld   e, $00				; E = Current slot
 .checkSlot:
 	ld   a, [hl]		; Read active status
 	or   a				; Is the slot marked as active?
@@ -4564,9 +4564,9 @@ Act_Floater_Idle_PosOffTbl:
 ; Spawns the direction marker.
 Act_Floater_SpawnArrow:
 	; Find an empty slot
-	ld   hl, sAct		; HL = Actor slot area
-	ld   d, $05			; D = Total slots
-	ld   e, $00			; E = Current slot
+	ld   hl, sAct				; HL = Actor slot area
+	ld   d, ACTSLOT_COUNT_LO	; D = Total slots
+	ld   e, $00					; E = Current slot
 .checkSlot:
 	ld   a, [hl]		; Read active status
 	or   a				; Is the slot marked as active?
@@ -4582,7 +4582,7 @@ Act_Floater_SpawnArrow:
 	
 .slotFound:
 	mActS_SetOBJBank Act_FloaterArrow
-	ld   a, $02					; Enabled
+	ld   a, ATV_ONSCREEN		; Enabled
 	ldi  [hl], a
 	ld   a, [sActSetX_Low]		; X
 	ldi  [hl], a
@@ -4655,7 +4655,7 @@ Act_FloaterArrow:
 	; Get ptr to tracked slot, like mActSeekToParentSlot.
 	; mActSeekToParentSlot sActSetTimer7
 	ld   a, [sActFloaterArrowParentSlot]
-	and  a, $07
+	and  a, ACTSLOT_COUNT
 	rlca
 	swap a
 	ld   d, $00
@@ -5137,8 +5137,8 @@ GFX_Act_Bridge: INCBIN "data/gfx/actor/bridge.bin"
 ActS_SpawnBridge:
 	; Find the first empty slot we can use
 	ld   hl, sAct
-	ld   d, $05		; D = Total allowed slots
-	ld   e, $00		; E = Slot ID
+	ld   d, ACTSLOT_COUNT_LO	; D = Total allowed slots
+	ld   e, $00					; E = Slot ID
 .nextSlot:
 	ld   a, [hl]	; Is this an empty slot?
 	or   a

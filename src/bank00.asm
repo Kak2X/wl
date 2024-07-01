@@ -2735,7 +2735,7 @@ ENDC
 	push hl
 	ld   a, [sROMBank]
 	push af
-	ld   a, $05
+	ld   a, BANK(GFX_Level_SharedOBJ) ; BANK $05
 	ld   [sROMBank], a
 	ld   [MBC1RomBank], a
 	ld   hl, GFX_Level_SharedOBJ
@@ -6524,12 +6524,12 @@ ActS_DespawnAllNormExceptCur_Broken:
 	; Check if we can despawn the actor in this slot
 	;
 	ld   a, d				
-	cp   e					; Is this the slot we aren't despawning?
+	cp   e						; Is this the slot we aren't despawning?
 	jr   z, .nextSlot			; If so, skip this slot
-	ld   a, [hl]			; Read the actor ID
-	and  a, $0F				; Filter upper nybble
-	cp   a, $07				; Is this a default actor (id >= $07)?
-	jr   nc, .nextSlot		; If so, skip this slot
+	ld   a, [hl]				; Read the actor ID
+	and  a, $0F					; Filter upper nybble
+	cp   a, ACT_DEFAULT_BASE	; Is this a default actor (id >= $07)?
+	jr   nc, .nextSlot			; If so, skip this slot
 .freeSlot:
 	; Seek to BC the active status
 	ld   b, h				; BC = HL - $10
@@ -6551,8 +6551,8 @@ ActS_DespawnAllNormExceptCur_Broken:
 	;		but it ends up checking the low byte of HL instead, which will always be $30 in the first loop.
 	;		$30 > $07, so it returns immediately.
 	; [NOTE] Also, only default actors (which we don't want to remove) can spawn in slots $05-$06.
-	;        This could have been "cp   a, $05"
-	cp   a, $07				; Have we reached the last slot?
+	;        This could have been "cp   a, ACTSLOT_COUNT_LO"
+	cp   a, ACTSLOT_COUNT	; Have we reached the last slot?
 	jr   c, .checkSlot 		; If not, loop
 	ret
 ENDC
@@ -7721,7 +7721,7 @@ ActS_LoadAndWriteOBJLst:
 	; Get the ptr to the current actor slot
 	ld   h, HIGH(sAct)
 	ld   a, [sActNumProc] ; L = sActNumProc * $20
-	and  a, $07
+	and  a, ACTSLOT_COUNT
 	swap a
 	rlca
 	ld   l, a 
@@ -7863,7 +7863,7 @@ ActS_WriteOBJLst:
 	; set default tile base.
 	ld   a, [sActSetId]
 	and  a, $7F				; Filter away no-respawn flag
-	cp   a, $07				; Is this a valid actor slot? (< $07)
+	cp   a, ACTSLOT_COUNT	; Is this a valid actor slot? (< $07)
 	jr   nc, .setGlobal		; If not, jump (don't use an out of bounds index)
 	
 	; Index the first table

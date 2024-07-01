@@ -646,6 +646,10 @@ DEF ACT_10COIN                               EQU $0E
 DEF ACT_BULLPOT                              EQU $0F
 DEF ACT_NORESPAWN                            EQU $80 ; Special MSB flag in the actor ID -- if set the actor isn't written back to the actor layout (aka: respawn table)
 DEF ACTB_NORESPAWN                           EQU 7
+
+DEF ACTSLOT_COUNT                            EQU $07 ; Number of Actor slots (total)
+DEF ACTSLOT_COUNT_LO                         EQU $05 ; Number of Actor slots (low priority)
+
                                              
 DEF ACTFLAGB_UNUSED_NOBUMPKILL               EQU 0 ; Prevents the actor from being instakilled by ActS_Unused_StunBumpKill when landing.
 DEF ACTFLAGB_UNUSED_FREEOFFSCREEN            EQU 3 ; As soon as the actor goes off-screen, it gets permanently despawned. For some reason, this is done actor-specific instead of using this flag.
