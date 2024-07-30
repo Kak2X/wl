@@ -3167,8 +3167,14 @@ Act_SyrupCastleBoss_LoadVRAMGenieAndSetParallax:
 	; Set parallax line triggers
 	ld   a, $00
 	ld   [sParallaxNextLY0], a
+	; [BUG] $28 cannot be set yet, otherwise it conflicts with the wave effect
+IF FIX_BUGS
+	ld   a, $7C
+	ld   [sParallaxNextLY1], a
+ELSE
 	ld   a, $28
 	ld   [sParallaxNextLY1], a
+ENDC
 	ld   a, $7E
 	ld   [sParallaxNextLY2], a
 	ld   a, $80
@@ -3197,6 +3203,12 @@ Act_SyrupCastleBoss_LoadVRAMGenieAndSetParallax:
 	call Act_SyrupCastleBoss_BGWrite_Ground
 	call Act_SyrupCastleBoss_LoadGFXGenieAndDoWaveEffect ; [WAIT]
 	call Act_SyrupCastleBoss_DoWaveEffectSoft3C ; [WAIT]
+	
+	; Now set the real value for this section.
+IF FIX_BUGS
+	ld   a, $28
+	ld   [sParallaxNextLY1], a
+ENDC
 	ret
 	
 ; =============== Act_SyrupCastleBoss_LoadGFXGenieAndDoWaveEffect ===============
