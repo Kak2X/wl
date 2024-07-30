@@ -5347,6 +5347,38 @@ Act_Snowman:
 	mSubCall ActBGColi_IsSolid
 	or   a
 	jp   nz, SubCall_ActS_StartJumpDead
+
+	; [BUG] This actor lacks logic to make him fall down when there isn't a solid block below.
+IF FIX_BUGS
+	;--
+	; If the actor isn't on solid ground, make him fall.
+	call ActColi_GetBlockId_Ground
+	mSubCall ActBGColi_IsSolidOnTop
+	or   a								; Is the actor on solid ground?
+	jr   nz, .onGround					; If so, skip
+	
+	ld   a, [sActSnowmanYSpeed]
+	ld   c, a							; BC = sActSnowmanYSpeed
+	ld   b, $00
+	call ActS_MoveDown					; Move down by that
+	
+	; Every 4 frames increase the drop speed
+	ld   a, [sActSetTimer]
+	and  a, $03
+	jr   nz, .chkRoutine
+	ld   a, [sActSnowmanYSpeed]
+	inc  a
+	ld   [sActSnowmanYSpeed], a
+	jr   .chkRoutine
+.onGround:
+	xor  a								; Reset drop speed
+	ld   [sActSnowmanYSpeed], a
+	ld   a, [sActSetY_Low]				; And align to Y block
+	and  a, $F0
+	ld   [sActSetY_Low], a
+.chkRoutine:
+	;--
+ENDC
 	
 	ld   a, [sActSetTimer]			; Timer++
 	inc  a

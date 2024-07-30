@@ -378,6 +378,7 @@ DEF sActBridgeModeTimer                              EQU sActSetTimer2
 DEF sActBridgeRoutineId                              EQU sActSetTimer5
 DEF sActSnowmanTurnDelay                             EQU sActSetTimer2
 DEF sActSnowmanPostKickDelay                         EQU sActSetTimer3
+DEF sActSnowmanYSpeed                                EQU sActSetTimer4 ; FIX_BUGS only
 DEF sActSnowmanRoutineId                             EQU sActSetTimer5
 DEF sActSnowmanShootDelay                            EQU sActSetTimer6
 DEF sActSnowman_Unused_SpawnDelay                    EQU sActSetTimer7
