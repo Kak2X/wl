@@ -5143,7 +5143,7 @@ Map_RiceBeach_IsPathOpen:    mMapIsSubmapOpen sMapRiceBeachCompletion, sMap_Unus
 ; Gets the completion bitmask required to go through the specified path.
 ;
 ; OUT
-; - H: Parh unlock bitmask 
+; - H: Path unlock bitmask 
 ; - L: Path unlock bitmask (high byte)
 Map_Submap_GetPathCompletionBitPtr:
 	ld   a, [sMapLevelId]
