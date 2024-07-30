@@ -1644,8 +1644,13 @@ Pl_DoCtrl_Duck:
 	ld   [sPlBGColiSolidReadOnly], a
 	call PlBGColi_DoTop
 	; [POI] This causes water blocks on top to be treated as solid (through glitches)
+IF IMPROVE
+	cp   a, COLI_SOLID		; Is there a solid block on top?
+	jr   z, .keepDuck		; If so, keep crouching
+ELSE
 	and  a					; Is there an empty block on top?
 	jr   nz, .keepDuck		; If not, keep ducking
+ENDC
 	xor  a
 	ld   [sPlBGColiSolidReadOnly], a
 	jp   Pl_SwitchToStand
@@ -1659,9 +1664,16 @@ Pl_DoCtrl_Duck:
 	; Since we're explicitly trying to move this doesn't use read-only mode
 	xor  a					; Simulate uncrouch to check for top block
 	ld   [sPlDuck], a
-	call PlBGColi_DoTop	; Check collosion and trigger any blocks
+	
+	; [POI] No longer treating water blocks as solid
+	call PlBGColi_DoTop		; Check collision and trigger any blocks
+IF IMPROVE
+	cp   a, COLI_SOLID		; Is there a solid block on top?
+	jr   z, .keepDuck		; If so, keep ducking
+ELSE
 	and  a					; Is there an empty block on top?
 	jr   nz, .keepDuck		; If not, keep ducking
+ENDC
 	; Otherwise, start a duck jump
 	ld   a, $01
 	ld   [sPlDuck], a
@@ -1999,11 +2011,18 @@ Pl_SwimDown:
 	
 	; Handle the ground collision
 	call PlBGColi_DoGround
+	; [POI] Fix for entering water/sand blocks from below
+IF !IMPROVE
 	and  a							; Is there an empty block below?
 	jp   z, Pl_SwitchToJumpFall2	; If so, fall
+ENDC
 	cp   a, COLI_SOLID				; Is there a solid block?
 	jp   z, Pl_SwitchToSwimStand	; If so, stand on the ground
-	
+IF IMPROVE
+	and  a							; Is there an empty block below?
+	call z, Pl_ChkWaterExitD		; If so, perform further checks before falling (this may POP HL)
+ENDC
+
 	; Otherwise, move down on the water.
 	; Pick different speed depending on action.
 	ld   a, [sLvlAutoScrollDir]
@@ -2943,14 +2962,24 @@ Pl_JumpSubY2:
 	; Check for top collision
 	ld   c, b				; Save for later
 	call PlBGColi_DoTop		; Handle top collision
-	cp   a, COLI_WATER		; Is there a water/sand block?
 IF IMPROVE
-	jr   z, .startSwim
+	; [POI] Fix for entering water/sand blocks from below
+	;       Prevents the water collision from occurring until we're above the water block.
+	cp   a, COLI_SOLID      ; Is there a solid block?
+	jp   z, Pl_JumpSolidTop	; If so, end the jump
+	cp   a, COLI_WATER		; Is there a water/sand block?
+	jr   nz, .keepMoving	; If not, skip ahead
+	
+	call PlBGColi_DoGround	; Handle ground collision
+	cp   a, COLI_WATER		; Is there a water/sand block?
+	jp   z, Pl_SwitchToSwim	; If so, try to swim on it
 ELSE
+	cp   a, COLI_WATER		; Is there a water/sand block?
 	jp   z, Pl_SwitchToSwim	; If so, try to swim on it (not that it works)
-ENDC
 	and  a	; COLI_EMPTY	; Is there an empty block?
 	jp   nz, Pl_JumpSolidTop	; If not, there's a solid block so end the jump
+ENDC
+.keepMoving:
 	ld   b, c
 	;--
 	
@@ -2975,18 +3004,6 @@ ENDC
 	inc  a
 	ld   [sPlJumpYPathIndex], a
 	ret
-IF IMPROVE
-.startSwim:
-    ;ld   a, [sPlSand]
-	;and  a						; Did we hit a sand block?
-	ld   a, $01					
-	;jr   nz, .startSand		; If so, jump
-	ld   [sPlSwimUpTimer], a	; Continue swimming up
-	jp   Pl_SwitchToSwim
-;.startSand:			
-;	ld   [sPlSandJump], a		; Start in the jump mode to avoid falling off
-;	jp   Pl_SwitchToSand
-ENDC
 ; =============== Pl_JumpAddY ===============
 ; Attempts to move the player down by the specified amount during a fall.
 ; IN
@@ -3134,6 +3151,35 @@ ELSE
 	jp   Pl_SwitchToStand
 ENDC
 
+IF IMPROVE
+; =============== Pl_ChkWaterExitD ===============
+; This should be called when swimming/sanding and the block below the player is empty.
+; In the original game, it would directly call Pl_SwitchToJumpFall2, with the side effect of falling down immediately,
+; basically making these blocks unenterable from below.
+;
+; The calling code is expected to be set up so that returning from here (ret nz) keeps the player in the water/sand state. 
+; Otherwise, the rest of the calling code is skipped by popping out the return address, and jumping to the empty block code instead.
+; The calling code MUST also make sure to check for the solid case beforehand. If the block below is solid, we should never get here.
+;
+; IN
+; - A: Must be $00
+Pl_ChkWaterExitD:
+	; When the bottom block is empty, only exit out of water mode when the top one also is.
+	; This allows Wario to enter water from below.
+	inc  a							; sPlBGColiSolidReadOnly = 1
+	ld   [sPlBGColiSolidReadOnly], a
+	call PlBGColi_DoTop
+	ld   b, a
+		xor  a
+		ld   [sPlBGColiSolidReadOnly], a
+	ld   a, b
+	and  a ; COLI_EMPTY				; Is there an empty block on top?
+	ret  nz                         ; If not, return
+	
+	; Otherwise, don't return to the previous func and switch to the fall/empty state	
+	pop  hl
+	jr   Pl_SwitchToJumpFall2
+ENDC
 	
 ; =============== Pl_SwitchToJumpFall ===============
 ; Switches to the jump action in the falling state (when moving off the edge of a platform, ...).
@@ -5394,12 +5440,16 @@ Pl_DoCtrl_Sand:
 	; Check what's below
 	call PlBGColi_DoGround
 	
-	; [BUG?] This check ends up preventing jumping into sand from below,
-	;		 since it would trigger as soon as you jump into it.
-	;        (water has a similar problem)
+	; [POI] This check ends up preventing jumping into sand from below,
+	;       since it would trigger as soon as you jump into it.
+	;       (water has a similar problem)
 	and  a ; COLI_EMPTY				; Is there an empty block below?
+IF IMPROVE
+	jr   z, .chkConfirmEmpty		; If so, perform further checks
+ELSE
 	jp   z, Pl_SwitchToJumpFall2	; If so, switch to the fall anim
-	
+ENDC
+
 	cp   a, COLI_SOLID				; Is there a solid block below?
 	jr   nz, .fallSand				; If not, jump
 	
@@ -5450,6 +5500,10 @@ Pl_DoCtrl_Sand:
 	ld   [sPlLstId], a
 	ret
 	
+IF IMPROVE
+.chkConfirmEmpty:
+	call Pl_ChkWaterExitD ; may POP HL
+ENDC
 .fallSand:
 	; We're falling in the sand
 	; Normally downwards movement is 1px/frame, but holding DOWN will increase it to 2px/frame.
