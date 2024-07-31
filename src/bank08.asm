@@ -2365,7 +2365,7 @@ IF IMPROVE
 	; Fall-through
 
 .skipObjDraw:	
-;Map_Mode_FadeOut_NoDrawOBJ:
+	call Map_FadeOut_AnimTiles
 ENDC
 	; Did we reach the last table entry?
 	ld   a, [sMapFadeTimer]		
