@@ -6236,6 +6236,9 @@ HomeCall_Map_InitMisc: mHomeCallRet Map_InitMisc ; BANK $08
 HomeCall_Map_Overworld_WriteEv: mHomeCallRet Map_Overworld_WriteEv ; BANK $08
 HomeCall_Map_Overworld_AnimTiles: mHomeCallRet Map_Overworld_AnimTiles ; BANK $08
 HomeCall_Map_C32ClearCutscene_Init: mHomeCallRet Map_C32ClearCutscene_Init ; BANK $14
+IF IMPROVE
+HomeCall_Map_InitMtTeapotSproutOBJLst: mHomeCallRet Map_InitMtTeapotSproutOBJLst ; BANK $14
+ENDC
 HomeCall_Map_C32ClearCutscene_Do: mHomeCallRet Map_C32ClearCutscene_Do ; BANK $14
 HomeCall_Map_MoveMtTeapotLid: mHomeCallRet Map_MoveMtTeapotLid ; BANK $14
 HomeCall_Map_MtTeapotLidSetPos: mHomeCallRet Map_MtTeapotLidSetPos ; BANK $14

@@ -72,6 +72,14 @@ MACRO mWaitForNewHBlank
 	mWaitForHBlank
 ENDM
 
+; =============== mWaitForVBlankOrHBlank ===============
+; Waits for the VBlank or HBlank period.
+MACRO mWaitForVBlankOrHBlank
+.waitVBlankOrHBlank_\@:
+	ldh  a, [rSTAT]
+	bit  1, a
+	jr   nz, .waitVBlankOrHBlank_\@
+ENDM
 
 ; =============== mIncludeMultiInt ===============
 ; Shorthand for including Overworld animated GFX

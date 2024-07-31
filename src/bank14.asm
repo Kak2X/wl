@@ -360,6 +360,9 @@ Map_MoveMtTeapotLid:
 ; Writes and animates the mappings for Mt.Teapot, always in fixed position mode.
 Map_NoMoveMtTeapotLid:
 	call Map_MtTeapotLidSetPos ; Use the initial abs coordinates
+IF IMPROVE
+	call Map_WriteMtTeaputSproutOBJLst ; Sprout effect when crashed down
+ENDC
 	jr   Map_WriteMtTeapotLidOBJLst
 ;--
 .addStep:
@@ -492,7 +495,11 @@ ENDC
 ; Used to set the initial position of Mt.Teapot's lid when the Mt.Teapot cutscene starts.
 ; This is done as the lid starts higher than usual.
 Map_MtTeapotLidSetPosCutscene:
+IF IMPROVE
+	ld   a, $58                     ; Extended since the cutscene starts during the fade in IMPROVE mode
+ELSE
 	ld   a, $50						; Absolute Y Value
+ENDC
 	jr   Map_MtTeapotLidSetPos2
 ; =============== Map_MtTeapotLidSetPos ===============
 ; Used to set the initial screen position for Mt.Teapot's lid.
@@ -527,6 +534,13 @@ ENDC
 ; shown on first completion of Course 12.
 Map_C12ClearCutscene_Do:
 	call HomeCall_Map_Overworld_AnimTiles
+IF FIX_BUGS
+	; [BUG] There are a few frames where the lid isn't drawn due to the call to jr .writeLid being done manually.
+	call .doScript
+	call Map_MtTeapotLidUpdateCoords
+	jp   Map_WriteMtTeapotLidOBJLst
+.doScript:
+ENDC
 	ld   a, [sMapOverworldCutsceneScript]
 	and  a
 	jr   z, .act0
@@ -539,22 +553,36 @@ Map_C12ClearCutscene_Do:
 	cp   a, $04
 	jr   z, .act4
 	
+IF !FIX_BUGS
 .writeLid:
 	call Map_MtTeapotLidUpdateCoords
 	jp   Map_WriteMtTeapotLidOBJLst
+ENDC
 .act0:
 	ld   a, [sMapTimer_Low]			; Every 8 frames
 	and  a, $07
+IF FIX_BUGS
+	ret  nz
+ELSE
 	jr   nz, .writeLid
-	
+ENDC
+
 	ld   hl, sMapMtTeapotLidY		; The lid slowly rises up
 	dec  [hl]
 	
 	ld   hl, sMapMtTeapotLidYTimer
 	inc  [hl]
 	ld   a, [hl]
+IF IMPROVE
+	cp   a, $20                     ; Extended since the cutscene starts during the fade in IMPROVE mode
+ELSE
 	cp   a, $18						; Until it moves $18 pixels up
+ENDC
+IF FIX_BUGS
+	ret  nz
+ELSE
 	jr   nz, .writeLid
+ENDC
 .nextAct:
 	; Reset the timer and switch to the next cutscene act
 	xor  a
@@ -565,7 +593,11 @@ Map_C12ClearCutscene_Do:
 .act1:
 	ld   a, [sMapTimer_Low]			; Every 4 frames
 	and  a, $03
+IF FIX_BUGS
+	ret  nz
+ELSE
 	jr   nz, .writeLid
+ENDC
 	
 	ld   a, SFX1_13		; Play "warning" SFX
 	ld   [sSFX1Set], a
@@ -578,7 +610,11 @@ Map_C12ClearCutscene_Do:
 	inc  [hl]
 	ld   a, [hl]
 	cp   a, $15
+IF FIX_BUGS
+	ret  nz
+ELSE
 	jr   nz, .writeLid
+ENDC
 	
 	ld   a, $1C						; After it's done, return the palette to normal
 	ldh  [rOBP0], a
@@ -592,7 +628,11 @@ Map_C12ClearCutscene_Do:
 	inc  [hl]
 	ld   a, [hl]
 	cp   a, $08
+IF FIX_BUGS
+	ret  nz
+ELSE
 	jr   nz, .writeLid
+ENDC
 	
 	ld   a, $01						; After that, start screen shake effect
 	ld   [sMapShake], a
@@ -605,7 +645,11 @@ Map_C12ClearCutscene_Do:
 	inc  a
 	ld   [sMapShake], a
 	cp   a, $40
+IF FIX_BUGS
+	ret  nz
+ELSE
 	jr   nz, .writeLid
+ENDC
 	
 	xor  a							; Clear screen shake related memory
 	ld   [sMapShake], a
@@ -614,11 +658,18 @@ Map_C12ClearCutscene_Do:
 	ld   [sMapCutsceneEndTimer], a
 	jr   .nextAct
 .act4:
+IF IMPROVE
+	call Map_WriteMtTeaputSproutOBJLst ; Show steam
+ENDC
 	ld   hl, sMapCutsceneEndTimer	; Pause cutscene for $B0 frames
 	inc  [hl]
 	ld   a, [hl]
 	cp   a, $B0
+IF FIX_BUGS
+	ret  nz
+ELSE
 	jp   nz, .writeLid
+ENDC
 	
 	ld   a, MAP_MODE_CUTSCENEFADEOUT	; After that's done, start the fade out
 	ld   [sMapId], a
@@ -631,6 +682,68 @@ Map_C12ClearCutscene_Do:
 	ld   a, BGMACT_FADEOUT				; Fade out the song
 	ld   [sBGMActSet], a
 	ret
+
+
+IF IMPROVE
+
+; =============== Map_InitMtTeapotSproutOBJLst ===============
+; Initialize the variables for the steam sprout effect, unused in the original game.
+; Fixed up to be properly aligned to Mt. Teapot.
+Map_InitMtTeapotSproutOBJLst:
+	ld   a, [sMapMtTeapotLidY] 					; Y = LidY
+	add  -$10
+	ld   [sMapMtTeapotSproutY], a
+	ld   a, [sMapMtTeapotLidX] 					; X = LidX + $30
+	add  $1A
+	ld   [sMapMtTeapotSproutX], a
+	ld   a, $07
+	ld   [sMapMtTeapotSproutAnimTimer], a
+	ld   a, $01	; OBJ_MTTEAPOT_SPROUT1								
+	ld   [sMapMtTeapotSproutLstId], a
+	ld   a, $10
+	ld   [sMapMtTeapotSproutFlags], a
+	ret
+	
+; =============== Map_WriteMtTeaputSproutOBJLst ===============
+; Displays a steam sprout effect after the lid crashes down.
+Map_WriteMtTeaputSproutOBJLst:
+
+	; Update location
+	ld   a, [sMapMtTeapotLidY] 					; Y = LidY
+	add  -$10
+	ld   [sMapMtTeapotSproutY], a
+	ld   a, [sMapMtTeapotLidX] 					; X = LidX + $30
+	add  $1A
+	ld   [sMapMtTeapotSproutX], a
+
+	ld   a, [sMapMtTeapotSproutAnimTimer]
+	ld   b, a
+	ld   a, [sMapTimer0]
+	and  a, b					; Is AnimMask & Timer != 0?
+	jr   nz, .write				; If not, don't update the frame
+	;--
+	; Loop between indexes $03-$05
+	ld   hl, sMapMtTeapotSproutLstId
+	inc  [hl]					; Otherwise, switch to the next frame
+	ld   a, [hl]
+	cp   a, $04 + 1 ; OBJ_MTTEAPOT_SPROUT3+1	; Went past the last index?
+	jr   nz, .write				; If not, jump
+	
+	ld   a, $01 ; OBJ_MTTEAPOT_SPROUT0		; Otherwise reset it back the first entry
+	ld   [hl], a
+.write:
+	; Prepare call
+	ld   hl, OBJLstPtrTable_Map_OverworldMtTeapot
+	ld   a, [sMapMtTeapotSproutY]
+	ld   [sMapOAMWriteY], a
+	ld   a, [sMapMtTeapotSproutX]
+	ld   [sMapOAMWriteX], a
+	ld   a, [sMapMtTeapotSproutLstId]
+	ld   [sMapOAMWriteLstId], a
+	ld   a, [sMapMtTeapotSproutFlags]
+	ld   [sMapOAMWriteFlags], a
+	jp   Map_WriteOBJLst
+ELSE
 
 ; =============== Map_Unused_WriteMtTeapotSproutOBJLst ===============
 ; [TCRF] Unreferenced sprite mapping setup code for the sprout coming out of Mt.Teapot.
@@ -645,7 +758,6 @@ Map_C12ClearCutscene_Do:
 ; Considering only the initial mapping frame is shown, the code may be unfinished.
 ; Note that there is an also unused table just after this subroutine with the frame IDs 
 ; which would have been used for animating the sprite.
-
 Map_Unused_WriteMtTeapotSproutOBJLst:
 	; OBJ Settings
 	ld   a, [sMapMtTeapotLidY] 					; Y = LidY
@@ -676,6 +788,7 @@ OBJLstAnim_Unused_Map_MtTeapotSprout:
 	db $03
 	db $04
 	db $FF
+ENDC
 
 ; =============== OBJLstPtrTable_Map_OverworldMtTeapot ===============
 OBJLstPtrTable_Map_OverworldMtTeapot: 
@@ -866,7 +979,7 @@ ENDM
 	ld   hl, sMapLakeDrainLstId
 	ld   de, sMapLakeDrainAnimTimer
 	call Map_SetLakeDrainOBJLst
-.animSprout:;J
+.animSprout:
 	ld   hl, sMapLakeSproutLstId
 	ld   de, sMapLakeSproutAnimTimer
 	call Map_SetLakeSproutOBJLst

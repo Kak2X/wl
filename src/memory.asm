@@ -919,7 +919,9 @@ sMapEvOffsetTablePtr_High                  :db     ; EQU $A7EF ; Nice big endian
 sMapEvOffsetTablePtr_Low                   :db     ; EQU $A7F0
 sMapPathDirSel_Copy                        :db     ; EQU $A7F1 ; Copy value used for "validation"... that doesn't do anything
 sMap_Unused_CopyLinkedTbl                  :db     ; EQU $A7F2
-
+IF IMPROVE
+sMapLastId                                 :db     ; EQU $A7F3 
+ENDC
 SECTION "Active Save Slot", SRAM[$A800]
 ds $04 ; Skipped, would be the checksum
 sLevelId                                   :db     ; EQU $A804
@@ -1342,7 +1344,19 @@ NEXTU
 ds $40
 sMapEvTileId                               :db     ; EQU $B040 ; Next tile ID to place for the map event
 sMapEvBGPtr                                :db     ; EQU $B041 ; Where to place the tile ID from above. Ptr to the tilemap.
-ds $EE
+
+ds $E9
+
+IF IMPROVE
+; Teapot steam sprout (working)
+sMapMtTeapotSproutAnimTimer                :db     ; EQU $B12B
+sMapMtTeapotSproutY                        :db     ; EQU $B12C
+sMapMtTeapotSproutX                        :db     ; EQU $B12D
+sMapMtTeapotSproutFlags                    :db     ; EQU $B12E
+sMapMtTeapotSproutLstId                    :db     ; EQU $B12F
+ELSE
+ds $05
+ENDC
 ;--
 ; Teapot lid
 sMapMtTeapotLidY                           :db     ; EQU $B130

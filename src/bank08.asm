@@ -1508,6 +1508,9 @@ Map_Mode_OverworldInit:
 	call Map_ClearRAM
 	call Map_OverworldSetStartPos
 	call HomeCall_Map_MtTeapotLidSetPos
+IF IMPROVE
+	call HomeCall_Map_InitMtTeapotSproutOBJLst
+ENDC
 	call HomeCall_Map_InitWorldClearFlags
 	call HomeCall_Map_InitFreeViewArrows
 	call Map_InitMisc
@@ -1517,6 +1520,9 @@ Map_Mode_OverworldInit:
 	ld   [sMapNextId], a
 	ld   a, $00					; This immediately blanks out the palette (in preparation for the fade-in)
 	ldh  [rBGP], a
+IF FIX_BUGS
+	ldh  [rOBP0], a
+ENDC
 	ld   a, BGM_OVERWORLD
 	ld   [sBGMSet], a
 	
@@ -2188,6 +2194,10 @@ Map_EndingFadeIn_OBPTable:
 ; This will fade in the screen, then switch to the specified map mode in MapNextMode.
 Map_Mode_FadeIn:
 	call Map_FadeIn_AnimTiles
+IF IMPROVE
+	; Show objects during fades
+	call Map_FadeIn_WriteOBJ
+ENDC
 	ld   a, [sMapFadeTimer]		; Did we reach the last table entry?
 	cp   a, $05
 	jr   z, Map_FadeIn_End
@@ -2196,6 +2206,10 @@ Map_Mode_FadeIn:
 	ret  nz
 	ld   hl, Map_FadeIn_BGPTable
 	call Map_SetFadeBGP
+IF IMPROVE
+	ld   hl, Map_FadeIn_OBPTable
+	call Map_SetFadeOBP
+ENDC
 	ld   hl, sMapFadeTimer
 	inc  [hl]
 	ret
@@ -2206,7 +2220,7 @@ Map_Mode_FadeIn:
 ;
 ; IN
 ; - HL: Ptr to table of palettes
-Map_SetFadeBGP:;C
+Map_SetFadeBGP:
 	xor  a
 	ld   b, a
 	ld   a, [sMapFadeTimer]
@@ -2221,8 +2235,15 @@ Map_FadeIn_End:
 	ld   [sMapFadeTimer], a
 	ld   a, $E1						; Just in case, set the normal BGP palette
 	ldh  [rBGP], a
+IF IMPROVE
+	ld   a, $1C						; and the OBJ one as well
+	ldh  [rOBP0], a
+ENDC
 	ld   a, [sMapNextId]			; Switch to the requested mode.
 	ld   [sMapId], a
+IF IMPROVE
+	ld   [sMapLastId], a			; Required for animating tiles during the fade out
+ENDC
 	ld   a, $EC
 	ld   [sMapTimer0], a
 	ret
@@ -2231,14 +2252,36 @@ Map_FadeIn_BGPTable:
 	db $00,$40,$50,$A1,$E1
 	ret
 	
+IF IMPROVE
+Map_FadeIn_OBPTable:
+	db $00,$04,$14,$18,$1C
+	ret
+	
+; =============== Map_FadeOut_AnimTiles ===============
+; Performs tile animation during the fade-out.
+Map_FadeOut_AnimTiles:
+	ld   a, [sMapLastId]
+	jr   Map_FadeIn_AnimTiles.custom
+ENDC
+
 ; =============== Map_FadeIn_AnimTiles ===============
 ; Performs tile animation during the fade-in.
 Map_FadeIn_AnimTiles:
 	ld   a, [sMapNextId]
+.custom:
 	cp   a, MAP_MODE_OVERWORLD
 	jr   z, .overworld
 	cp   a, MAP_MODE_RICEBEACH
 	jr   z, .riceBeach
+	; [BUG] These checks are missing, causing the animated tiles to flash at the beginning when they end up copying blank tiles
+IF FIX_BUGS
+	cp   a, MAP_MODE_MTTEAPOTCUTSCENE
+	jr   z, .overworld
+	cp   a, MAP_MODE_PARSLEYWOODSCUTSCENE
+	jr   z, .overworld
+	cp   a, MAP_MODE_SSTEACUPCUTSCENE
+	jr   z, .overworld	
+ENDC
 	ret
 .overworld:
 	call Map_Overworld_AnimTiles
@@ -2246,6 +2289,54 @@ Map_FadeIn_AnimTiles:
 .riceBeach:
 	call Map_RiceBeach_AnimTiles
 	ret
+	
+IF IMPROVE
+; =============== Map_FadeIn_WriteOBJ ===============
+; Writes OBJ other than the player during normal fade ins.
+Map_FadeIn_WriteOBJ:
+	ld   a, [sMapNextId]
+	cp   a, MAP_MODE_OVERWORLD
+	jr   z, .overworld
+	; The lid movement is different in the cutscene, so calling HomeCall_Map_MoveMtTeapotLid isn't applicable
+	cp   a, MAP_MODE_MTTEAPOTCUTSCENE
+	jr   z, .overworld2
+	cp   a, MAP_MODE_PARSLEYWOODSCUTSCENE
+	jr   z, .overworld
+	ret
+.overworld:
+	call HomeCall_Map_MoveMtTeapotLid
+	
+	; Prevent drawing flags in World Clear mode.
+	; If we did we would draw the newly obtained flag prematurely.
+	ld   a, [sMapWorldClear]
+	and  a
+	ret  nz
+	call HomeCall_Map_Overworld_AnimFlags
+	ret
+	
+.overworld2:
+	; Start executing the cutscene immediately.
+	; To account for this early start, the lid was relocated a bit lower.
+	call HomeCall_Map_C12ClearCutscene_Do
+	;call HomeCall_Map_Overworld_AnimFlags
+	ret
+	
+; =============== Map_FadeOut_WriteOBJ ===============
+; Writes OBJ other than the player during normal fade outs.
+Map_FadeOut_WriteOBJ:
+	ld   a, [sMapLastId]
+	cp   a, MAP_MODE_OVERWORLD
+	jr   z, .overworld
+	cp   a, MAP_MODE_MTTEAPOTCUTSCENE
+	jr   z, .overworld
+	cp   a, MAP_MODE_PARSLEYWOODSCUTSCENE
+	jr   z, .overworld
+	ret
+.overworld:
+	call HomeCall_Map_MoveMtTeapotLid
+	call HomeCall_Map_Overworld_AnimFlags
+	ret
+ENDC
 	
 ; =============== Map_Mode_CutsceneFadeOut ===============
 ; Mode $15
@@ -2261,11 +2352,21 @@ Map_Mode_CutsceneFadeOut:
 	call HomeCall_Map_NoMoveMtTeapotLid
 	ld   a, $01
 	ld   [sMapFadeOutRetVal], a
-	
+IF IMPROVE
+	jr   Map_Mode_FadeOut.skipObjDraw
+ENDC
+
 ; =============== Map_Mode_FadeOut ===============
 ; Mode $08
 ; Sets the background *and object* palette from a palette table.
 Map_Mode_FadeOut:
+IF IMPROVE
+	call Map_FadeOut_WriteOBJ
+	; Fall-through
+
+.skipObjDraw:	
+;Map_Mode_FadeOut_NoDrawOBJ:
+ENDC
 	; Did we reach the last table entry?
 	ld   a, [sMapFadeTimer]		
 	sub  a, $06					; > 6
@@ -2287,7 +2388,13 @@ Map_Mode_FadeOut:
 	ret
 	
 Map_FadeOut_OBPTable:
+; [BUG] Improper palette table for fading out objects.
+;       Evidently this wasn't tested enough, as objects are usually hidden during fade outs -- cutscenes being the only exception.
+IF FIX_BUGS
+	db $1C,$18,$14,$04,$00,$00
+ELSE
 	db $FC,$08,$10,$40,$00,$00
+ENDC
 	ret
 
 ; =============== Map_SetFadeOBP ===============
@@ -2316,6 +2423,9 @@ ENDC
 	ldh  [rBGP], a					; Switch to next mode
 	ld   a, [sMapNextId]
 	ld   [sMapId], a
+IF IMPROVE
+	ld   [sMapLastId], a
+ENDC
 	
 	; If we requested to switch to a different mode when the fadeout ends, do so
 	ld   a, [sMapFadeOutRetVal]
@@ -7014,7 +7124,10 @@ Map_SetNextEvTile:
 	ld   d, a		
 	ld   a, [hl]
 	ld   e, a
-	
+IF IMPROVE
+	; Required for the new screen event code
+	mWaitForVBlankOrHBlank
+ENDC
 	ld   a, [bc]	; Get the tile ID
 	ld   [de], a	; Set it to the VRAM address
 	ret
@@ -7815,6 +7928,9 @@ Map_Mode_C12ClearInit:
 	ld   [sMapScrollY], a
 	ld   [sMapScrollX], a
 	call HomeCall_Map_MtTeapotLidSetPosCutscene
+IF IMPROVE
+	call HomeCall_Map_InitMtTeapotSproutOBJLst
+ENDC
 	call Map_InitMisc
 	ld   a, MAP_MODE_FADEIN
 	ld   [sMapId], a
@@ -7822,6 +7938,9 @@ Map_Mode_C12ClearInit:
 	ld   [sMapNextId], a
 	ld   a, $00
 	ldh  [rBGP], a
+IF IMPROVE
+	ldh  [rOBP0], a
+ENDC
 	ld   a, BGM_CUTSCENE
 	ld   [sBGMSet], a
 	ret
@@ -8545,7 +8664,7 @@ Map_ScreenEvent:
 	;
 	ld   a, [sMapShake]				; Is the screen shake effect active?
 	and  a
-	jr   z, .chkRiceBeachNext	; If not, skip
+	jr   z, .chkRiceBeachNext		; If not, skip
 	
 	ld   a, [sMapScrollYShake]		; Is the base Y scroll override set?
 	and  a							
@@ -8584,6 +8703,43 @@ Map_ScreenEvent:
 ;	TILE ANIMATION HANDLER
 ;--
 	
+.animTiles:
+IF IMPROVE
+.chkRiceBeachNext: ; Whatever...
+.chkRiceBeach:
+	call .tryAnimTilesByAddr
+	jr   .checkEv
+
+.tryAnimTilesByAddr:
+	; Try to animate the tiles, going off the three possible values.
+	; If there is any match, once the code for the specific tile animation finishes, it will pop out
+	; the return address to exit .tryAnimTilesByAddr prematurely.
+	ld   a, [sMapId]
+	call .chkTileAnimList
+	ld   a, [sMapNextId]
+	call .chkTileAnimList
+	ld   a, [sMapLastId]
+	call .chkTileAnimList ; and because of that, this should not be converted to "jr .chkTileAnimList"
+	ret
+	
+.chkTileAnimList:
+	cp   a, MAP_MODE_RICEBEACH
+	jr   z, .riceBeach
+	cp   a, MAP_MODE_OVERWORLD
+	jr   z, .overworld
+	cp   a, MAP_MODE_MTTEAPOTCUTSCENE
+	jr   z, .overworld
+	cp   a, MAP_MODE_SSTEACUPCUTSCENE
+	jr   z, .overworld
+	cp   a, MAP_MODE_PARSLEYWOODSCUTSCENE
+	jr   z, .overworld
+	cp   a, MAP_MODE_SSTEACUP
+	jr   z, .modeSSTeacup
+	cp   a, MAP_MODE_STOVECANYON
+	jr   z, .modeStoveCanyon
+	ret
+
+ELSE
 ; Rice Beach gets special treatment, as its animated tiles
 ; are also processed during the fade in, unlike all other maps.
 ;
@@ -8598,6 +8754,7 @@ Map_ScreenEvent:
 	ld   a, [sMapId]
 	cp   a, MAP_MODE_RICEBEACH
 	jp   nz, .checkMode3
+ENDC
 	
 .riceBeach:
 	; Copy over all of the 1bpp animated tiles for Rice Beach from CRAM to VRAM.
@@ -8621,14 +8778,19 @@ Map_ScreenEvent:
 	xor  a							; Reset the counter
 	ld   [hl], a
 	
-	; Rice Beach also handles its Map Event code here, likely to save time
+IF IMPROVE
+	pop  hl
+	ret
+ELSE
+	; Rice Beach also handles its Map Event code here, likely to save time.
+	; It also just so happens to not cause VRAM inaccessibility issues in Map_SetNextEvTile in the unmodified game.
 	; This is identical to .doEv
 	ld   a, [sMapLevelClear]
 	and  a							; Are we playing the path reveal anim?
 	ret  z							; If not, return
 	call Map_SetNextEvTile			; Otherwise, update a single tile as specified
 	ret
-	
+
 .checkMode3:
 	; Detect overworld cutscenes (which still do the overworld tile anim)
 	ld   a, [sMapId]
@@ -8648,8 +8810,16 @@ Map_ScreenEvent:
 	;--
 	cp   a, MAP_MODE_OVERWORLD
 	jr   nz, .checkEv
+ENDC
+
 .overworld:
+	
+IF IMPROVE
+	pop  hl
+	jp   Map_Overworld_ScreenEvent
+ELSE
 	call Map_Overworld_ScreenEvent
+ENDC
 	
 ;--
 ;	MAP EVENT (PATH REVEAL VER) / TILE UPDATE HANDLER
@@ -8670,6 +8840,15 @@ Map_ScreenEvent:
 .doEv:
 	call Map_SetNextEvTile
 	ret
+	
+IF IMPROVE
+.modeSSTeacup:
+	pop  hl
+	jp   Map_SSTeacup_ScreenEvent
+.modeStoveCanyon:
+	pop  hl
+	jp   Map_StoveCanyon_ScreenEvent
+ELSE	
 .modeSSTeacup:
 	call Map_SSTeacup_ScreenEvent
 	jr   .checkEv
@@ -8677,6 +8856,7 @@ Map_ScreenEvent:
 	call Map_StoveCanyon_ScreenEvent
 	jr   .checkEv
 	ret
-	
+ENDC
+
 ; =============== END OF BANK ===============
 	mIncJunk "L087EB6"
