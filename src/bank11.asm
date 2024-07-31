@@ -1,6 +1,7 @@
 ;
 ; BANK $11 - Shared level GFX
 ;
+Marker_GFX_LevelAnim:
 GFX_LevelAnim_00: INCBIN "data/gfx/level/anim_00.bin"
 GFX_LevelAnim_01: INCBIN "data/gfx/level/anim_01.bin"
 GFX_LevelAnim_02: INCBIN "data/gfx/level/anim_02.bin"
@@ -17,6 +18,7 @@ GFX_LevelAnim_0C: INCBIN "data/gfx/level/anim_0c.bin"
 GFX_LevelAnim_0D: INCBIN "data/gfx/level/anim_0d.bin"
 GFX_LevelAnim_0E: INCBIN "data/gfx/level/anim_0e.bin"
 GFX_LevelAnim_0F: INCBIN "data/gfx/level/anim_0f.bin"
+Marker_GFX_LevelShared:
 GFX_LevelShared_00: INCBIN "data/gfx/level/shared_00.bin"
 GFX_LevelShared_01: INCBIN "data/gfx/level/shared_01.bin"
 GFX_LevelShared_02: INCBIN "data/gfx/level/shared_02.bin"
@@ -33,6 +35,7 @@ GFX_LevelShared_0C: INCBIN "data/gfx/level/shared_0c.bin"
 GFX_LevelShared_0D: INCBIN "data/gfx/level/shared_0d.bin"
 GFX_LevelShared_0E: INCBIN "data/gfx/level/shared_0e.bin"
 GFX_LevelShared_0F: INCBIN "data/gfx/level/shared_0f.bin"
+Marker_GFX_StatusBar:
 GFX_StatusBar_00: INCBIN "data/gfx/level/statusbar_00.bin"
 GFX_StatusBar_01: INCBIN "data/gfx/level/statusbar_01.bin"
 GFX_StatusBar_02: INCBIN "data/gfx/level/statusbar_02.bin"

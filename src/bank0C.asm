@@ -377,6 +377,7 @@ Door_LevelClear:	db DOORSPEC_LVLCLEAR
 Door_LevelClearAlt:	db DOORSPEC_LVLCLEARALT
 
 ; =============== Room Transitions ===============
+Marker_DoorHeaders:
 INCLUDE "data/lvl/c26/door_headers.asm"
 INCLUDE "data/lvl/c33/door_headers.asm"
 INCLUDE "data/lvl/c15/door_headers.asm"

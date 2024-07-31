@@ -554,7 +554,8 @@ Level_TreasureCompletionMask:
 	dw %0010000000000000 ; G
 	dw %0100000000000000 ; J
 	dw %1000000000000000 ; E
-
+	
+Marker_ActGroup:
 INCLUDE "data/lvl/c33/actor_group_init.asm"
 INCLUDE "data/lvl/c15/actor_group_init.asm"
 INCLUDE "data/lvl/c20/actor_group_init.asm"
@@ -612,7 +613,7 @@ INCLUDE "data/lvl/c31b/actor_group_init.asm"
 ; Defines the (initial) code an actor ID executes, before said
 ; init code replaces its pointers to the main code, if needed.
 ; All code pointers point to Bank $02 or Bank $00.
-
+Marker_ActCodeDef:
 ; [TCRF] Blank dummy object; Not meant to be used.
 ActCodeDef_Null:
 	mActCodeDef Act_Null, $02, $0F

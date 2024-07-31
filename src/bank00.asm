@@ -1360,7 +1360,7 @@ Level_EnterDoor:
 	;------------------
 	ld   a, [sROMBank]
 	push af
-	ld   a, $0C
+	ld   a, BANK(Level_DoorHeaderPtrTable) ; BANK $0C
 	ld   [sROMBank], a
 	ld   [MBC1RomBank], a
 	;------------------
@@ -1461,7 +1461,7 @@ ENDC
 Level_GetTreasureDoorPtr:
 	ld   a, [sROMBank]
 	push af
-	ld   a, $0C
+	ld   a, BANK(Level_DoorHeaders_TreasurePtrs) ; BANK $0C
 	ld   [sROMBank], a
 	ld   [MBC1RomBank], a
 	;------------------
@@ -2602,7 +2602,7 @@ Game_InitHatSwitch:
 Level_LoadData:
 	ld   a, [sROMBank]
 	push af
-	ld   a, $0C
+	ld   a, BANK(Level_HeaderPtrTable) ; BANK $0C
 	ld   [sROMBank], a
 	ld   [MBC1RomBank], a
 	;-------------------------------------
@@ -2665,7 +2665,7 @@ ENDC
 	
 	ld   a, [sROMBank]
 	push af
-	ld   a, $11				; Block GFX are all in bank $11
+	ld   a, BANK(Marker_GFX_LevelShared)	; Block GFX are all in bank $11
 	ld   [sROMBank], a
 	ld   [MBC1RomBank], a
 	call Level_CopySharedBlockGFX	; Copy them over
@@ -2691,7 +2691,7 @@ ENDC
 	
 	ld   a, [sROMBank]
 	push af
-	ld   a, $11				; Always in Bank $11
+	ld   a, BANK(Marker_GFX_StatusBar)	; Always in Bank $11
 	ld   [sROMBank], a
 	ld   [MBC1RomBank], a
 	call Level_CopyStatusBarGFX
@@ -2716,7 +2716,7 @@ ENDC
 	;#
 	ld   a, [sROMBank]
 	push af
-	ld   a, $11
+	ld   a, BANK(Marker_GFX_LevelAnim) ; BANK $11
 	ld   [sROMBank], a
 	ld   [MBC1RomBank], a
 	call Level_CopyAnimGFX
@@ -2914,7 +2914,7 @@ ENDC
 	;--
 	ld   a, [sROMBank]
 	push af
-	ld   a, $07
+	ld   a, BANK(Marker_ActGroup) ; BANK $07
 	ld   [sROMBank], a
 	ld   [MBC1RomBank], a
 	call JumpHL
@@ -2954,17 +2954,17 @@ ENDC
 	;--
 	ld   a, [sROMBank]
 	push af
-	ld   a, $05					; All are in BANK $05
+	ld   a, BANK(Marker_GFX_Hats) ; All are in BANK $05
 	ld   [sROMBank], a
 	ld   [MBC1RomBank], a
 	push hl
 	; Copy primary set
 	ld   de, vGFXHatPrimary
-	ld   b, $40					
+	ld   b, 4*TILESIZE
 	call CopyBytes
 	pop  hl
 	; Copy secondary set
-	ld   de, $0040 				; which is stored right after the primary set
+	ld   de, 4*TILESIZE		; which is stored right after the primary set
 	add  hl, de
 	ld   de, vGFXHatSecondary
 	ld   b, $40
@@ -3034,7 +3034,7 @@ Level_LoadRoomData:
 	
 	ld   a, [sROMBank]
 	push af
-	ld   a, $0C
+	ld   a, BANK(Marker_DoorHeaders) ; BANK $0C
 	ld   [sROMBank], a
 	ld   [MBC1RomBank], a
 	;-------------------------------------
@@ -3193,7 +3193,7 @@ Level_LoadRoomData:
 	;#
 	ld   a, [sROMBank]
 	push af
-	ld   a, $11						; Block GFX are all in bank $11
+	ld   a, BANK(Marker_GFX_LevelShared) ; Block GFX are all in bank $11
 	ld   [sROMBank], a
 	ld   [MBC1RomBank], a
 	call Level_CopySharedBlockGFX
@@ -3218,7 +3218,7 @@ Level_LoadRoomData:
 	;#
 	ld   a, [sROMBank]
 	push af
-	ld   a, $11
+	ld   a, BANK(Marker_GFX_StatusBar) ; BANK $11
 	ld   [sROMBank], a
 	ld   [MBC1RomBank], a
 	call Level_CopyStatusBarGFX
@@ -3243,7 +3243,7 @@ Level_LoadRoomData:
 	;#
 	ld   a, [sROMBank]
 	push af
-	ld   a, $11
+	ld   a, BANK(Marker_GFX_LevelAnim) ; BANK $11
 	ld   [sROMBank], a
 	ld   [MBC1RomBank], a
 	call Level_CopyAnimGFX
@@ -3303,7 +3303,7 @@ Level_LoadRoomData:
 	;--
 	ld   a, [sROMBank]
 	push af
-	ld   a, $07
+	ld   a, BANK(Marker_ActGroup) ; BANK $07
 	ld   [sROMBank], a
 	ld   [MBC1RomBank], a
 	call JumpHL
@@ -6705,7 +6705,7 @@ ActS_ReloadInitial:
 	ld   a, [sROMBank]
 	;##
 	push af					; Save bank
-	ld   a, $07				; Set new bank		
+	ld   a, BANK(Marker_ActCodeDef) ; BANK $07 ; Set new bank
 	ld   [sROMBank], a		
 	ld   [MBC1RomBank2], a
 	ld   a, [sSubCallTmpA]	; Restore A (useless)
@@ -7401,7 +7401,7 @@ ActS_InitToSlot:
 	ld   [sSubCallTmpA], a	; Save A
 	ld   a, [sROMBank]
 	push af
-	ld   a, $07				
+	ld   a, BANK(Marker_ActCodeDef) ; BANK $07	
 	ld   [sROMBank], a
 	ld   [MBC1RomBank2], a
 	ld   a, [sSubCallTmpA]	; Restore A

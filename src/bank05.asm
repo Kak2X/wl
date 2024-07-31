@@ -678,7 +678,7 @@ GFX_Level_SharedOBJ: INCBIN "data/gfx/level/shared_obj.bin"
 ; ========================================
 ; Powerup GFX
 ; The "secondary" graphics must be stored after the normal ones.
-
+Marker_GFX_Hats:
 GFX_NormalHat: 		INCBIN "data/gfx/hats/normal.bin"
 GFX_NormalHatSec: 	INCBIN "data/gfx/hats/normal_secondary.bin"
 GFX_BullHat: 		INCBIN "data/gfx/hats/bull.bin"
