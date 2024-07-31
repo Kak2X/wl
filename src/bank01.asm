@@ -420,7 +420,7 @@ Mode_LevelInit_StartLevel:
 	
 	ld   hl, rIE	; Enable STAT
 	set  IB_STAT, [hl]
-	ld   a, $40		; Enable LYC trigger
+	ld   a, STAT_LYC	; Enable LYC trigger
 	ldh  [rSTAT], a
 	
 	ldh  a, [rSCX]	; Keep current parameters for first trigger
@@ -8702,7 +8702,7 @@ Mode_LevelDoor_LoadRoom:
 	
 	ld   hl, rIE	; Enable STAT
 	set  IB_STAT, [hl]
-	ld   a, $40		; Enable LYC trigger
+	ld   a, STAT_LYC	; Enable LYC trigger
 	ldh  [rSTAT], a
 	
 	ldh  a, [rSCX]	; Keep current parameters for first trigger

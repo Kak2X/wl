@@ -59,7 +59,10 @@ DEF PRX_TRAINTRACKL                          EQU $0B
 DEF PRX_CREDMAIN                             EQU $0C
 DEF PRX_CREDROW1                             EQU $0D
 DEF PRX_CREDROW2                             EQU $0E
-                                             
+IF IMPROVE
+DEF PRX_SYRUPCASTLEWAVE                      EQU $0F
+ENDC
+                                            
 ; Static Screen event modes                  
 DEF SES_TITLE                                EQU $00
 DEF SES_BONUS                                EQU $01

@@ -1703,6 +1703,7 @@ Map_SyrupCastle_DoCutscenes:
 	jr   z, .act2	; 3 - Fade out
 	ret ; We never get here
 .act0:
+IF !IMPROVE
 	; Setup the wave effect like normal
 	ld   a, $01
 	ld   [sMapSyrupCastleWaveShift], a
@@ -1714,6 +1715,7 @@ Map_SyrupCastle_DoCutscenes:
 	ld   a, l
 	ld   [sMapSyrupCastleWaveTablePtr_Low], a
 	call Map_SyrupCastle_DoWaveEffect
+ENDC
 	call Map_SyrupCastle_DoPaletteEffect
 	; Wait $50 frames before change
 	ld   a, [sMapSyrupCastleCutsceneTimer]
@@ -1936,6 +1938,7 @@ Map_Ending_WriteStatueLowOBJLst:
 ; =============== Map_SyrupCastle_DoEffects ===============
 ; Performs the special effects for the Syrup Castle submap.
 Map_SyrupCastle_DoEffects:
+IF !IMPROVE
 	; [TCRF] Not possible to trigger here
 	ld   a, [sMapSyrupCastleCutscene]
 	cp   a, MAP_SCC_ENDING
@@ -1948,6 +1951,7 @@ Map_SyrupCastle_DoEffects:
 	ld   [sMapSyrupCastleWaveTablePtr_Low], a
 	call Map_SyrupCastle_DoWaveEffect
 	;--
+ENDC
 	call Map_SyrupCastle_DoPaletteEffect
 	ret
 	
@@ -2149,6 +2153,8 @@ Map_Ending_WriteWarioCustomOBJLst:
 	ld   [sMapOAMWriteFlags], a
 	jr   Map_Ending_WriteOBJLst2
 	
+; IMPROVE mode relocates this as a parallax mode in BANK $0D
+IF !IMPROVE
 ; =============== Map_SyrupCastle_WaveTbl ===============
 ; Base rSCX offset table for the wave effect in Syrup Castle.
 ; $10 consecutive values can be used at once,
@@ -2261,6 +2267,7 @@ ENDC
 	xor  a				; Reset X Scroll
 	ldh  [rSCX], a
 	ret
+ENDC
 	
 ; =============== Map_SyrupCastle_DoExplosion ===============
 ; Handles the sprite mappings for explosions in the Syrup Castle cutscenes.

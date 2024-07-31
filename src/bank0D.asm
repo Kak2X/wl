@@ -8802,6 +8802,11 @@ Parallax_Do:
 	dw Parallax_CreditsMain
 	dw Parallax_CreditsRow1
 	dw Parallax_CreditsRow2
+IF IMPROVE
+	; Wave effect at the top
+	dw Parallax_SyrupCastleWave
+ENDC
+
 ; =============== Parallax_TrainR_Mountains ===============
 ; Parallax for train levels autoscrolling to the right.
 ; Mountain background
@@ -8814,7 +8819,7 @@ Parallax_TrainR_Mountains:
 	ld   a, [sParallaxX0]
 	dec  a
 	ld   [sParallaxX0], a
-.noScroll:;R
+.noScroll:
 	ld   a, [sParallaxX0]
 	ldh  [rSCX], a
 	; Switch to Parallax_TrainR_Main on LY $2F
@@ -9007,6 +9012,83 @@ Parallax_CreditsRow2:
 	ld   a, PRX_CREDMAIN
 	ld   [sParallaxMode], a
 	ret
+	
+IF IMPROVE
+; =============== Parallax_SyrupCastleWave ===============
+; Performs the wave effect on Syrup Castle.
+; Because it needs to wait for rLY, this will take a significant amount of processing time.
+;
+; Not compatible with double speed mode.
+Parallax_SyrupCastleWave:
+
+	ld   a, [sMapSyrupCastleWaveLines]	; B = Number of lines to perform the effect
+	ld   b, a
+	jr   .loop2
+.loop:
+	mWaitForNewHBlank
+.loop2:
+	
+	; Calculate the *scanline-based* table index for this specific row.
+	; DE = rLY % $F
+	;      TIMER  TableSize
+	;
+	; Because this is tied to rLY, it will increase by one when it processes a new line.
+	; As the values in the table are in a specific pattern, this will cause a wave-like scrolling effect.
+	;
+	; The indexes also loop every 16 values.
+	ldh  a, [rLY]
+	and  a, $0F
+	ld   e, a
+	ld   d, $00
+	; HL = Base offset for the wave effect table.
+	;      It can be set to different values, but only .waveTbl is used.
+	ld   hl, .waveTbl
+	add  hl, de ; Index the wave table
+	
+	; Calculate the *timer-based* index.
+	; DE = Timer >> 2
+	;
+	; It's used to pick the initial index to the wave table.
+	; Because this depends on the timer (albeit >> 2'd to use a slower speed),
+	; this will result in the waves appearing to move upwards.
+	;
+	; With this and the current index above, the current wave entry to use can be calculated as:
+	; Offset = WaveTable[((Timer & $3C) >> 2) + rowVal]
+	;
+	; With "rowVal" changing on each scanline, and the Timer changing outside this subroutine.
+	ld   a, [sMapTimer_Low]
+	and  a, $3C
+	srl  a
+	srl  a
+	ld   e, a
+	ld   d, $00		; DE = (Timer & $3C) >> 2
+	add  hl, de
+	ld   a, [hl]	; Get the base offset
+	
+	; Set the offset to the X Scroll register
+	ldh  [rSCX], a
+	dec  b					; Have we processed all the lines?
+	jr   nz, .loop			; If not, loop
+	
+	; Wait for HBlank one last time, to reset the scroll offset back to normal
+	mWaitForHBlank
+	
+	xor  a				; Reset X Scroll
+	ldh  [rSCX], a
+	ret
+	
+; =============== Map_SyrupCastle_WaveTbl ===============
+; Base rSCX offset table for the wave effect in Syrup Castle.
+; $10 consecutive values can be used at once,
+; given a starting index with range 0-$F.
+;
+; An optional multiplier can be applied to these values,
+; though it's always set to 1 (therefore rendering this feature not used).
+.waveTbl: 
+	db $00,$00,$01,$01,$01,$01,$01,$01,$00,$00,$FF,$FF,$FF,$FF,$FF,$FF
+	db $00,$00,$01,$01,$01,$01,$01,$01,$00,$00,$FF,$FF,$FF,$FF,$FF,$FF
+
+ENDC
 	
 ; =============== Level_AnimTiles ===============
 ; Performs tile animation in a level.

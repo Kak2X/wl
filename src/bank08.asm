@@ -2144,7 +2144,7 @@ Map_Unused_CopyBytesUntilFF:
 	inc  de
 	jr   .loop
 
-; =============== Map_Mode_OverworldInit ===============
+; =============== Map_Mode_EndingFadeIn ===============
 ; Mode $20
 Map_Mode_EndingFadeIn:
 	call HomeCall_Map_Ending_DrawOBJ
@@ -2295,7 +2295,7 @@ Map_FadeOut_OBPTable:
 ;
 ; IN
 ; - HL: Ptr to table of palettes
-Map_SetFadeOBP:;C
+Map_SetFadeOBP:
 	xor  a
 	ld   b, a
 	ld   a, [sMapFadeTimer]
@@ -2306,6 +2306,10 @@ Map_SetFadeOBP:;C
 	ret
 	
 Map_FadeOut_End:
+IF IMPROVE
+	ld   hl, rIE					; Disable parallax
+	res  IB_STAT, [hl]
+ENDC
 	xor  a							; Reset the timer
 	ld   [sMapFadeTimer], a
 	ld   a, $00
@@ -7994,7 +7998,22 @@ Map_Mode_SyrupCastleInit_Do:
 	ld   [sMapSyrupCastleWaveShift], a
 	ld   a, $35							; 35 lines
 	ld   [sMapSyrupCastleWaveLines], a
+IF IMPROVE
+	ld   a, PRX_SYRUPCASTLEWAVE
+	ld   [sParallaxMode], a
 	
+	xor  a
+	ldh  [rIF], a
+	ldh  [rLYC], a		; Trigger at scanline 0
+	
+	ld   hl, rIE		; Enable STAT
+	set  IB_STAT, [hl]
+	ld   a, STAT_LYC	; Enable LYC trigger
+	ldh  [rSTAT], a	
+	
+	ld   a, BGM_SYRUPCASTLE
+	ld   [sBGMSet], a
+ELSE
 	; [TCRF] Silence the music for the unused ending trigger in Map_Mode_SyrupCastleInit.
 	ld   a, [sMapSyrupCastleCompletion]
 	bit  3, a
@@ -8005,18 +8024,20 @@ Map_Mode_SyrupCastleInit_Do:
 .unused_noMusic:
 	ld   a, BGM_NONE
 	ld   [sBGMSet], a
+ENDC
 	ret
 ; =============== Map_Mode_SyrupCastleInit ===============
 ; Mode $0B
 Map_Mode_SyrupCastleInit:
 	call Map_Mode_SyrupCastleInit_Do
-	ld   a, $07
+	ld   a, MAP_MODE_FADEIN
 	ld   [sMapId], a
-	ld   a, $0C
+	ld   a, MAP_MODE_SYRUPCASTLE
 	ld   [sMapNextId], a
 	ld   a, $00
 	ldh  [rBGP], a
 	
+IF !IMPROVE
 	; [TCRF] Normally it's impossible to mark C40 as completed, so this check always fails.
 	;
 	; This checks if the boss level was just completed in a similar way to other maps.
@@ -8035,6 +8056,7 @@ Map_Mode_SyrupCastleInit:
 	ret  nz
 	ld   a, MAP_SCC_ENDING   				; If so, play the ending cutscene.
 	ld   [sMapSyrupCastleCutscene], a
+ENDC
 	ret
 	
 ; =============== Map_Mode_SyrupCastle ===============
