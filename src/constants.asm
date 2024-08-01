@@ -1525,6 +1525,11 @@ DEF LOCK_OPEN                                EQU $02
 DEF CHECKPOINT_NONE                          EQU $00
 DEF CHECKPOINT_ACTIVATING                    EQU $01
 DEF CHECKPOINT_ACTIVE                        EQU $02
+
+; Collision targets
+IF IMPROVE
+DEF COLITG_LADDER_TOP_HI                     EQU $09 ; Offset subtracted to top/horizontal collision sensors while on ladders.
+ENDC
                                              
 ; Special level clear modes (sLvlSpecClear)  
 DEF LVLCLEAR_NONE                            EQU $00

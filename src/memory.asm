@@ -1120,7 +1120,11 @@ DEF sEndingWaitTimer                                 EQU sDelayTimer
 
 sTimeUp                                    :db     ; EQU $A985 ; If set, dying results in the time up screen showing up
 sGameOver                                  :db     ; EQU $A986 ; If set, dying results in the game over screen showing up
+IF IMPROVE
+sPlBGColiIgnoreLadders                     :db     ; EQU $A987 ; Good workaround
+ELSE
 ds $01
+ENDC
 sActInteractDir                            :db     ; EQU $A988 ; Bitmask which marks from which direction the actor is being interacted with
 sActColiBoxDistanceD                       :db     ; EQU $A989 ; Distance between pl up colibox and actor down colibox
 sActColiBoxDistanceU                       :db     ; EQU $A98A

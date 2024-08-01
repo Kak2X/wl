@@ -4142,6 +4142,54 @@ ExActBGColi_DragonHatFlame_CheckBlockId:
 	dw BGColi_Empty ; 5D ;X
 	dw BGColi_Empty ; 5E ;X
 	dw BGColi_Empty ; 5F ;X
+	
+IF IMPROVE
+; =============== PlBGColi_DoFrontLow ===============
+; Variation of PlBGColi_DoFront for the lowest block only.
+; Meant to be used when moving horizontally on a ladder, to allow collecting coins below.
+PlBGColi_DoFrontLow:
+	;--
+	; Autodetect the X target depending on the OBJLst direction, identically to PlBGColi_DoFront
+	ld   a, [sPlFlags]
+	bit  OBJLSTB_XFLIP, a		; Are we facing right?
+	jr   z, .left				; If not, jump
+.right:
+	ld   b, $08					; 8px right
+	call PlTarget_SetRightPos
+	jr   .go
+.left:
+	ld   b, $08					; 8px left
+	call PlTarget_SetLeftPos
+.go:
+	;--
+
+	; Get the X offset to the block, already correct
+	call PlBGColi_GetXBlockOffset
+	ld   a, l											
+	ld   [sBlockTopLeftPtr_Low], a
+	
+	; Calculate the Y offset to the block
+	ld   b, $08								; 8px up (middle of low block)
+	call PlTarget_SetUpPos
+	call PlBGColi_GetYBlockOffset
+	
+	; To get the proper high byte of the level layout ptr, add wLevelLayout to it.
+	; We take advantage of this since we also need the block ID.
+	ld   a, [sBlockTopLeftPtr_Low]		
+	ld   l, a								
+	ld   de, wLevelLayout					; Add the level layout base
+	add  hl, de
+	ld   a, h								; With the block indexed, we have the proper high byte
+	ld   [sBlockTopLeftPtr_High], a	
+	
+	; Save the block ID for the low block
+	ld   a, [hl]
+	and  a, $7F
+	ld   [sPlBGColiBlockId], a
+	
+	jp   PlBGColi_DoGround.chkBlockId
+ENDC
+
 ; =============== PlBGColi_GetBlockIdLow ===============
 ; Gets the active block ID the player is colliding with in the low part of the body.
 ; See also: PlBGColi_CheckLadderLow
@@ -4848,6 +4896,12 @@ PlBGColi_CheckLadderLow:
 	ld   a, [hl]
 	and  a, $7F			; Remove actor flag
 	ld   [sPlBGColiBlockId], a
+IF IMPROVE
+	push hl				; Save block ID ptr (bottom-left)
+	
+	; Loop marker for the retry logic below
+	ld   c, $00			; Retry count = 0
+ENDC
 	;--
 	
 	; Do the same thing for the bottom-right corner.
@@ -4869,9 +4923,12 @@ PlBGColi_CheckLadderLow:
 	ld   a, [hl]
 	and  a, $7F			; Remove actor flag
 	ld   b, a
-	
+IF IMPROVE
+	pop  de				; DE = Block ID ptr (bottom-left)
+ENDC	
 	; Is it the same block ID as the bottom-left corner?
-	ld   a, [sPlBGColiBlockId]		; A = bottom-left  block id		
+	ld   a, [sPlBGColiBlockId]		; A = bottom-left  block id	
+.retry:	
 	cp   a, b						; B = bottom-right block id
 	jr   z, .blockEq
 	
@@ -4892,7 +4949,37 @@ PlBGColi_CheckLadderLow:
 	jr   z, .ladder					; == $44?
 	cp   a, BLOCKID_LADDERTOP
 	jr   z, .ladderTop				; == $45?
-	jr   .solid
+	
+	IF IMPROVE
+	.setRetry:
+		;
+		; RETRY LOGIC
+		;
+		; When both of the blocks are empty, try again with the blocks right above, just once.
+		; This extends the ladder grab range when below one, making ladders significantly less frustrating to deal with.
+		; We can absolutely get away with doing this for both Small and Big Wario.
+		;
+		
+		; Do not retry more than once
+		ld   a, c
+		and  a				; RetryCount != 0?
+		jr   nz, .solid		; If so, give up
+		inc  c
+		
+		; Move the level layout pointers up by 1
+		dec  h				; Move 1 block above (top-right)
+		ld   a, [hl]
+		ld   b, a 			; B = Block
+		
+		dec  d				; Move 1 block above (top-left)
+		ld   a, [de]
+		and  a, $7F			; Remove actor flag
+		ld   [sPlBGColiBlockId], a	; Top-left
+		jr   .retry
+	ELSE
+		jr   .solid
+	ENDC
+	
 .solidTop:
 	; Ladders are a special case since they should have more priority than top-solid platforms,
 	; even though ladders have higher block ID than those.
@@ -4909,7 +4996,9 @@ PlBGColi_CheckLadderLow:
 	jr   z, .ladder
 	cp   a, BLOCKID_LADDERTOP
 	jr   z, .ladderTop
-	; Otherwise fall back to solid
+	; Otherwise fall back to solid.
+	; No fallback to .setRetry, it's not really necessary when the ladder doesn't end in the air
+	; and worse, it'd allow to pass through top-solid blocks.
 .solid:
 	xor  a ; COLILD_SOLID
 	ld   [sPlBGColiLadderType], a
@@ -4924,11 +5013,22 @@ PlBGColi_CheckLadderLow:
 	ret
 .blockEq:
 	; When both blocks are the same
-	cp   a, BLOCKID_LADDER
+	IF IMPROVE
+		cp   a, BLOCKID_MISCSOLID_END	; < $40?
+		jr   c, .solid		
+		cp   a, BLOCKID_LADDER			; < $44?
+		jr   c, .solidTop
+	ELSE
+		cp   a, BLOCKID_LADDER
+	ENDC
 	jr   z, .ladderDouble
 	cp   a, BLOCKID_LADDERTOP
 	jr   z, .ladderTopDouble
-	jr   .solid
+	IF IMPROVE
+		jr   .setRetry
+	ELSE
+		jr   .solid
+	ENDC
 .ladderDouble:
 	ld   a, COLILD_LADDER2
 	ld   [sPlBGColiLadderType], a
@@ -5239,6 +5339,13 @@ ELSE
 ENDC
 	ret
 BGColi_LadderTop:
+IF IMPROVE
+	; Workaround required by the standard collision function being now called even when climbing, to allow collecting coins.
+	ld   a, [sPlBGColiIgnoreLadders]
+	and  a
+	jr   nz, BGColi_Ladder
+ENDC
+
 	; If the player is less than 4px close to the top of the block, treat it as a solid platform.
 	ld   a, [sPlY_Low]
 	and  a, $0F
@@ -5403,7 +5510,20 @@ PlBGColi_DoTop:
 	jr   z, .setYTarget					; If not, we aren't short
 .isShort:
 	ld   b, $10							; Short: 16px up
+IF IMPROVE
+	jr   .noYEdit
 .setYTarget:
+	; Convenience feature when climbing ladders.
+	ld   a, [sPlAction]
+	cp   a, PL_ACT_CLIMB
+	jr   nz, .noYEdit
+	ld   a, b
+	sub  a, COLITG_LADDER_TOP_HI
+	ld   b, a
+.noYEdit:
+ELSE
+.setYTarget:
+ENDC
 	call PlTarget_SetUpPos
 	call PlBGColi_GetYBlockOffset
 	ld   a, [sPlBGColiBlockOffset1_Low]
@@ -5758,6 +5878,16 @@ PlBGColi_DoHorz:
 
 	; Calculate the Y offset to the block
 	ld   b, $1A					; $1A px up (higher part of high corner)
+IF IMPROVE
+	; Convenience feature when climbing ladders.
+	ld   a, [sPlAction]
+	cp   a, PL_ACT_CLIMB
+	jr   nz, .noYEditHi
+	ld   a, b
+	sub  a, COLITG_LADDER_TOP_HI
+	ld   b, a
+.noYEditHi:
+ENDC
 	call PlTarget_SetUpPos
 	call PlBGColi_GetYBlockOffset		; H = Y offset
 	ld   a, [sPlBGColiBlockOffset1_Low]	; L = Reused X offset

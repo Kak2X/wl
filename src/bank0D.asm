@@ -1786,14 +1786,15 @@ Pl_DoCtrl_Climb:
 	call Pl_AnimClimb
 	
 	
-IF FIX_FUN_BUGS
+IF FIX_FUN_BUGS || IMPROVE
 	; Reorganized to work with the ladder body being set as COLI_EMPTY.
+	; Also required for IMPROVE mode's extended ladder range.
 	
-	; Even when not moving, always check what we're over
 	call PlBGColi_CheckLadderLow
 	and  a							; Are we over a ladder block?
-	jr   nz, .moveDown				; If so, skip ahead
+	jr   nz, .moveDownAndGetCoins	; If so, skip ahead
 	
+	; Check collision type
 	call PlBGColi_DoGround
 	cp   a, COLI_WATER				; Is there water below?
 	jp   z, Pl_SwitchToSwim			; If so, jump
@@ -1803,6 +1804,16 @@ IF FIX_FUN_BUGS
 	ld   a, [sPlBGColiLadderType]		
 	and  a							; Is there a ladder block below?
 	jr   z, .switchToStand			; If not, it's a solid
+	jr   .moveDown
+	
+.moveDownAndGetCoins:
+	; Collision on the ground tile must be always processed regardless of anything else.
+	; This allows us to collect coins right below ladders, for example.
+	ld   a, $01
+	ld   [sPlBGColiIgnoreLadders], a
+		call PlBGColi_DoGround
+	xor  a
+	ld   [sPlBGColiIgnoreLadders], a
 ELSE
 	; This is also not great for ladders; again when big, *only* checking 
 	; for the bottom collision makes it the opposite of generous.
@@ -1829,7 +1840,7 @@ ENDC
 	jp   Pl_SwitchToStand
 	
 .noVMove:
-IF FIX_FUN_BUGS
+IF FIX_FUN_BUGS || IMPROVE
 	; Reorganized to work with the ladder body being set as COLI_EMPTY.
 	
 	; Even when not moving, always check what we're over
@@ -1858,6 +1869,15 @@ ENDC
 
 	;--
 .checkHMove:
+IF IMPROVE
+	; Collision on the ground tile must be always processed regardless of anything else.
+	; This allows us to collect coins right below ladders, for example.
+	ld   a, $01
+	ld   [sPlBGColiIgnoreLadders], a
+		call PlBGColi_DoFrontLow
+	xor  a
+	ld   [sPlBGColiIgnoreLadders], a
+ENDC
 	ldh  a, [hJoyKeys]
 	and  a, KEY_LEFT|KEY_RIGHT		; Is there horizontal movement?
 	ret  z							; If not, return
@@ -3200,6 +3220,23 @@ Pl_SwitchToJumpFall2:
 	; Switch to the jump action
 	ld   a, PL_ACT_JUMP
 	ld   [sPlAction], a
+	
+IF IMPROVE
+	; If the ceiling isn't high enough, crouch.
+	; This fixes a few collision hiccups involving getting stuck on the ceiling.
+	; This check must be also made AFTER setting the new sPlAction, in case we got here
+	; by moving off a ladder, as PL_ACT_CLIMB uses alternate collision targets.
+	inc  a
+	ld   [sPlBGColiSolidReadOnly], a
+	call PlBGColi_DoTop
+	cp   a, COLI_SOLID
+	jr   nz, .noCrouch
+	inc  a
+	ld   [sPlDuck], a
+.noCrouch:
+	xor  a
+	ld   [sPlBGColiSolidReadOnly], a
+ENDC
 	
 ; =============== Pl_SetJumpYFall ===============
 ; Sets the player in the falling state, without setting the jumping action.
