@@ -5517,9 +5517,7 @@ IF IMPROVE
 	ld   a, [sPlAction]
 	cp   a, PL_ACT_CLIMB
 	jr   nz, .noYEdit
-	ld   a, b
-	sub  a, COLITG_LADDER_TOP_HI
-	ld   b, a
+	ld   b, $1C-COLITG_LADDER_TOP_HI
 .noYEdit:
 ELSE
 .setYTarget:
@@ -5883,9 +5881,7 @@ IF IMPROVE
 	ld   a, [sPlAction]
 	cp   a, PL_ACT_CLIMB
 	jr   nz, .noYEditHi
-	ld   a, b
-	sub  a, COLITG_LADDER_TOP_HI
-	ld   b, a
+	ld   b, $1A-COLITG_LADDER_TOP_HI
 .noYEditHi:
 ENDC
 	call PlTarget_SetUpPos
