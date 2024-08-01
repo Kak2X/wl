@@ -2679,6 +2679,12 @@ ActS_StartBumpSoft:
 ; =============== ActS_StartStunBump ===============
 ; Sets up the loop code for a bump which stuns the currrent actor.
 ActS_StartStunBump:
+IF FIX_BUGS
+	; [BUG] Stunned enemies shouldn't deal damage
+	mActColiMask ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM
+	ld   a, COLI
+	ld   [sActSetColiType], a
+ENDC
 	ld   bc, SubCall_ActS_StunBumpNorm	; Set code ptr
 	call ActS_SetCodePtr
 	ld   a, $00							; Reset timer
@@ -2689,6 +2695,12 @@ ActS_StartStunBump:
 ; =============== ActS_StartStunBumpFar ===============
 ; Sets up the loop code for a far bump which stuns the currrent actor.
 ActS_StartStunBumpFar:
+IF FIX_BUGS
+	; [BUG] Stunned enemies shouldn't deal damage
+	mActColiMask ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM
+	ld   a, COLI
+	ld   [sActSetColiType], a
+ENDC
 	ld   bc, SubCall_ActS_StunBumpFar	; Set code ptr
 	call ActS_SetCodePtr
 	ld   a, $00							; Reset timer
