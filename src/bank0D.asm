@@ -3217,25 +3217,35 @@ Pl_SwitchToJumpFall2:
 	xor  a
 	ld   [sPlSwimGround], a
 	ld   [sPlGroundDashTimer], a
+IF IMPROVE
+	; Only allow autocruch when moving off a ladder
+	ld   a, [sPlAction]
+	cp   a, PL_ACT_CLIMB			; sPlAction == PL_ACT_CLIMB? ...
+	
 	; Switch to the jump action
 	ld   a, PL_ACT_JUMP
 	ld   [sPlAction], a
 	
-IF IMPROVE
-	; If the ceiling isn't high enough, crouch.
-	; This fixes a few collision hiccups involving getting stuck on the ceiling.
-	; This check must be also made AFTER setting the new sPlAction, in case we got here
-	; by moving off a ladder, as PL_ACT_CLIMB uses alternate collision targets.
+	jr   nz, Pl_SetJumpYFall		; ... if not, skip
+	
+	; If the ceiling isn't high enough (when moving off a ladder), crouch.
+	; This fixes a few collision hiccups involving getting stuck on the ceiling when moving off a ladder.
+	;
+	; This check must be also made AFTER setting the new sPlAction, as PL_ACT_CLIMB uses alternate collision targets.
 	inc  a
 	ld   [sPlBGColiSolidReadOnly], a
-	call PlBGColi_DoTop
-	cp   a, COLI_SOLID
-	jr   nz, .noCrouch
-	inc  a
-	ld   [sPlDuck], a
+		call PlBGColi_DoTop
+		cp   a, COLI_SOLID
+		jr   nz, .noCrouch
+		inc  a
+		ld   [sPlDuck], a
 .noCrouch:
 	xor  a
 	ld   [sPlBGColiSolidReadOnly], a
+ELSE
+	; Switch to the jump action
+	ld   a, PL_ACT_JUMP
+	ld   [sPlAction], a
 ENDC
 	
 ; =============== Pl_SetJumpYFall ===============
