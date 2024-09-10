@@ -4375,7 +4375,7 @@ Act_Floater_MoveDown:
 	; Move player down if there isn't a solid block in the way
 	; (ie: standing on the edge of the actor, with a solid block on the other side)
 	ld   b, $01
-	call z, SubCall_PlBGColi_CheckGroundSolidOrMove
+	call z, SubCall_Pl_MoveDownByAct
 	ret
 	
 ; =============== Act_Floater_MoveRight ===============		
@@ -4427,7 +4427,7 @@ ENDC
 	cp   a, ACTRTN_06
 	ld   b, $01
 	; Move player up if there isn't a solid block in the way
-	call z, SubCall_PlBGColi_DoTopAndMove
+	call z, SubCall_Pl_MoveUpByAct
 	ret
 	
 ; =============== Act_Floater_MoveLeft ===============		
@@ -5101,7 +5101,7 @@ Act_Bridge_Fall:
 	ld   a, [sActSetRoutineId]
 	and  a, $0F
 	cp   a, ACTRTN_06
-	call z, SubCall_PlBGColi_CheckGroundSolidOrMove
+	call z, SubCall_Pl_MoveDownByAct
 	
 	; Increase the drop speed every 8 frames, capped to 3px/frame
 	ld   a, [sActSetTimer]
@@ -5228,7 +5228,7 @@ ActS_SpawnBridge:
 	ld   [sActBridgeSpawned], a
 	
 	ld   b, $01
-	call SubCall_PlBGColi_CheckGroundSolidOrMove
+	call SubCall_Pl_MoveDownByAct
 	ret
 	
 ; =============== ActInit_StickBomb ===============

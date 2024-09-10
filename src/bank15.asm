@@ -521,7 +521,7 @@ Act_Cart_DoFall:
 	ld   a, [sActSetRoutineId]
 	and  a, $0F
 	cp   a, ACTRTN_06					; Are we standing on it?
-	call z, SubCall_PlBGColi_CheckGroundSolidOrMove	; If so, try to move down
+	call z, SubCall_Pl_MoveDownByAct	; If so, try to move down
 	
 	call ActColi_GetBlockId_Low
 	mSubCall ActBGColi_IsSpikeBlock
@@ -3277,7 +3277,7 @@ Act_PouncerDrop_MoveUp:
 	and  a, $0F						
 	cp   a, $06								; Is the player standing on top?
 	ld   b, $01
-	call z, SubCall_PlBGColi_DoTopAndMove	; If so, move it up too
+	call z, SubCall_Pl_MoveUpByAct	; If so, move it up too
 	
 	ret
 	
@@ -3688,7 +3688,7 @@ Act_PouncerFollow_MoveUp:
 	ld   a, [sActSetRoutineId]
 	and  a, $0F
 	cp   a, ACTRTN_06			; Are we standing on it?
-	call z, SubCall_PlBGColi_DoTopAndMove ; If so, try to move up
+	call z, SubCall_Pl_MoveUpByAct ; If so, try to move up
 	ret
 	
 ; =============== Act_PouncerFollow_MoveRight ===============
@@ -3730,7 +3730,7 @@ Act_PouncerFollow_MoveDown:
 	ld   a, [sActSetRoutineId]
 	and  a, $0F
 	cp   a, ACTRTN_06			; Are we standing on it?
-	call z, SubCall_PlBGColi_CheckGroundSolidOrMove	; If so, try to move down
+	call z, SubCall_Pl_MoveDownByAct	; If so, try to move down
 	ret
 	
 	

@@ -896,7 +896,7 @@ Act_MiniGenie_RiseUp:
 	and  a, $0F						; Filter away interaction direction
 	cp   a, ACTRTN_06				; Standing on top?
 	ld   b, $01
-	call z, SubCall_PlBGColi_DoTopAndMove	; If so, call
+	call z, SubCall_Pl_MoveUpByAct	; If so, call
 	
 	; When reaching
 	ld   a, [sActSetRelY]
@@ -3992,7 +3992,7 @@ Act_StoveCanyonPlatform:
 	and  a, $0F
 	cp   a, ACTRTN_06			
 	ld   b, $01
-	call z, SubCall_PlBGColi_CheckGroundSolidOrMove
+	call z, SubCall_Pl_MoveDownByAct
 	ret
 .moveUp:
 	
@@ -4012,7 +4012,7 @@ Act_StoveCanyonPlatform:
 	and  a, $0F
 	cp   a, ACTRTN_06
 	ld   b, $01
-	call z, SubCall_PlBGColi_DoTopAndMove
+	call z, SubCall_Pl_MoveUpByAct
 	ret
 .reset:
 	; Wait for $10 frames before starting to move down again

@@ -7661,14 +7661,14 @@ Level_Scroll_DoAutoScrollRight:
 	ld   b, $01						; Otherwise, move the player right to keep him on-screen
 	jr   .moveRight
 	
-; =============== PlBGColi_CheckGroundSolidOrMove ===============
-; Checks for fall collision while in the read-only mode, used for secondary checking by a few blocks.
-; If there isn't a solid block below, the player is moved downwards.
-; Uses:
-;  - After stepping on a collapsing bridge, since you can trigger the bridge 
-;    by touching the block's edge while standing in a solid block.
-;    If there isn't, it moves the player down to firmly stand on the bridge actor.
-PlBGColi_CheckGroundSolidOrMove:
+; =============== Pl_MoveDownByAct ===============
+; Moves the player down by the specified amount if there isn't a solid block below, while also handling collision detection.
+;
+; Used when standing on an actor that's moving down, to sync the player position.
+;
+; IN
+; - B: Pixels of movement
+Pl_MoveDownByAct:
 	ld   a, [sPlActSolid]		; Save actor collision flag
 	ld   [sPlActSolid_Bak], a
 	;--
@@ -7692,20 +7692,20 @@ PlBGColi_CheckGroundSolidOrMove:
 	ld   [sPlActSolid], a
 	ret
 	
-; =============== PlBGColi_DoTopAndMove ===============
+; =============== Pl_MoveUpByAct ===============
 ; Moves the player up, while also handling collision detection as if the player was jumping.
 ;
-; This is used when being moved upwards by an actor -- if Pl_MoveUp was called directly
-; we could be moved through blocks without registering any collision.
+; Used when standing on an actor that's moving up, to sync the player position.
 ;
 ; IN
 ; - B: Pixels of movement
-PlBGColi_DoTopAndMove:
+Pl_MoveUpByAct:
 	push bc
 	call PlBGColi_DoTopStub
 	pop  bc
 	call Pl_MoveUp
 	ret
+	
 ; =============== Level_Scroll_SetAutoScroll ===============
 ; This subroutine defines the forced autoscroll speed for autoscrolling levels.
 Level_Scroll_SetAutoScroll:

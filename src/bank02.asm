@@ -4183,12 +4183,12 @@ ActS_StunFloatingPlatform_SyncPlMove:
 .moveDown:
 	; Move down 1px if there isn't a solid block in the way
 	ld   b, $01
-	call SubCall_PlBGColi_CheckGroundSolidOrMove
+	call SubCall_Pl_MoveDownByAct
 	ret
 .moveUp:
 	; Move up 1px if there isn't a solid block in the way
 	ld   b, $01
-	call SubCall_PlBGColi_DoTopAndMove
+	call SubCall_Pl_MoveUpByAct
 	ret
 	
 ; =============== ActS_StunFloatingPlatform_Unused_InWater ===============
@@ -6637,7 +6637,7 @@ Act_SyrupCastlePlatformU:
 	and  a, $0F
 	cp   a, ACTRTN_06			; Standing on the platform?
 	ld   b, $01
-	call z, SubCall_PlBGColi_DoTopAndMove	; If so, call
+	call z, SubCall_Pl_MoveUpByAct	; If so, call
 	
 	; As soon as the actor goes off screen above, shift it off-screen below.
 	ld   a, [sActSetRelY]
@@ -6666,7 +6666,7 @@ Act_SyrupCastlePlatformD:
 	and  a, $0F
 	cp   a, ACTRTN_06			; Standing on the platform?
 	ld   b, $01
-	call z, SubCall_PlBGColi_CheckGroundSolidOrMove	; If so, call
+	call z, SubCall_Pl_MoveDownByAct	; If so, call
 	
 	; As soon as the actor goes off screen below, shift it off-screen above.
 	ld   a, [sActSetRelY]

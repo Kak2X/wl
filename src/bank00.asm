@@ -8143,8 +8143,8 @@ SubCall_ActS_StartHeldForce: mSubCallRet ActS_StartHeldForce ; BANK $02
 SubCall_ActS_DoStartJumpDead: mSubCallRet ActS_DoStartJumpDead ; BANK $02 
 SubCall_ActS_PlStand_MoveLeft: mSubCallRet ActS_PlStand_MoveLeft ; BANK $02 
 SubCall_ActS_PlStand_MoveRight: mSubCallRet ActS_PlStand_MoveRight ; BANK $02 
-SubCall_PlBGColi_DoTopAndMove: mSubCallRet PlBGColi_DoTopAndMove ; BANK $01 
-SubCall_PlBGColi_CheckGroundSolidOrMove: mSubCallRet PlBGColi_CheckGroundSolidOrMove ; BANK $01
+SubCall_Pl_MoveUpByAct: mSubCallRet Pl_MoveUpByAct ; BANK $01 
+SubCall_Pl_MoveDownByAct: mSubCallRet Pl_MoveDownByAct ; BANK $01
 SubCall_ActColi_SetForDefault: mSubCallRet ActColi_SetForDefault ; BANK $0F
 ; =============== ActS_PlStand_MoveLeft_NoScroll ===============
 ; Tries to move the player left, while also handling collision detection.
