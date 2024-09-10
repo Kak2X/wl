@@ -6766,6 +6766,7 @@ PlActColiId_Lock:
 ; =============== PlActColi_SetPlActSolid ===============
 ; This subroutine sets the "solid actor" flag.
 PlActColi_SetPlActSolid:
+
 	; Snap the player on the top border of the actor's bounding box.
 	; This distance will never be negative (ie: player is above) when we get here.
 	; Done to make the landing position consistent and to give maximum
@@ -6774,13 +6775,24 @@ PlActColi_SetPlActSolid:
 	ld   b, a
 	call Pl_MoveUp						; Move up by that
 	
-	; Enable solid ground flag
+IF IMPROVE
+	; Do not stand on the actor when dashing horizontally.
+	; This prevents the player from moving down when dashing on a falling platform.
+	ld   a, [sPlAction]
+	cp   a, PL_ACT_DASH			; sPlAction == PL_ACT_DASH?
+	jr   z, .next				; If so, jump
+	cp   a, PL_ACT_DASHJET		; sPlAction == PL_ACT_DASHJET?
+	jr   z, .next				; If so, skip to the next actor
+ENDC
+	
+	; Enable solid actor flag
 	ld   a, $01
 	ld   [sPlActSolid], a
 	
 	; Set routine for standing on actor
 	ld   b, ACTRTN_06
 	call ActS_SetRoutineId
+.next:
 	jp   PlActColi_NextSlot
 	
 ; =============== PlActColiId_TypesItem ===============
