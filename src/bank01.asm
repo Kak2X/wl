@@ -10367,19 +10367,19 @@ SaveSel_DoIntroA:
 	
 	
 ; =============== SaveSel_ValidateSaveFiles ===============
-; Validates all three save games.
+; Validates all save slots.
 ;
-; There are 3 save games, and each is saved twice.
+; There are 3 of them, each saved twice.
 ; For any given save, these steps are performed:
 ; - Check the save signature
 ; - Validate the checksum
 ;
-; When validation fails for a save, the backup copy is checked the same way.
-; If the backup copy is valid, its data will be copied over the main save.
+; When validation fails for a save, the backup copy is checked in the same way,
+; and if that copy is valid, its data will be copied over to the main save.
 ;
-; If validation of both saves fails, the savedata will be marked as bad and re-initialized.
+; If validation of both copies fails, the save will be marked as bad and get re-initialized.
 ; The result depends on how the backup copy verification failed:
-; - If the signature is missing from both saves, the savedata ia assumed to not exist.
+; - If the signature is missing from both copies, the save data is assumed to not exist.
 ; - If the signature exists but the checksum is bad, the save gets marked as bad.
 ;   
 ; The "SAVE DATA ERROR" message is only shown if exactly one save is bad.
@@ -10394,9 +10394,13 @@ SaveSel_ValidateSaveFiles:
 ; SAVE DATA 1
 ;--
 .verifySave1:
-	; Verify saved data signature
-	; The first four bytes must be $16643957.
-	; If the bytes are missing, assume there's no save data.
+	; Verify the save signature.
+	; The first four bytes must contain the magic number $19643957.
+	; If it isn't there, assume there's no save data.
+	;
+	; The magic number itself is presumably a programmer's birth date, 1964-5-7, with showa 39 being 1964. 
+	; Wario Land 2 in DMG mode uses a similar magic number referencing the same date, $19640507.
+	; Worth noting that the only programmer shared between the two games is Yamanaka Masaru.
 	ld   hl, sSave1
 	ldi  a, [hl]
 	cp   a, $19
