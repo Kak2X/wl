@@ -118,6 +118,9 @@ Mode_Map:
 	rst  $28
 	dw Map_Do
 	dw CourseScr_Do
+IF IMPROVE
+	dw CourseSel_Do
+ENDC
 ; =============== Map_Do ===============
 ; Nearly all of the map screen code uses this submode.
 Map_Do:
@@ -149,26 +152,39 @@ Map_Do:
 	ldh  [hScrollY], a
 	ldh  [rSCX], a
 	ld   [sScrollX], a
-	; Write "COURSE" in the tilemap
-	ld   hl, vBGCourseText0
-	ld   a, $0C		; C
-	ldi  [hl], a
-	ld   a, $18		; O
-	ldi  [hl], a
-	ld   a, $1E		; U
-	ldi  [hl], a
-	ld   a, $1B		; R
-	ldi  [hl], a
-	ld   a, $1C		; S
-	ldi  [hl], a
-	ld   a, $0E		; E
-	ld   [hl], a
-	; Write "No." in the tilemap (uses 2 tiles)
-	ld   hl, vBGCourseText1
-	ld   a, $2B
-	ldi  [hl], a
-	ld   a, $2C
-	ld   [hl], a
+	
+IF IMPROVE
+	; Determine if this level has an alternate version (ie: C10-C13)
+	ld   a, [sMapLevelIdSel]
+	call CourseScr_GetDualOpt
+	jr   nz, CourseSel_Init
+ENDC
+
+.initCourseScr:
+	PUSHC
+		SETCHARMAP alpha
+		; Write "COURSE" in the tilemap
+		ld   hl, vBGCourseText0
+		ld   a, "C"
+		ldi  [hl], a
+		ld   a, "O"
+		ldi  [hl], a
+		ld   a, "U"
+		ldi  [hl], a
+		ld   a, "R"
+		ldi  [hl], a
+		ld   a, "S"
+		ldi  [hl], a
+		ld   a, "E"
+		ld   [hl], a
+		; Write "No." in the tilemap (uses 2 tiles)
+		ld   hl, vBGCourseText1
+		ld   a, "n"
+		ldi  [hl], a
+		ld   a, "o"
+		ld   [hl], a
+	POPC
+	
 	; Determine the course number to print on-screen.
 	ld   a, [sMapLevelIdSel]
 	ld   [sLevelId], a		; and set the current level id as well
@@ -194,6 +210,326 @@ Map_Do:
 	ld   a, $80					; Show the Course Screen for $80 frames
 	ld   [sCourseScrTimer], a
 	ret
+	
+IF IMPROVE
+; =============== CourseSel_Init ===============
+; Sets up the course dual selection screen.
+CourseSel_Init:
+	; Index the struct
+	ldi  a, [hl]
+	ld   [sLevelIdOptOld], a
+	ldi  a, [hl]
+	ld   [sLevelIdOptNew], a
+	ld   [sLevelId], a
+	
+	DEF vBGCourseSelDescRow0 EQU $992A
+	DEF vBGCourseSelDescRow1 EQU $996A	
+
+	; Text entry for sLevelIdOptOld
+	ldi  a, [hl]
+	push hl
+		ld   h, [hl]
+		ld   l, a
+		ld   de, vBGCourseSelDescRow0
+		call LoadString	
+	pop  hl
+	inc  hl
+	
+	; Text entry for sLevelIdOptNew
+	ldi  a, [hl]
+	ld   h, [hl]
+	ld   l, a
+	ld   de, vBGCourseSelDescRow1
+	call LoadString	
+
+	; Write course text
+	ld   hl, Txt_SelectCourse
+	ld   de, $9883
+	call LoadString
+	
+	; Write "No." right before the course numbers
+	ld   hl, Txt_No
+	ld   de, vBGCourseSelDescRow0 - 5
+	call LoadString
+	ld   hl, Txt_No
+	ld   de, vBGCourseSelDescRow1 - 5
+	call LoadString	
+	
+	; Write course numbers
+	ld   b, $00
+	ld   a, [sLevelIdOptOld]
+	ld   de, vBGCourseSelDescRow0 - 3
+	call GetCourseNum.custom
+	call LoadHexNumber
+	ld   a, [sLevelIdOptNew]
+	ld   de, vBGCourseSelDescRow1 - 3
+	call GetCourseNum.custom
+	call LoadHexNumber
+	
+	; Copy over the cursor graphic
+	ld   hl, GFX_Alpha_Cursor		; HL = Source
+	ld   de, $8000					; DE = Destination
+	ld   b, GFX_Alpha_Cursor.end-GFX_Alpha_Cursor
+	call CopyBytes	
+	
+	ld   a, GM_MAP_COURSESEL	; Switch to course dual select submode
+	ld   [sSubMode], a
+	
+	ld   a, $E1
+	ldh  [rBGP], a
+	ldh  [rOBP0], a
+	ld   a, $83
+	ldh  [rLCDC], a
+	ret
+	
+; =============== CourseScr_GetDualOpt ===============
+; Gets the alternate course settings for the selected level.
+; IN
+; - A: Level ID
+; OUT
+; - Z: If clear, this level allows selecting the replacement
+; - HL: Ptr to course replacement struct
+CourseScr_GetDualOpt:
+	; Index the assoc table.
+	ld   hl, .assocTbl
+	ld   e, a
+	ld   d, $00
+	add  hl, de
+	ld   a, [hl]
+	; If this value is $00, there's nothing here
+	and  a
+	ret  z			; Z Flag = Clear (no dual screen)
+	
+	; Index the main event ptr table
+	ld   hl, .ptrTbl
+	dec  a
+	add  a
+	ld   e, a
+	ld   d, $00
+	add  hl, de
+	
+	; Read out the ptr to HL
+	ldi  a, [hl]
+	ld   h, [hl]
+	ld   l, a
+	
+	xor  a			
+	inc  a			; Z Flag = Clear (has dual screen)
+	ret
+	
+	; Due to the nature of level changes, only the alternate version makes has a dual option assigned to it.
+	; This avoids the need to perform level unlock checks.
+.assocTbl:
+	db $00 ; LVL_C26 
+	db $00 ; LVL_C33 
+	db $00 ; LVL_C15 
+	db $00 ; LVL_C20 
+	db $00 ; LVL_C16 
+	db $00 ; LVL_C10 
+	db $00 ; LVL_C07 
+	db $00 ; LVL_C01A
+	db $00 ; LVL_C17 
+	db $00 ; LVL_C12 
+	db $03 ; LVL_C13 
+	db $00 ; LVL_C29 
+	db $00 ; LVL_C04 
+	db $00 ; LVL_C09 
+	db $00 ; LVL_C03A
+	db $00 ; LVL_C02 
+	db $00 ; LVL_C08 
+	db $00 ; LVL_C11 
+	db $00 ; LVL_C35 
+	db $00 ; LVL_C34 
+	db $00 ; LVL_C30 
+	db $00 ; LVL_C21 
+	db $00 ; LVL_C22 
+	db $01 ; LVL_C01B
+	db $00 ; LVL_C19 
+	db $00 ; LVL_C05 
+	db $00 ; LVL_C36 
+	db $00 ; LVL_C24 
+	db $00 ; LVL_C25 
+	db $00 ; LVL_C32 
+	db $00 ; LVL_C27 
+	db $00 ; LVL_C28 
+	db $00 ; LVL_C18 
+	db $00 ; LVL_C14 
+	db $00 ; LVL_C38 
+	db $00 ; LVL_C39 
+	db $02 ; LVL_C03B
+	db $00 ; LVL_C37 
+	db $00 ; LVL_C31A
+	db $00 ; LVL_C23 
+	db $00 ; LVL_C40 
+	db $00 ; LVL_C06 
+	db $04 ; LVL_C31B
+.ptrTbl
+	dw .c01 ; LVL_C01B
+	dw .c03 ; LVL_C03B
+	dw .c13 ; LVL_C13
+	dw .c31 ; LVL_C31B
+.c01:
+	db LVL_C01A
+	db LVL_C01B
+	dw Txt_Normal
+	dw Txt_Flooded
+.c03:
+	db LVL_C03A
+	db LVL_C03B
+	dw Txt_Normal
+	dw Txt_Flooded
+.c13:
+	db LVL_C10
+	db LVL_C13
+	dw Txt_C10
+	dw Txt_C13
+.c31:
+	db LVL_C31A
+	db LVL_C31B
+	dw Txt_Normal
+	dw Txt_Drained
+	
+PUSHC
+	SETCHARMAP alpha
+	Txt_Normal: mTxtDef "NORMAL"
+	Txt_Flooded: mTxtDef "FLOODED"
+	Txt_Drained: mTxtDef "DRAINED"
+	Txt_C10: mTxtDef "" ; "C10"
+	Txt_C13: mTxtDef "BOSS" ;"C13"
+	Txt_Course: mTxtDef "COURSE"
+	Txt_No: mTxtDef "no"
+	Txt_SelectCourse: mTxtDef "COURSE  SELECT"
+POPC
+
+
+; =============== CourseSel_Do ===============
+; Displays the course selection screen when picking between a new and old variation of a level.
+CourseSel_Do:
+	call .main
+	jr    CourseSel_DrawCursorSprMap
+	
+.main:
+	ldh  a, [hJoyNewKeys]		; Press A or START to select a level
+	and  KEY_A|KEY_START
+	jr   nz, .initLevel
+	
+	; Toggle on any vertical direction
+	ldh  a, [hJoyNewKeys]
+	and  KEY_UP|KEY_DOWN		
+	ret  z
+	
+	; There are only two options, so there's no need to implement a delay
+	ld   a, [sLevelIdOptOld]
+	ld   b, a					; B = Option #1
+	ld   a, [sLevelId] 			; A = (selected) LevelId
+	cp   b						; Do they match?
+	jr   z, .chkDown			; If so, jump			
+.chkUp:
+	ld   a, b					; Set old level id
+	ld   [sLevelId], a
+	ret
+.chkDown:
+	ld   a, [sLevelIdOptNew]	; Set new level id
+	ld   [sLevelId], a
+	ret
+.initLevel:
+	; Fake the sMapLevelIdSel value to what we just selected
+	ld   a, [sLevelId]
+	ld   [sMapLevelIdSel], a
+	call GetCourseNum
+	ld   [sCourseNum], a
+	
+	; In debug mode, allow selecting a level here
+	ld   a, [sDebugMode]
+	and  a						; Is that enabled?
+	jr   z, CourseScr_LevelInit	; If not, skip directly to starting the level
+	
+	; Reinitialize the course screen, skipping the select check 
+	call StopLCDOperation
+	call ClearBGMap2F	
+	jp   Map_Do.initCourseScr
+	
+; =============== CourseSel_DrawCursorSprMap ===============
+; Displays the cursor over the course selection screen.	
+CourseSel_DrawCursorSprMap:
+	; Blink every 8 frames
+	ld   a, [sTimer]
+	and  a, $08
+	ret  z
+
+	; Use the correct position depending on the selected level
+	ld   a, [sLevelIdOptOld]
+	ld   b, a					; B = Option #1
+	ld   a, [sLevelId] 			; A = (selected) LevelId
+	cp   b						; Do they match?
+
+	ld   a, $58					; # A = Option 1 Y cursor pos
+	jr   z, .writeSpr			; If so, skip
+	add  $10					; # Otherwise, draw 16px down for Option 2
+.writeSpr:
+	ld   [sMapOAMWriteY], a
+	ld   a, $28
+	ld   [sMapOAMWriteX], a
+	xor  a
+	ld   [sMapOAMWriteFlags], a
+	ld   [sMapOAMWriteLstId], a
+	ld   hl, OBJLstPtrTbl_Alpha
+	jp   Map_WriteOBJLst
+
+OBJLstPtrTbl_Alpha:
+	dw OBJLst_Alpha_Cursor
+	
+OBJLst_Alpha_Cursor: INCBIN "data/objlst/_custom/alpha_cursor.bin"
+GFX_Alpha_Cursor: INCBIN "data/gfx/_custom/alpha_cursor.bin"
+.end:
+
+; =============== LoadString ===============
+; Writes a string to VRAM.
+; Meant for static screens that don't scroll.
+; IN
+; - HL: Ptr to a TextDef structure
+; - DE: Destination address in VRAM
+; OUT
+; - DE: Updated destination address
+LoadString:
+	ldi  a, [hl]		; B = String length
+	and  a
+	ret  z
+	ld   b, a
+.loop:
+	ldi  a, [hl]		; Copy it over
+	ld   [de], a
+	inc  e				; No wraparound allowed
+	dec  b
+	jr   nz, .loop
+	ret
+	
+; =============== LoadHexNumber ===============
+; Writes an hexadecimal/BCD digit to VRAM.
+; Meant for static screens that don't scroll.
+; IN
+; - A: Number to write
+; - B: Base tile ID for digits
+; - DE: Destination address in VRAM
+; OUT
+; - DE: Updated destination address
+LoadHexNumber:
+	ld   c, a			; Backup digit
+	; High nybble
+	swap a				; A = Num >> 4
+	and  $0F
+	add  b				; + tile base for '0' in ASCII
+	ld   [de], a
+	inc  e
+	; Low nybble
+	ld   a, c			; A = Num & $0F
+	and  $0F
+	add  b				; + tile base for '0' in ASCII
+	ld   [de], a
+	inc  e
+	ret
+ENDC
+
 ; =============== CourseScr_Do ===============
 ; Displays the static course screen.
 CourseScr_Do:

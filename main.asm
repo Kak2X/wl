@@ -3,6 +3,7 @@ INCLUDE "src/hardware.asm"
 INCLUDE "src/constants.asm"
 INCLUDE "src/macro.asm"
 INCLUDE "src/memory.asm"
+INCLUDE "src/font.asm"
 
 ;IF DEBUG == 1
 ;	printt "HEH"

@@ -1025,6 +1025,9 @@ DEF GM_TITLE_SAVEERROR                       EQU $06
 ; ------------------------------------------------------------
 DEF GM_MAP_MAIN                              EQU $00
 DEF GM_MAP_COURSESCR                         EQU $01
+IF IMPROVE
+DEF GM_MAP_COURSESEL                         EQU $02
+ENDC
                                              
 ; Map modes available. They do not necessarily correspond to actual maps (ie. fade in mode)
 DEF MAP_MODE_INIT                            EQU $00

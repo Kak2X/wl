@@ -921,6 +921,8 @@ sMapPathDirSel_Copy                        :db     ; EQU $A7F1 ; Copy value used
 sMap_Unused_CopyLinkedTbl                  :db     ; EQU $A7F2
 IF IMPROVE
 sMapLastId                                 :db     ; EQU $A7F3 
+sLevelIdOptOld                             :db     ; EQU $A7F4
+sLevelIdOptNew                             :db     ; EQU $A7F5
 ENDC
 SECTION "Active Save Slot", SRAM[$A800]
 ds $04 ; Skipped, would be the checksum

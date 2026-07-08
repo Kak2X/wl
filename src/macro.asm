@@ -127,6 +127,17 @@ ENDC
 	ENDC
 ENDM
 
+; =============== mTxtDef ===============
+; Generates a counted string.
+; IN:
+; - 1: A string
+MACRO mTxtDef
+	db (.end_\@-.start_\@)
+.start_\@:
+	db \1
+.end_\@:
+ENDM
+
 ; =============== dwb ===============
 ; Shorthand for big-endian pointers.
 MACRO dwb

@@ -1,0 +1,49 @@
+;
+; FONT DEFINITIONS
+;
+
+; Alphanumeric font used by alpha_gameover_timeup
+NEWCHARMAP alpha
+	CHARMAP "0", $00
+	CHARMAP "1", $01
+	CHARMAP "2", $02
+	CHARMAP "3", $03
+	CHARMAP "4", $04
+	CHARMAP "5", $05
+	CHARMAP "6", $06
+	CHARMAP "7", $07
+	CHARMAP "8", $08
+	CHARMAP "9", $09
+	CHARMAP "A", $0A
+	CHARMAP "B", $0B
+	CHARMAP "C", $0C
+	CHARMAP "D", $0D
+	CHARMAP "E", $0E
+	CHARMAP "F", $0F
+	CHARMAP "G", $10
+	CHARMAP "H", $11
+	CHARMAP "I", $12
+	CHARMAP "J", $13
+	CHARMAP "K", $14
+	CHARMAP "L", $15
+	CHARMAP "M", $16
+	CHARMAP "N", $17
+	CHARMAP "O", $18
+	CHARMAP "P", $19
+	CHARMAP "Q", $1A
+	CHARMAP "R", $1B
+	CHARMAP "S", $1C
+	CHARMAP "T", $1D
+	CHARMAP "U", $1E
+	CHARMAP "V", $1F
+	CHARMAP "W", $20
+	CHARMAP "X", $21
+	CHARMAP "Y", $22
+	CHARMAP "Z", $23
+	CHARMAP "!", $26
+	CHARMAP ",", $27
+	CHARMAP "n", $2B
+	CHARMAP "o",$2C
+	CHARMAP " ", $2F
+
+SETCHARMAP main ; Use default map

@@ -774,6 +774,7 @@ ExActS_CopySet2ToSet:
 GetCourseNum:
 IF OPTIMIZE
 		ld   a, [sLevelId]
+	.custom:
 		ld   c, a
 		ld   b, $00
 		ld   hl, .tbl
@@ -826,6 +827,7 @@ IF OPTIMIZE
 		db $31 ; $2A
 ELSE
 		ld   a, [sLevelId]
+	.custom:
 		rst  $28
 		dw .c26
 		dw .c33
