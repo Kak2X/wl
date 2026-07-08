@@ -45,5 +45,35 @@ NEWCHARMAP alpha
 	CHARMAP "n", $2B
 	CHARMAP "o",$2C
 	CHARMAP " ", $2F
-
+	
+NEWCHARMAP credits
+	CHARMAP "A", $40
+	CHARMAP "B", $41
+	CHARMAP "C", $42
+	CHARMAP "D", $43
+	CHARMAP "E", $44
+	CHARMAP "F", $45
+	CHARMAP "G", $46
+	CHARMAP "H", $47
+	CHARMAP "I", $48
+	CHARMAP "J", $49
+	CHARMAP "K", $4A
+	CHARMAP "L", $4B
+	CHARMAP "M", $4C
+	CHARMAP "N", $4D
+	CHARMAP "O", $4E
+	CHARMAP "P", $4F
+	CHARMAP "Q", $50
+	CHARMAP "R", $51
+	CHARMAP "S", $52
+	CHARMAP "T", $53
+	CHARMAP "U", $54
+	CHARMAP "V", $55
+	CHARMAP "W", $56
+	CHARMAP "X", $57
+	CHARMAP "Y", $58
+	CHARMAP "Z", $59
+	CHARMAP " ", $5A
+	CHARMAP "!", $5B
+	
 SETCHARMAP main ; Use default map

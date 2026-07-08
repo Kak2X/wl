@@ -1923,7 +1923,13 @@ DEF END_GENIE_POINT                          EQU $02
 DEF END_GENIE_PALM                           EQU $03
                                              
 ; Credits text next (line) mode              
-DEF CTN_CLEARLINE2                           EQU $00
-DEF CTN_CLEARBOTH                            EQU $01
+DEF CTN_CLRSEC                               EQU $00
+DEF CTN_CLR                                  EQU $01
 DEF CTN_LASTLINE                             EQU $02
 DEF CTN_HALT                                 EQU $03
+
+; Text variants
+DEF CSN_CLR                                  EQU $FF
+DEF CSN_CLRSEC                               EQU $FE
+DEF CSN_LASTLINE                             EQU $FD
+DEF CSN_HALT                                 EQU $FC

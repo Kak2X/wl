@@ -363,7 +363,7 @@ Credits_WriteLineForRow2ToBuffer:
 	ld   [sCreditsNextRow1Mode], a
 	jr   .nextRow1
 .cmdNextRow1:
-	ld   a, CTN_CLEARBOTH
+	ld   a, CTN_CLR
 	ld   [sCreditsNextRow1Mode], a
 .nextRow1:
 	ld   a, [sCreditsRow1LineId]	; Line1Id++
@@ -377,6 +377,9 @@ Credits_WriteLineForRow2ToBuffer:
 	ld   [de], a
 	ret
 	
+PUSHC
+SETCHARMAP credits
+
 Credits_Row1LinesPtrTable:
 	dw .ln0
 	dw .ln1
@@ -391,18 +394,18 @@ Credits_Row1LinesPtrTable:
 	dw .lnA
 	dw .lnB
 
-.ln0: db $5A,$5A,$5A,$5A,$56,$40,$51,$48,$4E,$4B,$40,$4D,$43,$FF
-.ln1: db $5A,$5A,$5A,$5A,$5A,$43,$48,$51,$44,$42,$53,$4E,$51,$FF
-.ln2: db $5A,$5A,$5A,$5A,$4F,$51,$4E,$46,$51,$40,$4C,$4C,$44,$51,$FF
-.ln3: db $5A,$46,$51,$40,$4F,$47,$48,$42,$5A,$43,$44,$52,$48,$46,$4D,$44,$51,$FF
-.ln4: db $5A,$5A,$4C,$54,$52,$48,$42,$5A,$42,$4E,$4C,$4F,$4E,$52,$44,$51,$FF
-.ln5: db $5A,$4F,$40,$42,$4A,$40,$46,$44,$5A,$43,$44,$52,$48,$46,$4D,$44,$51,$FF
-.ln7: db $5A,$5A,$53,$44,$52,$53,$48,$4D,$46,$5A,$4F,$4B,$40,$58,$44,$51,$FF
-.ln8: db $5A,$5A,$5A,$5A,$5A,$4F,$51,$4E,$43,$54,$42,$44,$51,$FF
-.ln6: db $52,$4F,$44,$42,$48,$40,$4B,$5A,$53,$47,$40,$4D,$4A,$52,$5A,$53,$4E,$FF
-.ln9: db $5A,$5A,$5A,$4F,$51,$44,$52,$44,$4D,$53,$44,$43,$5A,$41,$58,$FF
-.lnA: db $5A,$5A,$5A,$5A,$5A,$5A,$4F,$4B,$44,$40,$52,$44,$FF
-.lnB: db $5A,$5A,$5A,$5A,$5A,$4F,$44,$51,$45,$44,$42,$53,$FF
+.ln0: db "    WARIOLAND",CSN_CLR
+.ln1: db "     DIRECTOR",CSN_CLR
+.ln2: db "    PROGRAMMER",CSN_CLR
+.ln3: db " GRAPHIC DESIGNER",CSN_CLR
+.ln4: db "  MUSIC COMPOSER",CSN_CLR
+.ln5: db " PACKAGE DESIGNER",CSN_CLR
+.ln7: db "  TESTING PLAYER",CSN_CLR
+.ln8: db "     PRODUCER",CSN_CLR
+.ln6: db "SPECIAL THANKS TO",CSN_CLR
+.ln9: db "   PRESENTED BY",CSN_CLR
+.lnA: db "      PLEASE",CSN_CLR
+.lnB: db "     PERFECT",CSN_CLR
 Credits_Row2LinesPtrTable:
 	dw .ln00
 	dw .ln01
@@ -455,59 +458,60 @@ Credits_Row2LinesPtrTable:
 	dw .ln30
 	dw .ln31
 
-.ln00: db $5A,$5A,$5A,$5A,$5A,$5A,$52,$53,$40,$45,$45,$FF
-.ln01: db $5A,$4A,$48,$58,$4E,$53,$40,$4A,$44,$5A,$47,$48,$51,$4E,$49,$48,$FE
-.ln02: db $47,$4E,$52,$4E,$4A,$40,$56,$40,$5A,$53,$40,$4A,$44,$47,$48,$4A,$4E,$FF
-.ln03: db $5A,$58,$40,$4C,$40,$4D,$40,$4A,$40,$5A,$4C,$40,$52,$40,$51,$54,$FE
-.ln04: db $5A,$5A,$5A,$4E,$46,$40,$56,$40,$5A,$58,$54,$59,$54,$51,$54,$FE
-.ln05: db $5A,$5A,$5A,$47,$48,$51,$40,$4D,$4E,$5A,$48,$52,$40,$4E,$FE
-.ln06: db $4A,$40,$53,$52,$54,$4A,$48,$5A,$58,$4E,$52,$47,$48,$4D,$4E,$51,$48,$FF
-.ln07: db $5A,$4A,$48,$58,$4E,$53,$40,$4A,$44,$5A,$47,$48,$51,$4E,$49,$48,$FE
-.ln08: db $47,$4E,$52,$4E,$4A,$40,$56,$40,$5A,$53,$40,$4A,$44,$47,$48,$4A,$4E,$FE
-.ln09: db $5A,$5A,$52,$54,$46,$48,$4D,$4E,$5A,$4A,$44,$4D,$48,$42,$47,$48,$FF
-.ln0A: db $5A,$58,$4E,$52,$47,$48,$53,$4E,$4C,$48,$5A,$51,$58,$4E,$49,$48,$FE
-.ln0B: db $5A,$5A,$48,$52,$47,$48,$4A,$40,$56,$40,$5A,$4A,$4E,$59,$54,$44,$FF
-.ln0C: db $5A,$5A,$4D,$4E,$4C,$54,$51,$40,$5A,$45,$54,$49,$48,$4A,$4E,$FE
-.ln0D: db $5A,$5A,$4D,$40,$4A,$40,$4D,$4E,$5A,$58,$54,$52,$54,$4A,$44,$FF
-.ln0E: db $5A,$48,$59,$54,$52,$47,$48,$5A,$53,$40,$4A,$44,$47,$48,$51,$4E,$FE
-.ln0F: db $5A,$5A,$58,$40,$4C,$40,$4C,$4E,$53,$4E,$5A,$4C,$40,$52,$40,$4E,$FE
-.ln10: db $5A,$47,$40,$51,$40,$43,$40,$5A,$53,$40,$4A,$40,$47,$48,$51,$4E,$FE
-.ln11: db $5A,$5A,$4E,$59,$40,$4A,$48,$5A,$4D,$4E,$41,$54,$47,$48,$51,$4E,$FE
-.ln12: db $5A,$5A,$5A,$5A,$43,$40,$4D,$5A,$4E,$56,$52,$44,$4D,$FE
-.ln13: db $5A,$5A,$5A,$43,$40,$58,$55,$5A,$41,$51,$4E,$4E,$4A,$52,$FE
-.ln14: db $5A,$5A,$5A,$53,$40,$4C,$54,$51,$40,$5A,$4A,$44,$48,$4A,$4E,$FE
-.ln15: db $5A,$5A,$5A,$4C,$40,$51,$58,$5A,$42,$4E,$42,$4E,$4C,$40,$FE
-.ln16: db $5A,$5A,$5A,$47,$48,$51,$4E,$5A,$58,$40,$4C,$40,$43,$40,$FE
-.ln17: db $5A,$5A,$5A,$43,$40,$55,$48,$43,$5A,$4F,$40,$53,$53,$4E,$4D,$FE
-.ln18: db $5A,$5A,$46,$51,$40,$47,$40,$4C,$5A,$40,$51,$42,$47,$44,$51,$FE
-.ln19: db $5A,$5A,$52,$47,$48,$41,$40,$53,$40,$5A,$52,$40,$53,$4E,$51,$54,$FF
-.ln1A: db $5A,$5A,$5A,$4E,$4A,$40,$43,$40,$5A,$4C,$40,$52,$40,$51,$54,$FE
-.ln1B: db $5A,$5A,$5A,$4A,$40,$4D,$4E,$47,$5A,$4C,$40,$4A,$4E,$53,$4E,$FE
-.ln1C: db $52,$40,$4A,$40,$52,$47,$48,$53,$40,$5A,$4C,$40,$52,$40,$45,$54,$4C,$48,$FE
-.ln1D: db $5A,$5A,$5A,$45,$54,$4A,$54,$48,$5A,$4A,$4E,$47,$53,$40,$FE
-.ln1E: db $5A,$53,$44,$51,$40,$52,$40,$4A,$48,$5A,$4A,$44,$48,$52,$54,$4A,$44,$FE
-.ln1F: db $5A,$4C,$40,$52,$47,$48,$4C,$4E,$5A,$4C,$40,$52,$40,$47,$48,$4A,$4E,$FE
-.ln20: db $5A,$58,$40,$4C,$40,$46,$40,$4C,$48,$5A,$47,$48,$53,$4E,$52,$47,$48,$FE
-.ln21: db $5A,$5A,$53,$4E,$53,$40,$4A,$40,$5A,$4A,$40,$59,$54,$4C,$48,$FE
-.ln22: db $5A,$58,$40,$4C,$40,$4D,$44,$5A,$53,$4E,$4C,$4E,$58,$4E,$52,$47,$48,$FE
-.ln23: db $5A,$5A,$5A,$5A,$47,$4E,$51,$48,$5A,$58,$54,$49,$48,$FE
-.ln24: db $5A,$5A,$5A,$48,$4C,$4E,$53,$4E,$5A,$53,$40,$4A,$40,$52,$47,$48,$FE
-.ln25: db $4A,$40,$4D,$44,$52,$47,$48,$46,$44,$5A,$53,$52,$54,$53,$4E,$4C,$54,$FE
-.ln26: db $5A,$4A,$40,$56,$40,$4D,$4E,$5A,$4C,$40,$52,$40,$47,$48,$51,$4E,$FE
-.ln27: db $5A,$4D,$40,$46,$40,$51,$44,$43,$40,$5A,$53,$40,$4A,$44,$52,$47,$48,$FE
-.ln28: db $4C,$40,$53,$52,$54,$4C,$54,$51,$40,$5A,$52,$40,$53,$4E,$52,$47,$48,$FE
-.ln29: db $58,$40,$4C,$40,$4C,$4E,$53,$4E,$5A,$58,$54,$4A,$48,$47,$48,$51,$4E,$FE
-.ln2A: db $5A,$58,$40,$4C,$40,$54,$42,$47,$48,$5A,$4C,$40,$4A,$4E,$53,$4E,$FE
-.ln2B: db $5A,$5A,$4D,$4E,$46,$40,$4C,$48,$5A,$52,$40,$53,$4E,$52,$47,$48,$FE
-.ln2C: db $5A,$5A,$53,$40,$4A,$44,$54,$42,$47,$48,$5A,$44,$48,$4A,$4E,$FE
-.ln2D: db $5A,$5A,$4C,$40,$51,$54,$4D,$4E,$5A,$40,$53,$52,$54,$52,$47,$48,$FF
+.ln00: db "      STAFF",CSN_CLR
+.ln01: db " KIYOTAKE HIROJI",CSN_CLRSEC
+.ln02: db "HOSOKAWA TAKEHIKO",CSN_CLR
+.ln03: db " YAMANAKA MASARU",CSN_CLRSEC
+.ln04: db "   OGAWA YUZURU",CSN_CLRSEC
+.ln05: db "   HIRANO ISAO",CSN_CLRSEC
+.ln06: db "KATSUKI YOSHINORI",CSN_CLR
+.ln07: db " KIYOTAKE HIROJI",CSN_CLRSEC
+.ln08: db "HOSOKAWA TAKEHIKO",CSN_CLRSEC
+.ln09: db "  SUGINO KENICHI",CSN_CLR
+.ln0A: db " YOSHITOMI RYOJI",CSN_CLRSEC
+.ln0B: db "  ISHIKAWA KOZUE",CSN_CLR
+.ln0C: db "  NOMURA FUJIKO",CSN_CLRSEC
+.ln0D: db "  NAKANO YUSUKE",CSN_CLR
+.ln0E: db " IZUSHI TAKEHIRO",CSN_CLRSEC
+.ln0F: db "  YAMAMOTO MASAO",CSN_CLRSEC
+.ln10: db " HARADA TAKAHIRO",CSN_CLRSEC
+.ln11: db "  OZAKI NOBUHIRO",CSN_CLRSEC
+.ln12: db "    DAN OWSEN",CSN_CLRSEC
+.ln13: db "   DAYV BROOKS",CSN_CLRSEC
+.ln14: db "   TAMURA KEIKO",CSN_CLRSEC
+.ln15: db "   MARY COCOMA",CSN_CLRSEC
+.ln16: db "   HIRO YAMADA",CSN_CLRSEC
+.ln17: db "   DAVID PATTON",CSN_CLRSEC
+.ln18: db "  GRAHAM ARCHER",CSN_CLRSEC
+.ln19: db "  SHIBATA SATORU",CSN_CLR
+.ln1A: db "   OKADA MASARU",CSN_CLRSEC
+.ln1B: db "   KANOH MAKOTO",CSN_CLRSEC
+.ln1C: db "SAKASHITA MASAFUMI",CSN_CLRSEC
+.ln1D: db "   FUKUI KOHTA",CSN_CLRSEC
+.ln1E: db " TERASAKI KEISUKE",CSN_CLRSEC
+.ln1F: db " MASHIMO MASAHIKO",CSN_CLRSEC
+.ln20: db " YAMAGAMI HITOSHI",CSN_CLRSEC
+.ln21: db "  TOTAKA KAZUMI",CSN_CLRSEC
+.ln22: db " YAMANE TOMOYOSHI",CSN_CLRSEC
+.ln23: db "    HORI YUJI",CSN_CLRSEC
+.ln24: db "   IMOTO TAKASHI",CSN_CLRSEC
+.ln25: db "KANESHIGE TSUTOMU",CSN_CLRSEC
+.ln26: db " KAWANO MASAHIRO",CSN_CLRSEC
+.ln27: db " NAGAREDA TAKESHI",CSN_CLRSEC
+.ln28: db "MATSUMURA SATOSHI",CSN_CLRSEC
+.ln29: db "YAMAMOTO YUKIHIRO",CSN_CLRSEC
+.ln2A: db " YAMAUCHI MAKOTO",CSN_CLRSEC
+.ln2B: db "  NOGAMI SATOSHI",CSN_CLRSEC
+.ln2C: db "  TAKEUCHI EIKO",CSN_CLRSEC
+.ln2D: db "  MARUNO ATSUSHI",CSN_CLR
 ; [TCRF] Unreferenced lines, right after the end of the "TESTERS"
-.unused_ln00: db $5A,$5A,$5A,$5A,$5A,$5A,$53,$44,$53,$52,$54,$FE ; "TETSU"
-.unused_ln01: db $5A,$5A,$5A,$5A,$58,$4E,$52,$47,$48,$44,$5A,$52,$40,$4D,$FE ; "YOSHIE SAN"
-.ln2E: db $5A,$5A,$5A,$58,$4E,$4A,$4E,$48,$5A,$46,$54,$4C,$4F,$44,$48,$FF
-.ln2F: db $5A,$5A,$5A,$5A,$5A,$4D,$48,$4D,$53,$44,$4D,$43,$4E,$FD
-.ln30: db $5A,$5A,$5A,$5A,$5A,$5A,$51,$44,$53,$51,$58,$5B,$FC
-.ln31: db $5A,$5A,$5A,$5A,$5A,$5A,$46,$40,$4C,$44,$5B,$FC
+.unused_ln00: db "      TETSU",CSN_CLRSEC
+.unused_ln01: db "    YOSHIE SAN",CSN_CLRSEC
+.ln2E: db "   YOKOI GUMPEI",CSN_CLR
+.ln2F: db "     NINTENDO",CSN_LASTLINE
+.ln30: db "      RETRY!",CSN_HALT
+.ln31: db "      GAME!",CSN_HALT
+POPC
 
 ; ================== Demo_GetInput =====================
 ; This subroutine updates the keypress values during the game demo.
