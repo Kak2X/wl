@@ -3822,10 +3822,14 @@ ENDC
 	ld   [sPlJumpYPathIndex], a
 	jp   Pl_SwitchToStand
 .chkLadder:
-	; Rebounding off a ladder top automatically grabs into it
+	; Rebounding off a ladder top should count as landing on solid ground...
 	ld   a, [sPlBGColiLadderType]
 	bit  COLILDB_LADDERTOP, a
-	jr   nz, .grabLadder
+IF FIX_BUGS
+	jp   nz, Pl_SwitchToStand
+ELSE
+	jr   nz, .grabLadder		; [BUG] ...but they cause a glitchy 1-frame ladder grab instead
+ENDC
 	; Holding UP will grab the ladder
 	ldh  a, [hJoyKeys]
 	bit  KEYB_UP, a
