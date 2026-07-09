@@ -1916,12 +1916,16 @@ Pl_MoveDown:
 	cp   a, LVLSCROLL_CHKAUTO
 	ret  nc
 .freeScroll:
+; [BUG] The free scrolling part is handling the screen lock at an improper location.
+;       The correct place to check for this is when actually moving the camera up, in Level_Screen_ScrollVert.
+IF !FIX_BUGS
 	; Update vertical screen lock
 	call Level_ScreenLock_DoBottom
 	; Is a vertical scroll lock active?
 	ld   a, [sLvlScrollLockCur]
 	and  a, DIR_U|DIR_D
 	ret  nz
+ENDC
 	; If not, mark the screen movement offset
 	ld   a, [sLvlScrollVAmount]
 	add  b
@@ -1953,12 +1957,14 @@ Pl_MoveUp:
 	cp   a, LVLSCROLL_CHKAUTO
 	ret  nc
 .freeScroll:
+IF !FIX_BUGS
 	; Update vertical screen lock
 	call Level_ScreenLock_DoTop
 	; Is a vertical scroll lock active?
 	ld   a, [sLvlScrollLockCur]
 	and  a, DIR_U|DIR_D
 	ret  nz
+ENDC
 	; If not, mark the screen movement offset
 	ld   a, [sLvlScrollVAmount]
 	sub  a, b

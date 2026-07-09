@@ -7478,14 +7478,26 @@ Level_Screen_ScrollVert:
 	cp   a, $58				; WY < $58?
 	jr   c, .endD
 	; On the exact center move it normally
-	jr   z, .scrollD
+	jr   z, .chkFreeBoundD
 	; Otherwise enforce the min 2px/frame scroll speed
 	ld   a, b
 	cp   a, $02
-	jr   nc, .scrollD
+	jr   nc, .chkFreeBoundD
 	inc  b
+.chkFreeBoundD:
+IF FIX_BUGS
+	call Level_Screen_MoveDown
+	; Update vertical screen lock
+	call Level_ScreenLock_DoBottom
+	; Is a vertical scroll lock active?
+	ld   a, [sLvlScrollLockCur]
+	and  a, DIR_U|DIR_D
+	jr   nz, .endD
+	jr   .scrollDoneD
+ENDC
 .scrollD:
 	call Level_Screen_MoveDown
+.scrollDoneD:
 	ld   hl, sLvlScrollDir
 	set  DIRB_D, [hl]
 	ld   hl, sLvlScrollDirAct
@@ -7517,16 +7529,28 @@ Level_Screen_ScrollVert:
 	; If we're exactly in the middle scroll the screen as usual
 	ld   a, [sPlYRel]
 	cp   a, $58
-	jr   z, .scrollU
+	jr   z, .chkFreeBoundU
 	; If we're below (> $58) don't scroll
 	jr   nc, .endU
 	; Otherwise we're above, so enforce the min 2px/frame camera speed
 	ld   a, b
 	cp   a, $02
-	jr   nc, .scrollU
+	jr   nc, .chkFreeBoundU
 	inc  b
+.chkFreeBoundU:
+IF FIX_BUGS
+	call Level_Screen_MoveUp
+	; Update vertical screen lock
+	call Level_ScreenLock_DoTop
+	; Is a vertical scroll lock active?
+	ld   a, [sLvlScrollLockCur]
+	and  a, DIR_U|DIR_D
+	jr   nz, .endU
+	jr   .scrollDoneU
+ENDC
 .scrollU:
 	call Level_Screen_MoveUp
+.scrollDoneU:
 	ld   hl, sLvlScrollDir
 	set  DIRB_U, [hl]
 	ld   hl, sLvlScrollDirAct
