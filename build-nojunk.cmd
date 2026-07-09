@@ -1,1 +1,2 @@
-@_build config-nojunk wl
+@call _build config-nojunk wl
+pause

@@ -814,7 +814,7 @@ Sound_CopyWavePattern:
 .loop:;R
 	; Copy the byte over
 	ld   a, [de]			
-	ld   [c], a				
+	ldh  [c], a				
 	inc  de					
 	inc  c
 	

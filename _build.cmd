@@ -12,11 +12,11 @@ call:inStr %*
 set nofix=%ERRORLEVEL%
 
 echo Assembling...
-rgbds\rgbasm -h -L -vo -v -o %filename%.o %source%.asm
+rgbds\rgbasm -v -o %filename%.o %source%.asm
 if %ERRORLEVEL% neq 0 goto assemble_fail
 
 echo Linking...
-rgbds\rgblink -m %filename%.map -n %filename%.sym -d -o %filename%.gb %filename%.o
+rgbds\rgblink -v -m %filename%.map -n %filename%.sym -p 0 -d -o %filename%.gb %filename%.o
 if %ERRORLEVEL% neq 0 goto link_fail
 
 echo ==========================
@@ -25,7 +25,7 @@ echo ==========================
 
 if %nofix% equ 0 (
 	echo Fixing header checksum...
-	rgbds\rgbfix -v %filename%.gb
+	rgbds\rgbfix -v %filename%.gb -p 0
 )
 
 if NOT "%comparison%" == "" if EXIST %comparison% ( fc /B %filename%.gb %comparison% | more )
@@ -43,7 +43,6 @@ echo   Build failure.
 echo ==========================
 
 :end
-pause
 exit /b
 
 :inStr

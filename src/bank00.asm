@@ -249,7 +249,7 @@ GameInit:
 	ld   hl, OAMDMACode  				; HL = Ptr to the OAMDMA code
 .cpLoop:
 	ldi  a, [hl]
-	ld   [c], a
+	ldh  [c], a
 	inc  c
 	dec  b
 	jr   nz, .cpLoop

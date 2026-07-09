@@ -1,1 +1,2 @@
-@_build config-original wl original.gb
+@call _build config-original wl original.gb
+pause

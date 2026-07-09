@@ -165,23 +165,23 @@ ENDC
 		SETCHARMAP alpha
 		; Write "COURSE" in the tilemap
 		ld   hl, vBGCourseText0
-		ld   a, "C"
+		ld   a, CHARVAL("C")
 		ldi  [hl], a
-		ld   a, "O"
+		ld   a, CHARVAL("O")
 		ldi  [hl], a
-		ld   a, "U"
+		ld   a, CHARVAL("U")
 		ldi  [hl], a
-		ld   a, "R"
+		ld   a, CHARVAL("R")
 		ldi  [hl], a
-		ld   a, "S"
+		ld   a, CHARVAL("S")
 		ldi  [hl], a
-		ld   a, "E"
+		ld   a, CHARVAL("E")
 		ld   [hl], a
 		; Write "No." in the tilemap (uses 2 tiles)
 		ld   hl, vBGCourseText1
-		ld   a, "n"
+		ld   a, CHARVAL("n")
 		ldi  [hl], a
-		ld   a, "o"
+		ld   a, CHARVAL("o")
 		ld   [hl], a
 	POPC
 	

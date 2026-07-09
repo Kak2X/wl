@@ -1,1 +1,2 @@
-@_build config-test wl
+@call _build config-test wl
+pause
