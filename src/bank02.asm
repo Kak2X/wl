@@ -1178,11 +1178,12 @@ ActS_InitByRightScroll:
 	ret  nc								; If so, don't spawn it
 	IF FIX_BUGS
 		cp   a, HIGH(wLevelLayout)	; LayoutPtr < LayoutStart?
-		ret  c								; If so, don't spawn it
+		jr   c, .skip				; If so, skip it
 	ENDC
 	; If there's an actor on this block (MSB set), spawn it
 	bit  7, [hl]
 	call nz, ActS_InitByLevelLayoutPtr
+.skip:
 	inc  h					; Move 1 block down
 	
 	dec  e					; BlocksLeft--
@@ -1214,11 +1215,12 @@ ActS_InitByLeftScroll:
 	ret  nc								; If so, don't spawn it
 	IF FIX_BUGS
 		cp   a, HIGH(wLevelLayout)	; LayoutPtr < LayoutStart?
-		ret  c								; If so, don't spawn it
+		jr   c, .skip				; If so, skip it
 	ENDC
 	; If there's an actor on this block (MSB set), spawn it
 	bit  7, [hl]
 	call nz, ActS_InitByLevelLayoutPtr
+.skip:
 	inc  h					; Move 1 block down
 	
 	dec  e
@@ -1249,11 +1251,12 @@ ActS_InitByUpScroll:
 	ret  nc								; If so, don't spawn it
 	IF FIX_BUGS
 		cp   a, HIGH(wLevelLayout)	; LayoutPtr < LayoutStart?
-		ret  c								; If so, don't spawn it
+		jr   c, .skip				; If so, skip it
 	ENDC
 	; If there's an actor on this block (MSB set), spawn it
 	bit  7, [hl]
 	call nz, ActS_InitByLevelLayoutPtr
+.skip:
 	inc  hl					; Move 1 block right
 	
 	dec  e
@@ -1284,11 +1287,12 @@ ActS_InitByDownScroll:
 	ret  nc								; If so, don't spawn it
 	IF FIX_BUGS
 		cp   a, HIGH(wLevelLayout)	; LayoutPtr < LayoutStart?
-		ret  c								; If so, don't spawn it
+		jr   c, .skip				; If so, skip it
 	ENDC
 	; If there's an actor on this block (MSB set), spawn it
 	bit  7, [hl]
 	call nz, ActS_InitByLevelLayoutPtr
+.skip:
 	inc  hl					; Move 1 block right
 	
 	dec  e
