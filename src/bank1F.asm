@@ -686,12 +686,12 @@ Ending_PreTr_RubLamp:
 	inc  a
 	ld   [wStaticPlAnimTimer], a
 	
-	; Alternate between SPR_ENDING_WARIO_DUCKRUB0 and SPR_ENDING_WARIO_DUCKRUB1 up to 4 times,
+	; Alternate between SPR_ENDING_WARIO_CROUCHRUB0 and SPR_ENDING_WARIO_CROUCHRUB1 up to 4 times,
 	; until wEndLoopsLeft elapses.
 	;
 	; In this animation, both frames will alternate every 8 frames, since:
-	;  -> $2E-$26 = $08 (SPR_ENDING_WARIO_DUCKRUB0)
-	;  -> $26-$1E = $08 (SPR_ENDING_WARIO_DUCKRUB1)
+	;  -> $2E-$26 = $08 (SPR_ENDING_WARIO_CROUCHRUB0)
+	;  -> $26-$1E = $08 (SPR_ENDING_WARIO_CROUCHRUB1)
 	;
 	; As a result of this, we also wait $26 frames before switching from the "throw" animation set previously.
 	cp   a, $26
@@ -700,17 +700,17 @@ Ending_PreTr_RubLamp:
 	jr   z, .setFrame1
 	ret
 .setFrame0:
-	ld   a, SPR_ENDING_WARIO_DUCKRUB0
+	ld   a, SPR_ENDING_WARIO_CROUCHRUB0
 	ld   [wStaticPlSprId], a
 	ret
 .setFrame1:
 	ld   a, SFX1_11					; Play initial lamp rub SFX
 	ld   [sSFX1Set], a
 	
-	; Switch to SPR_ENDING_WARIO_DUCKRUB1 for 8 frames
+	; Switch to SPR_ENDING_WARIO_CROUCHRUB1 for 8 frames
 	ld   a, $26-$08					
 	ld   [wStaticPlAnimTimer], a
-	ld   a, SPR_ENDING_WARIO_DUCKRUB1
+	ld   a, SPR_ENDING_WARIO_CROUCHRUB1
 	ld   [wStaticPlSprId], a
 	
 	; If the loop counter elapsed, switch to the next mode
@@ -721,7 +721,7 @@ Ending_PreTr_RubLamp:
 .nextMode:
 	xor  a
 	ld   [wStaticPlAnimTimer], a
-	ld   a, SPR_ENDING_WARIO_DUCKRUB2	; Set third frame while it flashes
+	ld   a, SPR_ENDING_WARIO_CROUCHRUB2	; Set third frame while it flashes
 	ld   [wStaticPlSprId], a
 	ld   a, $04						; Same loop counter
 	ld   [wEndLoopsLeft], a
@@ -899,7 +899,7 @@ Ending_PreTr_DoClouds:
 .frameA0:
 	xor  a
 	ld   [wEndCloudAnimTimer], a
-	ld   a, SPR_ENDING_WARIO_DUCKDIAG	; Set duck look-up player frame too
+	ld   a, SPR_ENDING_WARIO_CROUCHDIAG	; Set crouch look-up player frame too
 	ld   [wStaticPlSprId], a
 	ld   a, END_SPR_CLOUDA0				; Set first frame
 	ld   [wEndCloudSprId], a

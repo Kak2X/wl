@@ -357,8 +357,8 @@ DEF SPR_UNUSED_WARIO_GROUNDPOUND             EQU $0C
 DEF SPR_JETHATFLAME0                         EQU $0D
 DEF SPR_JETHATFLAME1                         EQU $0E
 DEF SPR_JETHATFLAME2                         EQU $0F
-DEF SPR_WARIO_DUCK                           EQU $10
-DEF SPR_WARIO_DUCKWALK                       EQU $11
+DEF SPR_WARIO_CROUCH                         EQU $10
+DEF SPR_WARIO_CROUCHWALK                     EQU $11
 DEF SPR_WARIO_CLIMB0                         EQU $12
 DEF SPR_WARIO_CLIMB1                         EQU $13
 DEF SPR_WARIO_BUMP                           EQU $14
@@ -409,9 +409,9 @@ DEF SPR_UNUSED_MAIN_40                       EQU $40
 DEF SPR_WARIO_GRAB                           EQU $41
 DEF SPR_SMALLWARIO_CLIMB0                    EQU $42
 DEF SPR_SMALLWARIO_CLIMB1                    EQU $43
-DEF SPR_WARIO_DUCKHOLD                       EQU $44
-DEF SPR_WARIO_DUCKWALKHOLD                   EQU $45
-DEF SPR_WARIO_DUCKTHROW                      EQU $46
+DEF SPR_WARIO_CROUCHHOLD                     EQU $44
+DEF SPR_WARIO_CROUCHWALKHOLD                 EQU $45
+DEF SPR_WARIO_CROUCHTHROW                    EQU $46
 DEF SPR_SMALLWARIO_HOLD                      EQU $47
 DEF SPR_SMALLWARIO_SWIM0                     EQU $48
 DEF SPR_SMALLWARIO_SWIM1                     EQU $49
@@ -586,10 +586,10 @@ DEF SPR_ENDING_WARIO_WALKHOLD2               EQU $1F
 DEF SPR_ENDING_WARIO_WALKHOLD3               EQU $20
 DEF SPR_ENDING_WARIO_IDLEHOLD                EQU $21
 DEF SPR_ENDING_WARIO_IDLETHROW               EQU $22
-DEF SPR_ENDING_WARIO_DUCKRUB0                EQU $23
-DEF SPR_ENDING_WARIO_DUCKRUB1                EQU $24
-DEF SPR_ENDING_WARIO_DUCKRUB2                EQU $25
-DEF SPR_ENDING_WARIO_DUCKDIAG                EQU $26
+DEF SPR_ENDING_WARIO_CROUCHRUB0              EQU $23
+DEF SPR_ENDING_WARIO_CROUCHRUB1              EQU $24
+DEF SPR_ENDING_WARIO_CROUCHRUB2              EQU $25
+DEF SPR_ENDING_WARIO_CROUCHDIAG              EQU $26
 DEF SPR_ENDING_WARIO_BUMP0                   EQU $27
 DEF SPR_ENDING_WARIO_BUMP1                   EQU $28
 DEF SPR_ENDING_WARIO_WISHCLOSE               EQU $29
@@ -1487,7 +1487,7 @@ DEF PL_POW_DRAGON                            EQU $04
 ; Player action (sPlAction values)           
 DEF PL_ACT_STAND                             EQU $00
 DEF PL_ACT_WALK                              EQU $01
-DEF PL_ACT_DUCK                              EQU $02 ; also duck walk
+DEF PL_ACT_CROUCH                            EQU $02 ; also crouch walk
 DEF PL_ACT_CLIMB                             EQU $03
 DEF PL_ACT_SWIM                              EQU $04
 DEF PL_ACT_JUMP                              EQU $05
@@ -1508,7 +1508,7 @@ DEF PL_ACT_TREASUREGET                       EQU $12
 ; Swimming ground movement                   
 DEF PL_SGM_NONE                              EQU $00
 DEF PL_SGM_STAND                             EQU $01
-DEF PL_SGM_DUCK                              EQU $02
+DEF PL_SGM_CROUCH                            EQU $02
 DEF PL_SGM_WALK                              EQU $03
                                              
 ; Hurt type / overlaps a bit with the hard bump effect

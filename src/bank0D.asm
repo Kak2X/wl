@@ -26,7 +26,7 @@ Pl_HatSwitchAnim_SetNextAction:
 	rst  $28
 	dw Pl_SwitchToStand 	; No change
 	dw Pl_SetMoveAction 	; No change
-	dw Pl_SetDuckAction 	; No change
+	dw Pl_SetCrouchAction 	; No change
 	dw Pl_GrabLadder		; No change
 	dw Pl_SwitchToSwim  	; No change, [BUG] but ends up spawning the water splash (fixed elsewhere)
 	dw Pl_SwitchToJump		; ...
@@ -957,7 +957,7 @@ Pl_DoCtrl:
 	rst  $28
 	dw Pl_DoCtrl_Stand
 	dw Pl_DoCtrl_Walk
-	dw Pl_DoCtrl_Duck
+	dw Pl_DoCtrl_Crouch
 	dw Pl_DoCtrl_Climb
 	dw Pl_DoCtrl_Swim
 	dw Pl_DoCtrl_Jump
@@ -970,7 +970,7 @@ Pl_DoCtrl:
 	dw Pl_DoCtrl_DashRebound
 	dw Pl_DoCtrl_DashJump
 	dw Pl_DoCtrl_DashJet
-	dw Pl_DoCtrl_DuckActGrab
+	dw Pl_DoCtrl_CrouchActGrab
 	dw Pl_DoCtrl_Throw
 	dw Pl_DoCtrl_Sand
 	dw Pl_DoCtrl_TreasureGet
@@ -1013,7 +1013,7 @@ ENDC
 .checkUp:
 	ldh  a, [hJoyKeys]
 	bit  KEYB_UP, a		
-	jr   z, Pl_DoCtrl_Stand_CheckB
+	jr   z, Pl_DoCtrl_Stand_ChkAction
 	;--
 	
 	; Door collision
@@ -1031,7 +1031,7 @@ ENDC
 	; Check for ladder collision above ground level (but still on the lower part of the body)
 	call PlBGColi_CheckLadderLow
 	and  a							; Are we colliding with a ladder?
-	jr   z, Pl_DoCtrl_Stand_CheckB	; If not, ignore this
+	jr   z, Pl_DoCtrl_Stand_ChkAction	; If not, ignore this
 	
 ; =============== Pl_GrabLadder ===============
 Pl_GrabLadder:
@@ -1099,12 +1099,13 @@ Pl_SetClimbAction:
 	add  SPR_SMALLWARIO_CLIMB0-SPR_WARIO_CLIMB0
 	ld   [sPlSprId], a
 	ret
-; =============== Pl_DoCtrl_Stand_CheckB ===============
-; Checks the action mapped to the B button.
-Pl_DoCtrl_Stand_CheckB:
+; =============== Pl_DoCtrl_Stand_ChkAction ===============
+Pl_DoCtrl_Stand_ChkAction:
+; Checks if we're performing the action mapped to the B button.
+.chkActionB:
 	ld   a, [sPlSprId]
 	cp   a, SPR_WARIO_HOLD			; Holding something?
-	jr   z, .checkDownLadder		; If so, ignore
+	jr   z, .chkDownLadder			; If so, ignore
 	
 	; Can't be a jump since we don't necessarily trigger any action in Pl_StartActionB
 	ldh  a, [hJoyNewKeys]
@@ -1117,20 +1118,20 @@ Pl_DoCtrl_Stand_CheckB:
 	ret  nz
 	
 ; Checks if we're starting to climb down a ladder.
-.checkDownLadder:
+.chkDownLadder:
 	ldh  a, [hJoyKeys]
 	bit  KEYB_DOWN, a			
-	jr   z, .checkA
+	jr   z, .chkA
 	;--
 	; If there's a ladder below, grab it
 	call PlBGColi_DoGround
 	ld   a, [sPlBGColiLadderType]
 	and  a							; Colliding with a ladder?
-	jr   z, .checkA	; If not, jump
+	jr   z, .chkA					; If not, jump
 	jr   Pl_SetClimbAction
 	
 ; Checks if we're starting a jump.
-.checkA:
+.chkA:
 	; If we've just pressed A, try to start a jump
 	ldh  a, [hJoyNewKeys]
 	bit  KEYB_A, a
@@ -1143,22 +1144,22 @@ Pl_DoCtrl_Stand_CheckB:
 	cp   a, COLI_SOLID				; Ground disappeared?
 	jp   nz, Pl_SwitchToJumpFall2		
 	
-; Checks if we're starting a duck.
-.checkDuck:
+; Checks if we're starting a crouch.
+.chkCrouch:
 	ldh  a, [hJoyKeys]
 	bit  KEYB_DOWN, a			
 	jr   z, Pl_DoCtrl_Stand_CheckRight		
 	;--	
-	; Small Wario can't duck
+	; Small Wario can't crouch
 	ld   a, [sSmallWario]
 	and  a						
 	jr   nz, Pl_DoCtrl_Stand_CheckRight
-; =============== Pl_SetDuckAction ===============
-; This subroutine switches to the duck action.
-Pl_SetDuckAction:
+; =============== Pl_SetCrouchAction ===============
+; This subroutine switches to the crouch action.
+Pl_SetCrouchAction:
 	xor  a
 	ld   [sPlAnimTimer], a
-	ld   a, PL_ACT_DUCK
+	ld   a, PL_ACT_CROUCH
 	ld   [sPlAction], a
 	ld   a, $01
 	ld   [sPlNewAction], a
@@ -1167,14 +1168,14 @@ Pl_SetDuckAction:
 	ld   [sPlIceDelayTimer], a
 	ld   [sPlIceDelayDir], a
 	ld   a, $01
-	ld   [sPlDuck], a
+	ld   [sPlCrouch], a
 	; Use a different frame if holding something
-	ld   a, SPR_WARIO_DUCK
+	ld   a, SPR_WARIO_CROUCH
 	ld   [sPlSprId], a
 	ld   a, [sActHeld]
 	and  a
 	ret  z
-	ld   a, SPR_WARIO_DUCKHOLD
+	ld   a, SPR_WARIO_CROUCHHOLD
 	ld   [sPlSprId], a
 	ret
 	
@@ -1412,16 +1413,16 @@ IF FIX_BUGS
 		ld   a, [sSmallWario]	
 		and  a					; Are we small Wario?
 		jr   nz, .plSmall		; If so, jump
-		ld   a, [sPlDuck]
-		and  a					; Are we ducking?
-		jr   nz, .plDuck		; If so, jump
+		ld   a, [sPlCrouch]
+		and  a					; Are we crouching?
+		jr   nz, .plCrouch		; If so, jump
 		
 	.plBig:
 		ld   a, SPR_WARIO_GRAB
 		ld   [sPlSprId], a
 		ret
-	.plDuck:
-		ld   a, SPR_WARIO_DUCKHOLD
+	.plCrouch:
+		ld   a, SPR_WARIO_CROUCHHOLD
 		ld   [sPlSprId], a
 		ret
 	.plSmall:	
@@ -1440,14 +1441,14 @@ ELSE
 	
 
 	; [BUG] Badly placed check.
-	; This is checked only if we're Small Wario, who can never duck.
-	; As a result, the correct grab anim isn't used when ducking (until the anim ends).
-	ld   a, [sPlDuck]
+	; This is checked only if we're Small Wario, who can never crouch.
+	; As a result, the correct grab anim isn't used when crouching (until the anim ends).
+	ld   a, [sPlCrouch]
 	and  a
 	ret  z
 	;--
 	; [TCRF] So this is unreachable as a result.
-	ld   a, SPR_WARIO_DUCKHOLD
+	ld   a, SPR_WARIO_CROUCHHOLD
 	ld   [sPlSprId], a
 	ret
 ENDC
@@ -1511,17 +1512,17 @@ ENDC
 	ret  nz
 	
 	;--
-	; If we're pressing down, start the duck action
+	; If we're pressing down, start the crouch action
 	; (if we got here, the ladder check failed)
 	
-	; Small Wario can't duck
+	; Small Wario can't crouch
 	ld   a, [sSmallWario]
 	and  a
 	jr   nz, .checkDir
 	
 	ldh  a, [hJoyKeys]
 	bit  KEYB_DOWN, a
-	jp   nz, Pl_SetDuckAction
+	jp   nz, Pl_SetCrouchAction
 	;--
 .checkDir:
 	; Which direction are we moving to?
@@ -1583,12 +1584,12 @@ ENDC
 	ld   [sPlIceDelayDir], a
 	jp   Pl_SwitchToStand
 	
-; =============== Pl_DoCtrl_Duck ===============
-Pl_DoCtrl_Duck:
-	; Small Wario can't duck
+; =============== Pl_DoCtrl_Crouch ===============
+Pl_DoCtrl_Crouch:
+	; Small Wario can't crouch
 	ld   a, [sSmallWario]
 	and  a						; Are we Small Wario?
-	jp   nz, Pl_SwitchToStand	; If so, we can't duck
+	jp   nz, Pl_SwitchToStand	; If so, we can't crouch
 	
 	; Did we start holding an actor?
 	ld   a, [sActHeld]
@@ -1635,59 +1636,59 @@ Pl_DoCtrl_Duck:
 	; unless theres's a solid block on top
 	ldh  a, [hJoyKeys]
 	bit  KEYB_DOWN, a		; Still holding DOWN?
-	jr   nz, .checkDuckJump	; If so, jump
+	jr   nz, .chkCrouchJump	; If so, jump
 	
 	ldh  a, [hJoyNewKeys]
-	bit  KEYB_A, a			; Starting a jump?
-	jr   nz, .startDuckJump	; If so, jump
+	bit  KEYB_A, a				; Starting a jump?
+	jr   nz, .startCrouchJump	; If so, jump
 	
 	; Check the collision on top
 	xor  a					; Simulate uncrouch to check for top block
-	ld   [sPlDuck], a
+	ld   [sPlCrouch], a
 	ld   a, $01				; Read-only ish state (don't destroy blocks, etc...)
 	ld   [sPlBGColiSolidReadOnly], a
 	call PlBGColi_DoTop
 	; [POI] This causes water blocks on top to be treated as solid (through glitches)
 IF IMPROVE
 	cp   a, COLI_SOLID		; Is there a solid block on top?
-	jr   z, .keepDuck		; If so, keep crouching
+	jr   z, .keepCrouch		; If so, keep crouching
 ELSE
 	and  a					; Is there an empty block on top?
-	jr   nz, .keepDuck		; If not, keep ducking
+	jr   nz, .keepCrouch	; If not, keep crouching
 ENDC
 	xor  a
 	ld   [sPlBGColiSolidReadOnly], a
 	jp   Pl_SwitchToStand
 	;--
-.checkDuckJump:
+.chkCrouchJump:
 	ldh  a, [hJoyNewKeys]
 	bit  KEYB_A, a			; Starting a jump?
-	jr   z, .keepDuck		; If not, skip
-.startDuckJump:
+	jr   z, .keepCrouch		; If not, skip
+.startCrouchJump:
 	; Check if we can actually jump
 	; Since we're explicitly trying to move this doesn't use read-only mode
-	xor  a					; Simulate uncrouch to check for top block
-	ld   [sPlDuck], a
+	xor  a					; Simulate uncrouching to check for top block
+	ld   [sPlCrouch], a
 	
 	; [POI] No longer treating water blocks as solid
 	call PlBGColi_DoTop		; Check collision and trigger any blocks
 IF IMPROVE
 	cp   a, COLI_SOLID		; Is there a solid block on top?
-	jr   z, .keepDuck		; If so, keep ducking
+	jr   z, .keepCrouch		; If so, keep crouching
 ELSE
 	and  a					; Is there an empty block on top?
-	jr   nz, .keepDuck		; If not, keep ducking
+	jr   nz, .keepCrouch	; If not, keep crouching
 ENDC
-	; Otherwise, start a duck jump
+	; Otherwise, start a crouch jump
 	ld   a, $01
-	ld   [sPlDuck], a
+	ld   [sPlCrouch], a
 	jp   Pl_StartJump
-.keepDuck:
+.keepCrouch:
 	xor  a
 	ld   [sPlBGColiSolidReadOnly], a
 	ld   a, $01
-	ld   [sPlDuck], a
-	; Now that we know the player is still ducking, handle right/left movement
+	ld   [sPlCrouch], a
+	; Now that we know the player is still crouching, handle right/left movement
 .checkMoveRight:
 	ldh  a, [hJoyKeys]
 	bit  KEYB_RIGHT, a
@@ -1698,9 +1699,9 @@ ENDC
 	call Pl_Anim2FrameSlow
 	
 	; If there's a solid block in front of the player, don't move
-	; Since ducking reduces the player height, there's only one block which can be triggered
+	; Since crouching reduces the player height, there's only one block which can be triggered
 	
-	; [POI] And this is why moving while ducking underwater works (through glitches)
+	; [POI] And this is why moving while crouching underwater works (through glitches)
 	call PlBGColi_DoFront
 	dec  a							; Is there a solid block?
 	ret  z							; If so, return
@@ -1733,16 +1734,16 @@ ENDC
 	jp   Pl_MoveLeftWithScreen
 	
 .end:
-	; If we got here, we're standing still while ducking
+	; If we got here, we're standing still while crouching
 	xor  a
 	ld   [sPlAnimTimer], a
 	
-	ld   a, SPR_WARIO_DUCK		; Set main frame
+	ld   a, SPR_WARIO_CROUCH		; Set main frame
 	ld   [sPlSprId], a
 	ld   a, [sActHeld]			
 	and  a						; Are we holding something?
 	ret  z						; If not, return
-	ld   a, SPR_WARIO_DUCKHOLD	; If so, Set the hold frame
+	ld   a, SPR_WARIO_CROUCHHOLD	; If so, Set the hold frame
 	ld   [sPlSprId], a
 	ret
 ; =============== Pl_DoCtrl_Climb ===============
@@ -2159,7 +2160,7 @@ Pl_SwimUp:
 Pl_StartSwimUpFromGround:
 	xor  a
 	ld   [sPlSwimGround], a
-	ld   [sPlDuck], a
+	ld   [sPlCrouch], a
 	
 	
 ; =============== Pl_StartSwimUp ===============
@@ -2183,9 +2184,9 @@ Pl_StartSwimUp:
 ; =============== Pl_SwimGroundWalk ===============
 ; Handles the player walking on the ground underwater.
 Pl_SwimGroundWalk:
-	; If the player is ducking, don't allow swimming up
-	ld   a, [sPlDuck]
-	and  a								; Ducking?
+	; If the player is crouching, don't allow swimming up
+	ld   a, [sPlCrouch]
+	and  a								; crouching?
 	jr   nz, .chkType					; If so, skip it
 	ldh  a, [hJoyNewKeys]
 	bit  KEYB_A, a
@@ -2197,7 +2198,7 @@ Pl_SwimGroundWalk:
 	dec  a
 	jr   z, Pl_SwimGroundWalk_Stand
 	dec  a
-	jr   z, Pl_SwimGroundWalk_Duck
+	jr   z, Pl_SwimGroundWalk_Crouch
 	jp   Pl_SwimGroundWalk_Walk
 	
 ; =============== Pl_SwimGroundWalk_Stand ===============
@@ -2210,7 +2211,7 @@ Pl_SwimGroundWalk_Stand:
 	bit  KEYB_LEFT, a
 	jp   nz, Pl_StartSwimWalkLeft
 	bit  KEYB_DOWN, a
-	jp   nz, Pl_StartSwimDuck
+	jp   nz, Pl_StartSwimCrouch
 	bit  KEYB_UP, a
 	jr   z, Pl_SwimGroundWalk_DoStandColi	; No manual movement
 .upKey:
@@ -2266,26 +2267,26 @@ Pl_SwimGroundWalk_DoStandColi:
 	ret
 .end:
 	ret
-; =============== Pl_SwimGroundWalk_Duck ===============
+; =============== Pl_SwimGroundWalk_Crouch ===============
 ; The player stands idle underwater.
-Pl_SwimGroundWalk_Duck:
-	; The duck state needs to be reconfirmed every time.
+Pl_SwimGroundWalk_Crouch:
+	; The crouching state needs to be reconfirmed every time.
 	xor  a
-	ld   [sPlDuck], a
+	ld   [sPlCrouch], a
 	
 	ldh  a, [hJoyKeys]
 	bit  KEYB_DOWN, a					; Are we holding DOWN?
-	jr   nz, Pl_SwimGroundWalk_SetDuck	; If so, confirm ducking
+	jr   nz, Pl_SwimGroundWalk_SetCrouch	; If so, confirm crouching
 	
 	; If not, check what's above us without activating any solid blocks
 	ld   a, $01
 	ld   [sPlBGColiSolidReadOnly], a
 	call PlBGColi_DoTop
 	dec  a								; Is there a solid block? 
-	jr   z, Pl_SwimGroundWalk_SetDuck	; If so, keep ducking
+	jr   z, Pl_SwimGroundWalk_SetCrouch	; If so, keep crouching
 	xor  a
 	ld   [sPlBGColiSolidReadOnly], a
-.noDuck:
+.noCrouch:
 	; This almost seems a mistake that it uses hJoyNewKeys instead of hJoyKeys
 	; As a result it's very difficult to trigger.
 	ldh  a, [hJoyNewKeys]
@@ -2300,15 +2301,15 @@ Pl_SwimGroundWalk_Duck:
 	bit  KEYB_LEFT, a
 	jr   nz, Pl_StartSwimWalkLeft
 	jr   Pl_SwitchToSwimStand
-; =============== Pl_SwimGroundWalk_SetDuck ===============
-; Starts/Confirms the ducking state for the player.
-Pl_SwimGroundWalk_SetDuck:
-	ld   a, $01					; Set duck state
-	ld   [sPlDuck], a
+; =============== Pl_SwimGroundWalk_SetCrouch ===============
+; Starts/Confirms the crouching state for the player.
+Pl_SwimGroundWalk_SetCrouch:
+	ld   a, $01					; Set crouching state
+	ld   [sPlCrouch], a
 	xor  a
 	ld   [sPlBGColiSolidReadOnly], a
 	ld   [sPlAnimTimer], a
-	ld   a, SPR_WARIO_DUCK
+	ld   a, SPR_WARIO_CROUCH
 	ld   [sPlSprId], a
 	jr   Pl_SwimGroundWalk_DoStandColi
 	
@@ -2338,17 +2339,17 @@ Pl_StartSwimWalk:
 	add  SPR_SMALLWARIO_WALK0-SPR_WARIO_WALK0
 	ld   [sPlSprId], a
 	ret
-; =============== Pl_StartSwimDuck ===============
-; Makes the player start ducking underwater.
-Pl_StartSwimDuck:
-	; Small Wario can't duck
+; =============== Pl_StartSwimCrouch ===============
+; Makes the player start crouching underwater.
+Pl_StartSwimCrouch:
+	; Small Wario can't crouch
 	ld   a, [sSmallWario]
 	and  a
 	jr   nz, Pl_SwitchToSwimStand
 	
-	ld   a, PL_SGM_DUCK				; Switch mode
+	ld   a, PL_SGM_CROUCH				; Switch mode
 	ld   [sPlSwimGround], a
-	jr   Pl_SwimGroundWalk_SetDuck			; Set anim frame
+	jr   Pl_SwimGroundWalk_SetCrouch	; Set anim frame
 	
 ; =============== Pl_SwitchToSwimStand ===============
 ; Marks the player as having landed on the ground underwater.
@@ -2377,8 +2378,8 @@ Pl_SwimGroundWalk_Walk:
 	ldh  a, [hJoyKeys]
 	bit  KEYB_LEFT, a					; Moving left now?
 	jr   nz, Pl_StartSwimWalkLeft
-	bit  KEYB_DOWN, a					; Starting to duck?
-	jr   nz, Pl_StartSwimDuck
+	bit  KEYB_DOWN, a					; Starting to crouch?
+	jr   nz, Pl_StartSwimCrouch
 	and  a, KEY_RIGHT|KEY_LEFT|KEY_DOWN	; Holding any of these keys?
 	jr   z, Pl_SwitchToSwimStand		; If not, stand
 	;--
@@ -2410,7 +2411,7 @@ Pl_SwimGroundWalk_Walk:
 	;		Unlike normal spikes, which have a lower ID than empty blocks,
 	;       underwater spikes have an higher ID than normal water blocks so they get less priority.
 	;		As a result, you can walk through underwater spikes unharmed when there's a single row of spikes, 
-	;		as long as you aren't Small Wario or ducking.
+	;		as long as you aren't Small Wario or crouching.
 	;		See: The area near the key lock in C03B.
 	
 	call PlBGColi_DoFront		; Handle front collision
@@ -2432,8 +2433,8 @@ Pl_SwimGroundWalk_Walk:
 	ldh  a, [hJoyKeys]
 	bit  KEYB_RIGHT, a					; Moving right now?
 	jp   nz, Pl_StartSwimWalkRight
-	bit  KEYB_DOWN, a					; Starting to duck?
-	jr   nz, Pl_StartSwimDuck
+	bit  KEYB_DOWN, a					; Starting to crouch?
+	jr   nz, Pl_StartSwimCrouch
 	and  a, KEY_RIGHT|KEY_LEFT|KEY_DOWN	; Holding any of these keys?
 	jr   z, Pl_SwitchToSwimStand		; If not, stand
 	;--
@@ -2466,10 +2467,10 @@ Pl_SwimGroundWalk_Walk:
 ; =============== Pl_SwimGroundWalk_StartSwimFall ===============
 ; Makes the player swim after walking off a solid block underwater.
 Pl_SwimGroundWalk_StartSwimFall:
-	; Unmark ground/duck status
+	; Unmark ground/crouch status
 	xor  a
 	ld   [sPlSwimGround], a
-	ld   [sPlDuck], a
+	ld   [sPlCrouch], a
 	; Set anim frame
 	ld   a, SPR_WARIO_SWIM0
 	ld   [sPlSprId], a
@@ -2632,9 +2633,9 @@ Pl_DoCtrl_ActInt:
 ; This bump moves the player in an arc.
 Pl_DoCtrl_HardBump:
 	; Determine if it's a ground bump or an air bump.
-	; Ground bumps are caused by ducking before hard bumping.
+	; Ground bumps are caused by crouching before hard bumping.
 	ld   a, [sPlHardBumpGround]
-	cp   a, PL_ACT_DUCK				; Is it an ground bump?
+	cp   a, PL_ACT_CROUCH				; Is it an ground bump?
 	jr   nz, Pl_DoCtrl_HardBumpAir				; If not, jump
 	
 	; Regardless of bump type, during a bump the player is moved in the opposite direction.
@@ -2668,15 +2669,15 @@ Pl_DoCtrl_HardBumpGround:
 	cp   a, $10						; Have we reached the end?
 	ret  nz							; If not, return
 	
-	; Restore the duck action
-	; sPlHardBumpGround is set to the previous action, which here is always PL_ACT_DUCK
-	ld   a, [sPlHardBumpGround]		; A = PL_ACT_DUCK
+	; Restore the crouch action
+	; sPlHardBumpGround is set to the previous action, which here is always PL_ACT_CROUCH
+	ld   a, [sPlHardBumpGround]		; A = PL_ACT_CROUCH
 	ld   [sPlAction], a
-	; [BUG] This doesn't explicitly set the sprite to SPR_WARIO_DUCKWALK.
+	; [BUG] This doesn't explicitly set the sprite to SPR_WARIO_CROUCHWALK.
 	;       Because of this, when holding LEFT/RIGHT after a ground bump,
 	;		the game does Anim2Frame with incorrect frames. (alternates between SPR_WARIO_BUMPAIR and SPR_WARIO_SWIM2)
 IF FIX_BUGS
-	ld   a, SPR_WARIO_DUCKWALK
+	ld   a, SPR_WARIO_CROUCHWALK
 	ld   [sPlSprId], a
 ENDC
 	xor  a
@@ -3114,9 +3115,9 @@ ENDC
 	ld   [sPlJumpYPathIndex], a
 	ld   [sHighJump], a
 	
-	ld   a, [sPlDuck]					; If ducking, switch seamlessly to the duck (walk) action
+	ld   a, [sPlCrouch]					; If crouching, switch seamlessly to the crouch(walk) action
 	and  a
-	jp   nz, Pl_SetDuckAction
+	jp   nz, Pl_SetCrouchAction
 	
 	; If we're ground pounding, trigger the screen shake effect
 	; Otherwise just land normally
@@ -3242,7 +3243,7 @@ IF IMPROVE
 		cp   a, COLI_SOLID
 		jr   nz, .noCrouch
 		inc  a
-		ld   [sPlDuck], a
+		ld   [sPlCrouch], a
 .noCrouch:
 	xor  a
 	ld   [sPlBGColiSolidReadOnly], a
@@ -3334,7 +3335,7 @@ ENDC
 	;--
 	xor  a
 	ld   [sPlAnimTimer], a
-	ld   [sPlDuck], a
+	ld   [sPlCrouch], a
 	ld   hl, sPlFlags
 	res  SPRMAPB_OBP1, [hl]
 	
@@ -3400,7 +3401,7 @@ Pl_SwitchToSand:
 	ld   [sPlAnimTimer], a
 	ld   [sPlJumpYPathIndex], a
 	ld   [sPlBumpYPathIndex], a
-	ld   [sPlDuck], a
+	ld   [sPlCrouch], a
 	
 	ld   hl, sPlFlags
 	res  SPRMAPB_OBP1, [hl]
@@ -4082,9 +4083,9 @@ ENDC
 	jp   Pl_SwitchToStand
 	
 	
-; =============== Pl_DoCtrl_DuckActGrab ===============
-; Starts a grab when ducking.
-Pl_DoCtrl_DuckActGrab:
+; =============== Pl_DoCtrl_CrouchActGrab ===============
+; Starts a grab when crouching.
+Pl_DoCtrl_CrouchActGrab:
 	; The anim frame for grabbing is set when the game switches to the throw action.
 	; Now we pause for 4 frames, which freezes the player in that anim.
 	ld   a, [sActHeld]				
@@ -4107,9 +4108,9 @@ Pl_DoCtrl_DuckActGrab:
 	; Reset timer and return to the correct action
 	xor  a
 	ld   [sPlDelayTimer], a
-	ld   a, [sPlDuck]
+	ld   a, [sPlCrouch]
 	and  a
-	jp   nz, Pl_SetDuckAction
+	jp   nz, Pl_SetCrouchAction
 	jp   Pl_SwitchToStand 		; Not entirely sure how this could be triggered
 	
 ; =============== Pl_StartThrowAction ===============
@@ -4132,10 +4133,10 @@ Pl_StartThrowAction:
 .normal:
 	ld   a, SPR_WARIO_THROW
 	ld   [sPlSprId], a
-	ld   a, [sPlDuck]
+	ld   a, [sPlCrouch]
 	and  a
 	ret  z
-	ld   a, SPR_WARIO_DUCKTHROW
+	ld   a, SPR_WARIO_CROUCHTHROW
 	ld   [sPlSprId], a
 	ret
 .small:
@@ -4158,9 +4159,9 @@ Pl_DoCtrl_Throw:
 	xor  a
 	ld   [sPlDelayTimer], a
 	ld   [sPlAnimTimer], a
-	ld   a, [sPlDuck]
-	and  a						; Are we ducking?
-	jp   nz, Pl_SetDuckAction	; If so, jump
+	ld   a, [sPlCrouch]
+	and  a						; Are we crouching?
+	jp   nz, Pl_SetCrouchAction	; If so, jump
 	jp   Pl_SwitchToStand
 	
 ; =============== Pl_WalkRight ===============
@@ -4195,9 +4196,9 @@ Pl_WalkRight:
 	and  a							; Is the block *on the bottom* empty?
 	ret  nz							; If not, we're going against a solid wall.
 	
-	ld   b, $03						; Otherwise, we can fit into the gap when ducking
+	ld   b, $03						; Otherwise, we can fit into the gap when crouching
 	call Pl_MoveRight				
-	jp   Pl_SetDuckAction			; Autoduck
+	jp   Pl_SetCrouchAction			; Autocrouch
 ; =============== Pl_AirMoveRight ===============
 ; Variant of Pl_AirMoveRight for moving right while in the air.
 ; and without checking for the auto-crouching.
@@ -4354,9 +4355,9 @@ Pl_WalkLeft:
 	and  a							; Is the block *on the bottom* empty?
 	ret  nz							; If not, we're going against a solid wall.
 	
-	ld   b, $03						; Otherwise, we can fit into the gap when ducking
+	ld   b, $03						; Otherwise, we can fit into the gap when crouching
 	call Pl_MoveLeft				
-	jp   Pl_SetDuckAction			; Autoduck
+	jp   Pl_SetCrouchAction			; Autocrouch
 	
 ; =============== Pl_AirMoveLeft ===============
 ; Variant of Pl_WalkLeft for moving left while in the air.
@@ -4489,20 +4490,20 @@ Pl_MoveLeftStub:
 	call Pl_MoveLeft
 	ret
 	
-; =============== Pl_Unused_SwitchToDuck ===============
+; =============== Pl_Unused_SwitchToCrouch ===============
 ; [TCRF] Unreferenced subroutine.
-; Makes the player duck if he isn't climbing, without setting
-; the actual sPlDuck flag though.
+; Makes the player crouch if he isn't climbing, without setting
+; the actual sPlCrouch flag though.
 ; Purpose unknown.
-Pl_Unused_SwitchToDuck: 
+Pl_Unused_SwitchToCrouch: 
 	ld   a, [sPlAction]
 	cp   a, PL_ACT_CLIMB	; Climbing a ladder?
 	ret  z					; If so, return
 	
-	; Otherwise, make the player duck
-	ld   a, SPR_WARIO_DUCK
+	; Otherwise, make the player crouch
+	ld   a, SPR_WARIO_CROUCH
 	ld   [sPlSprId], a
-	ld   a, PL_ACT_DUCK
+	ld   a, PL_ACT_CROUCH
 	ld   [sPlAction], a
 	ret
 	
@@ -4626,20 +4627,20 @@ Pl_JumpAnim:
 	ld   a, $05-$01
 	ld   [sPlJumpThrowTimer], a
 .setThrow:
-	; sPlDuck ? SPR_WARIO_DUCKTHROW : SPR_WARIO_JUMPTHROW
+	; sPlCrouch ? SPR_WARIO_CROUCHTHROW : SPR_WARIO_JUMPTHROW
 	ld   a, SPR_WARIO_JUMPTHROW
 	ld   [sPlSprId], a
-	ld   a, [sPlDuck]			
+	ld   a, [sPlCrouch]			
 	and  a
 	ret  z
-	ld   a, SPR_WARIO_DUCKTHROW
+	ld   a, SPR_WARIO_CROUCHTHROW
 	ld   [sPlSprId], a
 	ret
 	;--
 .chkGroundPound:
-	ld   a, [sPlDuck]
-	and  a						; Are we ducking?
-	jr   nz, .chkDuck			; If so, we can't be ground pounding
+	ld   a, [sPlCrouch]
+	and  a						; Are we crouching?
+	jr   nz, .chkCrouch			; If so, we can't be ground pounding
 	
 	ld   a, [sPlPower]
 	cp   a, PL_POW_BULL			; Are we Bull Wario?
@@ -4681,30 +4682,30 @@ Pl_JumpAnim:
 	ld   a, SPR_SMALLWARIO_HOLDJUMP
 	ld   [sPlSprId], a
 	ret
-.chkDuck:
-	; If we aren't holding DOWN, try to unduck
+.chkCrouch:
+	; If we aren't holding DOWN, try to uncrouch
 	ldh  a, [hJoyKeys]
 	bit  KEYB_DOWN, a		; Are we (still) holding down?
 	jr   z, .chkJump		; If not, try to set the jump anim
 	
-	; Use the appropriate ducking frame
-.setDuck:
+	; Use the appropriate crouching frame
+.setCrouch:
 	ld   a, [sActHeld]
 	and  a
-	jr   nz, .setDuckHold
-.setDuckNorm:
-	ld   a, SPR_WARIO_DUCK
+	jr   nz, .setCrouchHold
+.setCrouchNorm:
+	ld   a, SPR_WARIO_CROUCH
 	ld   [sPlSprId], a
 	ret
-.setDuckHold:
-	ld   a, SPR_WARIO_DUCKHOLD
+.setCrouchHold:
+	ld   a, SPR_WARIO_CROUCHHOLD
 	ld   [sPlSprId], a
 	ret
 .chkJump:
-	; The duck flag in the air ends up being set here.
+	; The crouch flag in the air ends up being set here.
 	
-	; [BUG] The intention here is to keep the player in the ducking state until there's enough space on top to unduck.
-	; 		If there's not enough space yet, the duck flag is properly set...
+	; [BUG] The intention here is to keep the player in the crouching state until there's enough space on top to uncrouch.
+	; 		If there's not enough space yet, the crouch flag is properly set...
 	; 		...but the animation frame isn't! It's set to the jumping frame by accident.
 	;		Because of this, the player appears to partially clip into the ceiling,
 	;		even though he's actually not. (which is why you can't jet dash in the "clipping" state)
@@ -4713,18 +4714,18 @@ Pl_JumpAnim:
 	res  SPRMAPB_OBP1, [hl]
 	
 	xor  a				; Handle the collision for the block above		
-	ld   [sPlDuck], a	; which requires unducking, at least temporarily
+	ld   [sPlCrouch], a	; which requires uncrouching, at least temporarily
 	call PlBGColi_DoTop
 	and  a				; Is there an empty block on top?
 	jr   z, .setJump	; If so, use the jump anim
 	
-	; Otherwise, keep ducking
+	; Otherwise, keep crouching
 	ld   a, $01
-	ld   [sPlDuck], a
+	ld   [sPlCrouch], a
 IF FIX_BUGS
-	jr   .setDuck
+	jr   .setCrouch
 ELSE
-	jr   .setJump	; ...and the bug. Should have jumped to .setDuck
+	jr   .setJump	; ...and the bug. Should have jumped to .setCrouch
 ENDC
 
 ; =============== Pl_AnimClimb ===============
@@ -4764,15 +4765,15 @@ Pl_StartActionB_Garlic:
 	and  a
 	ret  nz
 	
-	; If we're ducking, we may not have enough space to perform a dash
-	ld   a, [sPlDuck]
-	and  a				; Are we ducking?
+	; If we're crouching, we may not have enough space to perform a dash
+	ld   a, [sPlCrouch]
+	and  a				; Are we crouching?
 	jr   z, .start		; If not, jump
-.chkDuck:
-	; Disable duck temporarily to allow checking what's above us
-	; (since the collision check accounts for ducking)
+.chkCrouch:
+	; Disable crouching temporarily to allow checking what's above us
+	; (since the collision check accounts for crouching)
 	xor  a
-	ld   [sPlDuck], a
+	ld   [sPlCrouch], a
 	
 	; Check in the alternate mode since checking with the normal set
 	; would lead to any blocks above being destroyed/triggered.
@@ -4782,11 +4783,11 @@ Pl_StartActionB_Garlic:
 	call PlBGColi_DoTop
 	and  a				; Is there an empty block above us (collision $00)?
 	jr   z, .okSpace	; If so, jump
-	; If not, we don't have enough space, so we keep ducking and ignore the request.
+	; If not, we don't have enough space, so we keep crouching and ignore the request.
 	xor  a
 	ld   [sPlBGColiSolidReadOnly], a
 	ld   a, $01
-	ld   [sPlDuck], a
+	ld   [sPlCrouch], a
 	ret
 .okSpace:
 	xor  a
@@ -4796,7 +4797,7 @@ Pl_StartActionB_Garlic:
 	ld   [sPlSprId], a
 	xor  a							; Reset timers
 	ld   [sPlAnimTimer], a
-	ld   [sPlDuck], a
+	ld   [sPlCrouch], a
 	ld   a, PL_ACT_DASH
 	ld   [sPlAction], a
 	ld   a, $01
@@ -4826,24 +4827,24 @@ Pl_StartActionB_Jet:
 	and  a
 	ret  nz
 	
-	; If we're ducking, check if we have enough space to start a dash
+	; If we're crouching, check if we have enough space to start a dash
 	; Like what's done for the ground dash
-	ld   a, [sPlDuck]
-	and  a						; Are we ducking?
+	ld   a, [sPlCrouch]
+	and  a						; Are we crouching?
 	jr   z, .start				; If not, skip
-.chkDuck:
+.chkCrouch:
 	xor  a						
-	ld   [sPlDuck], a
+	ld   [sPlCrouch], a
 	ld   a, $01
 	ld   [sPlBGColiSolidReadOnly], a
 	call PlBGColi_DoTop
 	and  a						; Is there an empty block above us?
 	jr   z, .okSpace			; If so, jump
-	; If not, keep ducking and ignore the request.
+	; If not, keep crouching and ignore the request.
 	xor  a
 	ld   [sPlBGColiSolidReadOnly], a
 	ld   a, $01
-	ld   [sPlDuck], a
+	ld   [sPlCrouch], a
 	ret
 .okSpace:
 	xor  a
@@ -4856,7 +4857,7 @@ Pl_StartActionB_Jet:
 	xor  a
 	ld   [sPlSuperJump], a
 	ld   [sPlJumpYPathIndex], a
-	ld   [sPlDuck], a
+	ld   [sPlCrouch], a
 	ld   [sPlSlowJump], a		; 
 	ld   a, PL_ACT_DASHJET
 	ld   [sPlAction], a
@@ -4925,12 +4926,12 @@ Pl_StartActionB_JetOrDragon:
 	; Spawn the dragon flame actor
 	ld   a, EXACT_DRAGONHATFLAME
 	ld   [sExActSet], a
-	; If the player is ducking use a different Y pos
+	; If the player is crouching use a different Y pos
 	ld   b, $10						; $10: Default Y pos
-	ld   a, [sPlDuck]
-	and  a							; Is the player ducking?
+	ld   a, [sPlCrouch]
+	and  a							; Is the player crouching?
 	jr   z, .highYPos				; If not, jump
-	ld   b, $08						; $08: Y pos when ducking
+	ld   b, $08						; $08: Y pos when crouching
 .highYPos:
 	call PlTarget_SetUpPos
 	ld   a, [sTarget_High]
@@ -5102,7 +5103,7 @@ Pl_SwitchToStand:
 	; Reset everything
 	xor  a
 	ld   [sPlAnimTimer], a
-	ld   [sPlDuck], a
+	ld   [sPlCrouch], a
 	ld   [sPlGroundDashTimer], a
 	ld   [sPlJetDashTimer], a
 IF !IMPROVE
@@ -5351,13 +5352,13 @@ ENDC
 ; =============== Pl_Anim2FrameSlow ===============
 ; Animates a player's 2 frame animation cycle every $10 frames.
 ; Identical to Pl_Anim2Frame except slower.
-; Only used for animating the duck walk.
+; Only used for animating the crouch walk.
 Pl_Anim2FrameSlow:
 	; Animate every $10 frames
 	ld   a, [sTimer]
 	and  a, $0F
 	ret  nz
-	; Alternate between SPR_WARIO_DUCK ($10) and SPR_WARIO_DUCKWALK ($11)
+	; Alternate between SPR_WARIO_CROUCH ($10) and SPR_WARIO_CROUCHWALK ($11)
 	ld   a, [sPlSprId]
 	xor  $01
 	ld   [sPlSprId], a
@@ -5365,10 +5366,10 @@ Pl_Anim2FrameSlow:
 	
 ; =============== Pl_DoCtrl_Sand ===============
 Pl_DoCtrl_Sand:
-	; Always prevent ducking
-	; Would have been nicer if you couldn't duck when coming from a walk/dash but oh well
+	; Always prevent crouching
+	; Would have been nicer if you couldn't crouch when coming from a walk/dash but oh well
 	xor  a
-	ld   [sPlDuck], a
+	ld   [sPlCrouch], a
 	
 	call Pl_SetFlipByJoyKeys
 	;--
@@ -5512,15 +5513,15 @@ ENDC
 .ground:
 
 	; There's no real movement on the ground.
-	; All we can do is duck (if we aren't Small Wario), while the rest
+	; All we can do is crouch (if we aren't Small Wario), while the rest
 	; just sets up the correct anim frame.
 	
 	ld   a, [sSmallWario]
 	and  a					; Are we Small Wario?
-	jr   nz, .gSmall		; If so, skip the duck check
+	jr   nz, .gSmall		; If so, skip the crouching check
 	ldh  a, [hJoyKeys]
-	bit  KEYB_DOWN, a		; Are we ducking?
-	jr   nz, .gDuck			; If so, jump
+	bit  KEYB_DOWN, a		; Are we crouching?
+	jr   nz, .gCrouch		; If so, jump
 .gNormal:
 	; Pick correct anim frame
 	ld   a, SPR_WARIO_IDLE0
@@ -5541,17 +5542,17 @@ ENDC
 	ld   a, SPR_SMALLWARIO_HOLD
 	ld   [sPlSprId], a
 	ret
-.gDuck:
-	; Set duck flag
+.gCrouch:
+	; Set crouch flag
 	ld   a, $01
-	ld   [sPlDuck], a
-	; Pick correct anim frame when ducking
-	ld   a, SPR_WARIO_DUCK
+	ld   [sPlCrouch], a
+	; Pick correct anim frame when crouching
+	ld   a, SPR_WARIO_CROUCH
 	ld   [sPlSprId], a
 	ld   a, [sActHeld]
 	and  a
 	ret  z
-	ld   a, SPR_WARIO_DUCKHOLD
+	ld   a, SPR_WARIO_CROUCHHOLD
 	ld   [sPlSprId], a
 	ret
 	
@@ -5876,7 +5877,7 @@ PlActColi_Do:
 	; There are three possible configurations:
 	; - Normal
 	; - Small Wario
-	; - Ducking
+	; - crouching
 	ld   a, [sSmallWario]
 	and  a						
 	jr   nz, .plSmall
@@ -5886,14 +5887,14 @@ PlActColi_Do:
 	ld   [sPlColiBoxL], a
 	ld   a, +$09
 	ld   [sPlColiBoxR], a
-	; Ducking reduces the top border to the same value used for Small Wario
+	; crouching reduces the top border to the same value used for Small Wario
 	ld   a, [sPlAction]
-	cp   a, PL_ACT_DUCK
-	jr   z, .plDuck
+	cp   a, PL_ACT_CROUCH
+	jr   z, .plCrouch
 	ld   a, [sPlSwimGround]
-	cp   a, PL_SGM_DUCK
-	jr   z, .plDuck
-.plNormNoDuck:
+	cp   a, PL_SGM_CROUCH
+	jr   z, .plCrouch
+.plNormNoCrouch:
 	ld   a, -$1B
 	jr   .plSetYBox
 .plSmall:
@@ -5903,7 +5904,7 @@ PlActColi_Do:
 	ld   [sPlColiBoxL], a
 	ld   a, +$06
 	ld   [sPlColiBoxR], a
-.plDuck:
+.plCrouch:
 	ld   a, -$0E
 .plSetYBox:
 	ld   [sPlColiBoxU], a
@@ -6419,7 +6420,7 @@ PlActColiMask_CheckType_Norm:
 	
 	; Determine if we should switch to the bump action, which stops you momentarily.
 	ld   a, [sPlAction]
-	cp   a, PL_ACT_DUCK						; Are we standing or walking?			
+	cp   a, PL_ACT_CROUCH						; Are we standing or walking?			
 	jr   nc, .skipBump						; If not, skip it
 	ld   a, [sSmallWario]
 	and  a									; Are we Small Wario
@@ -7266,12 +7267,12 @@ ExAct_DragonHatFlame:
 	and  a									; Started a ground dash? (how is this even triggerable)
 	jr   nz, ExAct_DragonHatFlame_Despawn	; If so, despawn
 	;--
-	; Pick the correct Rel.Y position (upwards) depending if we're ducking or not.
+	; Pick the correct Rel.Y position (upwards) depending if we're crouching or not.
 	; This also determines the final location of the collision box too.
 	ld   b, $10								; B = Normal Y top offset
-	ld   a, [sPlDuck]
-	and  a									; Are we ducking?
-	jr   nz, ExAct_DragonHatFlame_DuckPos	; If so, jump
+	ld   a, [sPlCrouch]
+	and  a									; Are we crouching?
+	jr   nz, ExAct_DragonHatFlame_CrouchPos	; If so, jump
 	jr   ExAct_DragonHatFlame_SetColiV
 	
 ExAct_DragonHatFlame_Despawn:
@@ -7294,8 +7295,8 @@ ExAct_DragonHatFlame_Despawn:
 	ld   a, SFX_NONE
 	ld   [sSFX4Set], a
 	ret
-ExAct_DragonHatFlame_DuckPos:
-	ld   b, $08								; B = Ducking Y top offset
+ExAct_DragonHatFlame_CrouchPos:
+	ld   b, $08								; B = crouching Y top offset
 ExAct_DragonHatFlame_SetColiV:
 	; Set vertical collision box, shared across all acts
 	ld   a, -$08
@@ -7774,17 +7775,17 @@ ExAct_TreasureGet:
 	add  $0C
 	ld   [sExActOBJFixX], a
 	
-	; Wario ducks if he adds a treasure from the last row.
+	; Wario crouches if he adds a treasure from the last row.
 	; In that case, the treasure is obviously held from a different height.
-	ld   a, [sPlDuck]
-	and  a						; Ducking?
-	jr   nz, .duck				; If so, jump
+	ld   a, [sPlCrouch]
+	and  a						; Crouching?
+	jr   nz, .crouch			; If so, jump
 .stand:
 	ld   a, [sPlYRel]			; actorY = sPlYRel - $18
 	sub  a, $18
 	ld   [sExActOBJFixY], a
 	ret
-.duck:
+.crouch:
 	ld   a, [sPlYRel]			; actorY = sPlYRel - $10
 	sub  a, $10
 	ld   [sExActOBJFixY], a
@@ -8259,7 +8260,7 @@ ExAct_TreasureEnding:
 	dec  a
 	ld   [sExActOBJFixX], a
 	; When the treasure gets close to the player, signal out to the ending code
-	; to make the player either jump or duck in the "hold" position.
+	; to make the player either jump or crouch in the "hold" position.
 	cp   a, $38					; X == $38?
 	jr   z, .reqPlReact			; If so, jump
 	

@@ -2404,9 +2404,9 @@ Pl_SwitchToHardBump:
 	xor  a
 	ld   [sPlBumpYPathIndex], a
 	
-	; Always start the normal airborne bump, unless we're ducking
+	; Always start the normal airborne bump, unless we're crouching
 	ld   a, [sPlAction]
-	cp   a, PL_ACT_DUCK
+	cp   a, PL_ACT_CROUCH
 	jr   nz, Pl_SwitchToHardBumpAir
 	
 	; In that case, set the flag to bump on the ground without moving vertically
@@ -5510,8 +5510,8 @@ PlBGColi_DoTop:
 	
 	; The player's height isn't always the same
 	ld   b, $1C							; Normal: 28px up
-	ld   a, [sPlDuck]
-	and  a								; Are we ducking?
+	ld   a, [sPlCrouch]
+	and  a								; Are we crouching?
 	jr   nz, .isShort					; If so, we are short
 	ld   a, [sSmallWario]
 	and  a								; Are we Small Wario?
@@ -5869,11 +5869,11 @@ PlBGColi_DoHorz:
 	;
 	
 	; As usual the higher collision box isn't necessarily there.
-	; When ducking or as Small Wario, the player's height fits into a single block,
+	; When crouching or as Small Wario, the player's height fits into a single block,
 	; so we don't need to get other block IDs.
 	
 	;--
-	ld   a, [sPlDuck]
+	ld   a, [sPlCrouch]
 	and  a
 	jr   nz, .blockLt
 	ld   a, [sSmallWario]
@@ -5915,9 +5915,9 @@ ENDC
 	; ...except this later check doesn't always happen.
 	;
 	; A trick they did here was to set sPlBGColiBlockIdNext (block ID checked next time) to the lower priority block if the block ID with more priority is in the upper part.
-	; It was done to save time when checking for autoducking -- since 1 block gaps fit this description:
+	; It was done to save time when checking for autocrouching -- since 1 block gaps fit this description:
 	; a solid block (highest priority) on top, and something else on the bottom.
-	; By just checking if the lower priority block is empty we know if we can duck under there.
+	; By just checking if the lower priority block is empty we know if we can crouch under there.
 	
 	; Calculate the priority as usual.
 	ld   a, [sPlBGColiBlockId]	; A = BlockL
@@ -6902,12 +6902,12 @@ ActS_SyncHeldPos:
 	; X OFFSET: Will be stored in DE and added to the player's X position.
 	;
 	
-	; Pick a different Y offset depending on the duck status
-	ld   b, $1B					; B = Y offset when not ducking
-	ld   a, [sPlDuck]
-	or   a						; Is the player ducking?
+	; Pick a different Y offset depending on whether we're crouching or not
+	ld   b, $1B					; B = Y offset when not crouching
+	ld   a, [sPlCrouch]
+	or   a						; Is the player crouching?
 	jr   z, .chkX				; If not, jump
-	ld   b, $13					; B = Y offset when ducking
+	ld   b, $13					; B = Y offset when crouching
 	
 .chkX:
 

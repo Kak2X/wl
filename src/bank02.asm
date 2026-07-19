@@ -1675,13 +1675,13 @@ ActS_Held:
 	ld   b, $1B					; B = Default Y offset
 	ld   a, [sPlAction]
 	cp   a, PL_ACT_CLIMB		; Is the player climbing?
-	jr   nz, .chkDuck			; If not, skip
+	jr   nz, .chkCrouch			; If not, skip
 	ld   b, $17					; B = Y offset when climbing
-.chkDuck:
-	ld   a, [sPlDuck]
-	or   a						; Is the player ducking?
+.chkCrouch:
+	ld   a, [sPlCrouch]
+	or   a						; Is the player crouching?
 	jr   z, .chkXNorm			; If not, skip
-	ld   b, $13					; B = Y offset when ducking
+	ld   b, $13					; B = Y offset when crouching
 .chkXNorm:
 	; Mark grab delay/animation as finished
 	ld   a, $01					
@@ -2643,13 +2643,13 @@ ActS_OnPlColiH:
 	
 .chkPower:
 	;
-	; Perform a soft bump if small or when ducking
+	; Perform a soft bump if small or when crouching
 	;
 	ld   a, [sPlPower]
 	and  a, $0F						; Is the player big?
 	jp   z, .small					; If not, jump
 	ld   a, [sPlAction]
-	cp   a, PL_ACT_DUCK				; Is the player ducking?		
+	cp   a, PL_ACT_CROUCH				; Is the player crouching?		
 	jp   z, ActS_StartBumpSoft		; If so, jump
 	
 	;
@@ -3512,7 +3512,7 @@ ActS_DashKill_MoveLeft:
 ; =============== ActS_BumpSoft ===============
 ; This subroutine handles "soft bump" state for actors.
 ;
-; Soft bumps happen exclusively when walking into actors as Small Wario or when ducking.
+; Soft bumps happen exclusively when walking into actors as Small Wario or when crouching.
 ; These do not put the actor into the stun state, but just freeze it for a few
 ; frames, then make it change direction.
 ActS_BumpSoft:
@@ -8804,8 +8804,8 @@ Act_Fly_Idle:
 	ld   a, HIGH(SprMapPtrTable_Act_Fly_Idle)
 	ld   [sActSetSprMapPtrTablePtr+1], a
 	
-	; [POI] You can duck to avoid getting detected by the fly
-	ld   a, [sPlDuck]
+	; [POI] You can crouch to avoid getting detected by the fly
+	ld   a, [sPlCrouch]
 	or   a
 	ret  nz
 	

@@ -3892,8 +3892,8 @@ Ending_TrRoom_WaitNear:
 	
 	;
 	; The player now has to grab the treasure. He can either:
-	; - Jump (treasure in rows 1 or 2 -- two possible heights, decided later)
-	; - Duck (treasure in row 3)
+	; - Jump   (treasure in rows 1 or 2 -- two possible heights, decided later)
+	; - Crouch (treasure in row 3)
 	;
 	; [BUG] Standing frame seems odd for this. Shouldn't it be SPR_WARIO_HOLDJUMP?
 	IF FIX_BUGS
@@ -3905,10 +3905,10 @@ Ending_TrRoom_WaitNear:
 	ld   a, [sExActTreasureRow]
 	cp   a, $02						; Is this treasure in the third row?
 	jr   nz, .nextMode				; If not, skip
-	; Otherwise, make the player duck
+	; Otherwise, make the player crouch
 	ld   a, $01
-	ld   [sPlDuck], a
-	ld   a, SPR_WARIO_DUCKHOLD
+	ld   [sPlCrouch], a
+	ld   a, SPR_WARIO_CROUCHHOLD
 	ld   [sPlSprId], a
 .nextMode:
 	xor  a
@@ -3919,7 +3919,7 @@ Ending_TrRoom_WaitNear:
 	ret
 	
 ; =============== Ending_TrRoom_GrabTreasure ===============
-; Wario jumps (or ducks) to grab the treasure.
+; Wario jumps (or crouches) to grab the treasure.
 Ending_TrRoom_GrabTreasure:
 	call TrRoom_AnimCoin
 	
@@ -3969,7 +3969,7 @@ Ending_TrRoom_GrabTreasure:
 	ret
 .row3:
 	;
-	; Third row - Just duck
+	; Third row - Just crouch
 	;
 	ld   a, [sEndingTrRoomMode]	; Next mode
 	inc  a
@@ -4011,8 +4011,8 @@ Ending_TrRoom_GetTreasure:
 	;
 	ld   a, SPR_TRROOM_WARIO_IDLE0	; Stand
 	ld   [sPlSprId], a
-	xor  a							; Stop ducking, if set
-	ld   [sPlDuck], a
+	xor  a							; Stop crouching, if set
+	ld   [sPlCrouch], a
 	ld   a, [sEndingTrRoomMode]		; Next mode
 	inc  a
 	ld   [sEndingTrRoomMode], a
@@ -5810,7 +5810,7 @@ Mode_Treasure_TrRoom_WalkInR:
 	; After we finish moving...
 	;
 	; Determine the player frame to use when inserting the treasure.
-	; If it's on the third row we have to duck, otherwise we can stand normally.
+	; If it's on the third row we have to crouch, otherwise we can stand normally.
 	;
 	ld   a, SPR_WARIO_HOLD				; Set stand frame
 	ld   [sPlSprId], a
@@ -5818,10 +5818,10 @@ Mode_Treasure_TrRoom_WalkInR:
 	ld   a, [sExActTreasureRow]
 	cp   a, $02							; Is the treasure on the third row?
 	jr   nz, .nextMode					; If not, jump
-.setDuckFrame:
-	ld   a, $01							; Set duck mode
-	ld   [sPlDuck], a
-	ld   a, SPR_WARIO_DUCKHOLD			; Set duck frame
+.setCrouchFrame:
+	ld   a, $01							; Set crouch mode
+	ld   [sPlCrouch], a
+	ld   a, SPR_WARIO_CROUCHHOLD		; Set crouch frame
 	ld   [sPlSprId], a
 .nextMode:
 	xor  a
@@ -5831,7 +5831,7 @@ Mode_Treasure_TrRoom_WalkInR:
 	ld   [sTreasureTrRoomMode], a
 	ld   a, BGM_WORLDCLEAR				; Play Treasure Get BGM
 	ld   [sBGMSet], a
-	ld   a, $40							; Allow jump/duck anim to last $40 frames
+	ld   a, $40							; Allow jump/crouch anim to last $40 frames
 	ld   [sPlDelayTimer], a
 	ret
 	
@@ -5971,9 +5971,9 @@ Mode_Treasure_TrRoom_PlAction:
 	ld   a, SPR_WARIO_JUMPTHROW
 	ld   [sPlSprId], a
 	ld   a, [sExActTreasureRow]
-	cp   a, $02						; Are we ducking?
+	cp   a, $02						; Are we crouching?
 	ret  nz							; If not, return
-	ld   a, SPR_WARIO_DUCKTHROW
+	ld   a, SPR_WARIO_CROUCHTHROW
 	ld   [sPlSprId], a
 	ret
 	
@@ -6009,8 +6009,8 @@ Mode_Treasure_TrRoom_MoveDownAndCollect:
 
 	ld   a, SPR_TRROOM_WARIO_IDLE0	; Stand
 	ld   [sPlSprId], a
-	xor  a							; Stop ducking, if set
-	ld   [sPlDuck], a
+	xor  a							; Stop crouching, if set
+	ld   [sPlCrouch], a
 	ld   a, [sTreasureTrRoomMode]	; Next mode
 	inc  a
 	ld   [sTreasureTrRoomMode], a
@@ -8745,16 +8745,16 @@ ENDC
 	; 
 	; Whatever its intended purpose is, this does mean the player automatically
 	; uncrouches if switching powerups while crouching and there's enough space on top.
-	xor  a					; Temp unduck to verify what's on top
-	ld   [sPlDuck], a
-	ld   a, [sPlAction]	; Can't duck while swimming over the ground
+	xor  a					; Temp uncrouch to verify what's on top
+	ld   [sPlCrouch], a
+	ld   a, [sPlAction]		; Can't crouch while swimming over the ground
 	cp   a, PL_ACT_SWIM
 	ret  z
 	call PlBGColi_DoTopStub	; Handle collision for block on top.
 	and  a	; COLI_EMPTY	; Is there an empty block on top?				
-	ret  z					; If so, keep unducking
-	ld   a, $01				; Otherwise duck since there isn't enough space
-	ld   [sPlDuck], a
+	ret  z					; If so, keep uncrouching
+	ld   a, $01				; Otherwise crouch since there isn't enough space
+	ld   [sPlCrouch], a
 	ret
 .setHardBump:
 	call Pl_SwitchToHardBump

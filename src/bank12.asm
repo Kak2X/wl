@@ -1374,10 +1374,10 @@ Static_WriteWarioSprMap:
 	dw Ending_WarioFrame_WalkHoldR3 ; $20
 	dw Ending_WarioFrame_IdleHoldR
 	dw Ending_WarioFrame_IdleThrowR
-	dw Ending_WarioFrame_DuckRub0
-	dw Ending_WarioFrame_DuckRub1
-	dw Ending_WarioFrame_DuckRub2
-	dw Ending_WarioFrame_DuckDiagR
+	dw Ending_WarioFrame_CrouchRub0
+	dw Ending_WarioFrame_CrouchRub1
+	dw Ending_WarioFrame_CrouchRub2
+	dw Ending_WarioFrame_CrouchDiagR
 	dw Ending_WarioFrame_BumpR0 ; with hat above
 	dw Ending_WarioFrame_BumpR1 ; norm
 	dw Ending_WarioFrame_WishClose
@@ -1549,19 +1549,19 @@ Ending_WarioFrame_IdleThrowR:
 	call Static_WriteSprMap
 	ld   de, SprMap_Ending_Wario_IdleHoldR_Body
 	jp   Static_WriteSprMap
-Ending_WarioFrame_DuckRub0:
-	ld   de, SprMap_Ending_Wario_DuckRub0
+Ending_WarioFrame_CrouchRub0:
+	ld   de, SprMap_Ending_Wario_CrouchRub0
 	jp   Static_WriteSprMap
-Ending_WarioFrame_DuckRub1:
-	ld   de, SprMap_Ending_Wario_DuckRub1_Hand
+Ending_WarioFrame_CrouchRub1:
+	ld   de, SprMap_Ending_Wario_CrouchRub1_Hand
 	call Static_WriteSprMap
-	ld   de, SprMap_Ending_Wario_DuckRub1_Body
+	ld   de, SprMap_Ending_Wario_CrouchRub1_Body
 	jp   Static_WriteSprMap
-Ending_WarioFrame_DuckRub2:
-	ld   de, SprMap_Ending_Wario_DuckRub2
+Ending_WarioFrame_CrouchRub2:
+	ld   de, SprMap_Ending_Wario_CrouchRub2
 	jp   Static_WriteSprMap
-Ending_WarioFrame_DuckDiagR:
-	ld   de, SprMap_Ending_Wario_DuckDiagR
+Ending_WarioFrame_CrouchDiagR:
+	ld   de, SprMap_Ending_Wario_CrouchDiagR
 	jp   Static_WriteSprMap
 Ending_WarioFrame_BumpR0:
 	ld   de, SprMap_Ending_Wario_HardBumpR0
@@ -1626,11 +1626,11 @@ SprMap_Ending_Wario_WalkHoldR0_Hand: INCBIN "data/sprmap/ending/wario_walkholdr0
 SprMap_Ending_Wario_IdleHoldR_Hand: INCBIN "data/sprmap/ending/wario_idleholdr_hand.bin"
 SprMap_Ending_Wario_WalkHoldR1_Hand: INCBIN "data/sprmap/ending/wario_walkholdr1_hand.bin"
 SprMap_Ending_Wario_IdleThrowR_Hand: INCBIN "data/sprmap/ending/wario_idlethrowr_hand.bin"
-SprMap_Ending_Wario_DuckRub0: INCBIN "data/sprmap/ending/wario_duckrub0.bin"
-SprMap_Ending_Wario_DuckRub1_Body: INCBIN "data/sprmap/ending/wario_duckrub1_body.bin"
-SprMap_Ending_Wario_DuckRub2: INCBIN "data/sprmap/ending/wario_duckrub2.bin"
-SprMap_Ending_Wario_DuckRub1_Hand: INCBIN "data/sprmap/ending/wario_duckrub1_hand.bin"
-SprMap_Ending_Wario_DuckDiagR: INCBIN "data/sprmap/ending/wario_duckdiagr.bin"
+SprMap_Ending_Wario_CrouchRub0: INCBIN "data/sprmap/ending/wario_crouchrub0.bin"
+SprMap_Ending_Wario_CrouchRub1_Body: INCBIN "data/sprmap/ending/wario_crouchrub1_body.bin"
+SprMap_Ending_Wario_CrouchRub2: INCBIN "data/sprmap/ending/wario_crouchrub2.bin"
+SprMap_Ending_Wario_CrouchRub1_Hand: INCBIN "data/sprmap/ending/wario_crouchrub1_hand.bin"
+SprMap_Ending_Wario_CrouchDiagR: INCBIN "data/sprmap/ending/wario_crouchdiagr.bin"
 SprMap_Ending_Wario_HardBumpR0: INCBIN "data/sprmap/ending/wario_hardbumpr0.bin"
 SprMap_Ending_Wario_HardBumpR1_Body: INCBIN "data/sprmap/ending/wario_hardbumpr1_body.bin"
 SprMap_Ending_Wario_HardBumpR1_Hat: INCBIN "data/sprmap/ending/wario_hardbumpr1_hat.bin"

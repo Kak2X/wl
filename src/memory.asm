@@ -1036,7 +1036,7 @@ sScreenShakeTimer:                          db     ; EQU $A93A ; Screen shake ti
 sActTmpColiDir:                             db     ; EQU $A93B ; Marks from which collision box border the actor is being interacted with
 sActTmpColiType:                            db     ; EQU $A93C
 sPlInvincibleTimer:                         db     ; EQU $A93D ; Timer
-sPlDuck:                                    db     ; EQU $A93E
+sPlCrouch:                                  db     ; EQU $A93E
 sPlBGColiBlockId:                           db     ; EQU $A93F ; Block ID indexed for collision
 sPlBGColiLadderType:                        db     ; EQU $A940 ; Current ladder collision type result
 sLvlScrollTimer:                            db     ; EQU $A941

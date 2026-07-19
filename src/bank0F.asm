@@ -3164,9 +3164,9 @@ Act_SSTeacupBoss_Mode_Wind_Main:
 	ld   a, [sActSetTimer]				
 	and  a, $01							
 	ret  nz
-	; If the player is ducking, don't move.
+	; If the player is crouching, don't move.
 	; Curiously, this outright returns, meaning the boss doesn't get to move either.
-	ld   a, [sPlDuck]
+	ld   a, [sPlCrouch]
 	or   a								
 	ret  nz								
 	; Otherwise, move left 1px
@@ -3622,16 +3622,16 @@ Act_SSTeacupBoss_Mode_Hit:
 	; Every other frame increase the anim frame.
 	ld   a, [sTimer]
 	and  a, $01
-	jr   nz, .chkDuck
+	jr   nz, .chkCrouch
 	ld   a, [sActSetSprMapId]
 	inc  a
 	ld   [sActSetSprMapId], a
 	;--
-.chkDuck:
+.chkCrouch:
 	; Move the player left 1px (as if the wind effect was active)
 	; Presumably meant to make it harder to combo the boss when jumping on top.
-	ld   a, [sPlDuck]
-	or   a				; Is the player ducking?
+	ld   a, [sPlCrouch]
+	or   a				; Is the player crouching?
 	ret  nz				; If so, don't move [POI]
 	ld   b, $01			; Otherwise move left
 	call Pl_MoveLeft

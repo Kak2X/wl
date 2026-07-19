@@ -5593,7 +5593,7 @@ Act_StickBomb_Explode:
 	ld   a, COLI			
 	ld   [sActSetColiType], a
 	; 28*28 area for the large explosion, with the animation making you think you
-	; would be able to duck under it, even though the box collision disagrees.
+	; would be able to crouch under it, even though the box collision disagrees.
 	ld   a, -$0E
 	ld   [sActSetColiBoxU], a
 	ld   a, +$0E

@@ -1532,9 +1532,9 @@ Act_SyrupCastleBoss_Intro_LampTouch2:
 	cp   a, $02
 	jr   nc, .wait
 	;--
-	ld   a, LOW(SprMapPtrTable_Act_SyrupCastleBoss_DuckRub)
+	ld   a, LOW(SprMapPtrTable_Act_SyrupCastleBoss_CrouchRub)
 	ld   [sActSetSprMapPtrTablePtr], a
-	ld   a, HIGH(SprMapPtrTable_Act_SyrupCastleBoss_DuckRub)
+	ld   a, HIGH(SprMapPtrTable_Act_SyrupCastleBoss_CrouchRub)
 	ld   [sActSetSprMapPtrTablePtr+1], a
 	xor  a
 	ld   [sActSetSprMapId], a
@@ -2476,7 +2476,7 @@ Act_SyrupCastleBoss_SwitchToDead:
 	ld   a, $01							
 	ld   [sActSyrupCastleBossDead], a
 	
-	mActSprMapPtrTable SprMapPtrTable_Act_SyrupCastleBoss_Duck
+	mActSprMapPtrTable SprMapPtrTable_Act_SyrupCastleBoss_Crouch
 	ld   a, $C8
 	ld   [sActBossParallaxFlashTimer], a
 	ret
@@ -2753,11 +2753,11 @@ SprMapPtrTable_Act_SyrupCastleBoss_StandRub:
 	dw SprMap_Act_SyrupCastleBoss_StandRub0
 	dw SprMap_Act_SyrupCastleBoss_StandRub1
 	dw $0000
-SprMapPtrTable_Act_SyrupCastleBoss_DuckRub:
-	dw SprMap_Act_SyrupCastleBoss_DuckRub0
-	dw SprMap_Act_SyrupCastleBoss_DuckRub1
+SprMapPtrTable_Act_SyrupCastleBoss_CrouchRub:
+	dw SprMap_Act_SyrupCastleBoss_CrouchRub0
+	dw SprMap_Act_SyrupCastleBoss_CrouchRub1
 	dw $0000
-SprMapPtrTable_Act_SyrupCastleBoss_Duck:
+SprMapPtrTable_Act_SyrupCastleBoss_Crouch:
 	dw SprMap_Act_SyrupCastleBoss_Dead0
 	dw $0000;X
 SprMapPtrTable_Act_SyrupCastleBoss_Dead:
@@ -2785,8 +2785,8 @@ SprMapPtrTable_Act_SyrupCastleBoss_OnGenieArmWave:
 SprMapPtrTable_Act_SyrupCastleBoss_OnGenieStand:
 	dw SprMap_Act_SyrupCastleBoss_OnGenie0
 	dw $0000;X
-; [TCRF] Unused copy of SprMapPtrTable_Act_SyrupCastleBoss_Duck with unused duplicate frames
-SprMapPtrTable_Act_SyrupCastleBoss_Unused_Duck:
+; [TCRF] Unused copy of SprMapPtrTable_Act_SyrupCastleBoss_Crouch with unused duplicate frames
+SprMapPtrTable_Act_SyrupCastleBoss_Unused_Crouch:
 	dw SprMap_Act_SyrupCastleBoss_Unused_Dead0_Copy;X
 	dw $0000;X
 ; [TCRF] Unused copy of SprMapPtrTable_Act_SyrupCastleBoss_Dead with unused duplicate frames
@@ -2834,8 +2834,8 @@ SprMap_Act_SyrupCastleBoss_Lay: INCBIN "data/sprmap/actor/syrupcastleboss_lay.bi
 SprMap_Act_SyrupCastleBoss_Stand: INCBIN "data/sprmap/actor/syrupcastleboss_stand.bin"
 SprMap_Act_SyrupCastleBoss_StandRub0: INCBIN "data/sprmap/actor/syrupcastleboss_standrub0.bin"
 SprMap_Act_SyrupCastleBoss_StandRub1: INCBIN "data/sprmap/actor/syrupcastleboss_standrub1.bin"
-SprMap_Act_SyrupCastleBoss_DuckRub0: INCBIN "data/sprmap/actor/syrupcastleboss_duckrub0.bin"
-SprMap_Act_SyrupCastleBoss_DuckRub1: INCBIN "data/sprmap/actor/syrupcastleboss_duckrub1.bin"
+SprMap_Act_SyrupCastleBoss_CrouchRub0: INCBIN "data/sprmap/actor/syrupcastleboss_crouchrub0.bin"
+SprMap_Act_SyrupCastleBoss_CrouchRub1: INCBIN "data/sprmap/actor/syrupcastleboss_crouchrub1.bin"
 SprMap_Act_SyrupCastleBoss_Dead0: INCBIN "data/sprmap/actor/syrupcastleboss_dead0.bin"
 SprMap_Act_SyrupCastleBoss_Dead1: INCBIN "data/sprmap/actor/syrupcastleboss_dead1.bin"
 SprMap_Act_SyrupCastleBoss_Dead2: INCBIN "data/sprmap/actor/syrupcastleboss_dead2.bin"

@@ -709,8 +709,8 @@ SprMapPtrTable_Main:
 	dw SprMap_JetHatFlame0
 	dw SprMap_JetHatFlame1
 	dw SprMap_JetHatFlame2
-	dw SprMap_Wario_Duck ; $10
-	dw SprMap_Wario_DuckWalk
+	dw SprMap_Wario_Crouch ; $10
+	dw SprMap_Wario_CrouchWalk
 	dw SprMap_Wario_Climb0
 	dw SprMap_Wario_Climb1
 	dw SprMap_Wario_Bump
@@ -761,9 +761,9 @@ SprMapPtrTable_Main:
 	dw SprMap_Wario_Grab
 	dw SprMap_SmallWario_Climb0
 	dw SprMap_SmallWario_Climb1
-	dw SprMap_Wario_DuckHold
-	dw SprMap_Wario_DuckWalkHold
-	dw SprMap_Wario_DuckThrow
+	dw SprMap_Wario_CrouchHold
+	dw SprMap_Wario_CrouchWalkHold
+	dw SprMap_Wario_CrouchThrow
 	dw SprMap_SmallWario_Hold
 	dw SprMap_SmallWario_Swim0
 	dw SprMap_SmallWario_Swim1
@@ -918,8 +918,8 @@ SprMap_Unused_Wario_GroundPound: INCBIN "data/sprmap/wario/unused_wario_groundpo
 SprMap_JetHatFlame0: INCBIN "data/sprmap/wario/jethatflame0.bin"
 SprMap_JetHatFlame1: INCBIN "data/sprmap/wario/jethatflame1.bin"
 SprMap_JetHatFlame2: INCBIN "data/sprmap/wario/jethatflame2.bin"
-SprMap_Wario_Duck: INCBIN "data/sprmap/wario/wario_duck.bin"
-SprMap_Wario_DuckWalk: INCBIN "data/sprmap/wario/wario_duckwalk.bin"
+SprMap_Wario_Crouch: INCBIN "data/sprmap/wario/wario_crouch.bin"
+SprMap_Wario_CrouchWalk: INCBIN "data/sprmap/wario/wario_crouchwalk.bin"
 SprMap_Wario_Climb0: INCBIN "data/sprmap/wario/wario_climb0.bin"
 SprMap_Wario_Climb1: INCBIN "data/sprmap/wario/wario_climb1.bin"
 SprMap_Wario_Bump: INCBIN "data/sprmap/wario/wario_bump.bin"
@@ -969,9 +969,9 @@ SprMap_Unused_Main_40: INCBIN "data/sprmap/wario/unused_main_40.bin"
 SprMap_Wario_Grab: INCBIN "data/sprmap/wario/wario_grab.bin"
 SprMap_SmallWario_Climb0: INCBIN "data/sprmap/wario/smallwario_climb0.bin"
 SprMap_SmallWario_Climb1: INCBIN "data/sprmap/wario/smallwario_climb1.bin"
-SprMap_Wario_DuckHold: INCBIN "data/sprmap/wario/wario_duckhold.bin"
-SprMap_Wario_DuckWalkHold: INCBIN "data/sprmap/wario/wario_duckwalkhold.bin"
-SprMap_Wario_DuckThrow: INCBIN "data/sprmap/wario/wario_duckthrow.bin"
+SprMap_Wario_CrouchHold: INCBIN "data/sprmap/wario/wario_crouchhold.bin"
+SprMap_Wario_CrouchWalkHold: INCBIN "data/sprmap/wario/wario_crouchwalkhold.bin"
+SprMap_Wario_CrouchThrow: INCBIN "data/sprmap/wario/wario_crouchthrow.bin"
 SprMap_SmallWario_Hold: INCBIN "data/sprmap/wario/smallwario_hold.bin"
 SprMap_SmallWario_Swim0: INCBIN "data/sprmap/wario/smallwario_swim0.bin"
 SprMap_SmallWario_Swim1: INCBIN "data/sprmap/wario/smallwario_swim1.bin"
