@@ -1,5 +1,5 @@
 ;
-; BANK 05 - Screen Event code / OBJLst definitions
+; BANK 05 - Screen Event code / Main sprite mapping definitions
 ;
 
 ; =============== ScreenEvent_Do ===============
@@ -464,10 +464,10 @@ LoadGFX_WarioPowerHat:
 	call CopyBytes
 	ret
 
-; =============== WriteWarioOBJLst ===============
+; =============== WriteWarioSprMap ===============
 ; Writes the sprite mappings for Wario during gameplay.
-WriteWarioOBJLst:
-	ld   hl, OBJLstPtrTable_Main
+WriteWarioSprMap:
+	ld   hl, SprMapPtrTable_Main
 	; Calculate the relative Y pos.
 	; NOTE: This is the value used for actor collision.
 	ldh  a, [hScrollY]
@@ -486,61 +486,61 @@ WriteWarioOBJLst:
 	ld   [sOAMWriteX], a
 	ld   [sPlXRel], a
 	
-	ld   a, [sPlLstId]
-	ld   [sOAMWriteLstId], a
+	ld   a, [sPlSprId]
+	ld   [sOAMWriteSprId], a
 	ld   a, [sPlFlags]
 	ld   [sOAMWriteFlags], a
-	call WriteOBJLst
+	call WriteSprMap
 	ret
 	
-; =============== NonGame_WriteWarioOBJLst ===============
+; =============== NonGame_WriteWarioSprMap ===============
 ; Writes the standard sprite mappings for Wario outside of gameplay.
 ; Used for unscrollable screens that aren't considered "static".
-NonGame_WriteWarioOBJLst:
-	ld   hl, OBJLstPtrTable_Main
+NonGame_WriteWarioSprMap:
+	ld   hl, SprMapPtrTable_Main
 	ld   a, [sPlYRel]
 	ld   [sOAMWriteY], a
 	ld   a, [sPlXRel]
 	ld   [sOAMWriteX], a
-	ld   a, [sPlLstId]
-	ld   [sOAMWriteLstId], a
+	ld   a, [sPlSprId]
+	ld   [sOAMWriteSprId], a
 	ld   a, [sPlFlags]
 	ld   [sOAMWriteFlags], a
-	call WriteOBJLst
+	call WriteSprMap
 	ret
 	
-; =============== NonGame_WriteExActOBJLst ===============
+; =============== NonGame_WriteExActSprMap ===============
 ; Writes the sprite mappings for extra actors outside of gameplay.
 ; Used for unscrollable screens that aren't considered "static".
-NonGame_WriteExActOBJLst:
+NonGame_WriteExActSprMap:
 	; Make sure the actor wasn't despawned
 	ld   a, [sExActSet]
 	and  a
 	ret  z
 	
-	ld   hl, OBJLstPtrTable_Main
+	ld   hl, SprMapPtrTable_Main
 	ld   a, [sExActOBJFixY]
 	ld   [sOAMWriteY], a
 	ld   [sExActOBJYRel], a
 	ld   a, [sExActOBJFixX]
 	ld   [sOAMWriteX], a
 	ld   [sExActOBJXRel], a
-	ld   a, [sExActOBJLstId]
-	ld   [sOAMWriteLstId], a
+	ld   a, [sExActSprMapId]
+	ld   [sOAMWriteSprId], a
 	ld   a, [sExActOBJFlags]
 	ld   [sOAMWriteFlags], a
-	call WriteOBJLst
+	call WriteSprMap
 	ret
 
-; =============== WriteExActOBJLst ===============
+; =============== WriteExActSprMap ===============
 ; Writes the sprite mappings for extra actors (during gameplay).
-WriteExActOBJLst:
+WriteExActSprMap:
 	; Make sure the actor wasn't despawned
 	ld   a, [sExActSet]
 	and  a
 	ret  z
 	
-	ld   hl, OBJLstPtrTable_Main
+	ld   hl, SprMapPtrTable_Main
 	; Calculate the relative Y pos.
 	; NOTE: This is the value used for actor collision.
 	ldh  a, [hScrollY]		
@@ -559,40 +559,34 @@ WriteExActOBJLst:
 	ld   [sOAMWriteX], a
 	ld   [sExActOBJXRel], a
 	
-	ld   a, [sExActOBJLstId]
-	ld   [sOAMWriteLstId], a
+	ld   a, [sExActSprMapId]
+	ld   [sOAMWriteSprId], a
 	ld   a, [sExActOBJFlags]
 	ld   [sOAMWriteFlags], a
-	call WriteOBJLst
+	call WriteSprMap
 	ret
 	
 	
-; =============== WriteOBJLst ===============
-; Writes an entire OBJ list (sprite mappings).
+; =============== WriteSprMap ===============
+; Generic sprite mappings draw routine, which is used across multiple game modes by:
+; - The player
+; - Any ExAct
 ;
-; This is the main subroutine for drawing OBJLst, used for:
-; - Drawing Wario across multiple game modes
-; - OBJ set up by ExAct
-;
-; The OBJ lists, as the name implies, are stored as a list of OAM OBJ (sprites).
-;
-; As a result an OBJLst is made of several entries one after the other, with each entry having:
+; These are stored in a straightforward way, as a table of raw OBJ data followed by an $80 terminator,
+; so each entry takes up this format:
 ; - Y Coord (relative to the origin)
 ; - X Coord (relative to the origin)
 ; - Tile ID
 ; - Flags
 ;
-; It's also possible to specify special flags for this subroutine, which
-; can be used to X/Y flip the entire OBJLst (both the OBJ flip and the mapping position).
+; It's also possible to specify special flags for this subroutine, which can be used to flip
+; the entire sprite mapping.
 ; 
-; The end of the list is marked by a single $80 entry.
-;
-;
 ; IN
-; - HL: Ptr to table of OBJLst
-WriteOBJLst:
+; - HL: Ptr to sprite mapping table (SprMapPtrTable_Main)
+WriteSprMap:
 	; Index the sprite mappings table
-	ld   a, [sOAMWriteLstId]
+	ld   a, [sOAMWriteSprId]
 	ld   d, $00					; DE = A * 2
 	ld   e, a
 	sla  e						; do *2 from here, in case A would have overflowed for high mapping IDs
@@ -672,7 +666,7 @@ WriteOBJLst:
 	jr   .loop
 	
 ; ========================================
-; Common OBJ GFX (Wario, ...)	
+; Common sprite GFX (Wario, ...)	
 GFX_Level_SharedOBJ: INCBIN "data/gfx/level/shared_obj.bin"
 
 ; ========================================
@@ -696,418 +690,418 @@ BGRLE_GameOver:		INCBIN "data/bg/gameover.rls";
 ; ========================================
 GFX_Level_StoneCastle: INCBIN "data/gfx/level/level_stonecastle.bin"
 
-; =============== OBJLstPtrTable_Main ===============
-; Main OBJLst table.
-OBJLstPtrTable_Main: 
-	dw OBJLst_Wario_None
-	dw OBJLst_Wario_Walk0
-	dw OBJLst_Wario_Walk1
-	dw OBJLst_Wario_Walk2
-	dw OBJLst_Wario_Walk3
-	dw OBJLst_HitBlock
-	dw OBJLst_Wario_Throw
-	dw OBJLst_Wario_JumpThrow
-	dw OBJLst_Wario_Stand
-	dw OBJLst_Wario_Idle0
-	dw OBJLst_Wario_Idle1
-	dw OBJLst_Hat
-	dw OBJLst_Unused_Wario_GroundPound ; [TCRF] Old version of ground pound frame?; broken graphics
-	dw OBJLst_JetHatFlame0
-	dw OBJLst_JetHatFlame1
-	dw OBJLst_JetHatFlame2
-	dw OBJLst_Wario_Duck ; $10
-	dw OBJLst_Wario_DuckWalk
-	dw OBJLst_Wario_Climb0
-	dw OBJLst_Wario_Climb1
-	dw OBJLst_Wario_Bump
-	dw OBJLst_DragonHatFlameA0
-	dw OBJLst_DragonHatFlameA1
-	dw OBJLst_DragonHatFlameA2
-	dw OBJLst_Wario_Swim0
-	dw OBJLst_Wario_Swim1
-	dw OBJLst_Wario_Dead
-	dw OBJLst_DragonHatFlameB0
-	dw OBJLst_DragonHatFlameB1
-	dw OBJLst_DragonHatFlameB2
-	dw OBJLst_Wario_Swim2
-	dw OBJLst_Wario_BumpAir
-	dw OBJLst_Wario_Jump ; $20
-	dw OBJLst_Wario_GroundPound
-	dw OBJLst_Wario_DashJump
-	dw OBJLst_Wario_DashEnemy
-	dw OBJLst_Wario_Dash0	; Some used for part of afterimage effect
-	dw OBJLst_Wario_Dash1
-	dw OBJLst_Wario_Dash2
-	dw OBJLst_Wario_Dash3
-	dw OBJLst_Wario_Dash4
-	dw OBJLst_Wario_Dash5
-	dw OBJLst_Wario_Dash6
-	dw OBJLst_DragonHatFlameC0
-	dw OBJLst_DragonHatFlameC1
-	dw OBJLst_DragonHatFlameC2
-	dw OBJLst_DragonHatFlameD0
-	dw OBJLst_DragonHatFlameD1
-	dw OBJLst_DragonHatFlameD2 ; $30
-	dw OBJLst_SmallWario_Walk0
-	dw OBJLst_SmallWario_Walk1
-	dw OBJLst_SmallWario_Walk2
-	dw OBJLst_Wario_LevelClear0
-	dw OBJLst_Wario_LevelClear1
-	dw OBJLst_Wario_None
-	dw OBJLst_TrRoom_Arrow ; 37
-	dw OBJLst_SmallWario_Stand
-	dw OBJLst_SmallWario_Idle
-	dw OBJLst_DragonHatFlameE0
-	dw OBJLst_DragonHatFlameE1
-	dw OBJLst_DragonHatFlameE2
-	dw OBJLst_DragonHatFlameF0
-	dw OBJLst_DragonHatFlameF1
-	dw OBJLst_DragonHatFlameF2
-	dw OBJLst_Unused_Main_40 ; $40 [TCRF] Broken graphics (same broken tiles for OBJLst_Unused_Wario_GroundPound)
-	dw OBJLst_Wario_Grab
-	dw OBJLst_SmallWario_Climb0
-	dw OBJLst_SmallWario_Climb1
-	dw OBJLst_Wario_DuckHold
-	dw OBJLst_Wario_DuckWalkHold
-	dw OBJLst_Wario_DuckThrow
-	dw OBJLst_SmallWario_Hold
-	dw OBJLst_SmallWario_Swim0
-	dw OBJLst_SmallWario_Swim1
-	dw OBJLst_SmallWario_HoldWalk0
-	dw OBJLst_SmallWario_HoldWalk1
-	dw OBJLst_SmallWario_HoldWalk2
-	dw OBJLst_SmallWario_HoldJump
-	dw OBJLst_SmallWario_Swim2
-	dw OBJLst_Wario_DashFly
-	dw OBJLst_SmallWario_Jump ; $50
-	dw OBJLst_Wario_HoldWalk0
-	dw OBJLst_Wario_HoldWalk1
-	dw OBJLst_Wario_HoldWalk2
-	dw OBJLst_Wario_HoldWalk3
-	dw OBJLst_WaterSplash0
-	dw OBJLst_WaterSplash1
-	dw OBJLst_WaterSplash2
-	dw OBJLst_Wario_Hold
-	dw OBJLst_BlockSmash0
-	dw OBJLst_BlockSmash1
-	dw OBJLst_BlockSmash2
-	dw OBJLst_BlockSmash3
-	dw OBJLst_BlockSmash4
-	dw OBJLst_BlockSmash5
-	dw OBJLst_BlockSmash6
-	dw OBJLst_BlockSmash7 ; $60
-	dw OBJLst_BlockSmash8
-	dw OBJLst_Unused_BlockSmash9 ;[TCRF] Extra frame for block debris; not used
-	dw OBJLst_SaveSel_Hat
-	dw OBJLst_SmallWario_LevelClear
-	dw OBJLst_SaveSel_BombWario0
-	dw OBJLst_SaveSel_BombWario1
-	dw OBJLst_SaveSel_BombWario2
-	dw OBJLst_SaveSel_Wario_Dash0
-	dw OBJLst_SaveSel_Wario_Dash1
-	dw OBJLst_SaveSel_Wario_Dash2
-	dw OBJLst_SaveSel_Wario_Dash3
-	dw OBJLst_SaveSel_Wario_Dash4
-	dw OBJLst_SaveSel_Wario_Dash5
-	dw OBJLst_SaveSel_Wario_Dash6
-	dw OBJLst_SaveSel_Wario_Bump
-	dw OBJLst_Wario_HoldJump ; $70
-	dw OBJLst_Wario_HoldGroundPound
-	dw OBJLst_SaveSel_OldHat0
-	dw OBJLst_SaveSel_OldHat1
-	dw OBJLst_SaveSel_OldHat2
-	dw OBJLst_SaveSel_Wario_JumpNoHat
-	dw OBJLst_SaveSel_Wario_StandNoHat ; [TCRF] Duplicate entry; not used
-	dw OBJLst_DragonHatWaterA0
-	dw OBJLst_DragonHatWaterA1
-	dw OBJLst_DragonHatWaterA2
-	dw OBJLst_DragonHatWaterB0
-	dw OBJLst_DragonHatWaterB1
-	dw OBJLst_DragonHatWaterB2
-	dw OBJLst_DragonHatWaterC0
-	dw OBJLst_DragonHatWaterC1
-	dw OBJLst_DragonHatWaterC2
-	dw OBJLst_DragonHatWaterD0 ; $80
-	dw OBJLst_DragonHatWaterD1
-	dw OBJLst_DragonHatWaterD2
-	dw OBJLst_DragonHatWaterE0
-	dw OBJLst_DragonHatWaterE1
-	dw OBJLst_DragonHatWaterE2
-	dw OBJLst_DragonHatWaterF0
-	dw OBJLst_DragonHatWaterF1
-	dw OBJLst_DragonHatWaterF2
-	dw OBJLst_TrRoom_Wario_Shrug
-	dw OBJLst_TrRoom_Wario_Gloat 
-	dw OBJLst_TrRoom_Wario_Idle0 
-	dw OBJLst_TrRoom_Wario_Idle1 
-	dw OBJLst_SaveSel_Cross
-	dw OBJLst_TrRoom_TreasureC0
-	dw OBJLst_TrRoom_TreasureC1 
-	dw OBJLst_TrRoom_TreasureI0 ; $90
-	dw OBJLst_TrRoom_TreasureI1
-	dw OBJLst_TrRoom_TreasureF0
-	dw OBJLst_TrRoom_TreasureF1
-	dw OBJLst_TrRoom_TreasureO0
-	dw OBJLst_TrRoom_TreasureO1
-	dw OBJLst_TrRoom_TreasureA0
-	dw OBJLst_TrRoom_TreasureA1
-	dw OBJLst_TrRoom_TreasureN0
-	dw OBJLst_TrRoom_TreasureN1
-	dw OBJLst_TrRoom_TreasureH0
-	dw OBJLst_TrRoom_TreasureH1
-	dw OBJLst_TrRoom_TreasureM0
-	dw OBJLst_TrRoom_TreasureM1
-	dw OBJLst_TrRoom_TreasureL0
-	dw OBJLst_TrRoom_TreasureL1
-	dw OBJLst_TrRoom_TreasureK0 ; $A0
-	dw OBJLst_TrRoom_TreasureK1
-	dw OBJLst_TrRoom_TreasureB0
-	dw OBJLst_TrRoom_TreasureB1
-	dw OBJLst_TrRoom_TreasureD0
-	dw OBJLst_TrRoom_TreasureD1
-	dw OBJLst_TrRoom_TreasureG0
-	dw OBJLst_TrRoom_TreasureG1
-	dw OBJLst_TrRoom_TreasureJ0
-	dw OBJLst_TrRoom_TreasureJ1
-	dw OBJLst_TrRoom_TreasureE0
-	dw OBJLst_TrRoom_TreasureE1
-	dw OBJLst_TrRoom_Star00 
-	dw OBJLst_TrRoom_Star01 
-	dw OBJLst_TrRoom_Star02 
-	dw OBJLst_TrRoom_Star03 
-	dw OBJLst_TrRoom_Star04 ; $B0
-	dw OBJLst_TrRoom_Star05 
-	dw OBJLst_TrRoom_Star06 
-	dw OBJLst_TrRoom_Star07
-	dw OBJLst_TrRoom_Star08
-	dw OBJLst_Wario_None
-	dw OBJLst_TrRoom_Star09
-	dw OBJLst_Wario_None
-	dw OBJLst_TrRoom_Star0A
-	dw OBJLst_TrRoom_Star0B
-	dw OBJLst_TrRoom_Star0B
-	dw OBJLst_TrRoom_Star0A
-	dw OBJLst_Coin0
-	dw OBJLst_Coin1
-	dw OBJLst_Coin2
-	dw OBJLst_Coin1
-	dw OBJLst_1UP ; $C0
-	dw OBJLst_SaveSel_Smoke0
-	dw OBJLst_SaveSel_Smoke1
-	dw OBJLst_SaveSel_Smoke2
-	dw OBJLst_3UP 
-	dw OBJLst_TrRoom_MoneyBags1
-	dw OBJLst_TrRoom_MoneyBags2
-	dw OBJLst_TrRoom_MoneyBags3
-	dw OBJLst_TrRoom_MoneyBags4
-	dw OBJLst_TrRoom_MoneyBags5
-	dw OBJLst_TrRoom_MoneyBags6
-	dw OBJLst_TrRoom_MoneyBagFall
-	dw OBJLst_SaveSel_Wario_StandNoHat
-	dw OBJLst_SaveSel_Wario_LookBack
-	dw OBJLst_SaveSel_Wario_LookUp
+; =============== SprMapPtrTable_Main ===============
+; Main sprite mapping table.
+SprMapPtrTable_Main: 
+	dw SprMap_Wario_None
+	dw SprMap_Wario_Walk0
+	dw SprMap_Wario_Walk1
+	dw SprMap_Wario_Walk2
+	dw SprMap_Wario_Walk3
+	dw SprMap_HitBlock
+	dw SprMap_Wario_Throw
+	dw SprMap_Wario_JumpThrow
+	dw SprMap_Wario_Stand
+	dw SprMap_Wario_Idle0
+	dw SprMap_Wario_Idle1
+	dw SprMap_Hat
+	dw SprMap_Unused_Wario_GroundPound ; [TCRF] Old version of ground pound frame?; broken graphics
+	dw SprMap_JetHatFlame0
+	dw SprMap_JetHatFlame1
+	dw SprMap_JetHatFlame2
+	dw SprMap_Wario_Duck ; $10
+	dw SprMap_Wario_DuckWalk
+	dw SprMap_Wario_Climb0
+	dw SprMap_Wario_Climb1
+	dw SprMap_Wario_Bump
+	dw SprMap_DragonHatFlameA0
+	dw SprMap_DragonHatFlameA1
+	dw SprMap_DragonHatFlameA2
+	dw SprMap_Wario_Swim0
+	dw SprMap_Wario_Swim1
+	dw SprMap_Wario_Dead
+	dw SprMap_DragonHatFlameB0
+	dw SprMap_DragonHatFlameB1
+	dw SprMap_DragonHatFlameB2
+	dw SprMap_Wario_Swim2
+	dw SprMap_Wario_BumpAir
+	dw SprMap_Wario_Jump ; $20
+	dw SprMap_Wario_GroundPound
+	dw SprMap_Wario_DashJump
+	dw SprMap_Wario_DashEnemy
+	dw SprMap_Wario_Dash0	; Some used for part of afterimage effect
+	dw SprMap_Wario_Dash1
+	dw SprMap_Wario_Dash2
+	dw SprMap_Wario_Dash3
+	dw SprMap_Wario_Dash4
+	dw SprMap_Wario_Dash5
+	dw SprMap_Wario_Dash6
+	dw SprMap_DragonHatFlameC0
+	dw SprMap_DragonHatFlameC1
+	dw SprMap_DragonHatFlameC2
+	dw SprMap_DragonHatFlameD0
+	dw SprMap_DragonHatFlameD1
+	dw SprMap_DragonHatFlameD2 ; $30
+	dw SprMap_SmallWario_Walk0
+	dw SprMap_SmallWario_Walk1
+	dw SprMap_SmallWario_Walk2
+	dw SprMap_Wario_LevelClear0
+	dw SprMap_Wario_LevelClear1
+	dw SprMap_Wario_None
+	dw SprMap_TrRoom_Arrow ; 37
+	dw SprMap_SmallWario_Stand
+	dw SprMap_SmallWario_Idle
+	dw SprMap_DragonHatFlameE0
+	dw SprMap_DragonHatFlameE1
+	dw SprMap_DragonHatFlameE2
+	dw SprMap_DragonHatFlameF0
+	dw SprMap_DragonHatFlameF1
+	dw SprMap_DragonHatFlameF2
+	dw SprMap_Unused_Main_40 ; $40 [TCRF] Broken graphics (same broken tiles for SprMap_Unused_Wario_GroundPound)
+	dw SprMap_Wario_Grab
+	dw SprMap_SmallWario_Climb0
+	dw SprMap_SmallWario_Climb1
+	dw SprMap_Wario_DuckHold
+	dw SprMap_Wario_DuckWalkHold
+	dw SprMap_Wario_DuckThrow
+	dw SprMap_SmallWario_Hold
+	dw SprMap_SmallWario_Swim0
+	dw SprMap_SmallWario_Swim1
+	dw SprMap_SmallWario_HoldWalk0
+	dw SprMap_SmallWario_HoldWalk1
+	dw SprMap_SmallWario_HoldWalk2
+	dw SprMap_SmallWario_HoldJump
+	dw SprMap_SmallWario_Swim2
+	dw SprMap_Wario_DashFly
+	dw SprMap_SmallWario_Jump ; $50
+	dw SprMap_Wario_HoldWalk0
+	dw SprMap_Wario_HoldWalk1
+	dw SprMap_Wario_HoldWalk2
+	dw SprMap_Wario_HoldWalk3
+	dw SprMap_WaterSplash0
+	dw SprMap_WaterSplash1
+	dw SprMap_WaterSplash2
+	dw SprMap_Wario_Hold
+	dw SprMap_BlockSmash0
+	dw SprMap_BlockSmash1
+	dw SprMap_BlockSmash2
+	dw SprMap_BlockSmash3
+	dw SprMap_BlockSmash4
+	dw SprMap_BlockSmash5
+	dw SprMap_BlockSmash6
+	dw SprMap_BlockSmash7 ; $60
+	dw SprMap_BlockSmash8
+	dw SprMap_Unused_BlockSmash9 ;[TCRF] Extra frame for block debris; not used
+	dw SprMap_SaveSel_Hat
+	dw SprMap_SmallWario_LevelClear
+	dw SprMap_SaveSel_BombWario0
+	dw SprMap_SaveSel_BombWario1
+	dw SprMap_SaveSel_BombWario2
+	dw SprMap_SaveSel_Wario_Dash0
+	dw SprMap_SaveSel_Wario_Dash1
+	dw SprMap_SaveSel_Wario_Dash2
+	dw SprMap_SaveSel_Wario_Dash3
+	dw SprMap_SaveSel_Wario_Dash4
+	dw SprMap_SaveSel_Wario_Dash5
+	dw SprMap_SaveSel_Wario_Dash6
+	dw SprMap_SaveSel_Wario_Bump
+	dw SprMap_Wario_HoldJump ; $70
+	dw SprMap_Wario_HoldGroundPound
+	dw SprMap_SaveSel_OldHat0
+	dw SprMap_SaveSel_OldHat1
+	dw SprMap_SaveSel_OldHat2
+	dw SprMap_SaveSel_Wario_JumpNoHat
+	dw SprMap_SaveSel_Wario_StandNoHat ; [TCRF] Duplicate entry; not used
+	dw SprMap_DragonHatWaterA0
+	dw SprMap_DragonHatWaterA1
+	dw SprMap_DragonHatWaterA2
+	dw SprMap_DragonHatWaterB0
+	dw SprMap_DragonHatWaterB1
+	dw SprMap_DragonHatWaterB2
+	dw SprMap_DragonHatWaterC0
+	dw SprMap_DragonHatWaterC1
+	dw SprMap_DragonHatWaterC2
+	dw SprMap_DragonHatWaterD0 ; $80
+	dw SprMap_DragonHatWaterD1
+	dw SprMap_DragonHatWaterD2
+	dw SprMap_DragonHatWaterE0
+	dw SprMap_DragonHatWaterE1
+	dw SprMap_DragonHatWaterE2
+	dw SprMap_DragonHatWaterF0
+	dw SprMap_DragonHatWaterF1
+	dw SprMap_DragonHatWaterF2
+	dw SprMap_TrRoom_Wario_Shrug
+	dw SprMap_TrRoom_Wario_Gloat 
+	dw SprMap_TrRoom_Wario_Idle0 
+	dw SprMap_TrRoom_Wario_Idle1 
+	dw SprMap_SaveSel_Cross
+	dw SprMap_TrRoom_TreasureC0
+	dw SprMap_TrRoom_TreasureC1 
+	dw SprMap_TrRoom_TreasureI0 ; $90
+	dw SprMap_TrRoom_TreasureI1
+	dw SprMap_TrRoom_TreasureF0
+	dw SprMap_TrRoom_TreasureF1
+	dw SprMap_TrRoom_TreasureO0
+	dw SprMap_TrRoom_TreasureO1
+	dw SprMap_TrRoom_TreasureA0
+	dw SprMap_TrRoom_TreasureA1
+	dw SprMap_TrRoom_TreasureN0
+	dw SprMap_TrRoom_TreasureN1
+	dw SprMap_TrRoom_TreasureH0
+	dw SprMap_TrRoom_TreasureH1
+	dw SprMap_TrRoom_TreasureM0
+	dw SprMap_TrRoom_TreasureM1
+	dw SprMap_TrRoom_TreasureL0
+	dw SprMap_TrRoom_TreasureL1
+	dw SprMap_TrRoom_TreasureK0 ; $A0
+	dw SprMap_TrRoom_TreasureK1
+	dw SprMap_TrRoom_TreasureB0
+	dw SprMap_TrRoom_TreasureB1
+	dw SprMap_TrRoom_TreasureD0
+	dw SprMap_TrRoom_TreasureD1
+	dw SprMap_TrRoom_TreasureG0
+	dw SprMap_TrRoom_TreasureG1
+	dw SprMap_TrRoom_TreasureJ0
+	dw SprMap_TrRoom_TreasureJ1
+	dw SprMap_TrRoom_TreasureE0
+	dw SprMap_TrRoom_TreasureE1
+	dw SprMap_TrRoom_Star00 
+	dw SprMap_TrRoom_Star01 
+	dw SprMap_TrRoom_Star02 
+	dw SprMap_TrRoom_Star03 
+	dw SprMap_TrRoom_Star04 ; $B0
+	dw SprMap_TrRoom_Star05 
+	dw SprMap_TrRoom_Star06 
+	dw SprMap_TrRoom_Star07
+	dw SprMap_TrRoom_Star08
+	dw SprMap_Wario_None
+	dw SprMap_TrRoom_Star09
+	dw SprMap_Wario_None
+	dw SprMap_TrRoom_Star0A
+	dw SprMap_TrRoom_Star0B
+	dw SprMap_TrRoom_Star0B
+	dw SprMap_TrRoom_Star0A
+	dw SprMap_Coin0
+	dw SprMap_Coin1
+	dw SprMap_Coin2
+	dw SprMap_Coin1
+	dw SprMap_1UP ; $C0
+	dw SprMap_SaveSel_Smoke0
+	dw SprMap_SaveSel_Smoke1
+	dw SprMap_SaveSel_Smoke2
+	dw SprMap_3UP 
+	dw SprMap_TrRoom_MoneyBags1
+	dw SprMap_TrRoom_MoneyBags2
+	dw SprMap_TrRoom_MoneyBags3
+	dw SprMap_TrRoom_MoneyBags4
+	dw SprMap_TrRoom_MoneyBags5
+	dw SprMap_TrRoom_MoneyBags6
+	dw SprMap_TrRoom_MoneyBagFall
+	dw SprMap_SaveSel_Wario_StandNoHat
+	dw SprMap_SaveSel_Wario_LookBack
+	dw SprMap_SaveSel_Wario_LookUp
 
 ;----------------------------
-OBJLst_Wario_None: INCBIN "data/objlst/wario/wario_none.bin"
-OBJLst_Wario_Walk0: INCBIN "data/objlst/wario/wario_walk0.bin"
-OBJLst_Wario_Walk1: INCBIN "data/objlst/wario/wario_walk1.bin"
-OBJLst_Wario_Walk2: INCBIN "data/objlst/wario/wario_walk2.bin"
-OBJLst_Wario_Walk3: INCBIN "data/objlst/wario/wario_walk3.bin"
-OBJLst_HitBlock: INCBIN "data/objlst/level/hitblock.bin"
-OBJLst_Wario_Throw: INCBIN "data/objlst/wario/wario_throw.bin"
-OBJLst_Wario_JumpThrow: INCBIN "data/objlst/wario/wario_jumpthrow.bin"
-OBJLst_Wario_Stand: INCBIN "data/objlst/wario/wario_stand.bin"
-OBJLst_Wario_Idle0: INCBIN "data/objlst/wario/wario_idle0.bin"
-OBJLst_Wario_Idle1: INCBIN "data/objlst/wario/wario_idle1.bin"
-OBJLst_Hat: INCBIN "data/objlst/wario/hat.bin"
-OBJLst_Unused_Wario_GroundPound: INCBIN "data/objlst/wario/unused_wario_groundpound.bin"
-OBJLst_JetHatFlame0: INCBIN "data/objlst/wario/jethatflame0.bin"
-OBJLst_JetHatFlame1: INCBIN "data/objlst/wario/jethatflame1.bin"
-OBJLst_JetHatFlame2: INCBIN "data/objlst/wario/jethatflame2.bin"
-OBJLst_Wario_Duck: INCBIN "data/objlst/wario/wario_duck.bin"
-OBJLst_Wario_DuckWalk: INCBIN "data/objlst/wario/wario_duckwalk.bin"
-OBJLst_Wario_Climb0: INCBIN "data/objlst/wario/wario_climb0.bin"
-OBJLst_Wario_Climb1: INCBIN "data/objlst/wario/wario_climb1.bin"
-OBJLst_Wario_Bump: INCBIN "data/objlst/wario/wario_bump.bin"
-OBJLst_DragonHatFlameA0: INCBIN "data/objlst/wario/dragonhatflamea0.bin"
-OBJLst_DragonHatFlameA1: INCBIN "data/objlst/wario/dragonhatflamea1.bin"
-OBJLst_DragonHatFlameA2: INCBIN "data/objlst/wario/dragonhatflamea2.bin"
-OBJLst_Wario_Swim0: INCBIN "data/objlst/wario/wario_swim0.bin"
-OBJLst_Wario_Swim1: INCBIN "data/objlst/wario/wario_swim1.bin"
-OBJLst_Wario_Swim2: INCBIN "data/objlst/wario/wario_swim2.bin"
-OBJLst_Wario_Dead: INCBIN "data/objlst/wario/wario_dead.bin"
-OBJLst_DragonHatFlameB0: INCBIN "data/objlst/wario/dragonhatflameb0.bin"
-OBJLst_DragonHatFlameB1: INCBIN "data/objlst/wario/dragonhatflameb1.bin"
-OBJLst_DragonHatFlameB2: INCBIN "data/objlst/wario/dragonhatflameb2.bin"
-OBJLst_Wario_BumpAir: INCBIN "data/objlst/wario/wario_bumpair.bin"
-OBJLst_Wario_Jump: INCBIN "data/objlst/wario/wario_jump.bin"
-OBJLst_Wario_GroundPound: INCBIN "data/objlst/wario/wario_groundpound.bin"
-OBJLst_Wario_DashJump: INCBIN "data/objlst/wario/wario_dashjump.bin"
-OBJLst_Wario_DashEnemy: INCBIN "data/objlst/wario/wario_dashenemy.bin"
-OBJLst_Wario_Dash0: INCBIN "data/objlst/wario/wario_dash0.bin"
-OBJLst_Wario_Dash1: INCBIN "data/objlst/wario/wario_dash1.bin"
-OBJLst_Wario_Dash2: INCBIN "data/objlst/wario/wario_dash2.bin"
-OBJLst_Wario_Dash3: INCBIN "data/objlst/wario/wario_dash3.bin"
-OBJLst_Wario_Dash4: INCBIN "data/objlst/wario/wario_dash4.bin"
-OBJLst_Wario_Dash5: INCBIN "data/objlst/wario/wario_dash5.bin"
-OBJLst_Wario_Dash6: INCBIN "data/objlst/wario/wario_dash6.bin"
-OBJLst_DragonHatFlameC0: INCBIN "data/objlst/wario/dragonhatflamec0.bin"
-OBJLst_DragonHatFlameC1: INCBIN "data/objlst/wario/dragonhatflamec1.bin"
-OBJLst_DragonHatFlameC2: INCBIN "data/objlst/wario/dragonhatflamec2.bin"
-OBJLst_DragonHatFlameD0: INCBIN "data/objlst/wario/dragonhatflamed0.bin"
-OBJLst_DragonHatFlameD1: INCBIN "data/objlst/wario/dragonhatflamed1.bin"
-OBJLst_DragonHatFlameD2: INCBIN "data/objlst/wario/dragonhatflamed2.bin"
-OBJLst_SmallWario_Walk0: INCBIN "data/objlst/wario/smallwario_walk0.bin"
-OBJLst_SmallWario_Walk1: INCBIN "data/objlst/wario/smallwario_walk1.bin"
-OBJLst_SmallWario_Walk2: INCBIN "data/objlst/wario/smallwario_walk2.bin"
-OBJLst_Wario_LevelClear0: INCBIN "data/objlst/wario/wario_levelclear0.bin"
-OBJLst_Wario_LevelClear1: INCBIN "data/objlst/wario/wario_levelclear1.bin"
-OBJLst_TrRoom_Arrow: INCBIN "data/objlst/trroom/arrow.bin"
-OBJLst_SmallWario_Stand: INCBIN "data/objlst/wario/smallwario_stand.bin"
-OBJLst_SmallWario_Idle: INCBIN "data/objlst/wario/smallwario_idle.bin"
-OBJLst_DragonHatFlameE0: INCBIN "data/objlst/wario/dragonhatflamee0.bin"
-OBJLst_DragonHatFlameE1: INCBIN "data/objlst/wario/dragonhatflamee1.bin"
-OBJLst_DragonHatFlameE2: INCBIN "data/objlst/wario/dragonhatflamee2.bin"
-OBJLst_DragonHatFlameF0: INCBIN "data/objlst/wario/dragonhatflamef0.bin"
-OBJLst_DragonHatFlameF1: INCBIN "data/objlst/wario/dragonhatflamef1.bin"
-OBJLst_DragonHatFlameF2: INCBIN "data/objlst/wario/dragonhatflamef2.bin"
-OBJLst_Unused_Main_40: INCBIN "data/objlst/wario/unused_main_40.bin"
-OBJLst_Wario_Grab: INCBIN "data/objlst/wario/wario_grab.bin"
-OBJLst_SmallWario_Climb0: INCBIN "data/objlst/wario/smallwario_climb0.bin"
-OBJLst_SmallWario_Climb1: INCBIN "data/objlst/wario/smallwario_climb1.bin"
-OBJLst_Wario_DuckHold: INCBIN "data/objlst/wario/wario_duckhold.bin"
-OBJLst_Wario_DuckWalkHold: INCBIN "data/objlst/wario/wario_duckwalkhold.bin"
-OBJLst_Wario_DuckThrow: INCBIN "data/objlst/wario/wario_duckthrow.bin"
-OBJLst_SmallWario_Hold: INCBIN "data/objlst/wario/smallwario_hold.bin"
-OBJLst_SmallWario_Swim0: INCBIN "data/objlst/wario/smallwario_swim0.bin"
-OBJLst_SmallWario_Swim1: INCBIN "data/objlst/wario/smallwario_swim1.bin"
-OBJLst_SmallWario_HoldWalk0: INCBIN "data/objlst/wario/smallwario_holdwalk0.bin"
-OBJLst_SmallWario_HoldWalk1: INCBIN "data/objlst/wario/smallwario_holdwalk1.bin"
-OBJLst_SmallWario_HoldWalk2: INCBIN "data/objlst/wario/smallwario_holdwalk2.bin"
-OBJLst_SmallWario_HoldJump: INCBIN "data/objlst/wario/smallwario_holdjump.bin"
-OBJLst_SmallWario_Swim2: INCBIN "data/objlst/wario/smallwario_swim2.bin"
-OBJLst_Wario_DashFly: INCBIN "data/objlst/wario/wario_dashfly.bin"
-OBJLst_SmallWario_Jump: INCBIN "data/objlst/wario/smallwario_jump.bin"
-OBJLst_Wario_HoldWalk0: INCBIN "data/objlst/wario/wario_holdwalk0.bin"
-OBJLst_Wario_HoldWalk1: INCBIN "data/objlst/wario/wario_holdwalk1.bin"
-OBJLst_Wario_HoldWalk2: INCBIN "data/objlst/wario/wario_holdwalk2.bin"
-OBJLst_Wario_HoldWalk3: INCBIN "data/objlst/wario/wario_holdwalk3.bin"
-OBJLst_WaterSplash0: INCBIN "data/objlst/wario/watersplash0.bin"
-OBJLst_WaterSplash1: INCBIN "data/objlst/wario/watersplash1.bin"
-OBJLst_WaterSplash2: INCBIN "data/objlst/wario/watersplash2.bin"
-OBJLst_Wario_Hold: INCBIN "data/objlst/wario/wario_hold.bin"
-OBJLst_BlockSmash0: INCBIN "data/objlst/level/blocksmash0.bin"
-OBJLst_BlockSmash1: INCBIN "data/objlst/level/blocksmash1.bin"
-OBJLst_BlockSmash2: INCBIN "data/objlst/level/blocksmash2.bin"
-OBJLst_BlockSmash3: INCBIN "data/objlst/level/blocksmash3.bin"
-OBJLst_BlockSmash4: INCBIN "data/objlst/level/blocksmash4.bin"
-OBJLst_BlockSmash5: INCBIN "data/objlst/level/blocksmash5.bin"
-OBJLst_BlockSmash6: INCBIN "data/objlst/level/blocksmash6.bin"
-OBJLst_BlockSmash7: INCBIN "data/objlst/level/blocksmash7.bin"
-OBJLst_BlockSmash8: INCBIN "data/objlst/level/blocksmash8.bin"
-OBJLst_Unused_BlockSmash9: INCBIN "data/objlst/level/unused_blocksmash9.bin"
-OBJLst_SaveSel_Hat: INCBIN "data/objlst/saveselect/hat.bin"
-OBJLst_SmallWario_LevelClear: INCBIN "data/objlst/wario/smallwario_levelclear.bin"
-OBJLst_SaveSel_BombWario0: INCBIN "data/objlst/saveselect/bombwario0.bin"
-OBJLst_SaveSel_BombWario1: INCBIN "data/objlst/saveselect/bombwario1.bin"
-OBJLst_SaveSel_BombWario2: INCBIN "data/objlst/saveselect/bombwario2.bin"
-OBJLst_SaveSel_Wario_Dash0: INCBIN "data/objlst/saveselect/wario_dash0.bin"
-OBJLst_SaveSel_Wario_Dash1: INCBIN "data/objlst/saveselect/wario_dash1.bin"
-OBJLst_SaveSel_Wario_Dash2: INCBIN "data/objlst/saveselect/wario_dash2.bin"
-OBJLst_SaveSel_Wario_Dash3: INCBIN "data/objlst/saveselect/wario_dash3.bin"
-OBJLst_SaveSel_Wario_Dash4: INCBIN "data/objlst/saveselect/wario_dash4.bin"
-OBJLst_SaveSel_Wario_Dash5: INCBIN "data/objlst/saveselect/wario_dash5.bin"
-OBJLst_SaveSel_Wario_Dash6: INCBIN "data/objlst/saveselect/wario_dash6.bin"
-OBJLst_SaveSel_Wario_Bump: INCBIN "data/objlst/saveselect/wario_bump.bin"
-OBJLst_Wario_HoldJump: INCBIN "data/objlst/wario/wario_holdjump.bin"
-OBJLst_Wario_HoldGroundPound: INCBIN "data/objlst/wario/wario_holdgroundpound.bin"
-OBJLst_SaveSel_OldHat0: INCBIN "data/objlst/saveselect/oldhat0.bin"
-OBJLst_SaveSel_OldHat1: INCBIN "data/objlst/saveselect/oldhat1.bin"
-OBJLst_SaveSel_OldHat2: INCBIN "data/objlst/saveselect/oldhat2.bin"
-OBJLst_SaveSel_Wario_JumpNoHat: INCBIN "data/objlst/saveselect/wario_jumpnohat.bin"
-OBJLst_SaveSel_Wario_StandNoHat: INCBIN "data/objlst/saveselect/wario_standnohat.bin"
-OBJLst_DragonHatWaterA0: INCBIN "data/objlst/wario/dragonhatwatera0.bin"
-OBJLst_DragonHatWaterA1: INCBIN "data/objlst/wario/dragonhatwatera1.bin"
-OBJLst_DragonHatWaterA2: INCBIN "data/objlst/wario/dragonhatwatera2.bin"
-OBJLst_DragonHatWaterB0: INCBIN "data/objlst/wario/dragonhatwaterb0.bin"
-OBJLst_DragonHatWaterB1: INCBIN "data/objlst/wario/dragonhatwaterb1.bin"
-OBJLst_DragonHatWaterB2: INCBIN "data/objlst/wario/dragonhatwaterb2.bin"
-OBJLst_DragonHatWaterC0: INCBIN "data/objlst/wario/dragonhatwaterc0.bin"
-OBJLst_DragonHatWaterC1: INCBIN "data/objlst/wario/dragonhatwaterc1.bin"
-OBJLst_DragonHatWaterC2: INCBIN "data/objlst/wario/dragonhatwaterc2.bin"
-OBJLst_DragonHatWaterD0: INCBIN "data/objlst/wario/dragonhatwaterd0.bin"
-OBJLst_DragonHatWaterD1: INCBIN "data/objlst/wario/dragonhatwaterd1.bin"
-OBJLst_DragonHatWaterD2: INCBIN "data/objlst/wario/dragonhatwaterd2.bin"
-OBJLst_DragonHatWaterE0: INCBIN "data/objlst/wario/dragonhatwatere0.bin"
-OBJLst_DragonHatWaterE1: INCBIN "data/objlst/wario/dragonhatwatere1.bin"
-OBJLst_DragonHatWaterE2: INCBIN "data/objlst/wario/dragonhatwatere2.bin"
-OBJLst_DragonHatWaterF0: INCBIN "data/objlst/wario/dragonhatwaterf0.bin"
-OBJLst_DragonHatWaterF1: INCBIN "data/objlst/wario/dragonhatwaterf1.bin"
-OBJLst_DragonHatWaterF2: INCBIN "data/objlst/wario/dragonhatwaterf2.bin"
-OBJLst_TrRoom_Wario_Shrug: INCBIN "data/objlst/trroom/wario_shrug.bin"
-OBJLst_TrRoom_Wario_Gloat: INCBIN "data/objlst/trroom/wario_gloat.bin"
-OBJLst_TrRoom_Wario_Idle0: INCBIN "data/objlst/trroom/wario_idle0.bin"
-OBJLst_TrRoom_Wario_Idle1: INCBIN "data/objlst/trroom/wario_idle1.bin"
-OBJLst_SaveSel_Cross: INCBIN "data/objlst/saveselect/cross.bin"
-OBJLst_TrRoom_TreasureC0: INCBIN "data/objlst/trroom/treasure_c0.bin"
-OBJLst_TrRoom_TreasureC1: INCBIN "data/objlst/trroom/treasure_c1.bin"
-OBJLst_TrRoom_TreasureI0: INCBIN "data/objlst/trroom/treasure_i0.bin"
-OBJLst_TrRoom_TreasureI1: INCBIN "data/objlst/trroom/treasure_i1.bin"
-OBJLst_TrRoom_TreasureF0: INCBIN "data/objlst/trroom/treasure_f0.bin"
-OBJLst_TrRoom_TreasureF1: INCBIN "data/objlst/trroom/treasure_f1.bin"
-OBJLst_TrRoom_TreasureO0: INCBIN "data/objlst/trroom/treasure_o0.bin"
-OBJLst_TrRoom_TreasureO1: INCBIN "data/objlst/trroom/treasure_o1.bin"
-OBJLst_TrRoom_TreasureA0: INCBIN "data/objlst/trroom/treasure_a0.bin"
-OBJLst_TrRoom_TreasureA1: INCBIN "data/objlst/trroom/treasure_a1.bin"
-OBJLst_TrRoom_TreasureN0: INCBIN "data/objlst/trroom/treasure_n0.bin"
-OBJLst_TrRoom_TreasureN1: INCBIN "data/objlst/trroom/treasure_n1.bin"
-OBJLst_TrRoom_TreasureH0: INCBIN "data/objlst/trroom/treasure_h0.bin"
-OBJLst_TrRoom_TreasureH1: INCBIN "data/objlst/trroom/treasure_h1.bin"
-OBJLst_TrRoom_TreasureM0: INCBIN "data/objlst/trroom/treasure_m0.bin"
-OBJLst_TrRoom_TreasureM1: INCBIN "data/objlst/trroom/treasure_m1.bin"
-OBJLst_TrRoom_TreasureL0: INCBIN "data/objlst/trroom/treasure_l0.bin"
-OBJLst_TrRoom_TreasureL1: INCBIN "data/objlst/trroom/treasure_l1.bin"
-OBJLst_TrRoom_TreasureK0: INCBIN "data/objlst/trroom/treasure_k0.bin"
-OBJLst_TrRoom_TreasureK1: INCBIN "data/objlst/trroom/treasure_k1.bin"
-OBJLst_TrRoom_TreasureB0: INCBIN "data/objlst/trroom/treasure_b0.bin"
-OBJLst_TrRoom_TreasureB1: INCBIN "data/objlst/trroom/treasure_b1.bin"
-OBJLst_TrRoom_TreasureD0: INCBIN "data/objlst/trroom/treasure_d0.bin"
-OBJLst_TrRoom_TreasureD1: INCBIN "data/objlst/trroom/treasure_d1.bin"
-OBJLst_TrRoom_TreasureG0: INCBIN "data/objlst/trroom/treasure_g0.bin"
-OBJLst_TrRoom_TreasureG1: INCBIN "data/objlst/trroom/treasure_g1.bin"
-OBJLst_TrRoom_TreasureJ0: INCBIN "data/objlst/trroom/treasure_j0.bin"
-OBJLst_TrRoom_TreasureJ1: INCBIN "data/objlst/trroom/treasure_j1.bin"
-OBJLst_TrRoom_TreasureE0: INCBIN "data/objlst/trroom/treasure_e0.bin"
-OBJLst_TrRoom_TreasureE1: INCBIN "data/objlst/trroom/treasure_e1.bin"
-OBJLst_TrRoom_Star00: INCBIN "data/objlst/trroom/star00.bin"
-OBJLst_TrRoom_Star01: INCBIN "data/objlst/trroom/star01.bin"
-OBJLst_TrRoom_Star02: INCBIN "data/objlst/trroom/star02.bin"
-OBJLst_TrRoom_Star03: INCBIN "data/objlst/trroom/star03.bin"
-OBJLst_TrRoom_Star04: INCBIN "data/objlst/trroom/star04.bin"
-OBJLst_TrRoom_Star05: INCBIN "data/objlst/trroom/star05.bin"
-OBJLst_TrRoom_Star06: INCBIN "data/objlst/trroom/star06.bin"
-OBJLst_TrRoom_Star07: INCBIN "data/objlst/trroom/star07.bin"
-OBJLst_TrRoom_Star08: INCBIN "data/objlst/trroom/star08.bin"
-OBJLst_TrRoom_Star09: INCBIN "data/objlst/trroom/star09.bin"
-OBJLst_TrRoom_Star0A: INCBIN "data/objlst/trroom/star0a.bin"
-OBJLst_TrRoom_Star0B: INCBIN "data/objlst/trroom/star0b.bin"
-OBJLst_Coin0: INCBIN "data/objlst/level/coin0.bin"
-OBJLst_Coin1: INCBIN "data/objlst/level/coin1.bin"
-OBJLst_Coin2: INCBIN "data/objlst/level/coin2.bin"
-OBJLst_1UP: INCBIN "data/objlst/level/1up.bin"
-OBJLst_SaveSel_Smoke0: INCBIN "data/objlst/saveselect/smoke0.bin"
-OBJLst_SaveSel_Smoke1: INCBIN "data/objlst/saveselect/smoke1.bin"
-OBJLst_SaveSel_Smoke2: INCBIN "data/objlst/saveselect/smoke2.bin"
-OBJLst_3UP: INCBIN "data/objlst/level/3up.bin"
-OBJLst_TrRoom_MoneyBags1: INCBIN "data/objlst/trroom/moneybags1.bin"
-OBJLst_TrRoom_MoneyBags2: INCBIN "data/objlst/trroom/moneybags2.bin"
-OBJLst_TrRoom_MoneyBags3: INCBIN "data/objlst/trroom/moneybags3.bin"
-OBJLst_TrRoom_MoneyBags4: INCBIN "data/objlst/trroom/moneybags4.bin"
-OBJLst_TrRoom_MoneyBags5: INCBIN "data/objlst/trroom/moneybags5.bin"
-OBJLst_TrRoom_MoneyBags6: INCBIN "data/objlst/trroom/moneybags6.bin"
-OBJLst_TrRoom_MoneyBagFall: INCBIN "data/objlst/trroom/moneybag_fall.bin"
-OBJLst_SaveSel_Wario_LookBack: INCBIN "data/objlst/saveselect/wario_lookback.bin"
-OBJLst_SaveSel_Wario_LookUp: INCBIN "data/objlst/saveselect/wario_lookup.bin"
+SprMap_Wario_None: INCBIN "data/sprmap/wario/wario_none.bin"
+SprMap_Wario_Walk0: INCBIN "data/sprmap/wario/wario_walk0.bin"
+SprMap_Wario_Walk1: INCBIN "data/sprmap/wario/wario_walk1.bin"
+SprMap_Wario_Walk2: INCBIN "data/sprmap/wario/wario_walk2.bin"
+SprMap_Wario_Walk3: INCBIN "data/sprmap/wario/wario_walk3.bin"
+SprMap_HitBlock: INCBIN "data/sprmap/level/hitblock.bin"
+SprMap_Wario_Throw: INCBIN "data/sprmap/wario/wario_throw.bin"
+SprMap_Wario_JumpThrow: INCBIN "data/sprmap/wario/wario_jumpthrow.bin"
+SprMap_Wario_Stand: INCBIN "data/sprmap/wario/wario_stand.bin"
+SprMap_Wario_Idle0: INCBIN "data/sprmap/wario/wario_idle0.bin"
+SprMap_Wario_Idle1: INCBIN "data/sprmap/wario/wario_idle1.bin"
+SprMap_Hat: INCBIN "data/sprmap/wario/hat.bin"
+SprMap_Unused_Wario_GroundPound: INCBIN "data/sprmap/wario/unused_wario_groundpound.bin"
+SprMap_JetHatFlame0: INCBIN "data/sprmap/wario/jethatflame0.bin"
+SprMap_JetHatFlame1: INCBIN "data/sprmap/wario/jethatflame1.bin"
+SprMap_JetHatFlame2: INCBIN "data/sprmap/wario/jethatflame2.bin"
+SprMap_Wario_Duck: INCBIN "data/sprmap/wario/wario_duck.bin"
+SprMap_Wario_DuckWalk: INCBIN "data/sprmap/wario/wario_duckwalk.bin"
+SprMap_Wario_Climb0: INCBIN "data/sprmap/wario/wario_climb0.bin"
+SprMap_Wario_Climb1: INCBIN "data/sprmap/wario/wario_climb1.bin"
+SprMap_Wario_Bump: INCBIN "data/sprmap/wario/wario_bump.bin"
+SprMap_DragonHatFlameA0: INCBIN "data/sprmap/wario/dragonhatflamea0.bin"
+SprMap_DragonHatFlameA1: INCBIN "data/sprmap/wario/dragonhatflamea1.bin"
+SprMap_DragonHatFlameA2: INCBIN "data/sprmap/wario/dragonhatflamea2.bin"
+SprMap_Wario_Swim0: INCBIN "data/sprmap/wario/wario_swim0.bin"
+SprMap_Wario_Swim1: INCBIN "data/sprmap/wario/wario_swim1.bin"
+SprMap_Wario_Swim2: INCBIN "data/sprmap/wario/wario_swim2.bin"
+SprMap_Wario_Dead: INCBIN "data/sprmap/wario/wario_dead.bin"
+SprMap_DragonHatFlameB0: INCBIN "data/sprmap/wario/dragonhatflameb0.bin"
+SprMap_DragonHatFlameB1: INCBIN "data/sprmap/wario/dragonhatflameb1.bin"
+SprMap_DragonHatFlameB2: INCBIN "data/sprmap/wario/dragonhatflameb2.bin"
+SprMap_Wario_BumpAir: INCBIN "data/sprmap/wario/wario_bumpair.bin"
+SprMap_Wario_Jump: INCBIN "data/sprmap/wario/wario_jump.bin"
+SprMap_Wario_GroundPound: INCBIN "data/sprmap/wario/wario_groundpound.bin"
+SprMap_Wario_DashJump: INCBIN "data/sprmap/wario/wario_dashjump.bin"
+SprMap_Wario_DashEnemy: INCBIN "data/sprmap/wario/wario_dashenemy.bin"
+SprMap_Wario_Dash0: INCBIN "data/sprmap/wario/wario_dash0.bin"
+SprMap_Wario_Dash1: INCBIN "data/sprmap/wario/wario_dash1.bin"
+SprMap_Wario_Dash2: INCBIN "data/sprmap/wario/wario_dash2.bin"
+SprMap_Wario_Dash3: INCBIN "data/sprmap/wario/wario_dash3.bin"
+SprMap_Wario_Dash4: INCBIN "data/sprmap/wario/wario_dash4.bin"
+SprMap_Wario_Dash5: INCBIN "data/sprmap/wario/wario_dash5.bin"
+SprMap_Wario_Dash6: INCBIN "data/sprmap/wario/wario_dash6.bin"
+SprMap_DragonHatFlameC0: INCBIN "data/sprmap/wario/dragonhatflamec0.bin"
+SprMap_DragonHatFlameC1: INCBIN "data/sprmap/wario/dragonhatflamec1.bin"
+SprMap_DragonHatFlameC2: INCBIN "data/sprmap/wario/dragonhatflamec2.bin"
+SprMap_DragonHatFlameD0: INCBIN "data/sprmap/wario/dragonhatflamed0.bin"
+SprMap_DragonHatFlameD1: INCBIN "data/sprmap/wario/dragonhatflamed1.bin"
+SprMap_DragonHatFlameD2: INCBIN "data/sprmap/wario/dragonhatflamed2.bin"
+SprMap_SmallWario_Walk0: INCBIN "data/sprmap/wario/smallwario_walk0.bin"
+SprMap_SmallWario_Walk1: INCBIN "data/sprmap/wario/smallwario_walk1.bin"
+SprMap_SmallWario_Walk2: INCBIN "data/sprmap/wario/smallwario_walk2.bin"
+SprMap_Wario_LevelClear0: INCBIN "data/sprmap/wario/wario_levelclear0.bin"
+SprMap_Wario_LevelClear1: INCBIN "data/sprmap/wario/wario_levelclear1.bin"
+SprMap_TrRoom_Arrow: INCBIN "data/sprmap/trroom/arrow.bin"
+SprMap_SmallWario_Stand: INCBIN "data/sprmap/wario/smallwario_stand.bin"
+SprMap_SmallWario_Idle: INCBIN "data/sprmap/wario/smallwario_idle.bin"
+SprMap_DragonHatFlameE0: INCBIN "data/sprmap/wario/dragonhatflamee0.bin"
+SprMap_DragonHatFlameE1: INCBIN "data/sprmap/wario/dragonhatflamee1.bin"
+SprMap_DragonHatFlameE2: INCBIN "data/sprmap/wario/dragonhatflamee2.bin"
+SprMap_DragonHatFlameF0: INCBIN "data/sprmap/wario/dragonhatflamef0.bin"
+SprMap_DragonHatFlameF1: INCBIN "data/sprmap/wario/dragonhatflamef1.bin"
+SprMap_DragonHatFlameF2: INCBIN "data/sprmap/wario/dragonhatflamef2.bin"
+SprMap_Unused_Main_40: INCBIN "data/sprmap/wario/unused_main_40.bin"
+SprMap_Wario_Grab: INCBIN "data/sprmap/wario/wario_grab.bin"
+SprMap_SmallWario_Climb0: INCBIN "data/sprmap/wario/smallwario_climb0.bin"
+SprMap_SmallWario_Climb1: INCBIN "data/sprmap/wario/smallwario_climb1.bin"
+SprMap_Wario_DuckHold: INCBIN "data/sprmap/wario/wario_duckhold.bin"
+SprMap_Wario_DuckWalkHold: INCBIN "data/sprmap/wario/wario_duckwalkhold.bin"
+SprMap_Wario_DuckThrow: INCBIN "data/sprmap/wario/wario_duckthrow.bin"
+SprMap_SmallWario_Hold: INCBIN "data/sprmap/wario/smallwario_hold.bin"
+SprMap_SmallWario_Swim0: INCBIN "data/sprmap/wario/smallwario_swim0.bin"
+SprMap_SmallWario_Swim1: INCBIN "data/sprmap/wario/smallwario_swim1.bin"
+SprMap_SmallWario_HoldWalk0: INCBIN "data/sprmap/wario/smallwario_holdwalk0.bin"
+SprMap_SmallWario_HoldWalk1: INCBIN "data/sprmap/wario/smallwario_holdwalk1.bin"
+SprMap_SmallWario_HoldWalk2: INCBIN "data/sprmap/wario/smallwario_holdwalk2.bin"
+SprMap_SmallWario_HoldJump: INCBIN "data/sprmap/wario/smallwario_holdjump.bin"
+SprMap_SmallWario_Swim2: INCBIN "data/sprmap/wario/smallwario_swim2.bin"
+SprMap_Wario_DashFly: INCBIN "data/sprmap/wario/wario_dashfly.bin"
+SprMap_SmallWario_Jump: INCBIN "data/sprmap/wario/smallwario_jump.bin"
+SprMap_Wario_HoldWalk0: INCBIN "data/sprmap/wario/wario_holdwalk0.bin"
+SprMap_Wario_HoldWalk1: INCBIN "data/sprmap/wario/wario_holdwalk1.bin"
+SprMap_Wario_HoldWalk2: INCBIN "data/sprmap/wario/wario_holdwalk2.bin"
+SprMap_Wario_HoldWalk3: INCBIN "data/sprmap/wario/wario_holdwalk3.bin"
+SprMap_WaterSplash0: INCBIN "data/sprmap/wario/watersplash0.bin"
+SprMap_WaterSplash1: INCBIN "data/sprmap/wario/watersplash1.bin"
+SprMap_WaterSplash2: INCBIN "data/sprmap/wario/watersplash2.bin"
+SprMap_Wario_Hold: INCBIN "data/sprmap/wario/wario_hold.bin"
+SprMap_BlockSmash0: INCBIN "data/sprmap/level/blocksmash0.bin"
+SprMap_BlockSmash1: INCBIN "data/sprmap/level/blocksmash1.bin"
+SprMap_BlockSmash2: INCBIN "data/sprmap/level/blocksmash2.bin"
+SprMap_BlockSmash3: INCBIN "data/sprmap/level/blocksmash3.bin"
+SprMap_BlockSmash4: INCBIN "data/sprmap/level/blocksmash4.bin"
+SprMap_BlockSmash5: INCBIN "data/sprmap/level/blocksmash5.bin"
+SprMap_BlockSmash6: INCBIN "data/sprmap/level/blocksmash6.bin"
+SprMap_BlockSmash7: INCBIN "data/sprmap/level/blocksmash7.bin"
+SprMap_BlockSmash8: INCBIN "data/sprmap/level/blocksmash8.bin"
+SprMap_Unused_BlockSmash9: INCBIN "data/sprmap/level/unused_blocksmash9.bin"
+SprMap_SaveSel_Hat: INCBIN "data/sprmap/saveselect/hat.bin"
+SprMap_SmallWario_LevelClear: INCBIN "data/sprmap/wario/smallwario_levelclear.bin"
+SprMap_SaveSel_BombWario0: INCBIN "data/sprmap/saveselect/bombwario0.bin"
+SprMap_SaveSel_BombWario1: INCBIN "data/sprmap/saveselect/bombwario1.bin"
+SprMap_SaveSel_BombWario2: INCBIN "data/sprmap/saveselect/bombwario2.bin"
+SprMap_SaveSel_Wario_Dash0: INCBIN "data/sprmap/saveselect/wario_dash0.bin"
+SprMap_SaveSel_Wario_Dash1: INCBIN "data/sprmap/saveselect/wario_dash1.bin"
+SprMap_SaveSel_Wario_Dash2: INCBIN "data/sprmap/saveselect/wario_dash2.bin"
+SprMap_SaveSel_Wario_Dash3: INCBIN "data/sprmap/saveselect/wario_dash3.bin"
+SprMap_SaveSel_Wario_Dash4: INCBIN "data/sprmap/saveselect/wario_dash4.bin"
+SprMap_SaveSel_Wario_Dash5: INCBIN "data/sprmap/saveselect/wario_dash5.bin"
+SprMap_SaveSel_Wario_Dash6: INCBIN "data/sprmap/saveselect/wario_dash6.bin"
+SprMap_SaveSel_Wario_Bump: INCBIN "data/sprmap/saveselect/wario_bump.bin"
+SprMap_Wario_HoldJump: INCBIN "data/sprmap/wario/wario_holdjump.bin"
+SprMap_Wario_HoldGroundPound: INCBIN "data/sprmap/wario/wario_holdgroundpound.bin"
+SprMap_SaveSel_OldHat0: INCBIN "data/sprmap/saveselect/oldhat0.bin"
+SprMap_SaveSel_OldHat1: INCBIN "data/sprmap/saveselect/oldhat1.bin"
+SprMap_SaveSel_OldHat2: INCBIN "data/sprmap/saveselect/oldhat2.bin"
+SprMap_SaveSel_Wario_JumpNoHat: INCBIN "data/sprmap/saveselect/wario_jumpnohat.bin"
+SprMap_SaveSel_Wario_StandNoHat: INCBIN "data/sprmap/saveselect/wario_standnohat.bin"
+SprMap_DragonHatWaterA0: INCBIN "data/sprmap/wario/dragonhatwatera0.bin"
+SprMap_DragonHatWaterA1: INCBIN "data/sprmap/wario/dragonhatwatera1.bin"
+SprMap_DragonHatWaterA2: INCBIN "data/sprmap/wario/dragonhatwatera2.bin"
+SprMap_DragonHatWaterB0: INCBIN "data/sprmap/wario/dragonhatwaterb0.bin"
+SprMap_DragonHatWaterB1: INCBIN "data/sprmap/wario/dragonhatwaterb1.bin"
+SprMap_DragonHatWaterB2: INCBIN "data/sprmap/wario/dragonhatwaterb2.bin"
+SprMap_DragonHatWaterC0: INCBIN "data/sprmap/wario/dragonhatwaterc0.bin"
+SprMap_DragonHatWaterC1: INCBIN "data/sprmap/wario/dragonhatwaterc1.bin"
+SprMap_DragonHatWaterC2: INCBIN "data/sprmap/wario/dragonhatwaterc2.bin"
+SprMap_DragonHatWaterD0: INCBIN "data/sprmap/wario/dragonhatwaterd0.bin"
+SprMap_DragonHatWaterD1: INCBIN "data/sprmap/wario/dragonhatwaterd1.bin"
+SprMap_DragonHatWaterD2: INCBIN "data/sprmap/wario/dragonhatwaterd2.bin"
+SprMap_DragonHatWaterE0: INCBIN "data/sprmap/wario/dragonhatwatere0.bin"
+SprMap_DragonHatWaterE1: INCBIN "data/sprmap/wario/dragonhatwatere1.bin"
+SprMap_DragonHatWaterE2: INCBIN "data/sprmap/wario/dragonhatwatere2.bin"
+SprMap_DragonHatWaterF0: INCBIN "data/sprmap/wario/dragonhatwaterf0.bin"
+SprMap_DragonHatWaterF1: INCBIN "data/sprmap/wario/dragonhatwaterf1.bin"
+SprMap_DragonHatWaterF2: INCBIN "data/sprmap/wario/dragonhatwaterf2.bin"
+SprMap_TrRoom_Wario_Shrug: INCBIN "data/sprmap/trroom/wario_shrug.bin"
+SprMap_TrRoom_Wario_Gloat: INCBIN "data/sprmap/trroom/wario_gloat.bin"
+SprMap_TrRoom_Wario_Idle0: INCBIN "data/sprmap/trroom/wario_idle0.bin"
+SprMap_TrRoom_Wario_Idle1: INCBIN "data/sprmap/trroom/wario_idle1.bin"
+SprMap_SaveSel_Cross: INCBIN "data/sprmap/saveselect/cross.bin"
+SprMap_TrRoom_TreasureC0: INCBIN "data/sprmap/trroom/treasure_c0.bin"
+SprMap_TrRoom_TreasureC1: INCBIN "data/sprmap/trroom/treasure_c1.bin"
+SprMap_TrRoom_TreasureI0: INCBIN "data/sprmap/trroom/treasure_i0.bin"
+SprMap_TrRoom_TreasureI1: INCBIN "data/sprmap/trroom/treasure_i1.bin"
+SprMap_TrRoom_TreasureF0: INCBIN "data/sprmap/trroom/treasure_f0.bin"
+SprMap_TrRoom_TreasureF1: INCBIN "data/sprmap/trroom/treasure_f1.bin"
+SprMap_TrRoom_TreasureO0: INCBIN "data/sprmap/trroom/treasure_o0.bin"
+SprMap_TrRoom_TreasureO1: INCBIN "data/sprmap/trroom/treasure_o1.bin"
+SprMap_TrRoom_TreasureA0: INCBIN "data/sprmap/trroom/treasure_a0.bin"
+SprMap_TrRoom_TreasureA1: INCBIN "data/sprmap/trroom/treasure_a1.bin"
+SprMap_TrRoom_TreasureN0: INCBIN "data/sprmap/trroom/treasure_n0.bin"
+SprMap_TrRoom_TreasureN1: INCBIN "data/sprmap/trroom/treasure_n1.bin"
+SprMap_TrRoom_TreasureH0: INCBIN "data/sprmap/trroom/treasure_h0.bin"
+SprMap_TrRoom_TreasureH1: INCBIN "data/sprmap/trroom/treasure_h1.bin"
+SprMap_TrRoom_TreasureM0: INCBIN "data/sprmap/trroom/treasure_m0.bin"
+SprMap_TrRoom_TreasureM1: INCBIN "data/sprmap/trroom/treasure_m1.bin"
+SprMap_TrRoom_TreasureL0: INCBIN "data/sprmap/trroom/treasure_l0.bin"
+SprMap_TrRoom_TreasureL1: INCBIN "data/sprmap/trroom/treasure_l1.bin"
+SprMap_TrRoom_TreasureK0: INCBIN "data/sprmap/trroom/treasure_k0.bin"
+SprMap_TrRoom_TreasureK1: INCBIN "data/sprmap/trroom/treasure_k1.bin"
+SprMap_TrRoom_TreasureB0: INCBIN "data/sprmap/trroom/treasure_b0.bin"
+SprMap_TrRoom_TreasureB1: INCBIN "data/sprmap/trroom/treasure_b1.bin"
+SprMap_TrRoom_TreasureD0: INCBIN "data/sprmap/trroom/treasure_d0.bin"
+SprMap_TrRoom_TreasureD1: INCBIN "data/sprmap/trroom/treasure_d1.bin"
+SprMap_TrRoom_TreasureG0: INCBIN "data/sprmap/trroom/treasure_g0.bin"
+SprMap_TrRoom_TreasureG1: INCBIN "data/sprmap/trroom/treasure_g1.bin"
+SprMap_TrRoom_TreasureJ0: INCBIN "data/sprmap/trroom/treasure_j0.bin"
+SprMap_TrRoom_TreasureJ1: INCBIN "data/sprmap/trroom/treasure_j1.bin"
+SprMap_TrRoom_TreasureE0: INCBIN "data/sprmap/trroom/treasure_e0.bin"
+SprMap_TrRoom_TreasureE1: INCBIN "data/sprmap/trroom/treasure_e1.bin"
+SprMap_TrRoom_Star00: INCBIN "data/sprmap/trroom/star00.bin"
+SprMap_TrRoom_Star01: INCBIN "data/sprmap/trroom/star01.bin"
+SprMap_TrRoom_Star02: INCBIN "data/sprmap/trroom/star02.bin"
+SprMap_TrRoom_Star03: INCBIN "data/sprmap/trroom/star03.bin"
+SprMap_TrRoom_Star04: INCBIN "data/sprmap/trroom/star04.bin"
+SprMap_TrRoom_Star05: INCBIN "data/sprmap/trroom/star05.bin"
+SprMap_TrRoom_Star06: INCBIN "data/sprmap/trroom/star06.bin"
+SprMap_TrRoom_Star07: INCBIN "data/sprmap/trroom/star07.bin"
+SprMap_TrRoom_Star08: INCBIN "data/sprmap/trroom/star08.bin"
+SprMap_TrRoom_Star09: INCBIN "data/sprmap/trroom/star09.bin"
+SprMap_TrRoom_Star0A: INCBIN "data/sprmap/trroom/star0a.bin"
+SprMap_TrRoom_Star0B: INCBIN "data/sprmap/trroom/star0b.bin"
+SprMap_Coin0: INCBIN "data/sprmap/level/coin0.bin"
+SprMap_Coin1: INCBIN "data/sprmap/level/coin1.bin"
+SprMap_Coin2: INCBIN "data/sprmap/level/coin2.bin"
+SprMap_1UP: INCBIN "data/sprmap/level/1up.bin"
+SprMap_SaveSel_Smoke0: INCBIN "data/sprmap/saveselect/smoke0.bin"
+SprMap_SaveSel_Smoke1: INCBIN "data/sprmap/saveselect/smoke1.bin"
+SprMap_SaveSel_Smoke2: INCBIN "data/sprmap/saveselect/smoke2.bin"
+SprMap_3UP: INCBIN "data/sprmap/level/3up.bin"
+SprMap_TrRoom_MoneyBags1: INCBIN "data/sprmap/trroom/moneybags1.bin"
+SprMap_TrRoom_MoneyBags2: INCBIN "data/sprmap/trroom/moneybags2.bin"
+SprMap_TrRoom_MoneyBags3: INCBIN "data/sprmap/trroom/moneybags3.bin"
+SprMap_TrRoom_MoneyBags4: INCBIN "data/sprmap/trroom/moneybags4.bin"
+SprMap_TrRoom_MoneyBags5: INCBIN "data/sprmap/trroom/moneybags5.bin"
+SprMap_TrRoom_MoneyBags6: INCBIN "data/sprmap/trroom/moneybags6.bin"
+SprMap_TrRoom_MoneyBagFall: INCBIN "data/sprmap/trroom/moneybag_fall.bin"
+SprMap_SaveSel_Wario_LookBack: INCBIN "data/sprmap/saveselect/wario_lookback.bin"
+SprMap_SaveSel_Wario_LookUp: INCBIN "data/sprmap/saveselect/wario_lookup.bin"
 
 ; =============== END OF BANK ===============
 	mIncJunk "L057A87"

@@ -207,13 +207,13 @@ ENDR
 	ld   [sActHeldKey], a
 	ret
 .transferHeld:
-	; [POI] Seemingly indexes the OBJLst bank table..., but DE is always $00 after the call to ActS_ClearRAM.
-	; So sActOBJLstBank = $0F
+	; [POI] Seemingly indexes the sprite mapping bank table..., but DE is always $00 after the call to ActS_ClearRAM.
+	; So sActSprMapBank = $0F
 	; Which is correct anyway, since the held actor is always the first one.
 	ld   a, $0F
 	;--
 	push hl
-	ld   hl, sActOBJLstBank
+	ld   hl, sActSprMapBank
 	ld   d, $00
 	add  hl, de
 	ld   [hl], a
@@ -249,15 +249,15 @@ ENDR
 	ldi  [hl], a			; Rel.Y (Origin)
 	ldi  [hl], a			; Rel.X (Origin)
 	
-	ld   a, [sActHeldOBJLstTablePtr_Low]	; OBJLst Table
+	ld   a, [sActHeldSprMapTablePtr_Low]	; Animation
 	ldi  [hl], a
-	ld   a, [sActHeldOBJLstTablePtr_High]	
+	ld   a, [sActHeldSprMapTablePtr_High]	
 	ldi  [hl], a
 	
 	; Ignore direction and anim frame
 	xor  a
 	ldi  [hl], a			; Dir
-	ldi  [hl], a			; OBJLst ID
+	ldi  [hl], a			; Sprite mapping ID
 	
 	ld   a, [sActHeldId]	; Actor ID
 	ldi  [hl], a
@@ -310,20 +310,20 @@ IF FIX_BUGS
 	cp   a, ACT_KEY			; Are we holding a key?
 	jr   z, .keyObj			; If so, jump
 .coinObj:
-	ld   a, LOW(OBJLstSharedPtrTable_Act_10Coin)
+	ld   a, LOW(SprMapSharedPtrTable_Act_10Coin)
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedPtrTable_Act_10Coin)
+	ld   a, HIGH(SprMapSharedPtrTable_Act_10Coin)
 	ldi  [hl], a
 	jr   .end
 .keyObj:
-	ld   a, LOW(OBJLstSharedPtrTable_Act_Key)
+	ld   a, LOW(SprMapSharedPtrTable_Act_Key)
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedPtrTable_Act_Key)
+	ld   a, HIGH(SprMapSharedPtrTable_Act_Key)
 	ldi  [hl], a
 ELSE
-	ld   a, LOW(OBJLstSharedPtrTable_Act_10Coin)
+	ld   a, LOW(SprMapSharedPtrTable_Act_10Coin)
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedPtrTable_Act_10Coin)
+	ld   a, HIGH(SprMapSharedPtrTable_Act_10Coin)
 	ldi  [hl], a
 ENDC
 	
@@ -430,7 +430,7 @@ Level_ActLayoutPtrTable:
 ; ActGroupCodeDef (4 bytes)
 ; -0-1: Ptr to code
 ; -  2: Actor flags (ACTFLAGB_*)
-; -  3: Bank number for OBJLst
+; -  3: Bank number for sprite mapping
 ;
 ; ActGroupGFXDef (4 bytes; shortneded through mActGFXDef)
 ; -  0: Bank number for GFX
@@ -911,15 +911,15 @@ ActInit_SpearGoom:
 	ld   bc, SubCall_Act_SpearGoom
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
+	; Set initial animation
 	push bc
-	ld   bc, OBJLstPtrTable_ActInit_SpearGoom
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_ActInit_SpearGoom
+	call ActS_SetSprMapPtr
 	pop  bc
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_SpearGoom
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_SpearGoom
+	call ActS_SetSprMapSharedTablePtr
 	
 	; [POI] By default, this is set as fully safe to touch, and it seems intentional,
 	;		since there's an actual delay before the proper collision is set.
@@ -937,8 +937,8 @@ ActInit_SpearGoom:
 	xor  a
 	ld   [sActSpearGoomColiDelay], a
 	ret
-OBJLstPtrTable_ActInit_SpearGoom: 
-	dw OBJLst_Act_SpearGoom_WalkL0
+SprMapPtrTable_ActInit_SpearGoom: 
+	dw SprMap_Act_SpearGoom_WalkL0
 	dw $0000;X
 ; =============== Act_SpearGoom ===============
 Act_SpearGoom:
@@ -1033,7 +1033,7 @@ Act_SpearGoom_Main:
 	ld   a, [sActSetTimer]
 	and  a, $02						; sActSetTimer % 2 == 0?
 	jr   z, .chkTurnDelay			; If so, jump
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	ret
 ;--
 .noWater:
@@ -1079,7 +1079,7 @@ Act_SpearGoom_Main:
 	ret  nz							; If not, return
 	call Act_SpearGoom_Turn			; Otherwise, turn to the other direction
 .anim:
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 ; Perform horizontal movement
 Act_SpearGoom_SetMove:
@@ -1088,10 +1088,10 @@ Act_SpearGoom_SetMove:
 	jr   nz, .moveR					; If so, jump
 .moveL:
 	; Set sprite mapping
-	ld   a, LOW(OBJLstPtrTable_Act_SpearGoom_WalkL)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_SpearGoom_WalkL)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_SpearGoom_WalkL)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_SpearGoom_WalkL)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; Set left direction
 	ld   a, [sActSetDir]
@@ -1137,10 +1137,10 @@ Act_SpearGoom_SetMove:
 	
 .moveR:
 	; Set sprite mapping
-	ld   a, LOW(OBJLstPtrTable_Act_SpearGoom_WalkR)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_SpearGoom_WalkR)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_SpearGoom_WalkR)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_SpearGoom_WalkR)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; Set right direction
 	ld   a, [sActSetDir]
@@ -1188,7 +1188,7 @@ Act_SpearGoom_SetMove:
 ; Makes the actor switch direction.
 Act_SpearGoom_Turn:
 	xor  a						; Reset anim frame
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	ld   a, $14					; Wait $14 frames before setting the new collision (see below)
 	ld   [sActSpearGoomColiDelay], a
 	ld   a, [sActSetDir]		; Switch direction
@@ -1230,69 +1230,69 @@ Act_SpearGoom_DecColiDelay:
 	dec  a
 	ld   [sActSpearGoomColiDelay], a
 	ret
-OBJLstSharedPtrTable_Act_SpearGoom:
-	dw OBJLstPtrTable_Act_SpearGoom_UnusedL;X
-	dw OBJLstPtrTable_Act_SpearGoom_UnusedR;X
-	dw OBJLstPtrTable_Act_SpearGoom_RestoreL
-	dw OBJLstPtrTable_Act_SpearGoom_RestoreR
-	dw OBJLstPtrTable_Act_SpearGoom_StunL
-	dw OBJLstPtrTable_Act_SpearGoom_StunR
-	dw OBJLstPtrTable_Act_SpearGoom_WalkL;X
-	dw OBJLstPtrTable_Act_SpearGoom_WalkR;X
-OBJLstPtrTable_Act_SpearGoom_UnusedL:
-	dw OBJLst_Act_SpearGoom_WalkL1;X
+SprMapSharedPtrTable_Act_SpearGoom:
+	dw SprMapPtrTable_Act_SpearGoom_UnusedL;X
+	dw SprMapPtrTable_Act_SpearGoom_UnusedR;X
+	dw SprMapPtrTable_Act_SpearGoom_RestoreL
+	dw SprMapPtrTable_Act_SpearGoom_RestoreR
+	dw SprMapPtrTable_Act_SpearGoom_StunL
+	dw SprMapPtrTable_Act_SpearGoom_StunR
+	dw SprMapPtrTable_Act_SpearGoom_WalkL;X
+	dw SprMapPtrTable_Act_SpearGoom_WalkR;X
+SprMapPtrTable_Act_SpearGoom_UnusedL:
+	dw SprMap_Act_SpearGoom_WalkL1;X
 	dw $0000;X
-OBJLstPtrTable_Act_SpearGoom_UnusedR:
-	dw OBJLst_Act_SpearGoom_WalkR1;X
+SprMapPtrTable_Act_SpearGoom_UnusedR:
+	dw SprMap_Act_SpearGoom_WalkR1;X
 	dw $0000;X
-OBJLstPtrTable_Act_SpearGoom_RestoreL:
-	dw OBJLst_Act_SpearGoom_StunL1
-	dw OBJLst_Act_SpearGoom_WalkL1
-	dw OBJLst_Act_SpearGoom_WalkL1
+SprMapPtrTable_Act_SpearGoom_RestoreL:
+	dw SprMap_Act_SpearGoom_StunL1
+	dw SprMap_Act_SpearGoom_WalkL1
+	dw SprMap_Act_SpearGoom_WalkL1
 	dw $0000;X
-OBJLstPtrTable_Act_SpearGoom_RestoreR:
-	dw OBJLst_Act_SpearGoom_StunR1
-	dw OBJLst_Act_SpearGoom_WalkR1
-	dw OBJLst_Act_SpearGoom_WalkR1
+SprMapPtrTable_Act_SpearGoom_RestoreR:
+	dw SprMap_Act_SpearGoom_StunR1
+	dw SprMap_Act_SpearGoom_WalkR1
+	dw SprMap_Act_SpearGoom_WalkR1
 	dw $0000;X
-OBJLstPtrTable_Act_SpearGoom_StunL:
-	dw OBJLst_Act_SpearGoom_StunL0
-	dw OBJLst_Act_SpearGoom_StunL1
-	dw OBJLst_Act_SpearGoom_StunL0
-	dw OBJLst_Act_SpearGoom_StunL2
+SprMapPtrTable_Act_SpearGoom_StunL:
+	dw SprMap_Act_SpearGoom_StunL0
+	dw SprMap_Act_SpearGoom_StunL1
+	dw SprMap_Act_SpearGoom_StunL0
+	dw SprMap_Act_SpearGoom_StunL2
 	dw $0000
-OBJLstPtrTable_Act_SpearGoom_StunR:
-	dw OBJLst_Act_SpearGoom_StunR0
-	dw OBJLst_Act_SpearGoom_StunR1
-	dw OBJLst_Act_SpearGoom_StunR0
-	dw OBJLst_Act_SpearGoom_StunR2
+SprMapPtrTable_Act_SpearGoom_StunR:
+	dw SprMap_Act_SpearGoom_StunR0
+	dw SprMap_Act_SpearGoom_StunR1
+	dw SprMap_Act_SpearGoom_StunR0
+	dw SprMap_Act_SpearGoom_StunR2
 	dw $0000
-OBJLstPtrTable_Act_SpearGoom_WalkL:
-	dw OBJLst_Act_SpearGoom_WalkL0
-	dw OBJLst_Act_SpearGoom_WalkL1
-	dw OBJLst_Act_SpearGoom_WalkL0
-	dw OBJLst_Act_SpearGoom_WalkL2
+SprMapPtrTable_Act_SpearGoom_WalkL:
+	dw SprMap_Act_SpearGoom_WalkL0
+	dw SprMap_Act_SpearGoom_WalkL1
+	dw SprMap_Act_SpearGoom_WalkL0
+	dw SprMap_Act_SpearGoom_WalkL2
 	dw $0000
-OBJLstPtrTable_Act_SpearGoom_WalkR:
-	dw OBJLst_Act_SpearGoom_WalkR0
-	dw OBJLst_Act_SpearGoom_WalkR1
-	dw OBJLst_Act_SpearGoom_WalkR0
-	dw OBJLst_Act_SpearGoom_WalkR2
+SprMapPtrTable_Act_SpearGoom_WalkR:
+	dw SprMap_Act_SpearGoom_WalkR0
+	dw SprMap_Act_SpearGoom_WalkR1
+	dw SprMap_Act_SpearGoom_WalkR0
+	dw SprMap_Act_SpearGoom_WalkR2
 	dw $0000
-OBJLst_Act_SpearGoom_WalkL0: INCBIN "data/objlst/actor/speargoom_walkl0.bin"
-OBJLst_Act_SpearGoom_WalkL1: INCBIN "data/objlst/actor/speargoom_walkl1.bin"
-OBJLst_Act_SpearGoom_WalkL2: INCBIN "data/objlst/actor/speargoom_walkl2.bin"
-OBJLst_Act_SpearGoom_StunL0: INCBIN "data/objlst/actor/speargoom_stunl0.bin"
-OBJLst_Act_SpearGoom_StunL1: INCBIN "data/objlst/actor/speargoom_stunl1.bin"
-OBJLst_Act_SpearGoom_StunL2: INCBIN "data/objlst/actor/speargoom_stunl2.bin"
-OBJLst_Act_SpearGoom_Unused_StunAltL: INCBIN "data/objlst/actor/speargoom_unused_stunaltl.bin"
-OBJLst_Act_SpearGoom_WalkR0: INCBIN "data/objlst/actor/speargoom_walkr0.bin"
-OBJLst_Act_SpearGoom_WalkR1: INCBIN "data/objlst/actor/speargoom_walkr1.bin"
-OBJLst_Act_SpearGoom_WalkR2: INCBIN "data/objlst/actor/speargoom_walkr2.bin"
-OBJLst_Act_SpearGoom_StunR0: INCBIN "data/objlst/actor/speargoom_stunr0.bin"
-OBJLst_Act_SpearGoom_StunR1: INCBIN "data/objlst/actor/speargoom_stunr1.bin"
-OBJLst_Act_SpearGoom_StunR2: INCBIN "data/objlst/actor/speargoom_stunr2.bin"
-OBJLst_Act_SpearGoom_Unused_StunAltR: INCBIN "data/objlst/actor/speargoom_unused_stunaltr.bin"
+SprMap_Act_SpearGoom_WalkL0: INCBIN "data/sprmap/actor/speargoom_walkl0.bin"
+SprMap_Act_SpearGoom_WalkL1: INCBIN "data/sprmap/actor/speargoom_walkl1.bin"
+SprMap_Act_SpearGoom_WalkL2: INCBIN "data/sprmap/actor/speargoom_walkl2.bin"
+SprMap_Act_SpearGoom_StunL0: INCBIN "data/sprmap/actor/speargoom_stunl0.bin"
+SprMap_Act_SpearGoom_StunL1: INCBIN "data/sprmap/actor/speargoom_stunl1.bin"
+SprMap_Act_SpearGoom_StunL2: INCBIN "data/sprmap/actor/speargoom_stunl2.bin"
+SprMap_Act_SpearGoom_Unused_StunAltL: INCBIN "data/sprmap/actor/speargoom_unused_stunaltl.bin"
+SprMap_Act_SpearGoom_WalkR0: INCBIN "data/sprmap/actor/speargoom_walkr0.bin"
+SprMap_Act_SpearGoom_WalkR1: INCBIN "data/sprmap/actor/speargoom_walkr1.bin"
+SprMap_Act_SpearGoom_WalkR2: INCBIN "data/sprmap/actor/speargoom_walkr2.bin"
+SprMap_Act_SpearGoom_StunR0: INCBIN "data/sprmap/actor/speargoom_stunr0.bin"
+SprMap_Act_SpearGoom_StunR1: INCBIN "data/sprmap/actor/speargoom_stunr1.bin"
+SprMap_Act_SpearGoom_StunR2: INCBIN "data/sprmap/actor/speargoom_stunr2.bin"
+SprMap_Act_SpearGoom_Unused_StunAltR: INCBIN "data/sprmap/actor/speargoom_unused_stunaltr.bin"
 GFX_Act_SpearGoom: INCBIN "data/gfx/actor/speargoom.bin"
 	mIncJunk "L076EB2"
 

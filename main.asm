@@ -29,7 +29,7 @@ INCLUDE "src/bank03.asm"
 SECTION "bank04", ROMX, BANK[$04]
 INCLUDE "src/bank04.asm"
 
-; Screen event (tile update), Main Sprite Mappings ("OBJLst") set
+; Screen event (tile update), Main Sprite Mapping set
 SECTION "bank05", ROMX, BANK[$05]
 INCLUDE "src/bank05.asm"
 
@@ -89,7 +89,7 @@ INCLUDE "src/bank12.asm"
 SECTION "bank13", ROMX, BANK[$13]
 INCLUDE "src/bank13.asm"
 
-; Compressed GFX / Tilemaps for Map Screen, Cutscenes, OBJ Drawing
+; Compressed GFX / Tilemaps for Map Screen, Cutscenes, Sprite Drawing
 SECTION "bank14", ROMX, BANK[$14]
 INCLUDE "src/bank14.asm"
 

@@ -1,82 +1,82 @@
 ;
 ; BANK $1E - Bonus Games
 ;
-OBJLst_HeartBonus_MenuCursor: INCBIN "data/objlst/heartbonus/menucursor.bin"
-OBJLst_HeartBonus_ResultFlash: INCBIN "data/objlst/heartbonus/resultflash.bin"
-OBJLst_HeartBonus_BombIcon: INCBIN "data/objlst/heartbonus/bombicon.bin"
-OBJLst_HeartBonus_BombIconHit: INCBIN "data/objlst/heartbonus/bombiconhit.bin"
-OBJLst_HeartBonus_BombIconMiss: INCBIN "data/objlst/heartbonus/bombiconmiss.bin"
-OBJLst_HeartBonus_TextReady: INCBIN "data/objlst/heartbonus/textready.bin"
-OBJLst_HeartBonus_TextGo: INCBIN "data/objlst/heartbonus/textgo.bin"
-OBJLst_HeartBonus_PowerBarCursorOBJ: INCBIN "data/objlst/heartbonus/powerbarcursorobj.bin"
-OBJLst_HeartBonus_BombLight0: INCBIN "data/objlst/heartbonus/bomblight0.bin"
-OBJLst_HeartBonus_BombLight1: INCBIN "data/objlst/heartbonus/bomblight1.bin"
-OBJLst_HeartBonus_Digit0: INCBIN "data/objlst/heartbonus/digit0.bin"
-OBJLst_HeartBonus_Digit1: INCBIN "data/objlst/heartbonus/digit1.bin"
-OBJLst_HeartBonus_Digit2: INCBIN "data/objlst/heartbonus/digit2.bin"
-OBJLst_HeartBonus_Digit3: INCBIN "data/objlst/heartbonus/digit3.bin"
-OBJLst_HeartBonus_Digit4: INCBIN "data/objlst/heartbonus/digit4.bin"
-OBJLst_HeartBonus_Digit5: INCBIN "data/objlst/heartbonus/digit5.bin"
-OBJLst_HeartBonus_Digit6: INCBIN "data/objlst/heartbonus/digit6.bin"
-OBJLst_HeartBonus_Digit7: INCBIN "data/objlst/heartbonus/digit7.bin"
-OBJLst_HeartBonus_Digit8: INCBIN "data/objlst/heartbonus/digit8.bin"
-OBJLst_HeartBonus_Digit9: INCBIN "data/objlst/heartbonus/digit9.bin"
-OBJLst_HeartBonus_Bomb0: INCBIN "data/objlst/heartbonus/bomb0.bin"
-OBJLst_HeartBonus_Bomb1: INCBIN "data/objlst/heartbonus/bomb1.bin"
-OBJLst_HeartBonus_Unused_BombExpl0: INCBIN "data/objlst/heartbonus/unused_bombexpl0.bin"
-OBJLst_HeartBonus_BombExpl1: INCBIN "data/objlst/heartbonus/bombexpl1.bin"
-OBJLst_HeartBonus_BombExpl2: INCBIN "data/objlst/heartbonus/bombexpl2.bin"
-OBJLst_HeartBonus_BombExpl3: INCBIN "data/objlst/heartbonus/bombexpl3.bin"
-OBJLst_HeartBonus_Goom_WalkL0: INCBIN "data/objlst/heartbonus/goom_walkl0.bin"
-OBJLst_HeartBonus_Goom_WalkL1: INCBIN "data/objlst/heartbonus/goom_walkl1.bin"
-OBJLst_HeartBonus_Goom_WalkL1_Body: INCBIN "data/objlst/heartbonus/goom_walkl1_body.bin"
-OBJLst_HeartBonus_Goom_WalkL2_Feet: INCBIN "data/objlst/heartbonus/goom_walkl2_feet.bin"
-OBJLst_HeartBonus_Goom_HitL: INCBIN "data/objlst/heartbonus/goom_hitl.bin"
-OBJLst_HeartBonus_Goom_WalkR0: INCBIN "data/objlst/heartbonus/goom_walkr0.bin"
-OBJLst_HeartBonus_Goom_WalkR1: INCBIN "data/objlst/heartbonus/goom_walkr1.bin"
-OBJLst_HeartBonus_Goom_WalkR1_Body: INCBIN "data/objlst/heartbonus/goom_walkr1_body.bin"
-OBJLst_HeartBonus_Goom_WalkR2_Feet: INCBIN "data/objlst/heartbonus/goom_walkr2_feet.bin"
-OBJLst_HeartBonus_Goom_HitR: INCBIN "data/objlst/heartbonus/goom_hitr.bin"
-OBJLst_HeartBonus_Duck_WalkL0: INCBIN "data/objlst/heartbonus/duck_walkl0.bin"
-OBJLst_HeartBonus_Duck_WalkL1: INCBIN "data/objlst/heartbonus/duck_walkl1.bin"
-OBJLst_HeartBonus_Duck_WalkL1_Body: INCBIN "data/objlst/heartbonus/duck_walkl1_body.bin"
-OBJLst_HeartBonus_Duck_HitL: INCBIN "data/objlst/heartbonus/duck_hitl.bin"
-OBJLst_HeartBonus_Duck_WalkL2_Feet: INCBIN "data/objlst/heartbonus/duck_walkl2_feet.bin"
-OBJLst_HeartBonus_Duck_WalkR0: INCBIN "data/objlst/heartbonus/duck_walkr0.bin"
-OBJLst_HeartBonus_Duck_WalkR1: INCBIN "data/objlst/heartbonus/duck_walkr1.bin"
-OBJLst_HeartBonus_Duck_WalkR1_Body: INCBIN "data/objlst/heartbonus/duck_walkr1_body.bin"
-OBJLst_HeartBonus_Duck_HitR: INCBIN "data/objlst/heartbonus/duck_hitr.bin"
-OBJLst_HeartBonus_Duck_WalkR2_Feet: INCBIN "data/objlst/heartbonus/duck_walkr2_feet.bin"
-OBJLst_HeartBonus_Mole_WalkL0: INCBIN "data/objlst/heartbonus/mole_walkl0.bin"
-OBJLst_HeartBonus_Mole_WalkL1: INCBIN "data/objlst/heartbonus/mole_walkl1.bin"
-OBJLst_HeartBonus_Mole_WalkL2_Body: INCBIN "data/objlst/heartbonus/mole_walkl2_body.bin"
-OBJLst_HeartBonus_Mole_WalkL2_Feet: INCBIN "data/objlst/heartbonus/mole_walkl2_feet.bin"
-OBJLst_HeartBonus_Mole_HitL: INCBIN "data/objlst/heartbonus/mole_hitl.bin"
-OBJLst_HeartBonus_Mole_WalkR0: INCBIN "data/objlst/heartbonus/mole_walkr0.bin"
-OBJLst_HeartBonus_Mole_WalkR1: INCBIN "data/objlst/heartbonus/mole_walkr1.bin"
-OBJLst_HeartBonus_Mole_WalkR1_Body: INCBIN "data/objlst/heartbonus/mole_walkr1_body.bin"
-OBJLst_HeartBonus_Mole_WalkR2_Feet: INCBIN "data/objlst/heartbonus/mole_walkr2_feet.bin"
-OBJLst_HeartBonus_Mole_HitR: INCBIN "data/objlst/heartbonus/mole_hitr.bin"
-OBJLst_CoinBonus_Item_10Ton: INCBIN "data/objlst/coinbonus/item_10ton.bin"
-OBJLst_CoinBonus_Item_MoneyBag: INCBIN "data/objlst/coinbonus/item_moneybag.bin"
-OBJLst_CoinBonus_Digit0: INCBIN "data/objlst/coinbonus/digit0.bin"
-OBJLst_CoinBonus_Digit1: INCBIN "data/objlst/coinbonus/digit1.bin"
-OBJLst_CoinBonus_Digit2: INCBIN "data/objlst/coinbonus/digit2.bin"
-OBJLst_CoinBonus_Digit3: INCBIN "data/objlst/coinbonus/digit3.bin"
-OBJLst_CoinBonus_Digit4: INCBIN "data/objlst/coinbonus/digit4.bin"
-OBJLst_CoinBonus_Digit5: INCBIN "data/objlst/coinbonus/digit5.bin"
-OBJLst_CoinBonus_Digit6: INCBIN "data/objlst/coinbonus/digit6.bin"
-OBJLst_CoinBonus_Digit7: INCBIN "data/objlst/coinbonus/digit7.bin"
-OBJLst_CoinBonus_Digit8: INCBIN "data/objlst/coinbonus/digit8.bin"
-OBJLst_CoinBonus_Digit9: INCBIN "data/objlst/coinbonus/digit9.bin"
+SprMap_HeartBonus_MenuCursor: INCBIN "data/sprmap/heartbonus/menucursor.bin"
+SprMap_HeartBonus_ResultFlash: INCBIN "data/sprmap/heartbonus/resultflash.bin"
+SprMap_HeartBonus_BombIcon: INCBIN "data/sprmap/heartbonus/bombicon.bin"
+SprMap_HeartBonus_BombIconHit: INCBIN "data/sprmap/heartbonus/bombiconhit.bin"
+SprMap_HeartBonus_BombIconMiss: INCBIN "data/sprmap/heartbonus/bombiconmiss.bin"
+SprMap_HeartBonus_TextReady: INCBIN "data/sprmap/heartbonus/textready.bin"
+SprMap_HeartBonus_TextGo: INCBIN "data/sprmap/heartbonus/textgo.bin"
+SprMap_HeartBonus_PowerBarCursorOBJ: INCBIN "data/sprmap/heartbonus/powerbarcursorobj.bin"
+SprMap_HeartBonus_BombLight0: INCBIN "data/sprmap/heartbonus/bomblight0.bin"
+SprMap_HeartBonus_BombLight1: INCBIN "data/sprmap/heartbonus/bomblight1.bin"
+SprMap_HeartBonus_Digit0: INCBIN "data/sprmap/heartbonus/digit0.bin"
+SprMap_HeartBonus_Digit1: INCBIN "data/sprmap/heartbonus/digit1.bin"
+SprMap_HeartBonus_Digit2: INCBIN "data/sprmap/heartbonus/digit2.bin"
+SprMap_HeartBonus_Digit3: INCBIN "data/sprmap/heartbonus/digit3.bin"
+SprMap_HeartBonus_Digit4: INCBIN "data/sprmap/heartbonus/digit4.bin"
+SprMap_HeartBonus_Digit5: INCBIN "data/sprmap/heartbonus/digit5.bin"
+SprMap_HeartBonus_Digit6: INCBIN "data/sprmap/heartbonus/digit6.bin"
+SprMap_HeartBonus_Digit7: INCBIN "data/sprmap/heartbonus/digit7.bin"
+SprMap_HeartBonus_Digit8: INCBIN "data/sprmap/heartbonus/digit8.bin"
+SprMap_HeartBonus_Digit9: INCBIN "data/sprmap/heartbonus/digit9.bin"
+SprMap_HeartBonus_Bomb0: INCBIN "data/sprmap/heartbonus/bomb0.bin"
+SprMap_HeartBonus_Bomb1: INCBIN "data/sprmap/heartbonus/bomb1.bin"
+SprMap_HeartBonus_Unused_BombExpl0: INCBIN "data/sprmap/heartbonus/unused_bombexpl0.bin"
+SprMap_HeartBonus_BombExpl1: INCBIN "data/sprmap/heartbonus/bombexpl1.bin"
+SprMap_HeartBonus_BombExpl2: INCBIN "data/sprmap/heartbonus/bombexpl2.bin"
+SprMap_HeartBonus_BombExpl3: INCBIN "data/sprmap/heartbonus/bombexpl3.bin"
+SprMap_HeartBonus_Goom_WalkL0: INCBIN "data/sprmap/heartbonus/goom_walkl0.bin"
+SprMap_HeartBonus_Goom_WalkL1: INCBIN "data/sprmap/heartbonus/goom_walkl1.bin"
+SprMap_HeartBonus_Goom_WalkL1_Body: INCBIN "data/sprmap/heartbonus/goom_walkl1_body.bin"
+SprMap_HeartBonus_Goom_WalkL2_Feet: INCBIN "data/sprmap/heartbonus/goom_walkl2_feet.bin"
+SprMap_HeartBonus_Goom_HitL: INCBIN "data/sprmap/heartbonus/goom_hitl.bin"
+SprMap_HeartBonus_Goom_WalkR0: INCBIN "data/sprmap/heartbonus/goom_walkr0.bin"
+SprMap_HeartBonus_Goom_WalkR1: INCBIN "data/sprmap/heartbonus/goom_walkr1.bin"
+SprMap_HeartBonus_Goom_WalkR1_Body: INCBIN "data/sprmap/heartbonus/goom_walkr1_body.bin"
+SprMap_HeartBonus_Goom_WalkR2_Feet: INCBIN "data/sprmap/heartbonus/goom_walkr2_feet.bin"
+SprMap_HeartBonus_Goom_HitR: INCBIN "data/sprmap/heartbonus/goom_hitr.bin"
+SprMap_HeartBonus_Duck_WalkL0: INCBIN "data/sprmap/heartbonus/duck_walkl0.bin"
+SprMap_HeartBonus_Duck_WalkL1: INCBIN "data/sprmap/heartbonus/duck_walkl1.bin"
+SprMap_HeartBonus_Duck_WalkL1_Body: INCBIN "data/sprmap/heartbonus/duck_walkl1_body.bin"
+SprMap_HeartBonus_Duck_HitL: INCBIN "data/sprmap/heartbonus/duck_hitl.bin"
+SprMap_HeartBonus_Duck_WalkL2_Feet: INCBIN "data/sprmap/heartbonus/duck_walkl2_feet.bin"
+SprMap_HeartBonus_Duck_WalkR0: INCBIN "data/sprmap/heartbonus/duck_walkr0.bin"
+SprMap_HeartBonus_Duck_WalkR1: INCBIN "data/sprmap/heartbonus/duck_walkr1.bin"
+SprMap_HeartBonus_Duck_WalkR1_Body: INCBIN "data/sprmap/heartbonus/duck_walkr1_body.bin"
+SprMap_HeartBonus_Duck_HitR: INCBIN "data/sprmap/heartbonus/duck_hitr.bin"
+SprMap_HeartBonus_Duck_WalkR2_Feet: INCBIN "data/sprmap/heartbonus/duck_walkr2_feet.bin"
+SprMap_HeartBonus_Mole_WalkL0: INCBIN "data/sprmap/heartbonus/mole_walkl0.bin"
+SprMap_HeartBonus_Mole_WalkL1: INCBIN "data/sprmap/heartbonus/mole_walkl1.bin"
+SprMap_HeartBonus_Mole_WalkL2_Body: INCBIN "data/sprmap/heartbonus/mole_walkl2_body.bin"
+SprMap_HeartBonus_Mole_WalkL2_Feet: INCBIN "data/sprmap/heartbonus/mole_walkl2_feet.bin"
+SprMap_HeartBonus_Mole_HitL: INCBIN "data/sprmap/heartbonus/mole_hitl.bin"
+SprMap_HeartBonus_Mole_WalkR0: INCBIN "data/sprmap/heartbonus/mole_walkr0.bin"
+SprMap_HeartBonus_Mole_WalkR1: INCBIN "data/sprmap/heartbonus/mole_walkr1.bin"
+SprMap_HeartBonus_Mole_WalkR1_Body: INCBIN "data/sprmap/heartbonus/mole_walkr1_body.bin"
+SprMap_HeartBonus_Mole_WalkR2_Feet: INCBIN "data/sprmap/heartbonus/mole_walkr2_feet.bin"
+SprMap_HeartBonus_Mole_HitR: INCBIN "data/sprmap/heartbonus/mole_hitr.bin"
+SprMap_CoinBonus_Item_10Ton: INCBIN "data/sprmap/coinbonus/item_10ton.bin"
+SprMap_CoinBonus_Item_MoneyBag: INCBIN "data/sprmap/coinbonus/item_moneybag.bin"
+SprMap_CoinBonus_Digit0: INCBIN "data/sprmap/coinbonus/digit0.bin"
+SprMap_CoinBonus_Digit1: INCBIN "data/sprmap/coinbonus/digit1.bin"
+SprMap_CoinBonus_Digit2: INCBIN "data/sprmap/coinbonus/digit2.bin"
+SprMap_CoinBonus_Digit3: INCBIN "data/sprmap/coinbonus/digit3.bin"
+SprMap_CoinBonus_Digit4: INCBIN "data/sprmap/coinbonus/digit4.bin"
+SprMap_CoinBonus_Digit5: INCBIN "data/sprmap/coinbonus/digit5.bin"
+SprMap_CoinBonus_Digit6: INCBIN "data/sprmap/coinbonus/digit6.bin"
+SprMap_CoinBonus_Digit7: INCBIN "data/sprmap/coinbonus/digit7.bin"
+SprMap_CoinBonus_Digit8: INCBIN "data/sprmap/coinbonus/digit8.bin"
+SprMap_CoinBonus_Digit9: INCBIN "data/sprmap/coinbonus/digit9.bin"
 
 ; =============== HeartBonus_WriteOBJ ===============
-; Writes all OBJLst for the hearts bonus game to OAM.
+; Writes all sprite mappings for the hearts bonus game to OAM.
 HeartBonus_WriteOBJ:
 	xor  a
 	ld   [wStaticOBJCount], a
 	ld   b, a
-	call HomeCall_Static_WriteWarioOBJLst
+	call HomeCall_Static_WriteWarioSprMap
 	call HeartBonus_WriteMenuCursorOBJ
 	call HeartBonus_WriteResultFlashOBJ
 	call HeartBonus_WriteHudBomb0OBJ
@@ -128,8 +128,8 @@ HeartBonus_WriteMenuCursorOBJ:
 .setY:
 	ld   [sOAMWriteY], a
 	
-	ld   de, OBJLst_HeartBonus_MenuCursor
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_MenuCursor
+	jp   Static_WriteSprMap
 	
 ; =============== HeartBonus_WriteResultFlashOBJ ===============
 ; Writes the black line shown to highlight the won prize in the result screen.
@@ -169,64 +169,64 @@ HeartBonus_WriteResultFlashOBJ:
 	ld   a, $1F
 .setY:
 	ld   [sOAMWriteY], a
-	ld   de, OBJLst_HeartBonus_ResultFlash
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_ResultFlash
+	jp   Static_WriteSprMap
 	
 ; =============== HeartBonus_WriteHudBomb*OBJ ===============
 ; Sets of subroutine for writing the bomb icons in the HUD,
 ; which mark if a bomb is yet to be thrown, missed or hit the target.
 
 HeartBonus_WriteHudBomb0OBJ:
-	ld   a, [wHeartBonusHudBomb0LstId]
-	ld   [wHeartBonusHudBombLstId], a
+	ld   a, [wHeartBonusHudBomb0SprId]
+	ld   [wHeartBonusHudBombSprId], a
 	ld   a, $58
 	jr   HeartBonus_WriteHudBombOBJ
 HeartBonus_WriteHudBomb1OBJ:
-	ld   a, [wHeartBonusHudBomb1LstId]
-	ld   [wHeartBonusHudBombLstId], a
+	ld   a, [wHeartBonusHudBomb1SprId]
+	ld   [wHeartBonusHudBombSprId], a
 	ld   a, $60
 	jr   HeartBonus_WriteHudBombOBJ
 HeartBonus_WriteHudBomb2OBJ:
-	ld   a, [wHeartBonusHudBomb2LstId]
-	ld   [wHeartBonusHudBombLstId], a
+	ld   a, [wHeartBonusHudBomb2SprId]
+	ld   [wHeartBonusHudBombSprId], a
 	ld   a, $68
 	jr   HeartBonus_WriteHudBombOBJ
 HeartBonus_WriteHudBomb3OBJ:
-	ld   a, [wHeartBonusHudBomb3LstId]
-	ld   [wHeartBonusHudBombLstId], a
+	ld   a, [wHeartBonusHudBomb3SprId]
+	ld   [wHeartBonusHudBombSprId], a
 	ld   a, $70
 	jr   HeartBonus_WriteHudBombOBJ
 HeartBonus_WriteHudBomb4OBJ:
-	ld   a, [wHeartBonusHudBomb4LstId]
-	ld   [wHeartBonusHudBombLstId], a
+	ld   a, [wHeartBonusHudBomb4SprId]
+	ld   [wHeartBonusHudBombSprId], a
 	ld   a, $78
 	
 ; =============== HeartBonus_WriteHudBombOBJ ===============
 ; Writes the specified bomb icon for the HUD.
 ; IN
 ; - A: X position of the icon
-; - wHeartBonusHudBombLstId: OBJLst frame for the bomb
+; - wHeartBonusHudBombSprId: Sprite mapping frame for the bomb
 HeartBonus_WriteHudBombOBJ:
 	ld   [sOAMWriteX], a
 	ld   a, $94							; Fixed Y loc
 	ld   [sOAMWriteY], a
 	
 	; Pick the frame
-	ld   a, [wHeartBonusHudBombLstId]
+	ld   a, [wHeartBonusHudBombSprId]
 	rst  $28
 	dw BonusGame_NoFrame
 	dw .bomb
 	dw .hit
 	dw .miss
 .bomb:
-	ld   de, OBJLst_HeartBonus_BombIcon
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_BombIcon
+	jp   Static_WriteSprMap
 .hit:
-	ld   de, OBJLst_HeartBonus_BombIconHit
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_BombIconHit
+	jp   Static_WriteSprMap
 .miss:
-	ld   de, OBJLst_HeartBonus_BombIconMiss
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_BombIconMiss
+	jp   Static_WriteSprMap
 	
 ; =============== HeartBonus_WritePowerBarCursorOBJ ===============
 ; Writes the cursor (down arrow) marking the throw power in the HUD.
@@ -240,14 +240,14 @@ HeartBonus_WritePowerBarCursorOBJ:
 	ld   [sOAMWriteX], a
 	ld   a, $90
 	ld   [sOAMWriteY], a
-	ld   de, OBJLst_HeartBonus_PowerBarCursorOBJ
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_PowerBarCursorOBJ
+	jp   Static_WriteSprMap
 	
 ; =============== HeartBonus_WriteLivesHeartsDigitsOBJ ===============
 ; Writes the digits for the amount of lives and hearts in the HUD for
 ; the result screen.
 ;
-; NOTE: This reuses wHeartBonusTime for wHeartBonusDigitLstId
+; NOTE: This reuses wHeartBonusTime for wHeartBonusDigitSprId
 HeartBonus_WriteLivesHeartsDigitsOBJ:
 	; If it's disabled, don't show it
 	ld   a, [wHeartBonusShowHudLivesHearts]
@@ -272,7 +272,7 @@ HeartBonus_WriteLivesDigitOBJHigh:
 	ld   a, [sLives]
 	and  a, $F0
 	swap a
-	ld   [wHeartBonusDigitLstId], a
+	ld   [wHeartBonusDigitSprId], a
 	jr   HeartBonus_WriteDigitOBJ
 	
 ; =============== HeartBonus_WriteLivesDigitOBJLow ===============
@@ -393,35 +393,35 @@ HeartBonus_WriteDigitOBJ:
 	dw .num8
 	dw .num9
 .num0:
-	ld   de, OBJLst_HeartBonus_Digit0
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Digit0
+	jp   Static_WriteSprMap
 .num1:
-	ld   de, OBJLst_HeartBonus_Digit1
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Digit1
+	jp   Static_WriteSprMap
 .num2:
-	ld   de, OBJLst_HeartBonus_Digit2
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Digit2
+	jp   Static_WriteSprMap
 .num3:
-	ld   de, OBJLst_HeartBonus_Digit3
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Digit3
+	jp   Static_WriteSprMap
 .num4:
-	ld   de, OBJLst_HeartBonus_Digit4
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Digit4
+	jp   Static_WriteSprMap
 .num5:
-	ld   de, OBJLst_HeartBonus_Digit5
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Digit5
+	jp   Static_WriteSprMap
 .num6:
-	ld   de, OBJLst_HeartBonus_Digit6
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Digit6
+	jp   Static_WriteSprMap
 .num7:
-	ld   de, OBJLst_HeartBonus_Digit7
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Digit7
+	jp   Static_WriteSprMap
 .num8:
-	ld   de, OBJLst_HeartBonus_Digit8
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Digit8
+	jp   Static_WriteSprMap
 .num9:
-	ld   de, OBJLst_HeartBonus_Digit9
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Digit9
+	jp   Static_WriteSprMap
 	
 	
 ; =============== HeartBonus_WriteTextOBJ ===============
@@ -429,7 +429,7 @@ HeartBonus_WriteDigitOBJ:
 HeartBonus_WriteTextOBJ:
 	ld   a, $1C
 	ld   [sOAMWriteY], a
-	ld   a, [wHeartBonusTextLstId]
+	ld   a, [wHeartBonusTextSprId]
 	rst  $28
 	dw BonusGame_NoFrame
 	dw .ready
@@ -437,13 +437,13 @@ HeartBonus_WriteTextOBJ:
 .ready:
 	ld   a, $40
 	ld   [sOAMWriteX], a
-	ld   de, OBJLst_HeartBonus_TextReady
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_TextReady
+	jp   Static_WriteSprMap
 .go:
 	ld   a, $4C
 	ld   [sOAMWriteX], a
-	ld   de, OBJLst_HeartBonus_TextGo
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_TextGo
+	jp   Static_WriteSprMap
 	
 ; =============== HeartBonus_WriteBombLightOBJ ===============
 ; Writes the fire light on the bomb's fuse.
@@ -452,17 +452,17 @@ HeartBonus_WriteBombLightOBJ:
 	ld   [sOAMWriteX], a
 	ld   a, [wHeartBonusBombLightY]
 	ld   [sOAMWriteY], a
-	ld   a, [wHeartBonusBombLightLstId]
+	ld   a, [wHeartBonusBombLightSprId]
 	rst  $28
 	dw BonusGame_NoFrame
 	dw .frame1
 	dw .frame2
 .frame1:
-	ld   de, OBJLst_HeartBonus_BombLight0
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_BombLight0
+	jp   Static_WriteSprMap
 .frame2:
-	ld   de, OBJLst_HeartBonus_BombLight1
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_BombLight1
+	jp   Static_WriteSprMap
 	
 ; =============== HeartBonus_WriteBombOBJ ===============
 ; Writes the bomb itself.
@@ -471,7 +471,7 @@ HeartBonus_WriteBombOBJ:
 	ld   [sOAMWriteX], a
 	ld   a, [wHeartBonusBombY]
 	ld   [sOAMWriteY], a
-	ld   a, [wHeartBonusBombLstId]
+	ld   a, [wHeartBonusBombSprId]
 	rst  $28
 	dw BonusGame_NoFrame
 	dw .bomb0
@@ -481,25 +481,25 @@ HeartBonus_WriteBombOBJ:
 	dw .bombExpl2
 	dw .bombExpl3
 .bomb0:
-	ld   de, OBJLst_HeartBonus_Bomb0
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Bomb0
+	jp   Static_WriteSprMap
 .bomb1:
-	ld   de, OBJLst_HeartBonus_Bomb1
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Bomb1
+	jp   Static_WriteSprMap
 ; [TCRF] Unused initial frame with a small explosion.
 ;        It's possible this was left unused by mistake.
 .unused_bombExpl0: 
-	ld   de, OBJLst_HeartBonus_Unused_BombExpl0
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Unused_BombExpl0
+	jp   Static_WriteSprMap
 .bombExpl1:
-	ld   de, OBJLst_HeartBonus_BombExpl1
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_BombExpl1
+	jp   Static_WriteSprMap
 .bombExpl2:
-	ld   de, OBJLst_HeartBonus_BombExpl2
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_BombExpl2
+	jp   Static_WriteSprMap
 .bombExpl3:
-	ld   de, OBJLst_HeartBonus_BombExpl3
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_BombExpl3
+	jp   Static_WriteSprMap
 	
 ; =============== HeartBonus_WriteEnemyOBJ ===============
 ; Writes the animation frame for the enemy.
@@ -521,11 +521,11 @@ HeartBonus_WriteEnemyOBJ:
 ; =============== HeartBonus_WriteMoleOBJ ===============
 HeartBonus_WriteMoleOBJ:
 	ld   a, [wHeartBonusEnemyFlags]
-	bit  STATIC_OBJLSTB_XFLIP, a		; Facing left?
+	bit  STATIC_SPRMAPB_XFLIP, a		; Facing left?
 	jr   z, .right						; If not, jump
 	
 .left:
-	ld   a, [wHeartBonusEnemyLstId]
+	ld   a, [wHeartBonusEnemySprId]
 	rst  $28
 	dw BonusGame_NoFrame
 	dw .walkL0
@@ -533,22 +533,22 @@ HeartBonus_WriteMoleOBJ:
 	dw .walkL2
 	dw .hitL
 .walkL0:
-	ld   de, OBJLst_HeartBonus_Mole_WalkL0
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Mole_WalkL0
+	jp   Static_WriteSprMap
 .walkL1:
-	ld   de, OBJLst_HeartBonus_Mole_WalkL1
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Mole_WalkL1
+	jp   Static_WriteSprMap
 .walkL2:
-	ld   de, OBJLst_HeartBonus_Mole_WalkL2_Body
-	call Static_WriteOBJLst
-	ld   de, OBJLst_HeartBonus_Mole_WalkL2_Feet
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Mole_WalkL2_Body
+	call Static_WriteSprMap
+	ld   de, SprMap_HeartBonus_Mole_WalkL2_Feet
+	jp   Static_WriteSprMap
 .hitL:
-	ld   de, OBJLst_HeartBonus_Mole_HitL
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Mole_HitL
+	jp   Static_WriteSprMap
 	
 .right:
-	ld   a, [wHeartBonusEnemyLstId]
+	ld   a, [wHeartBonusEnemySprId]
 	rst  $28
 	dw BonusGame_NoFrame
 	dw .walkR0
@@ -556,28 +556,28 @@ HeartBonus_WriteMoleOBJ:
 	dw .walkR2
 	dw .hitR
 .walkR0:
-	ld   de, OBJLst_HeartBonus_Mole_WalkR0
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Mole_WalkR0
+	jp   Static_WriteSprMap
 .walkR1:
-	ld   de, OBJLst_HeartBonus_Mole_WalkR1
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Mole_WalkR1
+	jp   Static_WriteSprMap
 .walkR2:
-	ld   de, OBJLst_HeartBonus_Mole_WalkR1_Body
-	call Static_WriteOBJLst
-	ld   de, OBJLst_HeartBonus_Mole_WalkR2_Feet
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Mole_WalkR1_Body
+	call Static_WriteSprMap
+	ld   de, SprMap_HeartBonus_Mole_WalkR2_Feet
+	jp   Static_WriteSprMap
 .hitR:
-	ld   de, OBJLst_HeartBonus_Mole_HitR
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Mole_HitR
+	jp   Static_WriteSprMap
 	
 ; =============== HeartBonus_WriteDuckOBJ ===============
 HeartBonus_WriteDuckOBJ:
 	ld   a, [wHeartBonusEnemyFlags]
-	bit  STATIC_OBJLSTB_XFLIP, a		; Facing left?
+	bit  STATIC_SPRMAPB_XFLIP, a		; Facing left?
 	jr   z, .right						; If not, jump
 
 .left:
-	ld   a, [wHeartBonusEnemyLstId]
+	ld   a, [wHeartBonusEnemySprId]
 	rst  $28
 	dw BonusGame_NoFrame
 	dw .walkL0
@@ -585,21 +585,21 @@ HeartBonus_WriteDuckOBJ:
 	dw .walkL2
 	dw .hitL
 .walkL0:
-	ld   de, OBJLst_HeartBonus_Duck_WalkL0
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Duck_WalkL0
+	jp   Static_WriteSprMap
 .walkL1:
-	ld   de, OBJLst_HeartBonus_Duck_WalkL1
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Duck_WalkL1
+	jp   Static_WriteSprMap
 .walkL2:
-	ld   de, OBJLst_HeartBonus_Duck_WalkL1_Body
-	call Static_WriteOBJLst
-	ld   de, OBJLst_HeartBonus_Duck_WalkL2_Feet
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Duck_WalkL1_Body
+	call Static_WriteSprMap
+	ld   de, SprMap_HeartBonus_Duck_WalkL2_Feet
+	jp   Static_WriteSprMap
 .hitL:
-	ld   de, OBJLst_HeartBonus_Duck_HitL
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Duck_HitL
+	jp   Static_WriteSprMap
 .right:
-	ld   a, [wHeartBonusEnemyLstId]
+	ld   a, [wHeartBonusEnemySprId]
 	rst  $28
 	dw BonusGame_NoFrame
 	dw .walkR0
@@ -607,27 +607,27 @@ HeartBonus_WriteDuckOBJ:
 	dw .walkR2
 	dw .hitR
 .walkR0:
-	ld   de, OBJLst_HeartBonus_Duck_WalkR0
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Duck_WalkR0
+	jp   Static_WriteSprMap
 .walkR1:
-	ld   de, OBJLst_HeartBonus_Duck_WalkR1
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Duck_WalkR1
+	jp   Static_WriteSprMap
 .walkR2:
-	ld   de, OBJLst_HeartBonus_Duck_WalkR1_Body
-	call Static_WriteOBJLst
-	ld   de, OBJLst_HeartBonus_Duck_WalkR2_Feet
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Duck_WalkR1_Body
+	call Static_WriteSprMap
+	ld   de, SprMap_HeartBonus_Duck_WalkR2_Feet
+	jp   Static_WriteSprMap
 .hitR:
-	ld   de, OBJLst_HeartBonus_Duck_HitR
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Duck_HitR
+	jp   Static_WriteSprMap
 
 ; =============== HeartBonus_WriteGoomOBJ ===============
 HeartBonus_WriteGoomOBJ:
 	ld   a, [wHeartBonusEnemyFlags]
-	bit  STATIC_OBJLSTB_XFLIP, a		; Facing left?
+	bit  STATIC_SPRMAPB_XFLIP, a		; Facing left?
 	jr   z, .right						; If not, jump
 .left:
-	ld   a, [wHeartBonusEnemyLstId]
+	ld   a, [wHeartBonusEnemySprId]
 	rst  $28
 	dw BonusGame_NoFrame
 	dw .walkL0
@@ -635,21 +635,21 @@ HeartBonus_WriteGoomOBJ:
 	dw .walkL2
 	dw .hitL
 .walkL0:
-	ld   de, OBJLst_HeartBonus_Goom_WalkL0
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Goom_WalkL0
+	jp   Static_WriteSprMap
 .walkL1:
-	ld   de, OBJLst_HeartBonus_Goom_WalkL1
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Goom_WalkL1
+	jp   Static_WriteSprMap
 .walkL2:
-	ld   de, OBJLst_HeartBonus_Goom_WalkL1_Body
-	call Static_WriteOBJLst
-	ld   de, OBJLst_HeartBonus_Goom_WalkL2_Feet
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Goom_WalkL1_Body
+	call Static_WriteSprMap
+	ld   de, SprMap_HeartBonus_Goom_WalkL2_Feet
+	jp   Static_WriteSprMap
 .hitL:
-	ld   de, OBJLst_HeartBonus_Goom_HitL
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Goom_HitL
+	jp   Static_WriteSprMap
 .right:
-	ld   a, [wHeartBonusEnemyLstId]
+	ld   a, [wHeartBonusEnemySprId]
 	rst  $28
 	dw BonusGame_NoFrame
 	dw .walkR0
@@ -657,27 +657,27 @@ HeartBonus_WriteGoomOBJ:
 	dw .walkR2
 	dw .hitR
 .walkR0:
-	ld   de, OBJLst_HeartBonus_Goom_WalkR0
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Goom_WalkR0
+	jp   Static_WriteSprMap
 .walkR1:
-	ld   de, OBJLst_HeartBonus_Goom_WalkR1
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Goom_WalkR1
+	jp   Static_WriteSprMap
 .walkR2:
-	ld   de, OBJLst_HeartBonus_Goom_WalkR1_Body
-	call Static_WriteOBJLst
-	ld   de, OBJLst_HeartBonus_Goom_WalkR2_Feet
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Goom_WalkR1_Body
+	call Static_WriteSprMap
+	ld   de, SprMap_HeartBonus_Goom_WalkR2_Feet
+	jp   Static_WriteSprMap
 .hitR:
-	ld   de, OBJLst_HeartBonus_Goom_HitR
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Goom_HitR
+	jp   Static_WriteSprMap
 	
 ; =============== CoinBonus_WriteOBJ ===============
-; Writes all OBJLst for the coin bonus game to OAM.
+; Writes all sprite mappings for the coin bonus game to OAM.
 CoinBonus_WriteOBJ:
 	xor  a
 	ld   [wStaticOBJCount], a
 	ld   b, a
-	call HomeCall_Static_WriteWarioOBJLst
+	call HomeCall_Static_WriteWarioSprMap
 	call CoinBonus_WriteDigitOBJHigh
 	call CoinBonus_WriteDigitOBJMid
 	call CoinBonus_WriteDigitOBJLow
@@ -729,35 +729,35 @@ CoinBonus_WriteDigitOBJ:
 	dw .num8
 	dw .num9
 .num0:
-	ld   de, OBJLst_CoinBonus_Digit0
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_CoinBonus_Digit0
+	jp   Static_WriteSprMap
 .num1:
-	ld   de, OBJLst_CoinBonus_Digit1
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_CoinBonus_Digit1
+	jp   Static_WriteSprMap
 .num2:
-	ld   de, OBJLst_CoinBonus_Digit2
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_CoinBonus_Digit2
+	jp   Static_WriteSprMap
 .num3:
-	ld   de, OBJLst_CoinBonus_Digit3
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_CoinBonus_Digit3
+	jp   Static_WriteSprMap
 .num4:
-	ld   de, OBJLst_CoinBonus_Digit4
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_CoinBonus_Digit4
+	jp   Static_WriteSprMap
 .num5:
-	ld   de, OBJLst_CoinBonus_Digit5
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_CoinBonus_Digit5
+	jp   Static_WriteSprMap
 .num6:
-	ld   de, OBJLst_CoinBonus_Digit6
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_CoinBonus_Digit6
+	jp   Static_WriteSprMap
 .num7:
-	ld   de, OBJLst_CoinBonus_Digit7
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_CoinBonus_Digit7
+	jp   Static_WriteSprMap
 .num8:
-	ld   de, OBJLst_CoinBonus_Digit8
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_CoinBonus_Digit8
+	jp   Static_WriteSprMap
 .num9:
-	ld   de, OBJLst_CoinBonus_Digit9
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_CoinBonus_Digit9
+	jp   Static_WriteSprMap
 	
 ; =============== CoinBonus_WriteItemOBJ ===============
 ; Writes the sprite mappings for the dropped item.
@@ -767,17 +767,17 @@ CoinBonus_WriteItemOBJ:
 	ld   a, [wCoinBonusItemY]		; Set Y pos
 	ld   [sOAMWriteY], a
 	; Determine item sprite (or don't draw one if set to $00)
-	ld   a, [wCoinBonusItemLstId]
+	ld   a, [wCoinBonusItemSprId]
 	rst  $28
 	dw BonusGame_NoFrame
 	dw .x10ton
 	dw .moneybag
 .x10ton:
-	ld   de, OBJLst_CoinBonus_Item_10Ton
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_CoinBonus_Item_10Ton
+	jp   Static_WriteSprMap
 .moneybag:
-	ld   de, OBJLst_CoinBonus_Item_MoneyBag
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_CoinBonus_Item_MoneyBag
+	jp   Static_WriteSprMap
 
 ; =============== Bonus_ScreenEvent_Do ===============
 ; Handles VBlank screen updates for the bonus games.
@@ -933,7 +933,7 @@ GFX_BonusGame_DragonHat: INCBIN "data/gfx/hats/dragon_bonusgame.bin"
 ; =============== HeartBonus_Do ===============
 ; See also: CoinBonus_Do
 HeartBonus_Do:
-	ld   a, $A0						; Static_WriteOBJLst uses another variable for this purpose
+	ld   a, $A0						; Static_WriteSprMap uses another variable for this purpose
 	ld   [sWorkOAMPos], a
 	call .main
 	jp   HeartBonus_WriteOBJ		
@@ -1017,12 +1017,12 @@ HeartBonus_InitVars:
 	xor  a
 	ld   [wHeartBonusHitCount], a		; We aren't in the result screen yet
 	ld   [wHeartBonusRoundNum], a			; Set first round
-	ld   [wStaticPlLstId], a				
-	ld   [wHeartBonusHudBomb0LstId], a		; Hide all bombs in the hud
-	ld   [wHeartBonusHudBomb1LstId], a
-	ld   [wHeartBonusHudBomb2LstId], a
-	ld   [wHeartBonusHudBomb3LstId], a
-	ld   [wHeartBonusHudBomb4LstId], a
+	ld   [wStaticPlSprId], a				
+	ld   [wHeartBonusHudBomb0SprId], a		; Hide all bombs in the hud
+	ld   [wHeartBonusHudBomb1SprId], a
+	ld   [wHeartBonusHudBomb2SprId], a
+	ld   [wHeartBonusHudBomb3SprId], a
+	ld   [wHeartBonusHudBomb4SprId], a
 	; [POI] Clear these as well just in case, to be sure the VBlank handler won't do Coin-bonus specific things
 	ld   [wCoinBonusBucketFrameSet], a
 	ld   [wCoinBonusRoundBGChg], a
@@ -1053,10 +1053,10 @@ HeartBonus_InitCommon:
 	ld   [wHeartBonusBombLightTimer], a
 	ld   [wHeartBonusTimeDecTimer], a
 	ld   [wHeartBonusModeTimer], a
-	ld   [wHeartBonusTextLstId], a
-	ld   [wHeartBonusBombLightLstId], a
-	ld   [wHeartBonusBombLstId], a
-	ld   [wHeartBonusEnemyLstId], a
+	ld   [wHeartBonusTextSprId], a
+	ld   [wHeartBonusBombLightSprId], a
+	ld   [wHeartBonusBombSprId], a
+	ld   [wHeartBonusEnemySprId], a
 	ld   [wHeartBonusShowCursor], a
 	ld   [wHeartBonusShowResultFlash], a
 	ld   [wHeartBonusShowPowerSel], a
@@ -1091,8 +1091,8 @@ HeartBonus_Menu_Mode_MoveRight:
 .nextMode:
 	xor  a							; Otherwise, init
 	ld   [wStaticPlAnimTimer], a
-	ld   a, OBJ_HEARTBONUS_WARIO_BACK ; Set read frame
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_HEARTBONUS_WARIO_BACK ; Set read frame
+	ld   [wStaticPlSprId], a
 	ld   a, $01						
 	ld   [wHeartBonusShowCursor], a	; Show selection cursor
 	ld   [wHeartBonusAct], a		; Next mode
@@ -1278,23 +1278,23 @@ HeartBonus_Menu_Mode_GiveBombs:
 	ret
 .bomb0:
 	ld   a, $01							; Display 1st bomb
-	ld   [wHeartBonusHudBomb0LstId], a
+	ld   [wHeartBonusHudBomb0SprId], a
 	jr   .playSFX						; Play SFX
 .bomb1:
 	ld   a, $01
-	ld   [wHeartBonusHudBomb1LstId], a
+	ld   [wHeartBonusHudBomb1SprId], a
 	jr   .playSFX
 .bomb2:
 	ld   a, $01
-	ld   [wHeartBonusHudBomb2LstId], a
+	ld   [wHeartBonusHudBomb2SprId], a
 	jr   .playSFX
 .bomb3:
 	ld   a, $01
-	ld   [wHeartBonusHudBomb3LstId], a
+	ld   [wHeartBonusHudBomb3SprId], a
 	jr   .playSFX
 .bomb4:
 	ld   a, $01
-	ld   [wHeartBonusHudBomb4LstId], a
+	ld   [wHeartBonusHudBomb4SprId], a
 .playSFX:
 	ld   a, SFX1_01
 	ld   [sSFX1Set], a
@@ -1327,8 +1327,8 @@ HeartBonus_InitNextRound:
 	call HeartBonus_InitCommon
 	ld   a, $09							; Give 9 seconds before bomb explodes
 	ld   [wHeartBonusTime], a
-	ld   a, OBJ_HEARTBONUS_WARIO_BACK
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_HEARTBONUS_WARIO_BACK
+	ld   [wStaticPlSprId], a
 	; Set player at the center
 	ld   a, $42							
 	ld   [wStaticPlX], a
@@ -1378,23 +1378,23 @@ HeartBonus_Game_Mode_ReadyText:
 	ld   a, SFX1_12
 	ld   [sSFX1Set], a
 	ld   a, HEARTBONUS_TEXT_READY
-	ld   [wHeartBonusTextLstId], a
+	ld   [wHeartBonusTextSprId], a
 	ret
 .txtGo:
 	ld   a, SFX1_03
 	ld   [sSFX1Set], a
 	ld   a, HEARTBONUS_TEXT_GO
-	ld   [wHeartBonusTextLstId], a
+	ld   [wHeartBonusTextSprId], a
 	ret
 .nextMode:
 	call HeartBonus_InitEnemyPos
 	xor  a
 	ld   [wHeartBonusModeTimer], a			
-	ld   [wHeartBonusTextLstId], a			; Hide text
-	ld   a, OBJ_HEARTBONUS_WARIO_BACKGRABBOMB
-	ld   [wStaticPlLstId], a
+	ld   [wHeartBonusTextSprId], a			; Hide text
+	ld   a, SPR_HEARTBONUS_WARIO_BACKGRABBOMB
+	ld   [wStaticPlSprId], a
 	ld   a, $01								; Enable all gameplay sprites
-	ld   [wHeartBonusBombLightLstId], a
+	ld   [wHeartBonusBombLightSprId], a
 	ld   [wHeartBonusShowPowerSel], a
 	ld   [wHeartBonusShowTime], a
 	ld   [wHeartBonusAct], a				; Next submode
@@ -1409,7 +1409,7 @@ HeartBonus_InitEnemyPos:
 	bit  0, a
 	jr   nz, .moveRight
 .moveLeft:
-	ld   a, STATIC_OBJLST_XFLIP			; Face left
+	ld   a, STATIC_SPRMAP_XFLIP			; Face left
 	ld   [wHeartBonusEnemyFlags], a
 	
 	; 50% chance of spawning 8px to the left than the usual position.
@@ -1578,20 +1578,20 @@ HeartBonus_DoEnemy:
 	jr   z, .useFrame1_resetTimer	
 	jr   .moveH
 .useFrame2:
-	ld   a, HEARTBONUS_OBJ_ENEMYWALK1
+	ld   a, HEARTBONUS_SPR_ENEMYWALK1
 	jr   .setFrame
 .useFrame1:
-	ld   a, HEARTBONUS_OBJ_ENEMYWALK0
+	ld   a, HEARTBONUS_SPR_ENEMYWALK0
 	jr   .setFrame
 .useFrame3:
-	ld   a, HEARTBONUS_OBJ_ENEMYWALK2
+	ld   a, HEARTBONUS_SPR_ENEMYWALK2
 	jr   .setFrame
 .useFrame1_resetTimer:
 	xor  a
 	ld   [wHeartBonusEnemyTimer], a
-	ld   a, HEARTBONUS_OBJ_ENEMYWALK0
+	ld   a, HEARTBONUS_SPR_ENEMYWALK0
 .setFrame:
-	ld   [wHeartBonusEnemyLstId], a
+	ld   [wHeartBonusEnemySprId], a
 	
 .moveH:
 	;
@@ -1630,7 +1630,7 @@ HeartBonus_DoEnemy:
 ; Moves the enemy horizontally by 1px.
 HeartBonus_MoveEnemyH:
 	ld   a, [wHeartBonusEnemyFlags]
-	bit  STATIC_OBJLSTB_XFLIP, a		; Facing left?
+	bit  STATIC_SPRMAPB_XFLIP, a		; Facing left?
 	jr   z, .moveR						; If not, move right
 .moveL:
 	; Move the enemy left until it's off-screen
@@ -1687,10 +1687,10 @@ HeartBonus_ChkHoldThrow:
 	; Otherwise, we're throwing the bomb.
 	xor  a							; Reset anim timer
 	ld   [wStaticPlAnimTimer], a
-	ld   a, HEARTBONUS_OBJ_BOMBLIGHT0
-	ld   [wHeartBonusBombLightLstId], a
-	ld   a, OBJ_HEARTBONUS_WARIO_BACKHOLDBOMB0
-	ld   [wStaticPlLstId], a
+	ld   a, HEARTBONUS_SPR_BOMBLIGHT0
+	ld   [wHeartBonusBombLightSprId], a
+	ld   a, SPR_HEARTBONUS_WARIO_BACKHOLDBOMB0
+	ld   [wStaticPlSprId], a
 	ld   a, HEARTBONUS_PLMODE_THROW	; Set throw mode
 	ld   [wHeartBonusPlMode], a
 	ld   [wHeartBonusAct], a		; And next submode HEARTBONUS_RTN_THROW
@@ -1730,14 +1730,14 @@ HeartBonus_ChkHoldThrow:
 	jr   z, .useFrame0_resetTimer
 	ret
 .useFrame1:
-	ld   a, OBJ_HEARTBONUS_WARIO_BACKHOLDBOMB1
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_HEARTBONUS_WARIO_BACKHOLDBOMB1
+	ld   [wStaticPlSprId], a
 	ret
 .useFrame0_resetTimer:
 	xor  a
 	ld   [wStaticPlAnimTimer], a
-	ld   a, OBJ_HEARTBONUS_WARIO_BACKHOLDBOMB0
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_HEARTBONUS_WARIO_BACKHOLDBOMB0
+	ld   [wStaticPlSprId], a
 	ret
 	
 ; =============== HeartBonus_DoThrownBombLight ===============
@@ -1753,16 +1753,16 @@ HeartBonus_DoThrownBombLight:
 	jr   z, .useFrame1
 	ret
 .useFrame2:
-	ld   a, HEARTBONUS_OBJ_BOMBLIGHT1
-	ld   [wHeartBonusBombLightLstId], a
+	ld   a, HEARTBONUS_SPR_BOMBLIGHT1
+	ld   [wHeartBonusBombLightSprId], a
 	ret
 .useFrame1:
 	ld   a, SFX4_14						; Play tick sfx
 	ld   [sSFX4Set], a
 	xor  a
 	ld   [wHeartBonusBombLightTimer], a
-	ld   a, HEARTBONUS_OBJ_BOMBLIGHT0
-	ld   [wHeartBonusBombLightLstId], a
+	ld   a, HEARTBONUS_SPR_BOMBLIGHT0
+	ld   [wHeartBonusBombLightSprId], a
 	ret
 	
 ; =============== HeartBonus_Game_Mode_Throw ===============
@@ -1780,8 +1780,8 @@ HeartBonus_Game_Mode_Throw:
 	jr   z, .nextSubmode
 	ret
 .setFrame:
-	ld   a, OBJ_HEARTBONUS_WARIO_BACKGRABBOMB
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_HEARTBONUS_WARIO_BACKGRABBOMB
+	ld   [wStaticPlSprId], a
 	ret
 .nextSubmode:
 	call HeartBonus_SetBombThrowPath
@@ -1789,15 +1789,15 @@ HeartBonus_Game_Mode_Throw:
 	ld   [sSFX1Set], a
 	xor  a							; Reset anim timer
 	ld   [wStaticPlAnimTimer], a
-	ld   a, HEARTBONUS_OBJ_BOMB0	; Set bomb frame
-	ld   [wHeartBonusBombLstId], a
+	ld   a, HEARTBONUS_SPR_BOMB0	; Set bomb frame
+	ld   [wHeartBonusBombSprId], a
 	ld   a, [wStaticPlX]			; BombX = PlX + $18 (aligned close to player's right)
 	add  $18
 	ld   [wHeartBonusBombX], a
 	ld   a, $68						; BombY = $68
 	ld   [wHeartBonusBombY], a
-	ld   a, OBJ_HEARTBONUS_WARIO_BACKTHROWBOMB
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_HEARTBONUS_WARIO_BACKTHROWBOMB
+	ld   [wStaticPlSprId], a
 	ld   a, HEARTBONUS_RTN_BOMBMOVE	; Next submode
 	ld   [wHeartBonusAct], a
 	ret
@@ -1867,10 +1867,10 @@ HeartBonus_Game_Mode_BombMove:
 
 	xor  a									; Clear all
 	ld   [wHeartBonusExplTimer], a
-	ld   [wHeartBonusBombLstId], a
-	ld   [wHeartBonusBombLightLstId], a
-	ld   a, OBJ_HEARTBONUS_WARIO_BACK		; Set player frame
-	ld   [wStaticPlLstId], a
+	ld   [wHeartBonusBombSprId], a
+	ld   [wHeartBonusBombLightSprId], a
+	ld   a, SPR_HEARTBONUS_WARIO_BACK		; Set player frame
+	ld   [wStaticPlSprId], a
 	ld   a, HEARTBONUS_RTN_BOMBEXPLODE		; Next submode
 	ld   [wHeartBonusAct], a
 	
@@ -1904,8 +1904,8 @@ HeartBonus_Game_Mode_BombMove:
 	ld   [sSFX1Set], a
 	ld   a, SFX4_02							; And bomb explosion SFX
 	ld   [sSFX4Set], a
-	ld   a, HEARTBONUS_OBJ_ENEMYSTUN		; Set stun frame (again, common id across 3 enemies)
-	ld   [wHeartBonusEnemyLstId], a
+	ld   a, HEARTBONUS_SPR_ENEMYSTUN		; Set stun frame (again, common id across 3 enemies)
+	ld   [wHeartBonusEnemySprId], a
 	ld   a, [wHeartBonusEnemyY]				; EnemyY += $03 to slightly increase the upwards movement time
 	add  $03
 	ld   [wHeartBonusEnemyY], a
@@ -1931,15 +1931,15 @@ HeartBonus_DoThrownBomb:
 	bit  2, a								; (Timer & $04) != 0?
 	jr   nz, .useFrame2						; If so, use frame 2
 .useFrame1:
-	ld   a, HEARTBONUS_OBJ_BOMB0
-	ld   [wHeartBonusBombLstId], a
-	ld   [wHeartBonusBombLightLstId], a
+	ld   a, HEARTBONUS_SPR_BOMB0
+	ld   [wHeartBonusBombSprId], a
+	ld   [wHeartBonusBombLightSprId], a
 	jr   .chkPath
 .useFrame2:
 	xor  a
-	ld   [wHeartBonusBombLightLstId], a
-	ld   a, HEARTBONUS_OBJ_BOMB1
-	ld   [wHeartBonusBombLstId], a
+	ld   [wHeartBonusBombLightSprId], a
+	ld   a, HEARTBONUS_SPR_BOMB1
+	ld   [wHeartBonusBombSprId], a
 .chkPath:
 
 	; Determine the throw path.
@@ -2069,7 +2069,7 @@ HeartBonus_Game_Mode_BombExplode:
 	; Continue moving the enemy (either horizontally if not hit, or vertically if so)
 	call HeartBonus_DoEnemy						
 	
-	; Do the timing sequence for the explosion animation (under the bomb OBJLst)
+	; Do the timing sequence for the explosion animation (under the bomb sprite mapping table)
 	ld   a, [wHeartBonusExplTimer]
 	inc  a
 	ld   [wHeartBonusExplTimer], a
@@ -2083,16 +2083,16 @@ HeartBonus_Game_Mode_BombExplode:
 	jr   z, HeartBonus_DoPostHitMiss
 	ret
 .setFrame4:
-	ld   a, HEARTBONUS_OBJ_BOMBEXPL1
-	ld   [wHeartBonusBombLstId], a
+	ld   a, HEARTBONUS_SPR_BOMBEXPL1
+	ld   [wHeartBonusBombSprId], a
 	ret
 .setFrame5:
-	ld   a, HEARTBONUS_OBJ_BOMBEXPL2
-	ld   [wHeartBonusBombLstId], a
+	ld   a, HEARTBONUS_SPR_BOMBEXPL2
+	ld   [wHeartBonusBombSprId], a
 	ret
 .hide:
 	xor  a
-	ld   [wHeartBonusBombLstId], a
+	ld   [wHeartBonusBombSprId], a
 	ret
 	
 ; =============== HeartBonus_DoPostHitMiss ===============
@@ -2117,10 +2117,10 @@ HeartBonus_DoPostHitMiss:
 	ld   [sSFX1Set], a
 	;--
 .setHitIcon:
-	ld   b, HEARTBONUS_OBJ_BOMBICON_HIT		; B = New OBJLstId for bomb icon
+	ld   b, HEARTBONUS_SPR_BOMBICON_HIT		; B = New SprMapId for bomb icon
 	jr   .chkRoundNum
 .setMissIcon:
-	ld   b, HEARTBONUS_OBJ_BOMBICON_MISS	; B = New OBJLstId for bomb icon
+	ld   b, HEARTBONUS_SPR_BOMBICON_MISS	; B = New SprMapId for bomb icon
 .chkRoundNum:
 
 	; Depending on the current round number, update the correct icon in the HUD
@@ -2135,23 +2135,23 @@ HeartBonus_DoPostHitMiss:
 	jr   z, .setRound5Icon
 .setRound1Icon:
 	ld   a, b							; Set the icon
-	ld   [wHeartBonusHudBomb0LstId], a
+	ld   [wHeartBonusHudBomb0SprId], a
 	jr   .setPlFrame
 .setRound2Icon:
 	ld   a, b
-	ld   [wHeartBonusHudBomb1LstId], a
+	ld   [wHeartBonusHudBomb1SprId], a
 	jr   .setPlFrame
 .setRound3Icon:
 	ld   a, b
-	ld   [wHeartBonusHudBomb2LstId], a
+	ld   [wHeartBonusHudBomb2SprId], a
 	jr   .setPlFrame
 .setRound4Icon:
 	ld   a, b
-	ld   [wHeartBonusHudBomb3LstId], a
+	ld   [wHeartBonusHudBomb3SprId], a
 	jr   .setPlFrame
 .setRound5Icon:
 	ld   a, b
-	ld   [wHeartBonusHudBomb4LstId], a
+	ld   [wHeartBonusHudBomb4SprId], a
 .setPlFrame:
 	; If the bomb exploded on us (we came from the timeout mode),
 	; prevent normal player animations from playing by skipping ahead
@@ -2161,8 +2161,8 @@ HeartBonus_DoPostHitMiss:
 	jp   z, .noResultAnim			; If so, jump
 	
 	; Otherwise, setup for those animations
-	ld   a, OBJ_STATIC_WARIO_FRONT	; Set front facing frame
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_FRONT	; Set front facing frame
+	ld   [wStaticPlSprId], a
 	
 	; If we missed the enemy, play an extra SFX
 	ld   a, [wHeartBonusEnemyHit]
@@ -2185,7 +2185,7 @@ HeartBonus_DoPostHitMiss:
 HeartBonus_Game_Mode_Timeout:
 	call HeartBonus_DoEnemy				; Continue moving enemy
 	xor  a								; Remove bomb
-	ld   [wHeartBonusBombLightLstId], a
+	ld   [wHeartBonusBombLightSprId], a
 	
 	; Time the player anim sequence
 	ld   a, [wStaticPlAnimTimer]		; AnimTimer++	
@@ -2207,8 +2207,8 @@ HeartBonus_Game_Mode_Timeout:
 .onTimer0A:;R
 	ld   a, SFX4_0B					; Play SFX
 	ld   [sSFX4Set], a
-	ld   a, HEARTBONUS_OBJ_BOMBEXPL1					
-	ld   [wHeartBonusBombLstId], a
+	ld   a, HEARTBONUS_SPR_BOMBEXPL1					
+	ld   [wHeartBonusBombSprId], a
 	
 	;
 	; Determine which animation frame to use depending on player mode.
@@ -2216,7 +2216,7 @@ HeartBonus_Game_Mode_Timeout:
 	; when the power bar is locked (holding A), with the bomb being placed elsewhere.
 	;
 	; We've also got to align the separate bomb sprite (for the explosion)
-	; over the bomb's location that appears in the OBJ_HEARTBONUS_WARIO_BACK*BOMBEXPL0 frames.
+	; over the bomb's location that appears in the SPR_HEARTBONUS_WARIO_BACK*BOMBEXPL0 frames.
 	;
 	; We only need to do this here, then we can simply increase the bomb and player frame ID.
 	;
@@ -2224,8 +2224,8 @@ HeartBonus_Game_Mode_Timeout:
 	cp   a, HEARTBONUS_PLMODE_MOVE	; Power bar moving?
 	jr   nz, .onTimer0A_lock		; If not, jump
 .onTimer0A_main:
-	ld   a, OBJ_HEARTBONUS_WARIO_BACKGRABBOMBEXPL0
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_HEARTBONUS_WARIO_BACKGRABBOMBEXPL0
+	ld   [wStaticPlSprId], a
 	ld   a, [wStaticPlX]			; ExplosionX = PlX + $11
 	add  $11
 	ld   [wHeartBonusBombX], a
@@ -2234,8 +2234,8 @@ HeartBonus_Game_Mode_Timeout:
 	ld   [wHeartBonusBombY], a
 	ret
 .onTimer0A_lock:
-	ld   a, OBJ_HEARTBONUS_WARIO_BACKHOLDBOMBEXPL0
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_HEARTBONUS_WARIO_BACKHOLDBOMBEXPL0
+	ld   [wStaticPlSprId], a
 	ld   a, [wStaticPlX]			; ExplosionX = PlX + $10
 	add  $10
 	ld   [wHeartBonusBombX], a		
@@ -2243,21 +2243,21 @@ HeartBonus_Game_Mode_Timeout:
 	ld   [wHeartBonusBombY], a
 	ret
 .onTimer19:
-	ld   a, [wStaticPlLstId]			; Next player frame
+	ld   a, [wStaticPlSprId]			; Next player frame
 	inc  a
-	ld   [wStaticPlLstId], a
-	ld   a, HEARTBONUS_OBJ_BOMBEXPL3	; Set bomb frame
-	ld   [wHeartBonusBombLstId], a
+	ld   [wStaticPlSprId], a
+	ld   a, HEARTBONUS_SPR_BOMBEXPL3	; Set bomb frame
+	ld   [wHeartBonusBombSprId], a
 	ld   a, [wStaticPlX]				; ExplosionX = PlX + $07
 	add  $07
 	ld   [wHeartBonusBombX], a
 	ret
 .onTimer28:;R
-	ld   a, [wStaticPlLstId]			; Next player frame
+	ld   a, [wStaticPlSprId]			; Next player frame
 	inc  a
-	ld   [wStaticPlLstId], a
-	ld   a, HEARTBONUS_OBJ_BOMBEXPL1	; Set bomb frame
-	ld   [wHeartBonusBombLstId], a
+	ld   [wStaticPlSprId], a
+	ld   a, HEARTBONUS_SPR_BOMBEXPL1	; Set bomb frame
+	ld   [wHeartBonusBombSprId], a
 	ld   a, [wStaticPlX]				; ExplosionX = PlX + $15
 	add  $15
 	ld   [wHeartBonusBombX], a
@@ -2267,17 +2267,17 @@ HeartBonus_Game_Mode_Timeout:
 	ret
 .onTimer50:
 	xor  a								; Hide explosion
-	ld   [wHeartBonusBombLstId], a
+	ld   [wHeartBonusBombSprId], a
 	ld   a, $66							
 	ld   [wStaticPlY], a
-	ld   a, OBJ_HEARTBONUS_WARIO_BACKBOMBEXPL3
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_HEARTBONUS_WARIO_BACKBOMBEXPL3
+	ld   [wStaticPlSprId], a
 	ret
 .onTimer78:
 	ld   a, SFX2_01						; Play miss SFX
 	ld   [sSFX2Set], a
-	ld   a, OBJ_HEARTBONUS_WARIO_BACKBOMBEXPL4
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_HEARTBONUS_WARIO_BACKBOMBEXPL4
+	ld   [wStaticPlSprId], a
 	ret
 ; =============== HeartBonus_Game_Mode_Result ===============
 ; Submode $06: Player reacts to the round.
@@ -2302,12 +2302,12 @@ HeartBonus_Game_Mode_Result:
 	cp   a, $00						; Did we hit the enemy?
 	jr   nz, .setHitFrame			; If so, jump
 .setMissFrame:
-	ld   a, OBJ_STATIC_WARIO_LOST
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_LOST
+	ld   [wStaticPlSprId], a
 	ret
 .setHitFrame:
-	ld   a, OBJ_STATIC_WARIO_WON0
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_WON0
+	ld   [wStaticPlSprId], a
 	ret
 ; =============== .plReact2 ===============
 ; Sets the second frame for the reaction anim.
@@ -2316,8 +2316,8 @@ HeartBonus_Game_Mode_Result:
 	ld   a, [wHeartBonusEnemyHit]
 	cp   a, $00						; Did we hit the enemy?
 	ret  z							; If not, return
-	ld   a, OBJ_STATIC_WARIO_WON1
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_WON1
+	ld   [wStaticPlSprId], a
 	ret
 ; =============== .newRound ===============
 ; Increases the round number. 
@@ -2349,17 +2349,17 @@ HeartBonus_InitResults:
 	call nz, HeartBonus_LoadBG_NormEasyResults
 	
 	call HeartBonus_InitCommon
-	ld   [wHeartBonusHudBomb0LstId], a
-	ld   [wHeartBonusHudBomb1LstId], a
-	ld   [wHeartBonusHudBomb2LstId], a
-	ld   [wHeartBonusHudBomb3LstId], a
-	ld   [wHeartBonusHudBomb4LstId], a
+	ld   [wHeartBonusHudBomb0SprId], a
+	ld   [wHeartBonusHudBomb1SprId], a
+	ld   [wHeartBonusHudBomb2SprId], a
+	ld   [wHeartBonusHudBomb3SprId], a
+	ld   [wHeartBonusHudBomb4SprId], a
 	; We're going to update them (hopefully), so show them
 	ld   a, $01
 	ld   [wHeartBonusShowHudLivesHearts], a
 	; Set player facing back at the center of the sign
-	ld   a, OBJ_HEARTBONUS_WARIO_BACK
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_HEARTBONUS_WARIO_BACK
+	ld   [wStaticPlSprId], a
 	ld   a, $42
 	ld   [wStaticPlX], a
 	ld   a, $66
@@ -2679,7 +2679,7 @@ HeartBonus_IndexRewardTable:
 ; Makes Wario walk to the left, to off-screen.
 ; After that, the Bonus Game task ends
 HeartBonus_Exit:
-	ld   a, STATIC_OBJLST_XFLIP		; Face left
+	ld   a, STATIC_SPRMAP_XFLIP		; Face left
 	ld   [wStaticPlFlags], a
 	;
 	; Move left at 1px/frame until we're enough off-screen.
@@ -2715,7 +2715,7 @@ BGRLE_HeartBonus_Results: INCBIN "data/bg/heartbonus/results.rls"
 ; =============== CoinBonus_Do ===============
 ; Code structure looks very similar to the Title Screen code -- likely the same programmer.
 CoinBonus_Do:
-	ld   a, $A0						; Static_WriteOBJLst uses another variable for this purpose				
+	ld   a, $A0						; Static_WriteSprMap uses another variable for this purpose				
 	ld   [sWorkOAMPos], a
 	
 	xor  a
@@ -2758,7 +2758,7 @@ CoinBonus_InitVars:
 	ld   [wCoinBonusAct], a
 	ld   [wCoinBonusRound], a
 	ld   [wHeartBonusTileAnim], a
-	ld   [wStaticPlLstId], a
+	ld   [wStaticPlSprId], a
 	ldh  [rSCX], a
 	ldh  [rSCY], a
 	ldh  [rWY], a
@@ -2778,7 +2778,7 @@ CoinBonus_InitNextTurn:
 	xor  a
 	ld   [wStaticPlAnimTimer], a
 	ld   [wCoinBonusModeTimer], a
-	ld   [wCoinBonusItemLstId], a
+	ld   [wCoinBonusItemSprId], a
 	ld   [wStaticPlFlags], a
 	ld   [wCoinBonusItemType], a
 	ld   a, COINBONUS_PLPOS_MID		; Start between buckets			
@@ -2863,8 +2863,8 @@ CoinBonus_SwitchToIdle:
 	ld   [wStaticPlAnimTimer], a
 	ld   [wCoinBonusModeTimer], a
 	ld   [wStaticPlFlags], a
-	ld   a, OBJ_STATIC_WARIO_IDLEDIAG
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_IDLEDIAG
+	ld   [wStaticPlSprId], a
 	ld   a, COINBONUS_RTN_IDLE
 	ld   [wCoinBonusAct], a
 	ret
@@ -2872,7 +2872,7 @@ CoinBonus_SwitchToIdle:
 ; Mode $02: Walking left until reaching the target.
 CoinBonus_Mode_MoveLeft:
 	call CoinBonus_GetPlXTarget		; B = Target pos
-	ld   a, STATIC_OBJLST_XFLIP		; Face left
+	ld   a, STATIC_SPRMAP_XFLIP		; Face left
 	ld   [wStaticPlFlags], a
 	ld   a, [wStaticPlX]			; Move left 1px
 	dec  a
@@ -2899,16 +2899,16 @@ CoinBonus_Mode_Idle:
 .idleL:
 	ld   a, SFX1_19
 	ld   [sSFX1Set], a
-	ld   a, OBJ_COINBONUS_WARIO_IDLEDIAGBACK	; Head back
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_COINBONUS_WARIO_IDLEDIAGBACK	; Head back
+	ld   [wStaticPlSprId], a
 	jr   .doCtrl
 .idleR:
 	ld   a, SFX1_18
 	ld   [sSFX1Set], a
 	xor  a
 	ld   [wStaticPlAnimTimer], a	
-	ld   a, OBJ_STATIC_WARIO_IDLEDIAG		; Head normal
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_IDLEDIAG		; Head normal
+	ld   [wStaticPlSprId], a
 .doCtrl:
 	;
 	; Handle controls
@@ -3004,11 +3004,11 @@ CoinBonus_Mode_Action:
 	and  a							; Is the item a moneybag (!= 0)
 	jr   z, .set10Ton				; If not, jump
 .setMoneybag:
-	; Takes the same value as the OBJLst for convenience.
-	ld   a, COINBONUS_OBJ_ITEM_MONEYBAG	; A = Item ID (more or less)
+	; Takes the same value as the sprite mapping for convenience.
+	ld   a, COINBONUS_SPR_ITEM_MONEYBAG	; A = Item ID (more or less)
 	jr   .setItem
 .set10Ton:
-	ld   a, COINBONUS_OBJ_ITEM_10TON	; A = Item ID (more or less)
+	ld   a, COINBONUS_SPR_ITEM_10TON	; A = Item ID (more or less)
 .setItem:
 	ld   [wCoinBonusItemType], a	; Save it
 	
@@ -3037,20 +3037,20 @@ CoinBonus_Mode_Pull:
 .grabRope:
 	ld   a, SFX1_18
 	ld   [sSFX1Set], a
-	ld   a, OBJ_COINBONUS_WARIO_PULL0
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_COINBONUS_WARIO_PULL0
+	ld   [wStaticPlSprId], a
 	ret
 .pullRope:
 	ld   a, SFX1_11
 	ld   [sSFX1Set], a
-	ld   a, OBJ_COINBONUS_WARIO_PULL1
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_COINBONUS_WARIO_PULL1
+	ld   [wStaticPlSprId], a
 	ld   a, COINBONUS_BUCKET_PULL		; Request upside down bucket
 	ld   [wCoinBonusBucketFrameSet], a
 	ret
 .releaseRope:
-	ld   a, OBJ_STATIC_WARIO_IDLEDIAG
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_IDLEDIAG
+	ld   [wStaticPlSprId], a
 	ret
 .showItem:
 	; Start drawing the item
@@ -3058,10 +3058,10 @@ CoinBonus_Mode_Pull:
 	ld   [sSFX1Set], a
 	xor  a							; Clear anim frame
 	ld   [wStaticPlAnimTimer], a
-	; Make item visible, by changing the frame from COINBONUS_OBJ_ITEM_NONE
+	; Make item visible, by changing the frame from COINBONUS_SPR_ITEM_NONE
 	; to what we've previously set in wCoinBonusItemType
 	ld   a, [wCoinBonusItemType]	; Make visibleCopy over frame id
-	ld   [wCoinBonusItemLstId], a
+	ld   [wCoinBonusItemSprId], a
 	ld   a, $52						; Set Y pos to be near the bucket
 	ld   [wCoinBonusItemY], a
 	ld   a, COINBONUS_RTN_DROPITEM
@@ -3080,13 +3080,13 @@ CoinBonus_Mode_DropItem:
 	ld   [wCoinBonusItemY], a
 	ret
 .plHit:
-	ld   a, OBJ_COINBONUS_WARIO_CRUSHED
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_COINBONUS_WARIO_CRUSHED
+	ld   [wStaticPlSprId], a
 	;
 	; The moneybag bounces off the player, while the 10-ton doesn't move anymore.
 	;
 	ld   a, [wCoinBonusItemType]
-	cp   a, COINBONUS_OBJ_ITEM_MONEYBAG		; Is the item a moneybag?					
+	cp   a, COINBONUS_SPR_ITEM_MONEYBAG		; Is the item a moneybag?					
 	jr   z, .bounceItem						; If so, jump
 	
 	ld   a, SFX1_02					; Bad choice sfx
@@ -3178,9 +3178,9 @@ CoinBonus_Mode_MoveCenter:
 	cp   a, $50						; Timer != $50?
 	ret  nz							; If so, jump
 	xor  a
-	ld   [wCoinBonusItemLstId], a
+	ld   [wCoinBonusItemSprId], a
 	ld   a, [wCoinBonusItemType]
-	cp   a, COINBONUS_OBJ_ITEM_MONEYBAG	; Is this a moneybag?
+	cp   a, COINBONUS_SPR_ITEM_MONEYBAG	; Is this a moneybag?
 	ret  z								; If so, return
 	ld   a, SFX2_01
 	ld   [sSFX2Set], a
@@ -3203,7 +3203,7 @@ CoinBonus_Mode_MoveCenter:
 	jp   z, .nextMode					; If so, we're done moving
 	jp   Static_Pl_WalkAnim
 .moveL:
-	ld   a, STATIC_OBJLST_XFLIP			; Face left
+	ld   a, STATIC_SPRMAP_XFLIP			; Face left
 	ld   [wStaticPlFlags], a
 	ld   a, [wStaticPlX]				; PlayerX++
 	dec  a
@@ -3216,8 +3216,8 @@ CoinBonus_Mode_MoveCenter:
 	;
 	xor  a
 	ld   [wCoinBonusModeTimer], a
-	ld   a, OBJ_STATIC_WARIO_FRONT
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_FRONT
+	ld   [wStaticPlSprId], a
 	ld   a, COINBONUS_RTN_RESULT
 	ld   [wCoinBonusAct], a
 	ret
@@ -3255,27 +3255,27 @@ CoinBonus_Mode_Result:
 ; Sets the new animation frame to react to money doubling/halved.
 .plReact:
 	ld   a, [wCoinBonusItemType]
-	cp   a, COINBONUS_OBJ_ITEM_MONEYBAG		; Is the item a moneybag?
+	cp   a, COINBONUS_SPR_ITEM_MONEYBAG		; Is the item a moneybag?
 	jr   z, .goodItem						; If so, our money got doubled
 .badItem:
 	ld   a, SFX1_1D							; Sad SFX
 	ld   [sSFX1Set], a
-	ld   a, OBJ_STATIC_WARIO_LOST
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_LOST
+	ld   [wStaticPlSprId], a
 	ret
 .goodItem:
-	ld   a, OBJ_STATIC_WARIO_WON0
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_WON0
+	ld   [wStaticPlSprId], a
 	ret
 ; =============== .plReact2 ===============
 ; Sets the second frame for the reaction anim.
 .plReact2:
 	; Only the win animation has two frames
 	ld   a, [wCoinBonusItemType]
-	cp   a, COINBONUS_OBJ_ITEM_MONEYBAG		; Is the item a moneybag?
+	cp   a, COINBONUS_SPR_ITEM_MONEYBAG		; Is the item a moneybag?
 	ret  nz									; If not, return
-	ld   a, OBJ_STATIC_WARIO_WON1
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_WON1
+	ld   [wStaticPlSprId], a
 	ret
 ; =============== .incRound ===============
 ; Increases the round count, requesting a GFX update.
@@ -3305,7 +3305,7 @@ CoinBonus_Mode_Result:
 	;
 	
 	ld   a, [wCoinBonusItemType]
-	cp   a, COINBONUS_OBJ_ITEM_10TON	; Got a 10-ton?
+	cp   a, COINBONUS_SPR_ITEM_10TON	; Got a 10-ton?
 	jr   z, .setRemCoins				; If so, jump
 .setAddCoins:
 	;
@@ -3442,7 +3442,7 @@ BonusGame_UpdateCoinCount:
 	;
 .chkChangeType:
 	ld   a, [wCoinBonusItemType]
-	cp   a, COINBONUS_OBJ_ITEM_10TON	; Did we get hit by a 10-ton?
+	cp   a, COINBONUS_SPR_ITEM_10TON	; Did we get hit by a 10-ton?
 	jr   z, .remCoin					; If so, remove a coin
 .addCoin:
 	;--
@@ -3491,7 +3491,7 @@ BonusGame_UpdateCoinCount:
 CoinBonus_Exit:
 	ld   a, COINBONUS_MODE_EXIT		; Prevent changes
 	ld   [wCoinBonusMode], a
-	ld   a, STATIC_OBJLST_XFLIP		; Face left
+	ld   a, STATIC_SPRMAP_XFLIP		; Face left
 	ld   [wStaticPlFlags], a
 	
 	;

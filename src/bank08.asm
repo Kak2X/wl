@@ -72,7 +72,7 @@ Map_OverworldDoWorldClear:
 	; ACT 0 - Wait until the world clear BGM finishes playing
 .act0:
 	call Map_Overworld_AnimTiles
-	call Map_WriteWarioOBJLst
+	call Map_WriteWarioSprMap
 	call HomeCall_Map_MoveMtTeapotLid
 	ld   a, [sMapTimer0]			; Wait $50 frames for that
 	cp   a, $50
@@ -84,7 +84,7 @@ Map_OverworldDoWorldClear:
 	ld   [sSFX1Set], a
 .act1s:
 	call Map_Overworld_AnimTiles
-	call Map_WriteWarioOBJLst
+	call Map_WriteWarioSprMap
 	call HomeCall_Map_MoveMtTeapotLid
 	call HomeCall_Map_Overworld_AnimFlags
 	ld   a, [sMapWorldClearTimer]	; Wait for $70 frames in this state
@@ -165,7 +165,7 @@ Map_OverworldDoWorldClear:
 ; Main code for processing the overworld.
 ;
 Map_Overworld_Do:
-	; [BUG] The OBJLst for these are being written before the screen is scrolled.
+	; [BUG] The sprite mappings for these are being written before the screen is scrolled.
 	;       This causes them to desync when scrolling the screen.
 IF !FIX_BUGS
 	call HomeCall_Map_MoveMtTeapotLid
@@ -184,7 +184,7 @@ ENDC
 	; Standard handlers
 	call Map_Overworld_DoCtrl
 	call Map_Overworld_AnimTiles
-	call Map_WriteWarioOBJLst
+	call Map_WriteWarioSprMap
 IF FIX_BUGS
 .writeOBJ:
 	call HomeCall_Map_MoveMtTeapotLid
@@ -1019,7 +1019,7 @@ Map_Overworld_BridgePos:       db $60,$48,$00,$00
 ; It works best when called during "free view" mode.
 Map_Unused_OverworldMoveTest:
 	call Map_Unused_Overworld_MoveWario
-	call Map_WriteWarioOBJLst
+	call Map_WriteWarioSprMap
 	ret
 
 ; =============== Map_Overworld_AnimTiles ===============
@@ -1195,27 +1195,27 @@ GFX_Unused_OverworldAnimA:  mIncludeMultiInt "data/gfx/maps/overworld_unused_ani
 GFX_Unused_OverworldAnimB:  mIncludeMultiInt "data/gfx/maps/overworld_unused_anim0B.bin"
 	ret
 	
-; =============== Map_WriteWarioOBJLst ===============
+; =============== Map_WriteWarioSprMap ===============
 ; Updates Wario's sprite mappings, then writes it to OAM.
-Map_WriteWarioOBJLst:
+Map_WriteWarioSprMap:
 	; Prepare Y pos and set a ptr to the current sprite mapping id in HL
 	call Map_WarioAnim
 	ld   a, [hl]				; Set the mapping id
-	ld   [sMapWarioLstId], a
-; =============== Map_WriteWarioOBJLstCustom ===============
+	ld   [sMapWarioSprId], a
+; =============== Map_WriteWarioSprMapCustom ===============
 ; Writes Wario's sprite mappings for the map screen.
 ; This will not perform animationa.
-Map_WriteWarioOBJLstCustom:
-	ld   hl, OBJLstPtrTable_MapWario
+Map_WriteWarioSprMapCustom:
+	ld   hl, SprMapPtrTable_MapWario
 	ld   a, [sMapWarioYRes]		; Use the "visual position" to show the sprite moving up/down in place.
 	ld   [sMapOAMWriteY], a
 	ld   a, [sMapWarioX]
 	ld   [sMapOAMWriteX], a
-	ld   a, [sMapWarioLstId]
-	ld   [sMapOAMWriteLstId], a
+	ld   a, [sMapWarioSprId]
+	ld   [sMapOAMWriteSprId], a
 	ld   a, [sMapWarioFlags]
 	ld   [sMapOAMWriteFlags], a
-	call Map_WriteOBJLst
+	call Map_WriteSprMap
 	ret
 ;--
 	ret
@@ -1509,7 +1509,7 @@ Map_Mode_OverworldInit:
 	call Map_OverworldSetStartPos
 	call HomeCall_Map_MtTeapotLidSetPos
 IF IMPROVE
-	call HomeCall_Map_InitMtTeapotSproutOBJLst
+	call HomeCall_Map_InitMtTeapotSproutSprMap
 ENDC
 	call HomeCall_Map_InitWorldClearFlags
 	call HomeCall_Map_InitFreeViewArrows
@@ -2132,7 +2132,7 @@ Map_Unused_DrawWarioTest:
 	ld   [sMapWarioY], a
 	ld   a, MAP_MWA_UNUSED_V1
 	ld   [sMapWarioAnimId], a
-	call Map_WriteWarioOBJLst
+	call Map_WriteWarioSprMap
 	ret  
 	
 ; =============== Map_Unused_CopyBytesUntilFF ===============
@@ -2765,53 +2765,53 @@ Map_InitMisc:
 	ld   [sMapWarioYOscillateMask], a
 	ret
 ; =============== Animation defn ===============
-OBJLstAnim_Map_WarioHide: 
+SprMapAnim_Map_WarioHide: 
 	db $0E
 	db $FF
-OBJLstAnim_Map_WarioWaterBack: 
+SprMapAnim_Map_WarioWaterBack: 
 	db $0D
 	db $FF
-OBJLstAnim_Map_WarioWaterFront: 
+SprMapAnim_Map_WarioWaterFront: 
 	db $0C
 	db $FF
-OBJLstAnim_Unused_Map_WarioH1C: 
+SprMapAnim_Unused_Map_WarioH1C: 
 	db $00
 	db $FF
-OBJLstAnim_Unused_Map_WarioH2C: 
+SprMapAnim_Unused_Map_WarioH2C: 
 	db $01
 	db $FF
-OBJLstAnim_Unused_Map_WarioH3C: 
+SprMapAnim_Unused_Map_WarioH3C: 
 	db $02
 	db $FF
-OBJLstAnim_Unused_Map_WarioH2: 
+SprMapAnim_Unused_Map_WarioH2: 
 	db $00
 	db $FF
-OBJLstAnim_Unused_Map_WarioH3: 
+SprMapAnim_Unused_Map_WarioH3: 
 	db $01
 	db $FF
-OBJLstAnim_Unused_Map_WarioH1: 
+SprMapAnim_Unused_Map_WarioH1: 
 	db $02
 	db $FF
-OBJLstAnim_Unused_Map_WarioV8:
+SprMapAnim_Unused_Map_WarioV8:
 	db $08
 	db $FF
-OBJLstAnim_Map_WarioLeft: 
+SprMapAnim_Map_WarioLeft: 
 	db $01
 	db $02
 	db $03
 	db $FF
-OBJLstAnim_Map_WarioRight: 
+SprMapAnim_Map_WarioRight: 
 	db $01
 	db $02
 	db $03
 	db $FF
-OBJLstAnim_Map_WarioBack: 
+SprMapAnim_Map_WarioBack: 
 	db $08
 	db $09
 	db $08
 	db $0A
 	db $FF
-OBJLstAnim_Map_WarioFront: 
+SprMapAnim_Map_WarioFront: 
 	db $04
 	db $05
 	db $04
@@ -2820,10 +2820,10 @@ OBJLstAnim_Map_WarioFront:
 	
 ; =============== Map_WarioAnim ===============
 ; Handles Wario's animations in the map screen.
-; This can update any part of Wario's OBJLst data.
+; This can update any part of Wario's sprite mapping data.
 ;
 ; OUT
-; - HL: Ptr to OBJLst Id
+; - HL: Ptr to sprite mapping ID
 Map_WarioAnim:
 	ld   a, [sMapWarioAnimId]
 	rst  $28
@@ -2833,7 +2833,7 @@ Map_WarioAnim:
 	dw Map_WarioAnim_Back
 	dw Map_WarioAnim_Front ; Duplicate of $00 for convenience, when $00 is handled as a special value
 	; [TCRF] Unused placeholder animations made up of a single frame.
-	; The number indicates which OBJLst ID uses.
+	; The number indicates which sprite mapping ID it uses.
 	dw Map_Unused_WarioAnim_V8
 	dw Map_Unused_WarioAnim_H3
 	dw Map_Unused_WarioAnim_H1
@@ -2849,89 +2849,89 @@ Map_WarioAnim_Back:
 	ld   a, $10
 	ld   [sMapWarioFlags], a
 	call Map_WarioOscillateYVert
-	ld   hl, OBJLstAnim_Map_WarioBack
-	call Map_WarioGetOBJLstId
+	ld   hl, SprMapAnim_Map_WarioBack
+	call Map_WarioGetSprMapId
 	ret
 Map_WarioAnim_Front:
 	ld   a, $10
 	ld   [sMapWarioFlags], a
 	call Map_WarioOscillateYVert
-	ld   hl, OBJLstAnim_Map_WarioFront
-	call Map_WarioGetOBJLstId
+	ld   hl, SprMapAnim_Map_WarioFront
+	call Map_WarioGetSprMapId
 	ret
 Map_WarioAnim_Left:
 	ld   a, $10
 	ld   [sMapWarioFlags], a
 	call Map_WarioOscillateYHorz
-	ld   hl, OBJLstAnim_Map_WarioLeft
-	call Map_WarioGetOBJLstId
+	ld   hl, SprMapAnim_Map_WarioLeft
+	call Map_WarioGetSprMapId
 	ret
 Map_WarioAnim_Right:
 	ld   a, $30
 	ld   [sMapWarioFlags], a
 	call Map_WarioOscillateYHorz
-	ld   hl, OBJLstAnim_Map_WarioRight
-	call Map_WarioGetOBJLstId
+	ld   hl, SprMapAnim_Map_WarioRight
+	call Map_WarioGetSprMapId
 	ret
 Map_Unused_WarioAnim_V8: 
 	ld   a, $10
 	ld   [sMapWarioFlags], a
-	ld   hl, OBJLstAnim_Unused_Map_WarioV8
-	call Map_WarioGetOBJLstId
+	ld   hl, SprMapAnim_Unused_Map_WarioV8
+	call Map_WarioGetSprMapId
 	ret
 Map_Unused_WarioAnim_H2: 	
 	ld   a, $30
 	ld   [sMapWarioFlags], a
-	ld   hl, OBJLstAnim_Unused_Map_WarioH2
-	call Map_WarioGetOBJLstId
+	ld   hl, SprMapAnim_Unused_Map_WarioH2
+	call Map_WarioGetSprMapId
 	ret
 Map_Unused_WarioAnim_H3: 
 	ld   a, $30
 	ld   [sMapWarioFlags], a
-	ld   hl, OBJLstAnim_Unused_Map_WarioH3
-	call Map_WarioGetOBJLstId
+	ld   hl, SprMapAnim_Unused_Map_WarioH3
+	call Map_WarioGetSprMapId
 	ret
 Map_Unused_WarioAnim_H1:
 	ld   a, $30
 	ld   [sMapWarioFlags], a
-	ld   hl, OBJLstAnim_Unused_Map_WarioH1
-	call Map_WarioGetOBJLstId
+	ld   hl, SprMapAnim_Unused_Map_WarioH1
+	call Map_WarioGetSprMapId
 	ret
 Map_Unused_WarioAnim_H1C: 
 	ld   a, $10
 	ld   [sMapWarioFlags], a
-	ld   hl, OBJLstAnim_Unused_Map_WarioH1C
-	call Map_WarioGetOBJLstId
+	ld   hl, SprMapAnim_Unused_Map_WarioH1C
+	call Map_WarioGetSprMapId
 	ret
 Map_Unused_WarioAnim_H2C: 
 	ld   a, $10
 	ld   [sMapWarioFlags], a
-	ld   hl, OBJLstAnim_Unused_Map_WarioH2C
-	call Map_WarioGetOBJLstId
+	ld   hl, SprMapAnim_Unused_Map_WarioH2C
+	call Map_WarioGetSprMapId
 	ret
 Map_Unused_WarioAnim_H3C: 
 	ld   a, $10
 	ld   [sMapWarioFlags], a
-	ld   hl, OBJLstAnim_Unused_Map_WarioH3C
-	call Map_WarioGetOBJLstId
+	ld   hl, SprMapAnim_Unused_Map_WarioH3C
+	call Map_WarioGetSprMapId
 	ret
 Map_WarioAnim_WaterFront:
 	ld   a, $10
 	ld   [sMapWarioFlags], a
-	ld   hl, OBJLstAnim_Map_WarioWaterFront
-	call Map_WarioGetOBJLstId
+	ld   hl, SprMapAnim_Map_WarioWaterFront
+	call Map_WarioGetSprMapId
 	ret
 Map_WarioAnim_WaterBack:
 	ld   a, $10
 	ld   [sMapWarioFlags], a
-	ld   hl, OBJLstAnim_Map_WarioWaterBack
-	call Map_WarioGetOBJLstId
+	ld   hl, SprMapAnim_Map_WarioWaterBack
+	call Map_WarioGetSprMapId
 	ret
 Map_WarioAnim_Hide:
 	ld   a, $10
 	ld   [sMapWarioFlags], a
-	ld   hl, OBJLstAnim_Map_WarioHide
-	call Map_WarioGetOBJLstId
+	ld   hl, SprMapAnim_Map_WarioHide
+	call Map_WarioGetSprMapId
 	ret
 	
 ;
@@ -3042,18 +3042,18 @@ Map_WarioOscillateYHorz:
 	ld   [sMapWarioAnimTimer], a
 	ret
 	
-; =============== Map_WarioGetOBJLstId ===============
-; This subroutines searches through a table of sprite mapping IDs (OBJLstAnim)
+; =============== Map_WarioGetSprMapId ===============
+; This subroutines searches through a table of sprite mapping IDs (SprMapAnim)
 ; to find the correct one to use based off the anim timer.
 ;
 ; It also performs out of bounds checks.
 ;
 ; IN
-; - HL = Ptr to OBJLstAnim
+; - HL = Ptr to SprMapAnim
 ;
 ; OUT
-; - HL = Ptr to correct entry at the OBJLstAnim
-Map_WarioGetOBJLstId:
+; - HL = Ptr to correct entry at the SprMapAnim
+Map_WarioGetSprMapId:
 	; basically HL += MIN(sMapWarioAnimTimer, <table length> - 1)
 	ld   a, [sMapWarioAnimTimer]	; Use the anim timer to determine the frame ID to use
 	ld   b, a						; B = Indexes left
@@ -3963,7 +3963,7 @@ Map_RiceBeach_Do:
 	call Map_RiceBeach_AnimTiles
 	call Map_Submap_DoCtrl
 	call Map_RiceBeach_DoLevelSwitch
-	call Map_WriteWarioOBJLst
+	call Map_WriteWarioSprMap
 	ret
 	
 ; =============== Map_Submap_DoCtrl ===============
@@ -4632,7 +4632,7 @@ Map_Submap_DoEnterAnim:
 	ld   a, $03
 	ld   [sMapWarioYOscillateMask], a
 	call Map_SubmapEnter_SetWarioAnimId
-	call Map_WriteWarioOBJLst
+	call Map_WriteWarioSprMap
 	; Index the level coordinates table
 	ld   a, [sMapLevelId]
 	ld   hl, Map_Submap_PosPtrTable
@@ -6625,7 +6625,7 @@ Map_RiceBeach_DoLevelClear:
 	;--
 	; Always perform tile/sprite anims, even when waiting for tiles
 	call Map_RiceBeach_AnimTiles
-	call Map_WriteWarioOBJLst
+	call Map_WriteWarioSprMap
 	
 	; Process a new tile every $10 frames
 	ld   a, [sMapTimer_Low]
@@ -7145,7 +7145,7 @@ Map_MtTeapot_DoLevelClear:
 	and  a
 	ret  z
 	
-	call Map_WriteWarioOBJLst
+	call Map_WriteWarioSprMap
 	
 	; Process a new tile every $10 frames
 	ld   a, [sMapTimer_Low]
@@ -7229,7 +7229,7 @@ Map_StoveCanyon_DoLevelClear:
 	and  a
 	ret  z
 	
-	call Map_WriteWarioOBJLst
+	call Map_WriteWarioSprMap
 	
 	; Process a new tile every $10 frames
 	ld   a, [sMapTimer_Low]
@@ -7306,7 +7306,7 @@ Map_SSTeacup_DoLevelClear:
 	and  a
 	ret  z
 	
-	call Map_WriteWarioOBJLst
+	call Map_WriteWarioSprMap
 	
 	; Process a new tile every $10 frames
 	ld   a, [sMapTimer_Low]
@@ -7382,7 +7382,7 @@ Map_ParsleyWoods_DoLevelClear:
 	and  a
 	ret  z
 	
-	call Map_WriteWarioOBJLst
+	call Map_WriteWarioSprMap
 	
 	; Process a new tile every $10 frames
 	ld   a, [sMapTimer_Low]
@@ -7459,7 +7459,7 @@ Map_SherbetLand_DoLevelClear:
 	and  a
 	ret  z
 	
-	call Map_WriteWarioOBJLst
+	call Map_WriteWarioSprMap
 	
 	; Process a new tile every $10 frames
 	ld   a, [sMapTimer_Low]
@@ -7536,7 +7536,7 @@ Map_SyrupCastle_DoLevelClear:
 	and  a
 	ret  z
 	
-	call Map_WriteWarioOBJLst
+	call Map_WriteWarioSprMap
 	
 	; Process a new tile every $10 frames
 	ld   a, [sMapTimer_Low]
@@ -7890,7 +7890,7 @@ Map_Mode_MtTeapot:
 Map_MtTeapot_Do:
 	call Map_Submap_DoCtrl
 	call Map_MtTeapot_DoLevelSwitch
-	call Map_WriteWarioOBJLst
+	call Map_WriteWarioSprMap
 	ret
 ; =============== Map_MtTeapot_DoLevelSwitch ===============
 ; Handles the Level ID changes after the lid crashes down.
@@ -7929,7 +7929,7 @@ Map_Mode_C12ClearInit:
 	ld   [sMapScrollX], a
 	call HomeCall_Map_MtTeapotLidSetPosCutscene
 IF IMPROVE
-	call HomeCall_Map_InitMtTeapotSproutOBJLst
+	call HomeCall_Map_InitMtTeapotSproutSprMap
 ENDC
 	call Map_InitMisc
 	ld   a, MAP_MODE_FADEIN
@@ -8004,7 +8004,7 @@ Map_Mode_StoveCanyon:
 	ret
 Map_StoveCanyon_Do:
 	call Map_Submap_DoCtrl
-	call Map_WriteWarioOBJLst
+	call Map_WriteWarioSprMap
 	ret
 	
 ; =============== Map_Mode_C40ClearInit ===============
@@ -8026,7 +8026,7 @@ Map_Mode_C40ClearInit:
 	ld   a, [sMapWarioYRes]
 	ld   a, [sMapWarioX]
 	ld   a, $06
-	ld   a, [sMapWarioLstId]
+	ld   a, [sMapWarioSprId]
 	ld   a, $10
 	ld   a, [sMapWarioFlags]
 	ret
@@ -8067,7 +8067,7 @@ Map_Mode_EndingInit:
 	ld   a, $58
 	ld   [sMapEndingStatueLowX], a
 	ld   a, $01
-	ld   [sMapEndingStatueLowLstId], a
+	ld   [sMapEndingStatueLowSprId], a
 	
 	ld   a, $2D
 	ld   [sMapEndingSparkleY], a
@@ -8081,8 +8081,8 @@ Map_Mode_EndingInit:
 	ld   a, $70
 	ld   [sMapWarioX], a
 	xor  a
-	ld   [sMapWarioLstId], a
-	ld   [sMapEndingHeliLstId], a
+	ld   [sMapWarioSprId], a
+	ld   [sMapEndingHeliSprId], a
 	ld   a, $10
 	ld   [sMapWarioFlags], a
 	ld   [sMapEndingHeliFlags], a
@@ -8194,7 +8194,7 @@ Map_Mode_SyrupCastle:
 	and  a
 	ret  nz
 	call Map_Submap_DoCtrl
-	call Map_WriteWarioOBJLst
+	call Map_WriteWarioSprMap
 	ld   hl, sMapSyrupCastleBlink
 	call HomeCall_Map_BlinkLevel_Do
 	ret
@@ -8309,7 +8309,7 @@ Map_Mode_ParsleyWoods:
 Map_ParsleyWoods_Do:
 	call Map_Submap_DoCtrl
 	call Map_ParsleyWoods_DoLevelSwitch
-	call Map_WriteWarioOBJLst
+	call Map_WriteWarioSprMap
 	ret
 ; =============== Map_ParsleyWoods_DoLevelSwitch ===============
 ; Handles the Level ID replacements when the Parsley Woods' lake is drained.
@@ -8393,7 +8393,7 @@ Map_Mode_SSTeacup:
 	ret
 Map_SSTeacup_Do:
 	call Map_Submap_DoCtrl
-	call Map_WriteWarioOBJLst
+	call Map_WriteWarioSprMap
 	ret
 	
 ; =============== Map_Mode_C30ClearInit ===============
@@ -8416,8 +8416,8 @@ Map_Mode_C30ClearInit:
 	ld   [sMapOAMWriteX], a
 	ld   [sMapWarioX], a
 	ld   a, $04
-	ld   [sMapWarioLstId], a
-	ld   [sMapOAMWriteLstId], a
+	ld   [sMapWarioSprId], a
+	ld   [sMapOAMWriteSprId], a
 	ld   a, $10
 	ld   [sMapWarioFlags], a
 	ld   [sMapOAMWriteFlags], a
@@ -8510,7 +8510,7 @@ Map_Mode_C30Clear:
 	ld   a, $50
 	ld   [sMapWarioFlags], a
 .drawWario:
-	call Map_WriteWarioOBJLstCustom
+	call Map_WriteWarioSprMapCustom
 	ret
 .playLaunchSFX:
 	ld   a, SFX1_31
@@ -8633,7 +8633,7 @@ Map_Mode_SherbetLand:
 	ret
 Map_SherbetLand_Do:
 	call Map_Submap_DoCtrl
-	call Map_WriteWarioOBJLst
+	call Map_WriteWarioSprMap
 	ret
 
 ; =============== Map_ScreenEvent ===============

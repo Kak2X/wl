@@ -63,9 +63,9 @@ NonGame_PlInit:
 	ld   [sPlYRel], a
 	ld   a, -$10			; Off-screen left
 	ld   [sPlXRel], a
-	ld   a, OBJ_WARIO_WALK0
-	ld   [sPlLstId], a
-	ld   a, OBJLST_XFLIP	; Face right
+	ld   a, SPR_WARIO_WALK0
+	ld   [sPlSprId], a
+	ld   a, SPRMAP_XFLIP	; Face right
 	ld   [sPlFlags], a
 	xor  a					; Reset timer
 	ld   [sPlAnimTimer], a
@@ -85,9 +85,9 @@ NonGame_PlInitHold:
 	ld   [sPlYRel], a
 	ld   a, -$10			; Off-screen left
 	ld   [sPlXRel], a
-	ld   a, OBJ_WARIO_HOLDWALK0
-	ld   [sPlLstId], a
-	ld   a, OBJLST_XFLIP	; Face right
+	ld   a, SPR_WARIO_HOLDWALK0
+	ld   [sPlSprId], a
+	ld   a, SPRMAP_XFLIP	; Face right
 	ld   [sPlFlags], a
 	xor  a					; Reset timer
 	ld   [sPlAnimTimer], a
@@ -110,7 +110,7 @@ ExActS_SpawnTreasureGet:
 	; FrameId = $8C + sTreasureId*2
 	ld   a, [sTreasureId]
 	add  a
-	add  OBJ_TRROOM_TREASURE_C0 - $02
+	add  SPR_TRROOM_TREASURE_C0 - $02
 	ldi  [hl], a
 	
 	ld   a, $10			; Flags
@@ -148,13 +148,13 @@ LoadGFX_SaveSelect:
 ; Initializes the OBJ and ExAct used in the save select screen.
 ;
 ; Because OAM is completely empty when this is called, the subroutines
-; which set OBJ do so by directly writing data to OAM, instead of going through OBJLst.
+; which set OBJ do so by directly writing data to OAM, instead of going through sprite mappings.
 ; They use hardcoded slot numbers which other code depends on.
 SaveSel_InitOBJ:
 	call SaveSel_InitLevelTextOBJ
 	call SaveSel_WriteBrickOBJ
 	call ExActS_SpawnSaveSel_WarioHat
-	call SaveSel_InitWarioOBJLst
+	call SaveSel_InitWarioSprMap
 	ret
 	
 ; =============== mSetLevelText ===============
@@ -293,15 +293,15 @@ ExActS_SpawnSaveSel_WarioHat:
 	call ExActS_Spawn
 	ret
 	
-; =============== SaveSel_InitWarioOBJLst ===============
-; Sets Wario's starting position / OBJLst settings.
-SaveSel_InitWarioOBJLst:
+; =============== SaveSel_InitWarioSprMap ===============
+; Sets Wario's starting position / sprite settings.
+SaveSel_InitWarioSprMap:
 	ld   a, $78
 	ld   [sPlYRel], a
 	ld   a, $F0
 	ld   [sPlXRel], a
 	ld   a, $68
-	ld   [sPlLstId], a
+	ld   [sPlSprId], a
 	ld   a, $20
 	ld   [sPlFlags], a
 	xor  a

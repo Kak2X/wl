@@ -472,14 +472,14 @@ CourseSel_DrawCursorSprMap:
 	ld   [sMapOAMWriteX], a
 	xor  a
 	ld   [sMapOAMWriteFlags], a
-	ld   [sMapOAMWriteLstId], a
-	ld   hl, OBJLstPtrTbl_Alpha
-	jp   Map_WriteOBJLst
+	ld   [sMapOAMWriteSprId], a
+	ld   hl, SprMapPtrTbl_Alpha
+	jp   Map_WriteSprMap
 
-OBJLstPtrTbl_Alpha:
-	dw OBJLst_Alpha_Cursor
+SprMapPtrTbl_Alpha:
+	dw SprMap_Alpha_Cursor
 	
-OBJLst_Alpha_Cursor: INCBIN "data/objlst/_custom/alpha_cursor.bin"
+SprMap_Alpha_Cursor: INCBIN "data/sprmap/_custom/alpha_cursor.bin"
 GFX_Alpha_Cursor: INCBIN "data/gfx/_custom/alpha_cursor.bin"
 .end:
 
@@ -710,7 +710,7 @@ Mode_LevelInit_LoadLevel:
 ; =============== Mode_LevelInit_StartLevel ===============
 ; Switches to the main gameplay mode, optionally setting up parallax.
 Mode_LevelInit_StartLevel:
-	call HomeCall_WriteWarioOBJLst
+	call HomeCall_WriteWarioSprMap
 	; If we've flagged the demo mode...
 	ld   a, [sDemoMode]
 	cp   a, DEMOMODE_WAITPLAYBACK	; Are we waiting for demo playback?
@@ -875,8 +875,8 @@ ENDC
 	ld   [sScrollX_High], a
 
 	
-	call HomeCall_WriteWarioOBJLst	; Draw player
-	call HomeCall_ExActS_ExecuteAllAndWriteOBJLst	; Draw and execute ExAct
+	call HomeCall_WriteWarioSprMap	; Draw player
+	call HomeCall_ExActS_ExecuteAllAndWriteSprMap	; Draw and execute ExAct
 	ld   a, [sPlHatSwitchTimer]
 	and  a
 	jr   nz, Game_UpdateScreen
@@ -1031,7 +1031,7 @@ DEF DEBUG_FREEROAM_SPEED EQU $03
 	ld   a, [sLvlScrollX_High]	; account for carry
 	sbc  a, $00
 	ld   [sScrollX_High], a
-	call HomeCall_WriteWarioOBJLst
+	call HomeCall_WriteWarioSprMap
 	jp   Game_UpdateScreen
 ; =============== Game_CheckTogglePause ===============
 ; This subroutine handles the pausing/unpausing of the game.
@@ -1273,7 +1273,7 @@ Mode_LevelClear_Fanfare:
 	;
 	; Always draw and process actors + player
 	;
-	call HomeCall_WriteWarioOBJLst	; Draw Wario
+	call HomeCall_WriteWarioSprMap	; Draw Wario
 	xor  a							; Drop whatever we're holding
 	ld   [sActHeld], a
 	call HomeCall_ActS_Do			; Run the actor code
@@ -1291,11 +1291,11 @@ Mode_LevelClear_Fanfare:
 	ld   [sLevelClearTimer], a
 	; Do the wink anim
 	cp   a, $38						; Timer == $38?
-	jr   z, .setFrame0				; If so, set OBJ_WARIO_THUMBSUP0
+	jr   z, .setFrame0				; If so, set SPR_WARIO_THUMBSUP0
 	cp   a, $48						; Timer == $48?
-	jr   z, .setFrame1				; If so, set OBJ_WARIO_THUMBSUP1
+	jr   z, .setFrame1				; If so, set SPR_WARIO_THUMBSUP1
 	cp   a, $60						; Timer == $60?
-	jr   z, .setFrame0				; If so, set OBJ_WARIO_THUMBSUP0
+	jr   z, .setFrame0				; If so, set SPR_WARIO_THUMBSUP0
 	ret
 	
 .setFrame0:
@@ -1306,22 +1306,22 @@ Mode_LevelClear_Fanfare:
 	ld   [sPauseActors], a
 	
 	; Set the correct anim frame depending on small/big player status
-	ld   a, OBJ_WARIO_THUMBSUP0	; Set standard frame
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_THUMBSUP0	; Set standard frame
+	ld   [sPlSprId], a
 	ld   a, [sSmallWario]
 	and  a						; Are we small?
 	ret  z						; If not, return
-	ld   a, [sPlLstId]			; Add $30 for the Small Wario frame
-	add  OBJ_SMALLWARIO_LEVELCLEAR-OBJ_WARIO_THUMBSUP0
-	ld   [sPlLstId], a
+	ld   a, [sPlSprId]			; Add $30 for the Small Wario frame
+	add  SPR_SMALLWARIO_LEVELCLEAR-SPR_WARIO_THUMBSUP0
+	ld   [sPlSprId], a
 	ret
 .setFrame1:
 	; Small Wario has no second frame for this animation
 	ld   a, [sSmallWario]
 	and  a						; Are we Small Wario?
 	ret  nz						; If so, return
-	ld   a, OBJ_WARIO_THUMBSUP1
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_THUMBSUP1
+	ld   [sPlSprId], a
 	ret
 	
 .chkEndPowerup:
@@ -1361,16 +1361,16 @@ Mode_LevelClear_Fanfare:
 	bit  0, a						; Even frame?
 	jr   z, .hatSwitch_setSmFrame	; If so, jump
 .hatSwitch_setBigFrame:
-	ld   a, OBJ_WARIO_STAND
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_STAND
+	ld   [sPlSprId], a
 	ret
 .hatSwitch_setSmFrame:
-	ld   a, OBJ_SMALLWARIO_STAND
-	ld   [sPlLstId], a
+	ld   a, SPR_SMALLWARIO_STAND
+	ld   [sPlSprId], a
 	ret
 .endHatSwitch:
-	ld   a, OBJ_WARIO_STAND			; Confirm "Big Wario" frame
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_STAND			; Confirm "Big Wario" frame
+	ld   [sPlSprId], a
 	xor  a							; Switch to Big Wario
 	ld   [sSmallWario], a
 	ld   a, PL_POW_GARLIC			; ""
@@ -1438,7 +1438,7 @@ Mode_LevelClear_InitCourseClr:
 ; =============== Mode_LevelClear_CourseClr ===============
 Mode_LevelClear_CourseClr:
 	call .main
-	call HomeCall_NonGame_WriteWarioOBJLst
+	call HomeCall_NonGame_WriteWarioSprMap
 	ret
 .main:
 	;
@@ -1496,7 +1496,7 @@ CourseClr_IntroMoveR0:
 	ld   a, [sCourseClrMode]		; Next mode
 	inc  a
 	ld   [sCourseClrMode], a
-	ld   a, OBJLST_BGPRIORITY		; Flip OBJ, draw player behind BG
+	ld   a, SPRMAP_BGPRIORITY		; Flip OBJ, draw player behind BG
 	ld   [sPlFlags], a
 	ret
 	
@@ -1527,7 +1527,7 @@ CourseClr_IntroMoveL0:
 	ld   a, [sCourseClrMode]		; Next mode
 	inc  a
 	ld   [sCourseClrMode], a
-	ld   a, OBJLST_XFLIP			; Flip OBJ, draw in front of BG
+	ld   a, SPRMAP_XFLIP			; Flip OBJ, draw in front of BG
 	ld   [sPlFlags], a
 	ret
 ; =============== CourseClr_GetPlWalkSpeed ===============
@@ -1576,8 +1576,8 @@ CourseClr_IntroMoveR1:
 	ld   [sCourseClrMode], a
 	; The nice part of forcing the player to be "Big Wario" when finishing a level
 	; is that we don't have to deal with checking for Small Wario's separate frames.
-	ld   a, OBJ_WARIO_IDLE0			; Set standing frame
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_IDLE0			; Set standing frame
+	ld   [sPlSprId], a
 	ret
 	
 ; =============== CourseClr_CoinBonusPos ===============
@@ -1636,9 +1636,9 @@ CourseClr_CoinBonusPos:
 	ld   [sCourseClrMode], a
 	xor  a
 	ld   [sPlAnimTimer], a
-	ld   a, OBJ_WARIO_WALK0		; Set walk frame
-	ld   [sPlLstId], a
-	ld   a, OBJLST_XFLIP		; Face right
+	ld   a, SPR_WARIO_WALK0		; Set walk frame
+	ld   [sPlSprId], a
+	ld   a, SPRMAP_XFLIP		; Face right
 	ld   [sPlFlags], a
 	ret
 	
@@ -1681,8 +1681,8 @@ CourseClr_MoveToHeartBonus:
 	ld   a, [sCourseClrMode]		; Next mode
 	inc  a
 	ld   [sCourseClrMode], a
-	ld   a, OBJ_WARIO_IDLE0			; Set standing frame
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_IDLE0			; Set standing frame
+	ld   [sPlSprId], a
 	ret
 	
 ; =============== CourseClr_HeartBonusPos ===============
@@ -1753,8 +1753,8 @@ CourseClr_HeartBonusPos:
 	ld   [sCourseClrMode], a
 	xor  a
 	ld   [sPlAnimTimer], a
-	ld   a, OBJ_WARIO_WALK0
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_WALK0
+	ld   [sPlSprId], a
 	ret
 .tryWalkLeft:
 	;--
@@ -1776,8 +1776,8 @@ CourseClr_HeartBonusPos:
 	ld   [sCourseClrMode], a
 	xor  a
 	ld   [sPlAnimTimer], a
-	ld   a, OBJ_WARIO_WALK0		; Set walk frame
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_WALK0		; Set walk frame
+	ld   [sPlSprId], a
 	ld   a, $00					; Face left
 	ld   [sPlFlags], a
 	ret
@@ -1799,8 +1799,8 @@ CourseClr_MoveToCoinBonus:
 .nextMode:
 	ld   a, COURSECLR_RTN_COINBONUSPOS
 	ld   [sCourseClrMode], a
-	ld   a, OBJ_WARIO_IDLE0
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_IDLE0
+	ld   [sPlSprId], a
 	ret
 	
 ; =============== CourseClr_HeartBonus ===============
@@ -1877,7 +1877,7 @@ Mode_LevelClear_InitTrRoom:
 ; Wario walks right from off-screen.
 Mode_LevelClear_TrRoomWait:
 	call .main
-	call HomeCall_NonGame_WriteWarioOBJLst
+	call HomeCall_NonGame_WriteWarioSprMap
 	ret
 .main:
 	;
@@ -1893,8 +1893,8 @@ Mode_LevelClear_TrRoomWait:
 	
 	; Otherwise, switch to the next mode and spawn extra actors.
 .nextMode:
-	ld   a, OBJ_WARIO_IDLE0
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_IDLE0
+	ld   [sPlSprId], a
 	xor  a
 	ld   [sPlAnimTimer], a
 	ld   a, GM_LEVELCLEAR_TRCOINCOUNT	; Next mode
@@ -1926,7 +1926,7 @@ ExActS_SpawnTrRoomArrow:
 	ldi  [hl], a
 	ldi  [hl], a			; X (not used)
 	ldi  [hl], a
-	ld   a, OBJ_BLANK_36 	; Blank frame
+	ld   a, SPR_BLANK_36 	; Blank frame
 	ldi  [hl], a
 	xor  a
 	ldi  [hl], a			; Flags
@@ -1948,8 +1948,8 @@ ExActS_SpawnTrRoomArrow:
 ; =============== Mode_LevelClear_TrRoomWait_NoMoney ===============
 ; Switches to the next mode with the player in the shrug frame.
 Mode_LevelClear_TrRoomWait_NoMoney:
-	ld   a, OBJ_TRROOM_WARIO_SHRUG
-	ld   [sPlLstId], a
+	ld   a, SPR_TRROOM_WARIO_SHRUG
+	ld   [sPlSprId], a
 	jp   LevelClear_SwitchToTrRoomIdle2
 	
 ; =============== TrRoom_CopyBlockData ===============
@@ -2010,7 +2010,7 @@ TrRoom_Digit16VRAMPtrs:
 Mode_LevelClear_TrRoomCoinCount:
 	call TrRoom_AnimCoin
 	call HomeCall_ExActS_ExecuteAll
-	call HomeCall_NonGame_WriteWarioOBJLst
+	call HomeCall_NonGame_WriteWarioSprMap
 	
 	;
 	; Wait for until the timer ticks down to $02 before counting down the coins.
@@ -2124,8 +2124,8 @@ LevelClear_SwitchToTrRoomIdle:
 	xor  a							; Reset coin count
 	ld   [sLevelCoins_Low], a
 	ld   [sLevelCoins_High], a
-	ld   a, OBJ_TRROOM_WARIO_IDLE0	; Set standing frame
-	ld   [sPlLstId], a
+	ld   a, SPR_TRROOM_WARIO_IDLE0	; Set standing frame
+	ld   [sPlSprId], a
 	ld   a, $01						; Signal out to despawn the flashing arrow
 	ld   [sExActTrRoomArrowDespawn], a
 	
@@ -2187,7 +2187,7 @@ Mode_LevelClear_TrRoomIdle:
 	; Until sPlDelayTimer elapses, we'll be in the gloat animation (unless we came in with no money).
 	; After that, we switch to the main idle animation:
 	; - Jump to .initIdleAnim the first time to setup the initial frame.
-	;   This is required to make sure TrRoom_WarioBlink_OBJLstAnimOff is applied in the correct frame.
+	;   This is required to make sure TrRoom_WarioBlink_SprMapAnimOff is applied in the correct frame.
 	; - Jump to .idleAnim from the next frame. This prevents the Gloat anim from occurring again.
 	;
 	
@@ -2202,19 +2202,19 @@ Mode_LevelClear_TrRoomIdle:
 .gloatAnim:
 	; Animate and write the player
 	call TrRoom_AnimWarioGloat
-	call HomeCall_NonGame_WriteWarioOBJLst
+	call HomeCall_NonGame_WriteWarioSprMap
 	ret
 	
 .initIdleAnim:
-	ld   a, OBJ_TRROOM_WARIO_IDLE0			; Set base frame for TrRoom_WarioBlink_OBJLstAnimOff
-	ld   [sPlLstId], a
+	ld   a, SPR_TRROOM_WARIO_IDLE0			; Set base frame for TrRoom_WarioBlink_SprMapAnimOff
+	ld   [sPlSprId], a
 	xor  a									; Clear
 	ld   [sPlAnimTimer], a
-	call HomeCall_NonGame_WriteWarioOBJLst
+	call HomeCall_NonGame_WriteWarioSprMap
 	ret
 .idleAnim:
 	call TrRoom_AnimWarioBlink				; Do idle animation
-	call HomeCall_NonGame_WriteWarioOBJLst
+	call HomeCall_NonGame_WriteWarioSprMap
 	call TrRoom_ChkSpawnSparkle				; Animate sparkles as well
 	call HomeCall_ExActS_ExecuteAll
 	ret
@@ -2226,8 +2226,8 @@ Mode_LevelClear_TrRoomIdle:
 	
 	ld   a, GM_LEVELCLEAR_TREXIT
 	ld   [sSubMode], a
-	ld   a, OBJ_WARIO_WALK0			; Prepare for walking-to-left anim
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_WALK0			; Prepare for walking-to-left anim
+	ld   [sPlSprId], a
 	xor  a
 	ld   [sPlAnimTimer], a
 	ld   [sPlFlags], a
@@ -2240,7 +2240,7 @@ Mode_LevelClear_TrRoomIdle:
 Mode_LevelClear_TrRoomExit:
 	call TrRoom_AnimCoin
 	call TrRoom_WalkToExit
-	call HomeCall_NonGame_WriteWarioOBJLst
+	call HomeCall_NonGame_WriteWarioSprMap
 	ret
 	
 ; =============== TrRoom_WalkToExit ===============
@@ -2264,7 +2264,7 @@ TrRoom_WalkToExit:
 	
 ; =============== TrRoom_AnimWarioGloat ===============
 ; Handles Wario's "gloat" animation in the treasure room.
-; (the animation between OBJ_TRROOM_WARIO_IDLE0 and OBJ_TRROOM_WARIO_IDLE1 is done elsewhere)
+; (the animation between SPR_TRROOM_WARIO_IDLE0 and SPR_TRROOM_WARIO_IDLE1 is done elsewhere)
 TrRoom_AnimWarioGloat:
 	; Every 8 frames...
 	ld   a, [sTimer]
@@ -2272,14 +2272,14 @@ TrRoom_AnimWarioGloat:
 	ret  nz
 	
 	; If we're still shrugging (no level coins), continue staying in that frame
-	ld   a, [sPlLstId]
-	cp   a, OBJ_TRROOM_WARIO_SHRUG
+	ld   a, [sPlSprId]
+	cp   a, SPR_TRROOM_WARIO_SHRUG
 	ret  z
 	
 	; Alternate between the previous and current animation.
-	; This is *only* used to switch between OBJ_TRROOM_WARIO_GLOAT and OBJ_TRROOM_WARIO_IDLE0
+	; This is *only* used to switch between SPR_TRROOM_WARIO_GLOAT and SPR_TRROOM_WARIO_IDLE0
 	xor  $01
-	ld   [sPlLstId], a
+	ld   [sPlSprId], a
 	ret
 	
 ; =============== TrRoom_AnimWarioBlink ===============
@@ -2288,8 +2288,8 @@ TrRoom_AnimWarioBlink:
 	; [POI] It's not possible to reach this in the shrug animation.
 	;       We always hit Mode_LevelClear_TrRoomIdle.initIdleAnim before getting here,
 	;       which sets the correct animation for this subroutine.
-	ld   a, [sPlLstId]
-	cp   a, OBJ_TRROOM_WARIO_SHRUG	; Are we shrugging?
+	ld   a, [sPlSprId]
+	cp   a, SPR_TRROOM_WARIO_SHRUG	; Are we shrugging?
 	ret  z							; If so, return (never)
 	
 	; Every 8 frames...
@@ -2302,10 +2302,10 @@ TrRoom_AnimWarioBlink:
 	; This is specified in an animation table, where each
 	; entry is an offset to the current animation frame.
 	;
-	ld   hl, TrRoom_WarioBlink_OBJLstAnimOff
+	ld   hl, TrRoom_WarioBlink_SprMapAnimOff
 	ld   a, [sPlAnimTimer]		; Index++
 	inc  a
-	cp   a, TrRoom_WarioBlink_OBJLstAnimOff.end-TrRoom_WarioBlink_OBJLstAnimOff	; Out of range?
+	cp   a, TrRoom_WarioBlink_SprMapAnimOff.end-TrRoom_WarioBlink_SprMapAnimOff	; Out of range?
 	jr   nz, .getOff		; If not, jump
 	xor  a					; Otherwise, reset index
 .getOff:
@@ -2313,12 +2313,12 @@ TrRoom_AnimWarioBlink:
 	ld   e, a
 	ld   d, $00				; DE = Index
 	add  hl, de				; Offset it
-	ld   a, [sPlLstId]		; sPlLstId += AnimTbl[DE]
+	ld   a, [sPlSprId]		; sPlSprId += AnimTbl[DE]
 	add  [hl]
-	ld   [sPlLstId], a
+	ld   [sPlSprId], a
 	ret
 	
-TrRoom_WarioBlink_OBJLstAnimOff: 
+TrRoom_WarioBlink_SprMapAnimOff: 
 	db +$00,+$00,+$00,+$00,+$00,+$00,+$00,+$00	; $00
 	db +$00,+$00,+$00,+$00,+$00,+$00,+$00,+$00	; $08
 	db +$01,-$01,+$01,-$01						; $10
@@ -3003,7 +3003,7 @@ Mode_GameOver_InitTrRoom:
 ; =============== Mode_GameOver_TrRoom ===============
 Mode_GameOver_TrRoom:
 	call .main
-	call HomeCall_NonGame_WriteWarioOBJLst
+	call HomeCall_NonGame_WriteWarioSprMap
 	call HomeCall_ExActS_ExecuteAll
 	ret
 .main:
@@ -3033,8 +3033,8 @@ Mode_GameOver_TrRoomWait:
 	
 	; Otherwise, once we got there, switch to the next mode and decide what to take away.
 .nextMode:
-	ld   a, OBJ_TRROOM_WARIO_SHRUG
-	ld   [sPlLstId], a
+	ld   a, SPR_TRROOM_WARIO_SHRUG
+	ld   [sPlSprId], a
 	xor  a
 	ld   [sPlAnimTimer], a
 	ld   a, BGM_GAMEOVER2			; Set
@@ -3271,8 +3271,8 @@ Mode_GameOver_TrRoomExit:
 	xor  a
 	ld   [sPlAnimTimer], a
 	ld   [sPlFlags], a
-	ld   a, OBJ_WARIO_WALK0
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_WALK0
+	ld   [sPlSprId], a
 	ld   a, $02						; [POI] What's the point
 	ld   [sExActTrRoomTreasureDespawn], a
 	ret
@@ -3318,7 +3318,7 @@ Mode_Ending:
 Mode_Ending_MovePlDown:
 
 	; Draw Wario & process/draw actors
-	call HomeCall_NonGame_WriteWarioOBJLst
+	call HomeCall_NonGame_WriteWarioSprMap
 	call HomeCall_ActS_Do
 	
 	;--
@@ -3353,8 +3353,8 @@ Mode_Ending_MovePlDown:
 	; If we're triggering the hat switch (see below) this will take effect for a single frame,
 	; but it's the same frame used as part of the hat switch, it won't matter.
 	
-	ld   a, OBJ_WARIO_IDLE0			; Set initial frame
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_IDLE0			; Set initial frame
+	ld   [sPlSprId], a
 	ld   a, [sSubMode]				; Next submode
 	inc  a
 	ld   [sSubMode], a
@@ -3382,7 +3382,7 @@ Mode_Ending_MovePlDown:
 ; Waits for the hat switch to finish, before increasing the coin count.
 Mode_Ending_HatSwitch:
 	; Draw player & actors
-	call HomeCall_NonGame_WriteWarioOBJLst
+	call HomeCall_NonGame_WriteWarioSprMap
 	call HomeCall_ActS_Do
 	
 	; Wait until the hat switch anim is over
@@ -3392,10 +3392,10 @@ Mode_Ending_HatSwitch:
 	ret  nz
 	
 	; [BUG] The hat switch leaves us in the wrong animation frame.
-	;       It should be set to OBJ_WARIO_IDLE0 now.
+	;       It should be set to SPR_WARIO_IDLE0 now.
 	IF FIX_BUGS
-		ld   a, OBJ_WARIO_IDLE0
-		ld   [sPlLstId], a
+		ld   a, SPR_WARIO_IDLE0
+		ld   [sPlSprId], a
 	ENDC
 	
 ; =============== Ending_Give300Coins ===============
@@ -3431,7 +3431,7 @@ Ending_Give300Coins:
 ; Makes the player walk towards the lamp.
 Mode_Ending_WalkToLamp:
 	; Draw player & actors
-	call HomeCall_NonGame_WriteWarioOBJLst
+	call HomeCall_NonGame_WriteWarioSprMap
 	call HomeCall_ActS_Do
 	
 	; Wait ($60) frames before walking
@@ -3444,8 +3444,8 @@ Mode_Ending_WalkToLamp:
 .startWalk:						; If so, setup the walk anim
 	xor  a
 	ld   [sPlAnimTimer], a
-	ld   a, OBJ_WARIO_WALK0		; Set 		
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_WALK0		; Set 		
+	ld   [sPlSprId], a
 	ret
 .walkLeft:
 	call NonGame_Wario_AnimWalkFast
@@ -3476,7 +3476,7 @@ Mode_Ending_WalkToLamp:
 	ld   b, $01					; Dec. Absolute 2-byte coord
 	call Pl_MoveLeft
 	ld   hl, sPlFlags			; Face left
-	res  OBJLSTB_XFLIP, [hl]
+	res  SPRMAPB_XFLIP, [hl]
 	ret
 .moveRight:
 	; Move right by 1px
@@ -3485,15 +3485,15 @@ Mode_Ending_WalkToLamp:
 	ld   b, $01					; Inc. Absolute 2-byte coord
 	call Pl_MoveRight
 	ld   hl, sPlFlags			; Face right
-	set  OBJLSTB_XFLIP, [hl]
+	set  SPRMAPB_XFLIP, [hl]
 	ret
 	
 .nextMode:
 	; Prepare for the left walking sequence
 	ld   a, PL_HLD_SPEC_NOTHROW	; Force lamp as held
 	ld   [sActHeld], a
-	ld   a, OBJ_WARIO_HOLDWALK0	; Set holding frame
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_HOLDWALK0	; Set holding frame
+	ld   [sPlSprId], a
 	xor  a						; Reset walk timer
 	ld   [sPlAnimTimer], a
 	ld   a, [sSubMode]			; Next submode
@@ -3506,7 +3506,7 @@ Mode_Ending_WalkToLamp:
 ; Once the player gets in the correct position, it fades out and the room reloads.
 Mode_Ending_WalkToReload:
 	; Draw player & actors
-	call HomeCall_NonGame_WriteWarioOBJLst
+	call HomeCall_NonGame_WriteWarioSprMap
 	call HomeCall_ActS_Do
 	
 	;
@@ -3528,7 +3528,7 @@ Mode_Ending_WalkToReload:
 	ld   b, $01				
 	call Pl_MoveLeft
 	ld   hl, sPlFlags			; Face left
-	res  OBJLSTB_XFLIP, [hl]
+	res  SPRMAPB_XFLIP, [hl]
 	ret
 .moveRight:
 	; Move right by 1px
@@ -3537,14 +3537,14 @@ Mode_Ending_WalkToReload:
 	ld   b, $01
 	call Pl_MoveRight
 	ld   hl, sPlFlags			; Face right
-	set  OBJLSTB_XFLIP, [hl]
+	set  SPRMAPB_XFLIP, [hl]
 	ret
 .nextMode:
 	; Set standing frame -- this is visible initially for a single frame before the room reloads.
 	; In practice it will be visible from the next fade in.
 	; [POI] See Level_FadeOutOBJ0ToBlack_NoOBJDraw for more info.
-	ld   a, OBJ_WARIO_HOLD		
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_HOLD		
+	ld   [sPlSprId], a
 	
 	xor  a						
 	ld   [sPlAnimTimer], a
@@ -3556,7 +3556,7 @@ Mode_Ending_WalkToReload:
 ; =============== Mode_Ending_WaitReload ===============
 ; Sets up the fade-out.
 Mode_Ending_WaitReload:
-	call HomeCall_NonGame_WriteWarioOBJLst
+	call HomeCall_NonGame_WriteWarioSprMap
 IF !OPTIMIZE
 	call Game_SetFinalBossDoorPtr
 ENDC
@@ -3581,7 +3581,7 @@ Mode_Ending_LevelCutscene:
 	cp   a, LVLCLEAR_FINALEXITTOMAP			; Is it finished?
 	jr   z, .startMap						; If so, jump
 
-	call HomeCall_NonGame_WriteWarioOBJLst	; Draw Wario
+	call HomeCall_NonGame_WriteWarioSprMap	; Draw Wario
 	call HomeCall_ActS_Do					; Run cutscene code
 	ret
 .startMap:
@@ -3687,7 +3687,7 @@ Mode_Ending_InitTrRoom:
 ; =============== Mode_Ending_TrRoom ===============
 Mode_Ending_TrRoom:
 	call .main
-	call HomeCall_NonGame_WriteWarioOBJLst
+	call HomeCall_NonGame_WriteWarioSprMap
 	call HomeCall_ExActS_ExecuteAll
 	ret
 .main:
@@ -3720,8 +3720,8 @@ Ending_TrRoom_WalkInR:
 	
 .nextMode:
 	;--
-	ld   a, OBJ_WARIO_IDLE0			; [TCRF] Replaced by OBJ_TRROOM_WARIO_IDLE1 immediately
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_IDLE0			; [TCRF] Replaced by SPR_TRROOM_WARIO_IDLE1 immediately
+	ld   [sPlSprId], a
 	;--
 	xor  a
 	ld   [sPlAnimTimer], a
@@ -3734,8 +3734,8 @@ Ending_TrRoom_WalkInR:
 	ld   a, [sEndingTrRoomMode]		; Next mode
 	inc  a
 	ld   [sEndingTrRoomMode], a
-	ld   a, OBJ_TRROOM_WARIO_IDLE0	; Set actual idle frame
-	ld   [sPlLstId], a
+	ld   a, SPR_TRROOM_WARIO_IDLE0	; Set actual idle frame
+	ld   [sPlSprId], a
 	ret
 	
 ; =============== Ending_TrRoom_CoinCount ===============
@@ -3841,8 +3841,8 @@ Ending_TrRoom_WaitRemove:
 	ld   [sPlDelayTimer], a		; Delay != $00?
 	ret  nz					; If so, return
 	
-	ld   a, OBJ_WARIO_IDLE0
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_IDLE0
+	ld   [sPlSprId], a
 	xor  a
 	ld   [sPlAnimTimer], a
 	ret
@@ -3895,21 +3895,21 @@ Ending_TrRoom_WaitNear:
 	; - Jump (treasure in rows 1 or 2 -- two possible heights, decided later)
 	; - Duck (treasure in row 3)
 	;
-	; [BUG] Standing frame seems odd for this. Shouldn't it be OBJ_WARIO_HOLDJUMP?
+	; [BUG] Standing frame seems odd for this. Shouldn't it be SPR_WARIO_HOLDJUMP?
 	IF FIX_BUGS
-		ld   a, OBJ_WARIO_HOLDJUMP
+		ld   a, SPR_WARIO_HOLDJUMP
 	ELSE
-		ld   a, OBJ_WARIO_HOLD			; Set norm. frame initially
+		ld   a, SPR_WARIO_HOLD			; Set norm. frame initially
 	ENDC
-	ld   [sPlLstId], a
+	ld   [sPlSprId], a
 	ld   a, [sExActTreasureRow]
 	cp   a, $02						; Is this treasure in the third row?
 	jr   nz, .nextMode				; If not, skip
 	; Otherwise, make the player duck
 	ld   a, $01
 	ld   [sPlDuck], a
-	ld   a, OBJ_WARIO_DUCKHOLD
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_DUCKHOLD
+	ld   [sPlSprId], a
 .nextMode:
 	xor  a
 	ld   [sPlAnimTimer], a
@@ -3941,8 +3941,8 @@ Ending_TrRoom_GrabTreasure:
 	cp   a, $7E				; Reached target?
 	ret  nz					; If not, return
 	
-	ld   a, OBJ_WARIO_JUMP	; Set jump frame without holding
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_JUMP	; Set jump frame without holding
+	ld   [sPlSprId], a
 	ld   a, [sEndingTrRoomMode]	; Next mode
 	inc  a
 	ld   [sEndingTrRoomMode], a
@@ -3959,8 +3959,8 @@ Ending_TrRoom_GrabTreasure:
 	cp   a, $8E				; Reached target?
 	ret  nz					; If not, return
 	
-	ld   a, OBJ_WARIO_JUMP	; Set jump frame without holding
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_JUMP	; Set jump frame without holding
+	ld   [sPlSprId], a
 	ld   a, [sEndingTrRoomMode]	; Next mode
 	inc  a
 	ld   [sEndingTrRoomMode], a
@@ -4009,8 +4009,8 @@ Ending_TrRoom_GetTreasure:
 	;
 	; Collect the treasure, and display its value on the level coin counter.
 	;
-	ld   a, OBJ_TRROOM_WARIO_IDLE0	; Stand
-	ld   [sPlLstId], a
+	ld   a, SPR_TRROOM_WARIO_IDLE0	; Stand
+	ld   [sPlSprId], a
 	xor  a							; Stop ducking, if set
 	ld   [sPlDuck], a
 	ld   a, [sEndingTrRoomMode]		; Next mode
@@ -4176,8 +4176,8 @@ Ending_TrRoom_SetNextTreasure:
 	ld   [sTreasureId], a
 	xor  a						; Reset timer
 	ld   [sPlAnimTimer], a
-	ld   a, OBJ_WARIO_IDLE0		
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_IDLE0		
+	ld   [sPlSprId], a
 	ld   a, ENDT_RTN_WAITREMOVE	; New mode
 	ld   [sEndingTrRoomMode], a
 	ret
@@ -4309,7 +4309,7 @@ ExActS_SpawnMoneybag:
 	ldi  [hl], a
 	ldi  [hl], a
 	ldi  [hl], a
-	ld   a, OBJ_TRROOM_MONEYBAG_FALL	; Initial frame
+	ld   a, SPR_TRROOM_MONEYBAG_FALL	; Initial frame
 	ldi  [hl], a
 	xor  a
 	ldi  [hl], a
@@ -4332,8 +4332,8 @@ ExActS_SpawnMoneybag:
 	ld   [sSFX1Set], a
 	; Put the player in the "holding" frame when the moneybag appears.
 	; (already in this frame if we were already holding one moneybag)
-	ld   a, OBJ_WARIO_HOLD			
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_HOLD			
+	ld   [sPlSprId], a
 	ret
 	
 ; =============== Ending_TrRoom_AwardExtra ===============
@@ -4404,8 +4404,8 @@ Ending_TrRoom_WalkOutL:
 	xor  a						
 	ld   [sPlAnimTimer], a			; Init timer for walk anim
 	ld   [sPlFlags], a			; Face left
-	ld   a, OBJ_WARIO_WALK0		; Set initial frame
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_WALK0		; Set initial frame
+	ld   [sPlSprId], a
 	ld   a, MONEYBAGSTACK_SYNCPOS		; Stary syncing moneybag position with player
 	ld   [sExActMoneybagStackMode], a
 	ret
@@ -5327,8 +5327,8 @@ ExActS_SpawnTreasure:
 	ld   [sExActOBJFixX], a
 	xor  a							; Row number of the treasure
 	ld   [sExActTreasureRow], a
-	ld   a, OBJ_TRROOM_TREASURE_A0	; Frame ID
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_TRROOM_TREASURE_A0	; Frame ID
+	ld   [sExActSprMapId], a
 	ld   hl, vBGTrRoomTreasureA		; Treasure block location in tilemap (to make .spawn replace it with an empty space)
 	jr   .spawn
 .treasureB:
@@ -5340,8 +5340,8 @@ ExActS_SpawnTreasure:
 	ld   [sExActOBJFixX], a
 	xor  a
 	ld   [sExActTreasureRow], a
-	ld   a, OBJ_TRROOM_TREASURE_B0
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_TRROOM_TREASURE_B0
+	ld   [sExActSprMapId], a
 	ld   hl, vBGTrRoomTreasureB
 	jr   .spawn
 .treasureC:
@@ -5353,8 +5353,8 @@ ExActS_SpawnTreasure:
 	ld   [sExActOBJFixX], a
 	xor  a
 	ld   [sExActTreasureRow], a
-	ld   a, OBJ_TRROOM_TREASURE_C0
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_TRROOM_TREASURE_C0
+	ld   [sExActSprMapId], a
 	ld   hl, vBGTrRoomTreasureC
 	jr   .spawn
 .treasureD:
@@ -5366,8 +5366,8 @@ ExActS_SpawnTreasure:
 	ld   [sExActOBJFixX], a
 	xor  a
 	ld   [sExActTreasureRow], a
-	ld   a, OBJ_TRROOM_TREASURE_D0
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_TRROOM_TREASURE_D0
+	ld   [sExActSprMapId], a
 	ld   hl, vBGTrRoomTreasureD
 	jr   .spawn
 .treasureE:
@@ -5379,8 +5379,8 @@ ExActS_SpawnTreasure:
 	ld   [sExActOBJFixX], a
 	xor  a
 	ld   [sExActTreasureRow], a
-	ld   a, OBJ_TRROOM_TREASURE_E0
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_TRROOM_TREASURE_E0
+	ld   [sExActSprMapId], a
 	ld   hl, vBGTrRoomTreasureE
 .spawn:
 	; With the value of HL specifying which block to replace...
@@ -5393,7 +5393,7 @@ ExActS_SpawnTreasure:
 	ldi  [hl], a                ; Y coord (low) -- not used
 	ldi  [hl], a                ; X coord (high) -- not used
 	ldi  [hl], a                ; X coord (low) -- not used
-	inc  l						; We've set sExActOBJLstId already
+	inc  l						; We've set sExActSprMapId already
 	ld   a, $10					; Flags
 	ldi  [hl], a
 	xor  a
@@ -5417,8 +5417,8 @@ ExActS_SpawnTreasure:
 	ld   [sExActOBJFixX], a
 	ld   a, $01
 	ld   [sExActTreasureRow], a
-	ld   a, OBJ_TRROOM_TREASURE_F0
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_TRROOM_TREASURE_F0
+	ld   [sExActSprMapId], a
 	ld   hl, vBGTrRoomTreasureF
 	jr   .spawn
 .treasureG:;I
@@ -5430,8 +5430,8 @@ ExActS_SpawnTreasure:
 	ld   [sExActOBJFixX], a
 	ld   a, $01
 	ld   [sExActTreasureRow], a
-	ld   a, OBJ_TRROOM_TREASURE_G0
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_TRROOM_TREASURE_G0
+	ld   [sExActSprMapId], a
 	ld   hl, vBGTrRoomTreasureG
 	jr   .spawn
 .treasureH:;I
@@ -5443,8 +5443,8 @@ ExActS_SpawnTreasure:
 	ld   [sExActOBJFixX], a
 	ld   a, $01
 	ld   [sExActTreasureRow], a
-	ld   a, OBJ_TRROOM_TREASURE_H0
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_TRROOM_TREASURE_H0
+	ld   [sExActSprMapId], a
 	ld   hl, vBGTrRoomTreasureH
 	jr   .spawn
 .treasureI:;I
@@ -5456,8 +5456,8 @@ ExActS_SpawnTreasure:
 	ld   [sExActOBJFixX], a
 	ld   a, $01
 	ld   [sExActTreasureRow], a
-	ld   a, OBJ_TRROOM_TREASURE_I0
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_TRROOM_TREASURE_I0
+	ld   [sExActSprMapId], a
 	ld   hl, vBGTrRoomTreasureI
 	jp   .spawn
 .treasureJ:;I
@@ -5469,8 +5469,8 @@ ExActS_SpawnTreasure:
 	ld   [sExActOBJFixX], a
 	ld   a, $01
 	ld   [sExActTreasureRow], a
-	ld   a, OBJ_TRROOM_TREASURE_J0
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_TRROOM_TREASURE_J0
+	ld   [sExActSprMapId], a
 	ld   hl, vBGTrRoomTreasureJ
 	jp   .spawn
 .treasureK:;I
@@ -5482,8 +5482,8 @@ ExActS_SpawnTreasure:
 	ld   [sExActOBJFixX], a
 	ld   a, $02
 	ld   [sExActTreasureRow], a
-	ld   a, OBJ_TRROOM_TREASURE_K0
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_TRROOM_TREASURE_K0
+	ld   [sExActSprMapId], a
 	ld   hl, vBGTrRoomTreasureK
 	jp   .spawn
 .treasureL:;I
@@ -5495,8 +5495,8 @@ ExActS_SpawnTreasure:
 	ld   [sExActOBJFixX], a
 	ld   a, $02
 	ld   [sExActTreasureRow], a
-	ld   a, OBJ_TRROOM_TREASURE_L0
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_TRROOM_TREASURE_L0
+	ld   [sExActSprMapId], a
 	ld   hl, vBGTrRoomTreasureL
 	jp   .spawn
 .treasureM:;I
@@ -5508,8 +5508,8 @@ ExActS_SpawnTreasure:
 	ld   [sExActOBJFixX], a
 	ld   a, $02
 	ld   [sExActTreasureRow], a
-	ld   a, OBJ_TRROOM_TREASURE_M0
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_TRROOM_TREASURE_M0
+	ld   [sExActSprMapId], a
 	ld   hl, vBGTrRoomTreasureM
 	jp   .spawn
 .treasureN:;I
@@ -5521,8 +5521,8 @@ ExActS_SpawnTreasure:
 	ld   [sExActOBJFixX], a
 	ld   a, $02
 	ld   [sExActTreasureRow], a
-	ld   a, OBJ_TRROOM_TREASURE_N0
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_TRROOM_TREASURE_N0
+	ld   [sExActSprMapId], a
 	ld   hl, vBGTrRoomTreasureN
 	jp   .spawn
 .treasureO:;I
@@ -5534,8 +5534,8 @@ ExActS_SpawnTreasure:
 	ld   [sExActOBJFixX], a
 	ld   a, $02
 	ld   [sExActTreasureRow], a
-	ld   a, OBJ_TRROOM_TREASURE_O0
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_TRROOM_TREASURE_O0
+	ld   [sExActSprMapId], a
 	ld   hl, vBGTrRoomTreasureO
 	jp   .spawn
 	
@@ -5551,7 +5551,7 @@ Mode_Treasure:
 ; =============== Mode_Treasure_Init ===============
 ; Prepares the fade out to the treasure room.
 Mode_Treasure_Init:
-	call HomeCall_WriteWarioOBJLst
+	call HomeCall_WriteWarioSprMap
 	ld   a, $01						; Like in room transitions, pause the actors
 	ld   [sPauseActors], a
 	call HomeCall_ActS_Do			; Draw them
@@ -5781,7 +5781,7 @@ Level_Scroll_Write4Tiles:
 ; =============== Mode_Treasure_TrRoom ===============
 Mode_Treasure_TrRoom:
 	call .main
-	call HomeCall_NonGame_WriteWarioOBJLst
+	call HomeCall_NonGame_WriteWarioSprMap
 	call HomeCall_ExActS_ExecuteAll
 	ret
 .main:
@@ -5812,8 +5812,8 @@ Mode_Treasure_TrRoom_WalkInR:
 	; Determine the player frame to use when inserting the treasure.
 	; If it's on the third row we have to duck, otherwise we can stand normally.
 	;
-	ld   a, OBJ_WARIO_HOLD				; Set stand frame
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_HOLD				; Set stand frame
+	ld   [sPlSprId], a
 	call TrRoom_GetTreasureRowNum		; Set row num to sExActTreasureRow
 	ld   a, [sExActTreasureRow]
 	cp   a, $02							; Is the treasure on the third row?
@@ -5821,8 +5821,8 @@ Mode_Treasure_TrRoom_WalkInR:
 .setDuckFrame:
 	ld   a, $01							; Set duck mode
 	ld   [sPlDuck], a
-	ld   a, OBJ_WARIO_DUCKHOLD			; Set duck frame
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_DUCKHOLD			; Set duck frame
+	ld   [sPlSprId], a
 .nextMode:
 	xor  a
 	ld   [sPlAnimTimer], a
@@ -5881,11 +5881,11 @@ NonGame_Wario_AnimWalk:
 	ret  nz
 	
 	; Use the anim timer as the index to the offset table
-	ld   hl, OBJLstAnimOff_Wario_Walk
+	ld   hl, SprMapAnimOff_Wario_Walk
 	ld   a, [sPlAnimTimer]				; Index++
 	inc  a
 	; If we reached the end of the table, reset the index
-	cp   a, (OBJLstAnimOff_Wario_Walk.end - OBJLstAnimOff_Wario_Walk)
+	cp   a, (SprMapAnimOff_Wario_Walk.end - SprMapAnimOff_Wario_Walk)
 	jr   nz, .setFrame
 	xor  a
 .setFrame:
@@ -5895,17 +5895,17 @@ NonGame_Wario_AnimWalk:
 	ld   d, $00
 	add  hl, de
 	; Add the offset to the current frame id
-	ld   a, [sPlLstId]
-	add  [hl]			; LstId += Offset
-	ld   [sPlLstId], a
+	ld   a, [sPlSprId]
+	add  [hl]			; SprId += Offset
+	ld   [sPlSprId], a
 	ret
-; =============== Unused_OBJLstAnimOff_Wario_WalkFast ===============
+; =============== Unused_SprMapAnimOff_Wario_WalkFast ===============
 ; [TCRF] Unused animation script.
 ;        Considering this is right after NonGame_Wario_AnimWalk, it must
 ;        have been intended for the fast walking animation... but that
-;        reuses OBJLstAnimOff_Wario_Walk, leaving this unreferenced.
+;        reuses SprMapAnimOff_Wario_Walk, leaving this unreferenced.
 ;        It's also identical to NonGame_Wario_AnimWalk anyway.
-Unused_OBJLstAnimOff_Wario_WalkFast: 
+Unused_SprMapAnimOff_Wario_WalkFast: 
 	db -$02,+$01,+$01,-$02,+$03,-$01
 .end:
 	
@@ -5941,8 +5941,8 @@ Mode_Treasure_TrRoom_PlAction:
 	ld   a, [sPlYRel]		; Move up 2px/frame
 	sub  a, $02
 	ld   [sPlYRel], a
-	ld   a, OBJ_WARIO_HOLDJUMP
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_HOLDJUMP
+	ld   [sPlSprId], a
 	ret
 .row2:
 	;
@@ -5955,8 +5955,8 @@ Mode_Treasure_TrRoom_PlAction:
 	ld   a, [sPlYRel]		; Move up 2px/frame
 	sub  a, $02
 	ld   [sPlYRel], a
-	ld   a, OBJ_WARIO_HOLDJUMP
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_HOLDJUMP
+	ld   [sPlSprId], a
 	ret
 .row3:
 	ret						; Don't move
@@ -5968,13 +5968,13 @@ Mode_Treasure_TrRoom_PlAction:
 	ld   [sTrRoomWaitTimer], a
 	
 	; Set correct throw frame
-	ld   a, OBJ_WARIO_JUMPTHROW
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_JUMPTHROW
+	ld   [sPlSprId], a
 	ld   a, [sExActTreasureRow]
 	cp   a, $02						; Are we ducking?
 	ret  nz							; If not, return
-	ld   a, OBJ_WARIO_DUCKTHROW
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_DUCKTHROW
+	ld   [sPlSprId], a
 	ret
 	
 	
@@ -6007,8 +6007,8 @@ Mode_Treasure_TrRoom_MoveDownAndCollect:
 	ret
 .landed:
 
-	ld   a, OBJ_TRROOM_WARIO_IDLE0	; Stand
-	ld   [sPlLstId], a
+	ld   a, SPR_TRROOM_WARIO_IDLE0	; Stand
+	ld   [sPlSprId], a
 	xor  a							; Stop ducking, if set
 	ld   [sPlDuck], a
 	ld   a, [sTreasureTrRoomMode]	; Next mode
@@ -6040,8 +6040,8 @@ Mode_Treasure_TrRoom_WaitTreasure:
 	call TrRoom_AnimWarioGloat	; Continue animating Wario
 	ret
 .preWalk:
-	ld   a, OBJ_TRROOM_WARIO_IDLE0	; Visible for one frame only!
-	ld   [sPlLstId], a
+	ld   a, SPR_TRROOM_WARIO_IDLE0	; Visible for one frame only!
+	ld   [sPlSprId], a
 	xor  a
 	ld   [sPlAnimTimer], a
 	ret
@@ -6053,8 +6053,8 @@ Mode_Treasure_TrRoom_WaitTreasure:
 	ld   a, [sTreasureTrRoomMode]	; Next mode
 	inc  a
 	ld   [sTreasureTrRoomMode], a
-	ld   a, OBJ_WARIO_WALK0		; Init walk anim
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_WALK0		; Init walk anim
+	ld   [sPlSprId], a
 	xor  a
 	ld   [sPlAnimTimer], a			; Init walk anim timer
 	ld   [sPlFlags], a			; Face left
@@ -6213,18 +6213,18 @@ TrRoom_ChkSpawnSparkle:
 	
 	; There are four different animations the sparkles, each taking up 4 frames.
 	; The frame IDs are sequential, so randomize the initial frame with: 
-	; FrameId = OBJ_TRROOM_STAR00 + ((rDiv % 4) * 4)
+	; FrameId = SPR_TRROOM_STAR00 + ((rDiv % 4) * 4)
 	;
 	; This means the initial frame can be any of these:
-	; - OBJ_TRROOM_STAR00
-	; - OBJ_TRROOM_STAR10
-	; - OBJ_TRROOM_STAR20
-	; - OBJ_TRROOM_STAR30
+	; - SPR_TRROOM_STAR00
+	; - SPR_TRROOM_STAR10
+	; - SPR_TRROOM_STAR20
+	; - SPR_TRROOM_STAR30
 	ldh  a, [rDIV]
 	and  a, $03
 	add  a
 	add  a
-	add  OBJ_TRROOM_STAR00
+	add  SPR_TRROOM_STAR00
 	ldi  [hl], a
 	
 	xor  a
@@ -6433,7 +6433,7 @@ TrRoom_GetSparklePos_O:
 ;        may have been part of Mode_Treasure_TrRoom_*.
 Mode_Unused_TrRoomExit:
 	call TrRoom_WalkToExit
-	call HomeCall_NonGame_WriteWarioOBJLst
+	call HomeCall_NonGame_WriteWarioSprMap
 	ret  
 	
 ; =============== TrRoom_Unused_WalkToExit ===============
@@ -8377,8 +8377,8 @@ ENDM
 ; =============== mHatSwitch_BigToSmall ===============
 ; Template macro for switching to Small Wario.
 ; IN
-; - 1: Label to subroutine for setting OBJLst (even timer ticks)
-; - 2: Label to subroutine for setting OBJLst (odd timer ticks)
+; - 1: Label to subroutine for setting sprite mapping (even timer ticks)
+; - 2: Label to subroutine for setting sprite mapping (odd timer ticks)
 MACRO mHatSwitch_BigToSmall
 	mHatSwitch_BigToSmallEx \1,\2,jp,jp,jp
 ENDM
@@ -8386,8 +8386,8 @@ ENDM
 ; =============== mHatSwitch_BigToSmallEx ===============
 ; Template macro for switching to Small Wario.
 ; IN
-; - 1: Label to subroutine for setting OBJLst (even timer ticks)
-; - 2: Label to subroutine for setting OBJLst (odd timer ticks)
+; - 1: Label to subroutine for setting sprite mapping (even timer ticks)
+; - 2: Label to subroutine for setting sprite mapping (odd timer ticks)
 ; - 3: Jump type for Game_HatSwitchAnim_End
 ; - 4: Jump type for \1
 ; - 5: Jump type for \2
@@ -8408,8 +8408,8 @@ ENDM
 ; =============== mHatSwitch_BigToSmall2 ===============
 ; Template macro for switching to Small Wario from a non-garlic powerup.
 ; IN
-; - 1: Label to subroutine for setting OBJLst (even timer ticks)
-; - 2: Label to subroutine for setting OBJLst (odd timer ticks)
+; - 1: Label to subroutine for setting sprite mapping (even timer ticks)
+; - 2: Label to subroutine for setting sprite mapping (odd timer ticks)
 MACRO mHatSwitch_BigToSmall2
 	mHatSwitch_BigToSmall2Ex \1,\2,jp,jp,jp,jp,jp
 ENDM
@@ -8417,8 +8417,8 @@ ENDM
 ; =============== mHatSwitch_BigToSmall2Ex ===============
 ; Template macro for switching to Small Wario from a non-garlic powerup.
 ; IN
-; - 1: Label to subroutine for setting OBJLst (even timer ticks)
-; - 2: Label to subroutine for setting OBJLst (odd timer ticks)
+; - 1: Label to subroutine for setting sprite mapping (even timer ticks)
+; - 2: Label to subroutine for setting sprite mapping (odd timer ticks)
 ; - 3: Jump type for Game_HatSwitchAnim_End
 ; - 4: Jump type for Game_HatSwitchAnim_SetHatSecToEnd
 ; - 5: Jump type for Game_HatSwitchAnim_EndSwitchLoopNormHat
@@ -8562,11 +8562,11 @@ Game_HatSwitchAnim_FromSmall:
 	cp   a, PL_POW_BULL
 	jr   z, .toBull
 .toGarlic: ; PL_POW_GARLIC
-	; Internally, Small Wario has the same hat GFX as the Garlic Powerup.
-	; the game simply doesn't display it since the Small Wario OBJLst does not use those tiles.
+	; Internally, Small Wario has the same hat GFX as the Garlic Powerup,
+	; the game simply doesn't display it since the Small Wario sprite mapping does not use those tiles.
 	; As a result, we don't need to update the hat GFX when going from Small to Garlic.
 	
-.decTimer: 	mHatSwitch_BigToSmall Game_HatSwitch_SetSmallLstId, Game_HatSwitch_SetNormLstId
+.decTimer: 	mHatSwitch_BigToSmall Game_HatSwitch_SetSmallSprId, Game_HatSwitch_SetNormSprId
 .toBull: 	mHatSwitch_SmallToBig SCRUPD_BULLHAT
 .toJet: 	mHatSwitch_SmallToBig SCRUPD_JETHAT
 .toDragon: 	mHatSwitch_SmallToBig SCRUPD_DRAGHAT
@@ -8579,7 +8579,7 @@ Game_HatSwitchAnim_FromGarlic:
 	jr   z, .toJet
 	cp   a, PL_POW_BULL
 	jr   z, .toBull
-.toSmall:	mHatSwitch_BigToSmall	Game_HatSwitch_SetNormLstId,	Game_HatSwitch_SetSmallLstId
+.toSmall:	mHatSwitch_BigToSmall	Game_HatSwitch_SetNormSprId,	Game_HatSwitch_SetSmallSprId
 .toBull:	mHatSwitch_BigToBig 	Game_HatSwitch_SetNormHatMode, 	Game_HatSwitch_SetBullHatMode
 .toJet:		mHatSwitch_BigToBig 	Game_HatSwitch_SetNormHatMode, 	Game_HatSwitch_SetJetHatMode
 .toDragon:	mHatSwitch_BigToBig 	Game_HatSwitch_SetNormHatMode, 	Game_HatSwitch_SetDragHatMode
@@ -8592,7 +8592,7 @@ Game_HatSwitchAnim_FromBull:
 	jr   z, Game_HatSwitchAnim_EndSwitchLoopNormHat.toJet
 	cp   a, PL_POW_GARLIC
 	jr   z, Game_HatSwitchAnim_EndSwitchLoopNormHat.toGarlic
-.toSmall: 	mHatSwitch_BigToSmall2Ex Game_HatSwitch_SetNormLstId, 	Game_HatSwitch_SetSmallLstId, jp,jp,jr,jp,jp
+.toSmall: 	mHatSwitch_BigToSmall2Ex Game_HatSwitch_SetNormSprId, 	Game_HatSwitch_SetSmallSprId, jp,jp,jr,jp,jp
 Game_HatSwitchAnim_EndSwitchLoopNormHat:
 	; Sets the correct hat GFX when switching to Small Wario from a non-garlic powerup.
 	ld   a, SCRUPD_NORMHAT
@@ -8610,7 +8610,7 @@ Game_HatSwitchAnim_FromJet:
 	jr   z, .toBull
 	cp   a, PL_POW_GARLIC
 	jr   z, .toGarlic
-.toSmall:	mHatSwitch_BigToSmall2 	Game_HatSwitch_SetNormLstId, 	Game_HatSwitch_SetSmallLstId
+.toSmall:	mHatSwitch_BigToSmall2 	Game_HatSwitch_SetNormSprId, 	Game_HatSwitch_SetSmallSprId
 .toGarlic:	mHatSwitch_BigToBigEx 	Game_HatSwitch_SetJetHatMode, 	Game_HatSwitch_SetNormHatMode,  jr,jp,jp,jp,jp ; Ending-only
 .toBull: 	mHatSwitch_BigToBigEx 	Game_HatSwitch_SetJetHatMode, 	Game_HatSwitch_SetBullHatMode,  jr,jp,jp,jp,jp 
 .toDragon:	mHatSwitch_BigToBigEx 	Game_HatSwitch_SetJetHatMode, 	Game_HatSwitch_SetDragHatMode,  jr,jp,jp,jp,jp 
@@ -8763,38 +8763,38 @@ ENDC
 	ld   [sPlPostHitInvulnTimer], a
 	ret
 	
-; =============== Game_HatSwitch_Set*LstId ===============
+; =============== Game_HatSwitch_Set*SprId ===============
 ; Sets of subroutines for updating the player sprite, when the powerup switch
 ; involves Small Wario somewhere.
 
 IF FIX_BUGS
 	; Account for collecting a powerup while climbing.
-Game_HatSwitch_SetNormLstId:
+Game_HatSwitch_SetNormSprId:
 	ld   a, [sPlAction]
 	cp   a, PL_ACT_CLIMB				; Are we climbing?
-	ld   a, OBJ_WARIO_CLIMB0			; A = Sprite ID (special)
+	ld   a, SPR_WARIO_CLIMB0			; A = Sprite ID (special)
 	jr   z, .end						; If so, skip
-	ld   a, OBJ_WARIO_STAND				; A = Sprite ID (normal)
+	ld   a, SPR_WARIO_STAND				; A = Sprite ID (normal)
 .end:
-	ld   [sPlLstId], a
+	ld   [sPlSprId], a
 	ret
-Game_HatSwitch_SetSmallLstId:
+Game_HatSwitch_SetSmallSprId:
 	ld   a, [sPlAction]
 	cp   a, PL_ACT_CLIMB				; Are we climbing?		
-	ld   a, OBJ_SMALLWARIO_CLIMB0		; A = Sprite ID (special)
+	ld   a, SPR_SMALLWARIO_CLIMB0		; A = Sprite ID (special)
 	jr   z, .end						; If so, skip
-	ld   a, OBJ_SMALLWARIO_STAND		; A = Sprite ID (normal)
+	ld   a, SPR_SMALLWARIO_STAND		; A = Sprite ID (normal)
 .end:
-	ld   [sPlLstId], a
+	ld   [sPlSprId], a
 	ret
 ELSE
-Game_HatSwitch_SetNormLstId:
-	ld   a, OBJ_WARIO_STAND
-	ld   [sPlLstId], a
+Game_HatSwitch_SetNormSprId:
+	ld   a, SPR_WARIO_STAND
+	ld   [sPlSprId], a
 	ret
-Game_HatSwitch_SetSmallLstId:
-	ld   a, OBJ_SMALLWARIO_STAND
-	ld   [sPlLstId], a
+Game_HatSwitch_SetSmallSprId:
+	ld   a, SPR_SMALLWARIO_STAND
+	ld   [sPlSprId], a
 	ret
 ENDC
 
@@ -8899,10 +8899,10 @@ Game_HatSwitchAnim_FromDragon:
 	jr   z, .toGarlic
 IF FIX_BUGS
 	; with the fixes above, some jr's go out of range...
-.toSmall: 	mHatSwitch_BigToSmall2Ex 	Game_HatSwitch_SetNormLstId, 	Game_HatSwitch_SetSmallLstId,   jp,jr,jp,jp,jp
+.toSmall: 	mHatSwitch_BigToSmall2Ex 	Game_HatSwitch_SetNormSprId, 	Game_HatSwitch_SetSmallSprId,   jp,jr,jp,jp,jp
 .toGarlic: 	mHatSwitch_BigToBigEx 		Game_HatSwitch_SetDragHatMode, 	Game_HatSwitch_SetNormHatMode,  jp,jr,jp,jp,jp ; Ending-only
 ELSE
-.toSmall: 	mHatSwitch_BigToSmall2Ex 	Game_HatSwitch_SetNormLstId, 	Game_HatSwitch_SetSmallLstId,   jp,jr,jp,jr,jr
+.toSmall: 	mHatSwitch_BigToSmall2Ex 	Game_HatSwitch_SetNormSprId, 	Game_HatSwitch_SetSmallSprId,   jp,jr,jp,jr,jr
 .toGarlic: 	mHatSwitch_BigToBigEx 		Game_HatSwitch_SetDragHatMode, 	Game_HatSwitch_SetNormHatMode,  jp,jr,jr,jr,jr ; Ending-only
 ENDC
 .toBull:	mHatSwitch_BigToBigEx 		Game_HatSwitch_SetDragHatMode, 	Game_HatSwitch_SetBullHatMode,  jp,jr,jp,jp,jp 
@@ -8929,7 +8929,7 @@ Level_FadeOutOBJ0ToBlack:
 	;
 	; Always draw and process actors + player
 	;
-	call HomeCall_WriteWarioOBJLst	; Draw Wario
+	call HomeCall_WriteWarioSprMap	; Draw Wario
 	ld   a, $01						; Pause all actors
 	ld   [sPauseActors], a
 	call HomeCall_ActS_Do			; Draw the actors
@@ -8938,7 +8938,7 @@ Level_FadeOutOBJ0ToBlack:
 ; [TCRF] This is specifically used in the ending... to avoid drawing actors while they fade out.
 ;        Which makes the fade out pointless in that case.
 ;        The only way this makes sense is if it only skipped processing actors, while still
-;        drawing the player. Was it patched out by moving above "call HomeCall_WriteWarioOBJLst"?
+;        drawing the player. Was it patched out by moving above "call HomeCall_WriteWarioSprMap"?
 Level_FadeOutOBJ0ToBlack_NoOBJDraw:
 	; Every 8 frames...
 	ld   a, [sTimer]
@@ -9134,7 +9134,7 @@ Mode_LevelDoor_ChkBreakBlock:
 ; =============== Level_FadeInOBJ ===============
 ; Handles the fade in for the OBJ.
 Level_FadeInOBJ:
-	call HomeCall_WriteWarioOBJLst
+	call HomeCall_WriteWarioSprMap
 	; Every $08 frames update palette
 	ld   a, [sTimer]
 	and  a, $07
@@ -9170,7 +9170,7 @@ Level_FadeInOBJ:
 ; =============== Mode_LevelDoor_SwitchToLevel ===============
 ; The door transition is over and it switches to the main gameplay mode.
 Mode_LevelDoor_SwitchToLevel:
-	call HomeCall_WriteWarioOBJLst
+	call HomeCall_WriteWarioSprMap
 	ld   a, GM_LEVEL				; Switch to gameplay
 	ld   [sGameMode], a
 	xor  a
@@ -9408,7 +9408,7 @@ ExActS_SpawnSaveSel_Cross:
 	ldi  [hl], a	
 	ldi  [hl], a	
 	ldi  [hl], a	
-	ld   a, OBJ_SAVESEL_CROSS	; Lst ID
+	ld   a, SPR_SAVESEL_CROSS	; Lst ID
 	ldi  [hl], a
 	xor  a
 	ldi  [hl], a
@@ -9451,7 +9451,7 @@ Mode_Title_SaveSelectIntroA:
 	call SaveSel_DoBreakEffect
 	call HomeCall_ExActS_ExecuteAll
 	call SaveSel_DoIntroA
-	call HomeCall_NonGame_WriteWarioOBJLst
+	call HomeCall_NonGame_WriteWarioSprMap
 	call HomeCall_SaveSel_AnimPipes
 	ret
 	
@@ -9461,7 +9461,7 @@ Mode_Title_SaveSelectIntroB:
 	ld   a, $06*$04			; The 6 brick OBJ are gone
 	ld   [sWorkOAMPos], a
 	call SaveSel_DoIntroB
-	call HomeCall_NonGame_WriteWarioOBJLst
+	call HomeCall_NonGame_WriteWarioSprMap
 	call HomeCall_ExActS_ExecuteAll
 	call HomeCall_SaveSel_AnimPipes
 	ret
@@ -9472,7 +9472,7 @@ Mode_Title_SaveSelect:
 	ld   a, $06*$04
 	ld   [sWorkOAMPos], a
 	call SaveSel_Do
-	call HomeCall_NonGame_WriteWarioOBJLst
+	call HomeCall_NonGame_WriteWarioSprMap
 	call HomeCall_ExActS_ExecuteAll
 	call HomeCall_SaveSel_AnimPipes
 	ret
@@ -9599,8 +9599,8 @@ SaveSel_Do:
 	ld   a, [sSaveBombWario]
 	and  a
 	ret  nz
-	ld   a, OBJ_WARIO_IDLE0
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_IDLE0
+	ld   [sPlSprId], a
 	ret
 	
 ; =============== SaveSel_MoveRight ===============
@@ -9656,8 +9656,8 @@ SaveSel_MoveRightStart:
 	ret  nz
 	xor  a
 	ld   [sPlAnimTimer], a
-	ld   a, OBJ_WARIO_WALK0
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_WALK0
+	ld   [sPlSprId], a
 	ret
 	
 ; =============== SaveSel_MoveLeftStart ===============
@@ -9687,8 +9687,8 @@ SaveSel_MoveLeftStart:
 	ret  nz
 	xor  a
 	ld   [sPlAnimTimer], a
-	ld   a, OBJ_WARIO_WALK0
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_WALK0
+	ld   [sPlSprId], a
 	ret
 	
 ; =============== SaveSel_JumpFromBombStart ===============
@@ -9706,8 +9706,8 @@ SaveSel_JumpFromBombStart:
 	ld   a, [sSaveBombWario]
 	and  a
 	ret  nz
-	ld   a, OBJ_WARIO_JUMP
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_JUMP
+	ld   [sPlSprId], a
 	xor  a
 	ld   [sPlAnimTimer], a
 	ret
@@ -9733,8 +9733,8 @@ SaveSel_JumpToBombStart:
 	ld   a, [sSaveBombWario]
 	and  a
 	ret  nz
-	ld   a, OBJ_WARIO_JUMP
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_JUMP
+	ld   [sPlSprId], a
 	xor  a
 	ld   [sPlAnimTimer], a
 	ret
@@ -9879,12 +9879,12 @@ SaveSel_EnterPipe:
 	and  a
 	jr   z, .normFrame
 .bombFrame:
-	ld   a, OBJ_SAVESEL_BOMBWARIO0
-	ld   [sPlLstId], a
+	ld   a, SPR_SAVESEL_BOMBWARIO0
+	ld   [sPlSprId], a
 	ret
 .normFrame:
-	ld   a, OBJ_SAVESEL_WARIO_LOOKUP
-	ld   [sPlLstId], a
+	ld   a, SPR_SAVESEL_WARIO_LOOKUP
+	ld   [sPlSprId], a
 	ret
 .filePipe:
 	; We're over a savefile pipe
@@ -9920,8 +9920,8 @@ ENDC
 	; Setup anim
 	ld   a, SAVE_PL_ACT_EXITPIPE
 	ld   [sSavePlAct], a
-	ld   a, OBJ_SAVESEL_WARIO_LOOKUP
-	ld   [sPlLstId], a
+	ld   a, SPR_SAVESEL_WARIO_LOOKUP
+	ld   [sPlSprId], a
 	; Clear bomb wario opt
 	xor  a
 	ld   [sPlAnimTimer], a
@@ -10025,7 +10025,7 @@ ENDC
 	ldi  [hl], a
 	ldi  [hl], a
 	ldi  [hl], a
-	ld   a, OBJ_SAVESEL_SMOKE0
+	ld   a, SPR_SAVESEL_SMOKE0
 	ldi  [hl], a
 	xor  a
 	ldi  [hl], a
@@ -10082,8 +10082,8 @@ SaveSel_ExitPipe:
 	ld   a, [sSaveBombWario]
 	and  a
 	ret  nz
-	ld   a, OBJ_SAVESEL_WARIO_LOOKUP
-	ld   [sPlLstId], a
+	ld   a, SPR_SAVESEL_WARIO_LOOKUP
+	ld   [sPlSprId], a
 	ret
 ; =============== SaveSel_ExitPipe ===============
 ; Performs the small jump after the exit from a pipe.
@@ -10203,8 +10203,8 @@ SaveSel_IntroB_Act1:
 	jr   nz, .headTurn			; If != $40, jump
 	
 	; If it's $40, switch to the standing frame
-	ld   a, OBJ_SAVESEL_WARIO_STANDNOHAT
-	ld   [sPlLstId], a
+	ld   a, SPR_SAVESEL_WARIO_STANDNOHAT
+	ld   [sPlSprId], a
 	ret
 .headTurn:
 	ret  nc						; Do nothing until it's < $40
@@ -10215,9 +10215,9 @@ SaveSel_IntroB_Act1:
 	ret  nz
 	
 	; Switch between HEADTURNA an HEADTURNB (also playing the appropriate SFX)
-	ld   a, [sPlLstId]
+	ld   a, [sPlSprId]
 	xor  $01
-	ld   [sPlLstId], a
+	ld   [sPlSprId], a
 	bit  0, a
 	jr   nz, .playSFXA
 .playSFXB:
@@ -10233,8 +10233,8 @@ SaveSel_IntroB_Act1:
 	; Starts the jump sequence
 	xor  a
 	ld   [sPlFlags], a
-	ld   a, OBJ_SAVESEL_WARIO_JUMPNOHAT
-	ld   [sPlLstId], a
+	ld   a, SPR_SAVESEL_WARIO_JUMPNOHAT
+	ld   [sPlSprId], a
 	ld   a, SFX1_05
 	ld   [sSFX1Set], a
 	ret
@@ -10270,8 +10270,8 @@ SaveSel_IntroB_Act1:
 	ld   a, [sSaveAnimAct]			; Next act
 	inc  a
 	ld   [sSaveAnimAct], a
-	ld   a, OBJ_WARIO_JUMP			;
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_JUMP			;
+	ld   [sPlSprId], a
 	ld   a, $1B						; Start at the index used when falling
 	ld   [sPlJumpYPathIndex], a
 	ret
@@ -10315,8 +10315,8 @@ SaveSel_IntroB_Act2:
 	ld   a, [sSaveAnimAct]
 	inc  a
 	ld   [sSaveAnimAct], a
-	ld   a, OBJ_WARIO_IDLE0
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_IDLE0
+	ld   [sPlSprId], a
 	ld   a, $20					; Idle delay before moving
 	ld   [sSaveWarioTimer], a
 	ld   a, SFX1_21
@@ -10338,8 +10338,8 @@ SaveSel_IntroB_Act3:
 .startMoveRight:
 	ld   a, $20					
 	ld   [sPlFlags], a
-	ld   a, OBJ_WARIO_WALK0
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_WALK0
+	ld   [sPlSprId], a
 	xor  a
 	ld   [sPlAnimTimer], a
 	ret
@@ -10370,8 +10370,8 @@ SaveSel_IntroB_Act3:
 .nextAct:
 	xor  a
 	ld   [sPlAnimTimer], a
-	ld   a, OBJ_WARIO_THUMBSUP0
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_THUMBSUP0
+	ld   [sPlSprId], a
 	ld   a, [sSaveAnimAct]
 	inc  a
 	ld   [sSaveAnimAct], a
@@ -10390,8 +10390,8 @@ SaveSel_IntroB_Act4:
 	ld   [sSaveAnimAct], a
 	ld   a, GM_TITLE_SAVESEL
 	ld   [sSubMode], a
-	ld   a, OBJ_WARIO_IDLE0
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_IDLE0
+	ld   [sPlSprId], a
 	ret
 	
 ; =============== NonGame_Wario_AnimWalkFast ===============
@@ -10414,11 +10414,11 @@ NonGame_Wario_AnimWalkFast:
 	ret  nz
 	
 	; Use the anim timer as the index to the offset table
-	ld   hl, OBJLstAnimOff_Wario_Walk
+	ld   hl, SprMapAnimOff_Wario_Walk
 	ld   a, [sPlAnimTimer]				; Index++
 	inc  a
 	; If we reached the end of the table, reset the index
-	cp   a, (OBJLstAnimOff_Wario_Walk.end - OBJLstAnimOff_Wario_Walk)
+	cp   a, (SprMapAnimOff_Wario_Walk.end - SprMapAnimOff_Wario_Walk)
 	jr   nz, .setFrame
 	xor  a
 .setFrame:
@@ -10428,13 +10428,13 @@ NonGame_Wario_AnimWalkFast:
 	ld   d, $00
 	add  hl, de
 	; Add the offset to the current frame id
-	ld   a, [sPlLstId]
-	add  [hl]			; LstId += Offset
-	ld   [sPlLstId], a
+	ld   a, [sPlSprId]
+	add  [hl]			; SprId += Offset
+	ld   [sPlSprId], a
 	ret
-; =============== OBJLstAnimOff_Wario_Walk ===============
-; Table of offsets to the current LstId to cycle frames for the walk cycle.
-OBJLstAnimOff_Wario_Walk:
+; =============== SprMapAnimOff_Wario_Walk ===============
+; Table of offsets to the current SprId to cycle frames for the walk cycle.
+SprMapAnimOff_Wario_Walk:
 	db -$02,+$01,+$01,-$02,+$03,-$01
 	.end:
 	
@@ -10455,11 +10455,11 @@ SaveSel_BombWario_Anim:
 	ld   [sSFX4Set], a
 	
 	; Use the anim timer as the index to the offset table
-	ld   hl, OBJLstAnimOff_BombWario
+	ld   hl, SprMapAnimOff_BombWario
 	ld   a, [sPlAnimTimer]
 	inc  a
 	; If we reached the end of the table, reset the index
-	cp   a, (OBJLstAnimOff_BombWario.end - OBJLstAnimOff_BombWario)
+	cp   a, (SprMapAnimOff_BombWario.end - SprMapAnimOff_BombWario)
 	jr   nz, .setFrame
 	xor  a
 .setFrame:
@@ -10469,13 +10469,13 @@ SaveSel_BombWario_Anim:
 	ld   d, $00
 	add  hl, de
 	; Add the offset to the current frame id
-	ld   a, [sPlLstId]
-	add  [hl]			; LstId += Offset
-	ld   [sPlLstId], a
+	ld   a, [sPlSprId]
+	add  [hl]			; SprId += Offset
+	ld   [sPlSprId], a
 	ret
 	
-; =============== OBJLstAnimOff_Wario_Walk ===============
-OBJLstAnimOff_BombWario:
+; =============== SprMapAnimOff_Wario_Walk ===============
+SprMapAnimOff_BombWario:
 	db -$02,+$01,-$01,+$02
 	.end:
 
@@ -10689,8 +10689,8 @@ SaveSel_DoIntroA:
 	call Wario_DoDashAfterimages
 	ret
 .nextSubMode:
-	ld   a, OBJ_SAVESEL_WARIO_BUMP
-	ld   [sPlLstId], a
+	ld   a, SPR_SAVESEL_WARIO_BUMP
+	ld   [sPlSprId], a
 	ld   a, GM_TITLE_SAVESELINTRO1
 	ld   [sSubMode], a
 	xor  a
@@ -10706,7 +10706,7 @@ SaveSel_DoIntroA:
 	ldi  [hl], a
 	ldi  [hl], a
 	ldi  [hl], a
-	ld   a, OBJ_SAVESEL_OLDHAT0
+	ld   a, SPR_SAVESEL_OLDHAT0
 	ldi  [hl], a
 	xor  a
 	ldi  [hl], a

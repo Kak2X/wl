@@ -6,8 +6,8 @@
 	dw LevelBlock_StoneCave	; 16x16 Blocks 
 	db $01,$E0	; Player Y
 	db $0D,$88	; Player X
-	db OBJ_WARIO_STAND ; OBJLst Frame
-	db $00		; OBJLst Flags (Face Left)
+	db SPR_WARIO_STAND ; Player sprite
+	db $00		; Player sprite flags (Face Left)
 	db $01,$60	; Scroll Y
 	db $0D,$28	; Scroll X
 	db DIR_NONE		; Screen Lock Flags

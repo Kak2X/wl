@@ -5,7 +5,7 @@
 LoadGFX_ParsleyWoods_SherbetLand:
 	ld   hl, GFXRLE_ParsleyWoods_SherbetLand
 	call DecompressGFX
-	call HomeCall_LoadGFX_SubmapOBJ
+	call HomeCall_LoadGFX_SubmapObj
 	ret
 ; =============== LoadBG_ParsleyWoods ===============
 LoadBG_ParsleyWoods:
@@ -28,7 +28,7 @@ LoadGFX_Overworld:
 	jr   LoadGFX_OverworldOBJ
 	ret
 ; =============== LoadGFX_OverworldOBJ ===============
-; Copies the overworld sprites GFX to VRAM, similarly to LoadGFX_SubmapOBJ.
+; Copies the overworld sprites GFX to VRAM, similarly to LoadGFX_SubmapObj.
 ; The upper portion of the compressed overworld GFX is left empty to make space for these tiles.
 LoadGFX_OverworldOBJ:
 	ld   hl, GFX_OverworldOBJ	; HL = Ptr to uncompressed GFX
@@ -174,18 +174,18 @@ Map_DrawFreeViewArrows:
 	ld   [sMapExOBJ1Flags], a
 	ld   [sMapExOBJ2Flags], a
 	ld   [sMapExOBJ3Flags], a
-	; Draw all the arrow OBJLst, one after the other
+	; Draw all the arrow sprites, one after the other
 	ld   a, $00
-	ld   [sMapExOBJ0LstId], a
+	ld   [sMapExOBJ0SprId], a
 	call Map_WriteExOBJ0Lst
 	ld   a, $01
-	ld   [sMapExOBJ1LstId], a
+	ld   [sMapExOBJ1SprId], a
 	call Map_WriteExOBJ1Lst
 	ld   a, $02
-	ld   [sMapExOBJ2LstId], a
+	ld   [sMapExOBJ2SprId], a
 	call Map_WriteExOBJ2Lst
 	ld   a, $03
-	ld   [sMapExOBJ3LstId], a
+	ld   [sMapExOBJ3SprId], a
 	call Map_WriteExOBJ3Lst
 	ret
 .usePal0:
@@ -195,18 +195,18 @@ Map_DrawFreeViewArrows:
 	ld   [sMapExOBJ1Flags], a
 	ld   [sMapExOBJ2Flags], a
 	ld   [sMapExOBJ3Flags], a
-	; Draw all the arrow OBJLst, one after the other
+	; Draw all the arrow sprites, one after the other
 	ld   a, $00
-	ld   [sMapExOBJ0LstId], a
+	ld   [sMapExOBJ0SprId], a
 	call Map_WriteExOBJ0Lst
 	ld   a, $01
-	ld   [sMapExOBJ1LstId], a
+	ld   [sMapExOBJ1SprId], a
 	call Map_WriteExOBJ1Lst
 	ld   a, $02
-	ld   [sMapExOBJ2LstId], a
+	ld   [sMapExOBJ2SprId], a
 	call Map_WriteExOBJ2Lst
 	ld   a, $03
-	ld   [sMapExOBJ3LstId], a
+	ld   [sMapExOBJ3SprId], a
 	call Map_WriteExOBJ3Lst
 	ret
 ; =============== Map_InitFreeViewArrows ===============
@@ -235,13 +235,13 @@ Map_InitFreeViewArrows:
 	ld   a, $00
 	;--
 	; Setup mapping used
-	ld   [sMapExOBJ0LstId], a
+	ld   [sMapExOBJ0SprId], a
 	ld   a, $01
-	ld   [sMapExOBJ1LstId], a
+	ld   [sMapExOBJ1SprId], a
 	ld   a, $02
-	ld   [sMapExOBJ2LstId], a
+	ld   [sMapExOBJ2SprId], a
 	ld   a, $03
-	ld   [sMapExOBJ3LstId], a
+	ld   [sMapExOBJ3SprId], a
 	; Start with OBP1 (inverted palette) by default
 	ld   a, $10
 	ld   [sMapExOBJ0Flags], a
@@ -254,69 +254,69 @@ Map_InitFreeViewArrows:
 ; Sets of functions to write OBJ mappings to OAM in the map screen.
 ;
 ; There are 4 generic slots (numbered 0 to 3) which can be used for anything.
-; Each slot has its own subroutine to prepare the call to Map_WriteOBJLst.
+; Each slot has its own subroutine to prepare the call to Map_WriteSprMap.
 ; There is a separate function for each of the slots.
 Map_WriteExOBJ0Lst:
-	ld   hl, OBJLstPtrTable_MapMisc	; HL = Ptr to OBJList pointer tsble
+	ld   hl, SprMapPtrTable_MapMisc	; HL = Ptr to OBJList pointer tsble
 	; Copy the ExOBJ info to the OAMWrite fields
 	ld   a, [sMapExOBJ0Y]		; Y base coord
 	ld   [sMapOAMWriteY], a
 	ld   a, [sMapExOBJ0X]		; X base coord
 	ld   [sMapOAMWriteX], a
-	ld   a, [sMapExOBJ0LstId]	; Index to the OBJList ptr table
-	ld   [sMapOAMWriteLstId], a
-	ld   a, [sMapExOBJ0Flags]	; OBJ Flags
+	ld   a, [sMapExOBJ0SprId]	; Index to the OBJList ptr table
+	ld   [sMapOAMWriteSprId], a
+	ld   a, [sMapExOBJ0Flags]	; Sprite flags
 	ld   [sMapOAMWriteFlags], a
-Map_WriteExOBJLst:
-	call Map_WriteOBJLst
+Map_WriteExSprMap:
+	call Map_WriteSprMap
 	ret
 Map_WriteExOBJ1Lst:
-	ld   hl, OBJLstPtrTable_MapMisc
+	ld   hl, SprMapPtrTable_MapMisc
 	ld   a, [sMapExOBJ1Y]
 	ld   [sMapOAMWriteY], a
 	ld   a, [sMapExOBJ1X]
 	ld   [sMapOAMWriteX], a
-	ld   a, [sMapExOBJ1LstId]
-	ld   [sMapOAMWriteLstId], a
+	ld   a, [sMapExOBJ1SprId]
+	ld   [sMapOAMWriteSprId], a
 	ld   a, [sMapExOBJ1Flags]
 	ld   [sMapOAMWriteFlags], a
-	jr   Map_WriteExOBJLst
+	jr   Map_WriteExSprMap
 Map_WriteExOBJ2Lst:
-	ld   hl, OBJLstPtrTable_MapMisc
+	ld   hl, SprMapPtrTable_MapMisc
 	ld   a, [sMapExOBJ2Y]
 	ld   [sMapOAMWriteY], a
 	ld   a, [sMapExOBJ2X]
 	ld   [sMapOAMWriteX], a
-	ld   a, [sMapExOBJ2LstId]
-	ld   [sMapOAMWriteLstId], a
+	ld   a, [sMapExOBJ2SprId]
+	ld   [sMapOAMWriteSprId], a
 	ld   a, [sMapExOBJ2Flags]
 	ld   [sMapOAMWriteFlags], a
-	jr   Map_WriteExOBJLst
+	jr   Map_WriteExSprMap
 Map_WriteExOBJ3Lst:
-	ld   hl, OBJLstPtrTable_MapMisc
+	ld   hl, SprMapPtrTable_MapMisc
 	ld   a, [sMapExOBJ3Y]
 	ld   [sMapOAMWriteY], a
 	ld   a, [sMapExOBJ3X]
 	ld   [sMapOAMWriteX], a
-	ld   a, [sMapExOBJ3LstId]
-	ld   [sMapOAMWriteLstId], a
+	ld   a, [sMapExOBJ3SprId]
+	ld   [sMapOAMWriteSprId], a
 	ld   a, [sMapExOBJ3Flags]
 	ld   [sMapOAMWriteFlags], a
-	jr   Map_WriteExOBJLst
-; =============== OBJLstPtrTable_MapMisc ===============
+	jr   Map_WriteExSprMap
+; =============== SprMapPtrTable_MapMisc ===============
 ; Sprite mappings for miscellaneous map elements.
 ;
-OBJLstPtrTable_MapMisc: 
-	dw OBJLst_MapArrowLeft
-	dw OBJLst_MapArrowRight
-	dw OBJLst_MapArrowUp
-	dw OBJLst_MapArrowDown
-	dw OBJLst_MapBlinkDot
-OBJLst_MapArrowUp:    INCBIN "data/objlst/map/arrow_up.bin"
-OBJLst_MapArrowDown:  INCBIN "data/objlst/map/arrow_down.bin"
-OBJLst_MapArrowLeft:  INCBIN "data/objlst/map/arrow_left.bin"
-OBJLst_MapArrowRight: INCBIN "data/objlst/map/arrow_right.bin"
-OBJLst_MapBlinkDot:   INCBIN "data/objlst/map/leveldot.bin"
+SprMapPtrTable_MapMisc: 
+	dw SprMap_MapArrowLeft
+	dw SprMap_MapArrowRight
+	dw SprMap_MapArrowUp
+	dw SprMap_MapArrowDown
+	dw SprMap_MapBlinkDot
+SprMap_MapArrowUp:    INCBIN "data/sprmap/map/arrow_up.bin"
+SprMap_MapArrowDown:  INCBIN "data/sprmap/map/arrow_down.bin"
+SprMap_MapArrowLeft:  INCBIN "data/sprmap/map/arrow_left.bin"
+SprMap_MapArrowRight: INCBIN "data/sprmap/map/arrow_right.bin"
+SprMap_MapBlinkDot:   INCBIN "data/sprmap/map/leveldot.bin"
 
 ; =============== mMap_UpdateOBJCoords ===============
 ; Generates code to update the relative coordinates of a specific overworld object.
@@ -361,9 +361,9 @@ Map_MoveMtTeapotLid:
 Map_NoMoveMtTeapotLid:
 	call Map_MtTeapotLidSetPos ; Use the initial abs coordinates
 IF IMPROVE
-	call Map_WriteMtTeaputSproutOBJLst ; Sprout effect when crashed down
+	call Map_WriteMtTeaputSproutSprMap ; Sprout effect when crashed down
 ENDC
-	jr   Map_WriteMtTeapotLidOBJLst
+	jr   Map_WriteMtTeapotLidSprMap
 ;--
 .addStep:
 	add  $01
@@ -401,7 +401,7 @@ ENDC
 	
 .display:
 	call Map_MtTeapotLidUpdateCoords
-	jr   Map_WriteMtTeapotLidOBJLst
+	jr   Map_WriteMtTeapotLidSprMap
 	
 .moveDown:
 	ld   hl, sMapMtTeapotLidY
@@ -418,7 +418,7 @@ ENDC
 	; Clear the MSB to mark upwards movement (+ timer reset)
 	xor  a
 	ld   [sMapMtTeapotLidYTimer], a
-	jr   Map_WriteMtTeapotLidOBJLst
+	jr   Map_WriteMtTeapotLidSprMap
 .switchToDown:
 	; Set the MSB to mark downwards movement (+ timer reset)
 	xor  a
@@ -426,26 +426,26 @@ ENDC
 	ld   [sMapMtTeapotLidYTimer], a
 	
 ; =============== Map_NoMoveMtTeapotLid ===============
-; Writes the OBJLst for Mt.Teapot's lid in the overworld.
-; This subroutine prepares a call to Map_OverworldWriteOBJLst.
-Map_WriteMtTeapotLidOBJLst:
-	ld   a, $00						; OBJLst 00 -> Mt.Teapot's lid
-	ld   [sMapMtTeapotLidLstId], a
+; Writes the sprite mapping for Mt.Teapot's lid in the overworld.
+; This subroutine prepares a call to Map_OverworldWriteSprMap.
+Map_WriteMtTeapotLidSprMap:
+	ld   a, $00						; ID 00 -> Mt.Teapot's lid
+	ld   [sMapMtTeapotLidSprId], a
 	ld   a, $10						; Set flags
 	ld   [sMapMtTeapotLidFlags], a
 	; Prepare call
-	ld   hl, OBJLstPtrTable_Map_OverworldMtTeapot
+	ld   hl, SprMapPtrTable_Map_OverworldMtTeapot
 	ld   a, [sMapMtTeapotLidY]		
 	ld   [sMapOAMWriteY], a
 	ld   a, [sMapMtTeapotLidX]
 	ld   [sMapOAMWriteX], a
-	ld   a, [sMapMtTeapotLidLstId]
-	ld   [sMapOAMWriteLstId], a
+	ld   a, [sMapMtTeapotLidSprId]
+	ld   [sMapOAMWriteSprId], a
 	ld   a, [sMapMtTeapotLidFlags]
 	ld   [sMapOAMWriteFlags], a
 	ld   bc, sMapMtTeapotLidY
 	ld   de, sMapMtTeapotLidX
-	call Map_OverworldWriteOBJLst
+	call Map_OverworldWriteSprMap
 	ret
 	
 ; =============== Map_MtTeapotLidUpdateCoords ===============
@@ -538,7 +538,7 @@ IF FIX_BUGS
 	; [BUG] There are a few frames where the lid isn't drawn due to the call to jr .writeLid being done manually.
 	call .doScript
 	call Map_MtTeapotLidUpdateCoords
-	jp   Map_WriteMtTeapotLidOBJLst
+	jp   Map_WriteMtTeapotLidSprMap
 .doScript:
 ENDC
 	ld   a, [sMapOverworldCutsceneScript]
@@ -556,7 +556,7 @@ ENDC
 IF !FIX_BUGS
 .writeLid:
 	call Map_MtTeapotLidUpdateCoords
-	jp   Map_WriteMtTeapotLidOBJLst
+	jp   Map_WriteMtTeapotLidSprMap
 ENDC
 .act0:
 	ld   a, [sMapTimer_Low]			; Every 8 frames
@@ -659,7 +659,7 @@ ENDC
 	jr   .nextAct
 .act4:
 IF IMPROVE
-	call Map_WriteMtTeaputSproutOBJLst ; Show steam
+	call Map_WriteMtTeaputSproutSprMap ; Show steam
 ENDC
 	ld   hl, sMapCutsceneEndTimer	; Pause cutscene for $B0 frames
 	inc  [hl]
@@ -686,10 +686,10 @@ ENDC
 
 IF IMPROVE
 
-; =============== Map_InitMtTeapotSproutOBJLst ===============
+; =============== Map_InitMtTeapotSproutSprMap ===============
 ; Initialize the variables for the steam sprout effect, unused in the original game.
 ; Fixed up to be properly aligned to Mt. Teapot.
-Map_InitMtTeapotSproutOBJLst:
+Map_InitMtTeapotSproutSprMap:
 	ld   a, [sMapMtTeapotLidY] 					; Y = LidY
 	add  -$10
 	ld   [sMapMtTeapotSproutY], a
@@ -698,15 +698,15 @@ Map_InitMtTeapotSproutOBJLst:
 	ld   [sMapMtTeapotSproutX], a
 	ld   a, $07
 	ld   [sMapMtTeapotSproutAnimTimer], a
-	ld   a, $01	; OBJ_MTTEAPOT_SPROUT1								
-	ld   [sMapMtTeapotSproutLstId], a
+	ld   a, $01	; SPR_MTTEAPOT_SPROUT1								
+	ld   [sMapMtTeapotSproutSprId], a
 	ld   a, $10
 	ld   [sMapMtTeapotSproutFlags], a
 	ret
 	
-; =============== Map_WriteMtTeaputSproutOBJLst ===============
+; =============== Map_WriteMtTeaputSproutSprMap ===============
 ; Displays a steam sprout effect after the lid crashes down.
-Map_WriteMtTeaputSproutOBJLst:
+Map_WriteMtTeaputSproutSprMap:
 
 	; Update location
 	ld   a, [sMapMtTeapotLidY] 					; Y = LidY
@@ -723,29 +723,29 @@ Map_WriteMtTeaputSproutOBJLst:
 	jr   nz, .write				; If not, don't update the frame
 	;--
 	; Loop between indexes $03-$05
-	ld   hl, sMapMtTeapotSproutLstId
+	ld   hl, sMapMtTeapotSproutSprId
 	inc  [hl]					; Otherwise, switch to the next frame
 	ld   a, [hl]
-	cp   a, $04 + 1 ; OBJ_MTTEAPOT_SPROUT3+1	; Went past the last index?
+	cp   a, $04 + 1 ; SPR_MTTEAPOT_SPROUT3+1	; Went past the last index?
 	jr   nz, .write				; If not, jump
 	
-	ld   a, $01 ; OBJ_MTTEAPOT_SPROUT0		; Otherwise reset it back the first entry
+	ld   a, $01 ; SPR_MTTEAPOT_SPROUT0		; Otherwise reset it back the first entry
 	ld   [hl], a
 .write:
 	; Prepare call
-	ld   hl, OBJLstPtrTable_Map_OverworldMtTeapot
+	ld   hl, SprMapPtrTable_Map_OverworldMtTeapot
 	ld   a, [sMapMtTeapotSproutY]
 	ld   [sMapOAMWriteY], a
 	ld   a, [sMapMtTeapotSproutX]
 	ld   [sMapOAMWriteX], a
-	ld   a, [sMapMtTeapotSproutLstId]
-	ld   [sMapOAMWriteLstId], a
+	ld   a, [sMapMtTeapotSproutSprId]
+	ld   [sMapOAMWriteSprId], a
 	ld   a, [sMapMtTeapotSproutFlags]
 	ld   [sMapOAMWriteFlags], a
-	jp   Map_WriteOBJLst
+	jp   Map_WriteSprMap
 ELSE
 
-; =============== Map_Unused_WriteMtTeapotSproutOBJLst ===============
+; =============== Map_Unused_WriteMtTeapotSproutSprMap ===============
 ; [TCRF] Unreferenced sprite mapping setup code for the sprout coming out of Mt.Teapot.
 ;        The graphics for it exist in the overworld submap GFX are present alongside the sprite mapping
 ;
@@ -758,7 +758,7 @@ ELSE
 ; Considering only the initial mapping frame is shown, the code may be unfinished.
 ; Note that there is an also unused table just after this subroutine with the frame IDs 
 ; which would have been used for animating the sprite.
-Map_Unused_WriteMtTeapotSproutOBJLst:
+Map_Unused_WriteMtTeapotSproutSprMap:
 	; OBJ Settings
 	ld   a, [sMapMtTeapotLidY] 					; Y = LidY
 	ld   [sMap_Unused_MtTeapotSproutY], a
@@ -766,23 +766,23 @@ Map_Unused_WriteMtTeapotSproutOBJLst:
 	add  $30
 	ld   [sMap_Unused_MtTeapotSproutX], a
 	ld   a, $01									; Use first mapping frame
-	ld   [sMap_Unused_MtTeapotSproutLstId], a
+	ld   [sMap_Unused_MtTeapotSproutSprId], a
 	ld   a, $10
 	ld   [sMap_Unused_MtTeapotSproutFlags], a
 	; Prepare call
-	ld   hl, OBJLstPtrTable_Map_OverworldMtTeapot
+	ld   hl, SprMapPtrTable_Map_OverworldMtTeapot
 	ld   a, [sMap_Unused_MtTeapotSproutY]
 	ld   [sMapOAMWriteY], a
 	ld   a, [sMap_Unused_MtTeapotSproutX]
 	ld   [sMapOAMWriteX], a
-	ld   a, [sMap_Unused_MtTeapotSproutLstId]
-	ld   [sMapOAMWriteLstId], a
+	ld   a, [sMap_Unused_MtTeapotSproutSprId]
+	ld   [sMapOAMWriteSprId], a
 	ld   a, [sMap_Unused_MtTeapotSproutFlags]
 	ld   [sMapOAMWriteFlags], a
-	call Map_WriteOBJLst
+	call Map_WriteSprMap
 	ret
 ; Unused sprout anim defn
-OBJLstAnim_Unused_Map_MtTeapotSprout:
+SprMapAnim_Unused_Map_MtTeapotSprout:
 	db $01 
 	db $02
 	db $03
@@ -790,19 +790,19 @@ OBJLstAnim_Unused_Map_MtTeapotSprout:
 	db $FF
 ENDC
 
-; =============== OBJLstPtrTable_Map_OverworldMtTeapot ===============
-OBJLstPtrTable_Map_OverworldMtTeapot: 
-	dw OBJLst_Map_MtTeapotLid
+; =============== SprMapPtrTable_Map_OverworldMtTeapot ===============
+SprMapPtrTable_Map_OverworldMtTeapot: 
+	dw SprMap_Map_MtTeapotLid
 	; [TCRF] Unused sprite mappings for Mt.Teapot's sprout
-	dw OBJLst_Unused_Map_MtTeapotSprout0
-	dw OBJLst_Unused_Map_MtTeapotSprout1
-	dw OBJLst_Unused_Map_MtTeapotSprout2
-	dw OBJLst_Unused_Map_MtTeapotSprout3
-OBJLst_Map_MtTeapotLid: INCBIN "data/objlst/map/overworld_mtteapot_lid.bin"
-OBJLst_Unused_Map_MtTeapotSprout0: INCBIN "data/objlst/map/overworld_unused_mtteapot_sprout0.bin"
-OBJLst_Unused_Map_MtTeapotSprout1: INCBIN "data/objlst/map/overworld_unused_mtteapot_sprout1.bin"
-OBJLst_Unused_Map_MtTeapotSprout2: INCBIN "data/objlst/map/overworld_unused_mtteapot_sprout2.bin"
-OBJLst_Unused_Map_MtTeapotSprout3: INCBIN "data/objlst/map/overworld_unused_mtteapot_sprout3.bin"
+	dw SprMap_Unused_Map_MtTeapotSprout0
+	dw SprMap_Unused_Map_MtTeapotSprout1
+	dw SprMap_Unused_Map_MtTeapotSprout2
+	dw SprMap_Unused_Map_MtTeapotSprout3
+SprMap_Map_MtTeapotLid: INCBIN "data/sprmap/map/overworld_mtteapot_lid.bin"
+SprMap_Unused_Map_MtTeapotSprout0: INCBIN "data/sprmap/map/overworld_unused_mtteapot_sprout0.bin"
+SprMap_Unused_Map_MtTeapotSprout1: INCBIN "data/sprmap/map/overworld_unused_mtteapot_sprout1.bin"
+SprMap_Unused_Map_MtTeapotSprout2: INCBIN "data/sprmap/map/overworld_unused_mtteapot_sprout2.bin"
+SprMap_Unused_Map_MtTeapotSprout3: INCBIN "data/sprmap/map/overworld_unused_mtteapot_sprout3.bin"
 
 ; =============== Map_C32ClearCutscene_Init ===============
 ; Initializes the cutscene played in the overworld of Parsley Woods' lake being drained.
@@ -827,7 +827,7 @@ Map_C32ClearCutscene_Init:
 	ld   [sMapLakeSproutX], a
 	ld   [sMap_Unused_LakeSproutXCopy], a
 	ld   a, $00
-	ld   [sMapLakeSproutLstId], a
+	ld   [sMapLakeSproutSprId], a
 	
 	; And the sprite version of the lake
 	ld   a, $66
@@ -838,7 +838,7 @@ Map_C32ClearCutscene_Init:
 	ld   [sMap_Unused_LakeDrainXCopy], a
 	
 	ld   a, $04
-	ld   [sMapLakeDrainLstId], a
+	ld   [sMapLakeDrainSprId], a
 	
 	call HomeCall_Map_InitMisc
 	ld   a, MAP_MODE_PARSLEYWOODSCUTSCENE
@@ -847,35 +847,35 @@ Map_C32ClearCutscene_Init:
 	ld   [sBGMSet], a
 	ret
 	
-; =============== Map_WriteLakeDrainOBJLst ===============
-Map_WriteLakeSproutOBJLst:
+; =============== Map_WriteLakeDrainSprMap ===============
+Map_WriteLakeSproutSprMap:
 	ld   a, $10
 	ld   [sMapLakeSproutFlags], a
-	ld   hl, OBJLstPtrTable_C32ClearCutscene
+	ld   hl, SprMapPtrTable_C32ClearCutscene
 	ld   a, [sMapLakeSproutY]
 	ld   [sMapOAMWriteY], a
 	ld   a, [sMapLakeSproutX]
 	ld   [sMapOAMWriteX], a
-	ld   a, [sMapLakeSproutLstId]
-	ld   [sMapOAMWriteLstId], a
+	ld   a, [sMapLakeSproutSprId]
+	ld   [sMapOAMWriteSprId], a
 	ld   a, [sMapLakeSproutFlags]
 	ld   [sMapOAMWriteFlags], a
-	call Map_WriteOBJLst
+	call Map_WriteSprMap
 	ret
-; =============== Map_WriteLakeDrainOBJLst ===============
-Map_WriteLakeDrainOBJLst:
+; =============== Map_WriteLakeDrainSprMap ===============
+Map_WriteLakeDrainSprMap:
 	ld   a, $10
 	ld   [sMapLakeDrainFlags], a
-	ld   hl, OBJLstPtrTable_C32ClearCutscene
+	ld   hl, SprMapPtrTable_C32ClearCutscene
 	ld   a, [sMapLakeDrainY]
 	ld   [sMapOAMWriteY], a
 	ld   a, [sMapLakeDrainX]
 	ld   [sMapOAMWriteX], a
-	ld   a, [sMapLakeDrainLstId]
-	ld   [sMapOAMWriteLstId], a
+	ld   a, [sMapLakeDrainSprId]
+	ld   [sMapOAMWriteSprId], a
 	ld   a, [sMapLakeDrainFlags]
 	ld   [sMapOAMWriteFlags], a
-	call Map_WriteOBJLst
+	call Map_WriteSprMap
 	ret
 ; =============== Map_C32ClearCutscene_Do ===============
 ; Handles the lake drain cutscene after clearing C32 for the first time.
@@ -936,7 +936,7 @@ ENDM
 	ld   [sMapC32ClearFlag], a
 	; Cleanup and setup switch to next mode
 	xor  a
-	ld   [sMapLakeDrainLstIdTarget], a
+	ld   [sMapLakeDrainSprIdTarget], a
 	ld   a, MAP_MODE_FADEOUT
 	ld   [sMapId], a
 	ld   a, MAP_MODE_INITPARSLEYWOODS
@@ -963,7 +963,7 @@ ENDM
 	; Lake - Mapping ID target (+1)
 	; Will make use of frames $04-$05
 	ld   a, $06
-	ld   [sMapLakeDrainLstIdTarget], a
+	ld   [sMapLakeDrainSprIdTarget], a
 	; Reset water sprout timer
 	xor  a
 	ld   [sMapTimer0], a
@@ -976,13 +976,13 @@ ENDM
 	ld   hl, sMapOverworldCutsceneScript
 	inc  [hl]
 .animLakeDrain:
-	ld   hl, sMapLakeDrainLstId
+	ld   hl, sMapLakeDrainSprId
 	ld   de, sMapLakeDrainAnimTimer
-	call Map_SetLakeDrainOBJLst
+	call Map_SetLakeDrainSprMap
 .animSprout:
-	ld   hl, sMapLakeSproutLstId
+	ld   hl, sMapLakeSproutSprId
 	ld   de, sMapLakeSproutAnimTimer
-	call Map_SetLakeSproutOBJLst
+	call Map_SetLakeSproutSprMap
 	ret
 .act1:
 	mC32Wait .animLakeDrain
@@ -996,14 +996,14 @@ ENDM
 	mC32Wait .animLakeDrain
 	; Reset to first frame in new range
 	ld   a, $05
-	ld   [sMapLakeDrainLstId], a
+	ld   [sMapLakeDrainSprId], a
 	ld   a, $6F
 	ld   [sMapC32CutsceneTimerTarget], a
 	
 	; Update lake frame target.
 	; This will make the lake use mapping frames $05-$06.
 	ld   a, $07
-	ld   [sMapLakeDrainLstIdTarget], a
+	ld   [sMapLakeDrainSprIdTarget], a
 	; Slow down the anim speed of both spries
 	ld   a, $07
 	ld   [sMapLakeDrainAnimTimer], a
@@ -1012,14 +1012,14 @@ ENDM
 .act3:
 	mC32Wait .animLakeDrain
 	ld   a, $00
-	ld   [sMapLakeSproutLstId], a
+	ld   [sMapLakeSproutSprId], a
 	jp   .nextAct
 .act4:
 	; Set the current mapping for the lake to $7
 	; This is for the "almost drained" lake, which is not animated.
 	ld   a, $07
-	ld   [sMapLakeDrainLstId], a
-	call Map_WriteLakeDrainOBJLst
+	ld   [sMapLakeDrainSprId], a
+	call Map_WriteLakeDrainSprMap
 	; Wait for timer to reach $77 before switching
 	mC32WaitFix $77, .animSprout
 	xor  a
@@ -1038,18 +1038,18 @@ ENDM
 	ld   [sBGMSet], a
 	ret
 	
-; =============== Map_SetLakeSproutOBJLst ===============
+; =============== Map_SetLakeSproutSprMap ===============
 ; Animates the water sprout in the Parsley Woods C32 cutscene.
 ;
 ; IN
-; - HL: Ptr to OBJLst ID for the water sprout
+; - HL: Ptr to sprite mapping ID for the water sprout
 ; - DE: [NOT USED] Ptr to animation bitmask.
 ;       This would be a bitmask which is AND'ed to a timer to determine when to
 ;       switch mapping frame, but the address is hardcoded to the subroutine.
 ;       This is generally a value with bits always grouped at the beginning, to guarantee a constant animation speed.
 ;       Because the frame ID changes when Timer & Bitmask == 0, the less bits a bitmask has, faster the animation plays.
 
-Map_SetLakeSproutOBJLst:
+Map_SetLakeSproutSprMap:
 	ld   a, [sMapLakeSproutAnimTimer]
 	ld   b, a
 	ld   a, [sMapTimer0]
@@ -1068,10 +1068,10 @@ Map_SetLakeSproutOBJLst:
 	ld   [sSFX4Set], a
 	;--
 .write:
-	call Map_WriteLakeSproutOBJLst
+	call Map_WriteLakeSproutSprMap
 	ret
 	
-; =============== Map_SetLakeDrainOBJLst ===============
+; =============== Map_SetLakeDrainSprMap ===============
 ; Animates the lake in the Parsley Woods C32 cutscene.
 ; This cycles through the needed mapping frames for the sprite version of the lake.
 ;
@@ -1079,9 +1079,9 @@ Map_SetLakeSproutOBJLst:
 ; Mapping frame $07 also exists but doesn't get animated and as such is done elsewhere.
 ;
 ; IN
-; - HL: Ptr to OBJLst ID
+; - HL: Ptr to sprite mapping ID
 ; - DE: [NOT USED] Ptr to animation timer
-Map_SetLakeDrainOBJLst:
+Map_SetLakeDrainSprMap:
 	; Wait for the timer to switch frame
 	ld   a, [sMapLakeDrainAnimTimer]
 	ld   b, a
@@ -1094,38 +1094,38 @@ Map_SetLakeDrainOBJLst:
 	; The target mapping ID (+1) for the lake can change
 	; (to progress gradually through the levels of drainage)
 	; so it isn't hardcoded like the water sprout
-	ld   a, [sMapLakeDrainLstIdTarget]
+	ld   a, [sMapLakeDrainSprIdTarget]
 	ld   b, a							; B = Target
 	ld   a, [hl]						; A = Current
 	cp   a, b							; Have we reached the target?
 	
 	jr   nz, .write						; If not, write
-	ld   a, [sMapLakeDrainLstIdTarget]	; Otherwise, decrement it by 2
+	ld   a, [sMapLakeDrainSprIdTarget]	; Otherwise, decrement it by 2
 	sub  a, $02
 	ld   [hl], a
 	;--
 .write:
-	call Map_WriteLakeDrainOBJLst
+	call Map_WriteLakeDrainSprMap
 	ret
 	
-; =============== OBJLstPtrTable_C32ClearCutscene ===============
-OBJLstPtrTable_C32ClearCutscene:
-	dw OBJLst_Map_Overworld_LakeSprout0
-	dw OBJLst_Map_Overworld_LakeSprout1
-	dw OBJLst_Map_Overworld_LakeSprout2
-	dw OBJLst_Map_Overworld_LakeSprout3
-	dw OBJLst_Map_Overworld_LakeDrain0
-	dw OBJLst_Map_Overworld_LakeDrain1
-	dw OBJLst_Map_Overworld_LakeDrain2
-	dw OBJLst_Map_Overworld_LakeDrain3
-OBJLst_Map_Overworld_LakeSprout0: INCBIN "data/objlst/map/overworld_lakesprout0.bin"
-OBJLst_Map_Overworld_LakeSprout1: INCBIN "data/objlst/map/overworld_lakesprout1.bin"
-OBJLst_Map_Overworld_LakeSprout2: INCBIN "data/objlst/map/overworld_lakesprout2.bin"
-OBJLst_Map_Overworld_LakeSprout3: INCBIN "data/objlst/map/overworld_lakesprout3.bin"
-OBJLst_Map_Overworld_LakeDrain0: INCBIN "data/objlst/map/overworld_lakedrain0.bin"
-OBJLst_Map_Overworld_LakeDrain1: INCBIN "data/objlst/map/overworld_lakedrain1.bin"
-OBJLst_Map_Overworld_LakeDrain2: INCBIN "data/objlst/map/overworld_lakedrain2.bin"
-OBJLst_Map_Overworld_LakeDrain3: INCBIN "data/objlst/map/overworld_lakedrain3.bin"
+; =============== SprMapPtrTable_C32ClearCutscene ===============
+SprMapPtrTable_C32ClearCutscene:
+	dw SprMap_Map_Overworld_LakeSprout0
+	dw SprMap_Map_Overworld_LakeSprout1
+	dw SprMap_Map_Overworld_LakeSprout2
+	dw SprMap_Map_Overworld_LakeSprout3
+	dw SprMap_Map_Overworld_LakeDrain0
+	dw SprMap_Map_Overworld_LakeDrain1
+	dw SprMap_Map_Overworld_LakeDrain2
+	dw SprMap_Map_Overworld_LakeDrain3
+SprMap_Map_Overworld_LakeSprout0: INCBIN "data/sprmap/map/overworld_lakesprout0.bin"
+SprMap_Map_Overworld_LakeSprout1: INCBIN "data/sprmap/map/overworld_lakesprout1.bin"
+SprMap_Map_Overworld_LakeSprout2: INCBIN "data/sprmap/map/overworld_lakesprout2.bin"
+SprMap_Map_Overworld_LakeSprout3: INCBIN "data/sprmap/map/overworld_lakesprout3.bin"
+SprMap_Map_Overworld_LakeDrain0: INCBIN "data/sprmap/map/overworld_lakedrain0.bin"
+SprMap_Map_Overworld_LakeDrain1: INCBIN "data/sprmap/map/overworld_lakedrain1.bin"
+SprMap_Map_Overworld_LakeDrain2: INCBIN "data/sprmap/map/overworld_lakedrain2.bin"
+SprMap_Map_Overworld_LakeDrain3: INCBIN "data/sprmap/map/overworld_lakedrain3.bin"
 
 ; =============== Map_Ending_Do ===============
 ; Processes the second part of the ending sequence.
@@ -1150,9 +1150,9 @@ ENDM
 ; Animates Mario's helicopter by alternating between two frames
 ; Do not use for the small helicopter OBJ
 MACRO mMapEnding_AnimHeli
-	ld   a, [sMapEndingHeliLstId]
+	ld   a, [sMapEndingHeliSprId]
 	xor  $01
-	ld   [sMapEndingHeliLstId], a
+	ld   [sMapEndingHeliSprId], a
 ENDM
 ;--
 
@@ -1210,7 +1210,7 @@ ENDM
 	jr   z, .warioJump		; ...alternate between the jumping frame and the back frame
 	ld   a, MAP_MWEA_JUMP
 .warioJump:
-	ld   [sMapWarioLstId], a
+	ld   [sMapWarioSprId], a
 	;--
 	; Wait for $C0 ($30*04) frames before switching to next script
 	mMapEnding_Timing
@@ -1222,7 +1222,7 @@ ENDM
 	;--
 	; Cleanup and next script
 	xor  a
-	ld   [sMapWarioLstId], a
+	ld   [sMapWarioSprId], a
 	ld   [sMapSyrupCastleCutsceneTimer], a
 	ld   hl, sMapSyrupCastleCutsceneAct
 	inc  [hl]
@@ -1264,13 +1264,13 @@ Map_Ending_DoActA:
 	ret
 .setFront:
 	ld   a, MAP_MWEA_FRONT
-	ld   [sMapWarioLstId], a
+	ld   [sMapWarioSprId], a
 	ld   a, SFX1_19
 	ld   [sSFX1Set], a
 	ret
 .setShrugNextAct:
 	ld   a, MAP_MWEA_SHRUG
-	ld   [sMapWarioLstId], a
+	ld   [sMapWarioSprId], a
 	xor  a
 	ld   [sMapSyrupCastleCutsceneTimer], a
 	ld   hl, sMapSyrupCastleCutsceneAct
@@ -1281,8 +1281,8 @@ Map_Ending_DoActA:
 	
 ; =============== Map_Ending_DoAct9 ===============
 Map_Ending_DoAct9:
-	ld   hl, OBJLstPtrTable_Map_Ending_Heli
-	call Map_Ending_WriteOBJLst
+	ld   hl, SprMapPtrTable_Map_Ending_Heli
+	call Map_Ending_WriteSprMap
 	
 	; Wait for $FF frames
 	ld   a, [sMapSyrupCastleCutsceneTimer]
@@ -1291,11 +1291,11 @@ Map_Ending_DoAct9:
 	mMapEnding_Timing
 	
 	; Heli animation (far away)
-	ld   a, [sMapEndingHeliLstId]
+	ld   a, [sMapEndingHeliSprId]
 	bit  0, a
 	jr   nz, .planeAltFrame
 	ld   a, $03
-	ld   [sMapEndingHeliLstId], a
+	ld   [sMapEndingHeliSprId], a
 	;--
 	; Move the helicopter to the right by $8 px
 	ld   a, [sMapEndingHeliX]
@@ -1311,7 +1311,7 @@ Map_Ending_DoAct9:
 	ret
 .planeAltFrame:
 	ld   a, $02
-	ld   [sMapEndingHeliLstId], a
+	ld   [sMapEndingHeliSprId], a
 	ret
 .nextAct:
 	xor  a
@@ -1321,11 +1321,11 @@ Map_Ending_DoAct9:
 	ret
 .warioFront:
 	xor  a ; MAP_MWEA_FRONT
-	ld   [sMapWarioLstId], a
+	ld   [sMapWarioSprId], a
 	ret
 .warioBack:
 	ld   a, MAP_MWEA_BACKRIGHT
-	ld   [sMapWarioLstId], a
+	ld   [sMapWarioSprId], a
 	ret
 .delayMove:
 	ld   hl, sMapSyrupCastleCutsceneTimer
@@ -1335,8 +1335,8 @@ Map_Ending_DoAct9:
 ; =============== Map_Ending_DoAct7 ===============
 ; NOTE: Map_Timer does not get reset to 0 before
 Map_Ending_DoAct7:
-	ld   hl, OBJLstPtrTable_Map_Ending_Heli
-	call Map_Ending_WriteOBJLst
+	ld   hl, SprMapPtrTable_Map_Ending_Heli
+	call Map_Ending_WriteSprMap
 	
 	;--
 	; [TCRF] Global timer never reaches $00 in this act
@@ -1402,7 +1402,7 @@ Map_Ending_DoAct7:
 	cp   a, $3A
 	ret  nz
 	ld   a, MAP_MWEA_BACKLEFT
-	ld   [sMapWarioLstId], a
+	ld   [sMapWarioSprId], a
 	ld   a, SFX1_33
 	ld   [sSFX1Set], a
 	ret
@@ -1417,13 +1417,13 @@ Map_Ending_DoAct7:
 	ld   a, $44					; Set heli Y pos
 	ld   [sMapEndingHeliY], a
 	ld   a, $03					; Small helicopter
-	ld   [sMapEndingHeliLstId], a
+	ld   [sMapEndingHeliSprId], a
 	ret
 	
 ; =============== Map_Ending_DoAct6 ===============
 Map_Ending_DoAct6:
-	ld   hl, OBJLstPtrTable_Map_Ending_Heli
-	call Map_Ending_WriteOBJLst
+	ld   hl, SprMapPtrTable_Map_Ending_Heli
+	call Map_Ending_WriteSprMap
 	mMapEnding_Timing
 	;--
 	mMapEnding_AnimHeli
@@ -1436,7 +1436,7 @@ Map_Ending_DoAct6:
 	ret  nz
 .nextAct:
 	xor  a
-	ld   [sMapEndingHeliLstId], a
+	ld   [sMapEndingHeliSprId], a
 	ld   [sMapSyrupCastleCutsceneTimer], a
 	ld   hl, sMapSyrupCastleCutsceneAct
 	inc  [hl]
@@ -1444,8 +1444,8 @@ Map_Ending_DoAct6:
 	
 ; =============== Map_Ending_DoAct5 ===============
 Map_Ending_DoAct5:
-	ld   hl, OBJLstPtrTable_Map_Ending_Heli
-	call Map_Ending_WriteOBJLst
+	ld   hl, SprMapPtrTable_Map_Ending_Heli
+	call Map_Ending_WriteSprMap
 	; Wait for $10(x4) frames with the standard heli anim before continuing
 	ld   a, [sMapAnimFrame_Misc]
 	cp   a, $10
@@ -1453,11 +1453,11 @@ Map_Ending_DoAct5:
 	mMapEnding_Timing
 	
 	; Heli anim (hello frames) while rising up
-	ld   a, [sMapEndingHeliLstId]
+	ld   a, [sMapEndingHeliSprId]
 	bit  0, a
 	jr   nz, .heliAltHelloFrame
 	ld   a, $05
-	ld   [sMapEndingHeliLstId], a
+	ld   [sMapEndingHeliSprId], a
 	
 	; Every other(x4) frame, move the helicopter up $10 times
 	ld   a, [sMapSyrupCastleCutsceneTimer]
@@ -1468,7 +1468,7 @@ Map_Ending_DoAct5:
 	ret
 .heliAltHelloFrame:
 	ld   a, $04
-	ld   [sMapEndingHeliLstId], a
+	ld   [sMapEndingHeliSprId], a
 	ret
 .moveHeliUp:
 	ld   a, [sMapEndingHeliY]
@@ -1484,7 +1484,7 @@ Map_Ending_DoAct5:
 	ret
 .nextAct:
 	xor  a
-	ld   [sMapEndingHeliLstId], a
+	ld   [sMapEndingHeliSprId], a
 	ld   [sMapSyrupCastleCutsceneTimer], a
 	ld   hl, sMapSyrupCastleCutsceneAct
 	inc  [hl]
@@ -1499,8 +1499,8 @@ Map_Ending_DoAct5:
 	
 ; =============== Map_Ending_DoAct4 ===============
 Map_Ending_DoAct4:
-	ld   hl, OBJLstPtrTable_Map_Ending_Heli
-	call Map_Ending_WriteOBJLst
+	ld   hl, SprMapPtrTable_Map_Ending_Heli
+	call Map_Ending_WriteSprMap
 	mMapEnding_Timing
 	
 	mMapEnding_AnimHeli
@@ -1521,24 +1521,24 @@ Map_Ending_DoAct4:
 	ld   [sMapEndingHeliY], a
 	xor  a
 	ld   [sMapSyrupCastleCutsceneTimer], a
-	ld   [sMapEndingHeliLstId], a
+	ld   [sMapEndingHeliSprId], a
 	ld   hl, sMapSyrupCastleCutsceneAct
 	inc  [hl]
 	ret
 
 ; =============== Map_Ending_DoAct3 ===============
 Map_Ending_DoAct3:
-	ld   hl, OBJLstPtrTable_Map_Ending_Heli
-	call Map_Ending_WriteOBJLst
+	ld   hl, SprMapPtrTable_Map_Ending_Heli
+	call Map_Ending_WriteSprMap
 	mMapEnding_Timing
 	
 	; Helicopter animation, default frames
-	ld   a, [sMapEndingHeliLstId]
+	ld   a, [sMapEndingHeliSprId]
 	bit  0, a
 	jr   nz, .planeAltFrame
 	ld   a, $01
 .chkMoveUp:
-	ld   [sMapEndingHeliLstId], a
+	ld   [sMapEndingHeliSprId], a
 	; Move heli upwards until it reaches Y $18
 	; When it reaches that position, move it to the left
 	ld   a, [sMapEndingHeliY]
@@ -1562,7 +1562,7 @@ Map_Ending_DoAct3:
 	ret
 .nextAct:
 	xor  a
-	ld   [sMapEndingHeliLstId], a
+	ld   [sMapEndingHeliSprId], a
 	ld   [sMapSyrupCastleCutsceneTimer], a
 	ld   hl, sMapSyrupCastleCutsceneAct
 	inc  [hl]
@@ -1570,8 +1570,8 @@ Map_Ending_DoAct3:
 	
 ; =============== Map_Ending_DoAct2 ===============
 Map_Ending_DoAct2:
-	ld   hl, OBJLstPtrTable_Map_Ending_Heli
-	call Map_Ending_WriteOBJLst
+	ld   hl, SprMapPtrTable_Map_Ending_Heli
+	call Map_Ending_WriteSprMap
 	
 	; Script is active for $20(x4) frames before switching
 	ld   a, [sMapSyrupCastleCutsceneTimer]
@@ -1591,31 +1591,31 @@ Map_Ending_DoAct2:
 	ld   [sMapAnimFrame_Misc], a
 	
 	; Alternate every other (x4) frame the helicopter anim ($00-$01)
-	ld   a, [sMapEndingHeliLstId]
+	ld   a, [sMapEndingHeliSprId]
 	bit  0, a
 	jr   nz, .heliAltFrame
 	ld   a, $01
-	ld   [sMapEndingHeliLstId], a
+	ld   [sMapEndingHeliSprId], a
 	ret
 .heliAltFrame:
 	xor  a
-	ld   [sMapEndingHeliLstId], a
+	ld   [sMapEndingHeliSprId], a
 	ret
 .useHelloFrames:
 	; Alternate every other (x4) frame the helicopter anim ($04-$05)
-	ld   a, [sMapEndingHeliLstId]
+	ld   a, [sMapEndingHeliSprId]
 	bit  0, a
 	jr   nz, .heliAltHelloFrame
 	ld   a, $05
-	ld   [sMapEndingHeliLstId], a
+	ld   [sMapEndingHeliSprId], a
 	ret
 .heliAltHelloFrame:
 	ld   a, $04
-	ld   [sMapEndingHeliLstId], a
+	ld   [sMapEndingHeliSprId], a
 	ret
 .nextAct:
 	ld   a, $04
-	ld   [sMapEndingHeliLstId], a
+	ld   [sMapEndingHeliSprId], a
 	xor  a
 	ld   [sMapSyrupCastleCutsceneTimer], a
 	ld   [sMapAnimFrame_Misc], a
@@ -1625,8 +1625,8 @@ Map_Ending_DoAct2:
 	
 ; =============== Map_Ending_DoAct1 ===============
 Map_Ending_DoAct1:
-	ld   hl, OBJLstPtrTable_Map_Ending_Heli
-	call Map_Ending_WriteOBJLst
+	ld   hl, SprMapPtrTable_Map_Ending_Heli
+	call Map_Ending_WriteSprMap
 	; Force proper palette
 	ld   a, $10
 	ld   [sMapEndingHeliFlags], a
@@ -1654,21 +1654,21 @@ Map_Ending_DoAct1:
 	xor  a
 	ld   [sMapTimer_Low], a
 	ld   [sMapSyrupCastleCutsceneTimer], a
-.setWarioLstId:
-	ld   [sMapWarioLstId], a
+.setWarioSprId:
+	ld   [sMapWarioSprId], a
 .switchPlaneFrame:
 	mMapEnding_AnimHeli
 	ret
 .warioRight:
 	ld   a, MAP_MWEA_BACKRIGHT
-	jr   .setWarioLstId
+	jr   .setWarioSprId
 .offscreen:
 	ld   hl, sMapSyrupCastleCutsceneTimer
 	inc  [hl]
 	
 	xor  a
 	ld   [sMapAnimFrame_Misc], a
-	ld   [sMapWarioLstId], a
+	ld   [sMapWarioSprId], a
 	ret
 	
 ; =============== Map_Ending_DrawOBJ ===============
@@ -1676,14 +1676,14 @@ Map_Ending_DoAct1:
 ;
 ; This also handles the SFX for Mario's helicopter.
 Map_Ending_DrawOBJ:
-	call Map_Ending_WriteStatueHighOBJLst
-	call Map_Ending_WriteStatueLowOBJLst
+	call Map_Ending_WriteStatueHighSprMap
+	call Map_Ending_WriteStatueLowSprMap
 	ldh  a, [rBGP]	; Has the fade in finished?
 	cp   a, $E1
 	ret  nz			; If not, don't draw any other sprites
 	call Map_Ending_DrawSparkle
-	ld   hl, OBJLstPtrTable_Map_Ending_Wario
-	call Map_Ending_WriteWarioCustomOBJLst
+	ld   hl, SprMapPtrTable_Map_Ending_Wario
+	call Map_Ending_WriteWarioCustomSprMap
 	
 	; Play the SFX for Mario's helicopter
 	ld   a, [sMapSyrupCastleCutsceneAct]
@@ -1735,10 +1735,10 @@ Map_Ending_DrawSparkle:
 	xor  a
 .writeOBJ:
 	; Every 8 frames, increase the sparkle pos index
-	ld   [sMapEndingSparkleLstId], a
+	ld   [sMapEndingSparkleSprId], a
 	ld   a, [sMapTimer_Low]	
 	and  a, $07
-	jr   nz, Map_Ending_WriteSparkleOBJLst
+	jr   nz, Map_Ending_WriteSparkleSprMap
 .nextCoords:
 	ld   hl, sMapEndingSparkleTblIdx
 	inc  [hl]
@@ -1747,7 +1747,7 @@ Map_Ending_DrawSparkle:
 	ld   c, a
 	cp   a, $0B				; Have we reached the end of the pos tables?
 	jr   z, .reset			; If so, reset the index
-	jr   Map_Ending_WriteSparkleOBJLst
+	jr   Map_Ending_WriteSparkleSprMap
 .frame1:
 	ld   a, $01
 	jr   .writeOBJ
@@ -1784,18 +1784,18 @@ Map_Ending_IndexSparklePos:
 Map_Ending_SparkleYTbl: db $E5,$F8,$F8,$00,$0F,$0C,$09,$1C,$F1,$00,$EB
 Map_Ending_SparkleXTbl: db $FA,$F2,$07,$FE,$F5,$07,$FF,$F9,$F3,$11,$0C
 
-; =============== Map_Ending_WriteSparkleOBJLst ===============
-Map_Ending_WriteSparkleOBJLst:
-	ld   hl, OBJLstPtrTable_Map_Ending_Sparkle
+; =============== Map_Ending_WriteSparkleSprMap ===============
+Map_Ending_WriteSparkleSprMap:
+	ld   hl, SprMapPtrTable_Map_Ending_Sparkle
 	ld   a, [sMapEndingSparkleY]
 	ld   [sMapOAMWriteY], a
 	ld   a, [sMapEndingSparkleX]
 	ld   [sMapOAMWriteX], a
-	ld   a, [sMapEndingSparkleLstId]
-	ld   [sMapOAMWriteLstId], a
+	ld   a, [sMapEndingSparkleSprId]
+	ld   [sMapOAMWriteSprId], a
 	ld   a, [sMapEndingSparkleFlags]
 	ld   [sMapOAMWriteFlags], a
-	call Map_WriteOBJLst
+	call Map_WriteSprMap
 	ret
 	
 ; =============== Map_SyrupCastle_DoCutscenes ===============
@@ -2018,35 +2018,35 @@ Ev_Map_C39ClearNoPath_Tiles:    INCBIN "data/event/syrupcastle_c39_nopath.evt"
 Ev_Map_C39ClearOldPath_Tiles:   INCBIN "data/event/syrupcastle_c39_oldpath.evt"
 Ev_Map_C39ClearNoPath_Offsets:  INCBIN "data/event/syrupcastle_c39_nopath.evp"
 Ev_Map_C39ClearOldPath_Offsets: INCBIN "data/event/syrupcastle_c39_oldpath.evp"
-; =============== Map_Ending_WriteStatueOBJLst ===============
-Map_Ending_WriteStatueHighOBJLst:
+; =============== Map_Ending_WriteStatueSprMap ===============
+Map_Ending_WriteStatueHighSprMap:
 	ld   a, $10
 	ld   [sMapEndingStatueHighFlags], a
-	ld   hl, OBJLstPtrTable_Map_Ending_Statue
+	ld   hl, SprMapPtrTable_Map_Ending_Statue
 	ld   a, [sMapEndingStatueHighY]
 	ld   [sMapOAMWriteY], a
 	ld   a, [sMapEndingStatueHighX]
 	ld   [sMapOAMWriteX], a
-	ld   a, [sMapEndingStatueHighLstId]
-	ld   [sMapOAMWriteLstId], a
+	ld   a, [sMapEndingStatueHighSprId]
+	ld   [sMapOAMWriteSprId], a
 	ld   a, [sMapEndingStatueHighFlags]
 	ld   [sMapOAMWriteFlags], a
-Map_Ending_WriteStatueOBJLst:
-	call Map_WriteOBJLst
+Map_Ending_WriteStatueSprMap:
+	call Map_WriteSprMap
 	ret
-Map_Ending_WriteStatueLowOBJLst:
+Map_Ending_WriteStatueLowSprMap:
 	ld   a, $10
 	ld   [sMapEndingStatueLowFlags], a
-	ld   hl, OBJLstPtrTable_Map_Ending_Statue
+	ld   hl, SprMapPtrTable_Map_Ending_Statue
 	ld   a, [sMapEndingStatueLowY]
 	ld   [sMapOAMWriteY], a
 	ld   a, [sMapEndingStatueLowX]
 	ld   [sMapOAMWriteX], a
-	ld   a, [sMapEndingStatueLowLstId]
-	ld   [sMapOAMWriteLstId], a
+	ld   a, [sMapEndingStatueLowSprId]
+	ld   [sMapOAMWriteSprId], a
 	ld   a, [sMapEndingStatueLowFlags]
 	ld   [sMapOAMWriteFlags], a
-	jr   Map_Ending_WriteStatueOBJLst
+	jr   Map_Ending_WriteStatueSprMap
 	
 ; =============== Map_SyrupCastle_DoEffects ===============
 ; Performs the special effects for the Syrup Castle submap.
@@ -2120,8 +2120,8 @@ Map_SyrupCastle_DoEnding:
 	ret
 .act1:
 	; Act 1: Move Wario downwards for $E frames (until Y $50 is reached)
-	call Map_Ending_WriteLampOBJLst
-	call HomeCall_Map_WriteWarioOBJLst
+	call Map_Ending_WriteLampSprMap
+	call HomeCall_Map_WriteWarioSprMap
 	ld   a, [sMapWarioYRes]		; Reached the target?
 	cp   a, $50
 	jr   z, .nextAct			; If so, jump
@@ -2132,7 +2132,7 @@ Map_SyrupCastle_DoEnding:
 .act2:
 	; Act 2: Trigger the right move anim
 	ld   a, MAP_MWA_RIGHT
-	ld   [sMapWarioLstId], a
+	ld   [sMapWarioSprId], a
 	ld   a, $30
 	ld   [sMapWarioFlags], a
 	jr   .nextAct
@@ -2144,7 +2144,7 @@ Map_SyrupCastle_DoEnding:
 	ret  nz
 	
 	ld   a, MAP_MWA_FRONT
-	ld   [sMapWarioLstId], a
+	ld   [sMapWarioSprId], a
 	ld   a, $30
 	ld   [sMapWarioFlags], a
 	jr   .nextAct
@@ -2172,8 +2172,8 @@ Map_SyrupCastle_Ending_DoJump:
 	cp   a, $02
 	jr   z, .playSFX
 .writeOBJ:
-	call Map_Ending_WriteWarioOBJLst
-	call Map_Ending_WriteLampOBJLst
+	call Map_Ending_WriteWarioSprMap
+	call Map_Ending_WriteLampSprMap
 	ret
 .playSFX:
 	ld   a, SFX1_29
@@ -2215,8 +2215,8 @@ Map_SyrupCastle_Ending_WarioYOffsetTbl:
 Map_SyrupCastle_Ending_WarioXOffsetTbl: 
 	db +$02,+$02,+$02,+$02,+$02,+$02,+$01,+$01,+$01,+$01,+$02,+$02,+$02,+$02,+$02,+$03
 
-; =============== Map_Ending_WriteLampOBJLst ===============
-Map_Ending_WriteLampOBJLst:
+; =============== Map_Ending_WriteLampSprMap ===============
+Map_Ending_WriteLampSprMap:
 	; Generate the Y offset for the lamp...
 	; ...for some reason however, it depends off a timer which is essentially random.
 	; I have no idea about why it's done like this.
@@ -2237,34 +2237,34 @@ Map_Ending_WriteLampOBJLst:
 .writeOBJ:
 	ld   a, $10
 	ld   [sMapEndingLampFlags], a
-	ld   hl, OBJLstPtrTable_Map_Ending_Lamp
+	ld   hl, SprMapPtrTable_Map_Ending_Lamp
 	ld   a, [sMapEndingLampY]
 	ld   [sMapOAMWriteY], a
 	ld   a, [sMapEndingLampX]
 	ld   [sMapOAMWriteX], a
-	ld   a, [sMapEndingLampLstId]
-	ld   [sMapOAMWriteLstId], a
+	ld   a, [sMapEndingLampSprId]
+	ld   [sMapOAMWriteSprId], a
 	ld   a, [sMapEndingLampFlags]
 	ld   [sMapOAMWriteFlags], a
-Map_Ending_WriteOBJLst2:
-	call Map_WriteOBJLst
+Map_Ending_WriteSprMap2:
+	call Map_WriteSprMap
 	ret
-; =============== Map_Ending_WriteWarioOBJLst ===============
+; =============== Map_Ending_WriteWarioSprMap ===============
 ; Writes Wario's sprite mappings in the ending.
 ; The first set reuses the normal mappings, while the second set
 ; is expected to point to the extra mappings specific to the ending.
-Map_Ending_WriteWarioOBJLst:
-	ld   hl, OBJLstPtrTable_MapWario
-Map_Ending_WriteWarioCustomOBJLst:
+Map_Ending_WriteWarioSprMap:
+	ld   hl, SprMapPtrTable_MapWario
+Map_Ending_WriteWarioCustomSprMap:
 	ld   a, [sMapWarioYRes]
 	ld   [sMapOAMWriteY], a
 	ld   a, [sMapWarioX]
 	ld   [sMapOAMWriteX], a
-	ld   a, [sMapWarioLstId]
-	ld   [sMapOAMWriteLstId], a
+	ld   a, [sMapWarioSprId]
+	ld   [sMapOAMWriteSprId], a
 	ld   a, [sMapWarioFlags]
 	ld   [sMapOAMWriteFlags], a
-	jr   Map_Ending_WriteOBJLst2
+	jr   Map_Ending_WriteSprMap2
 	
 ; IMPROVE mode relocates this as a parallax mode in BANK $0D
 IF !IMPROVE
@@ -2428,7 +2428,7 @@ Map_SyrupCastle_DrawExplosion1:
 	jr   z, .writeSet2
 	
 .writeSet0:
-	ld   [sMapExplOBJ3LstId], a
+	ld   [sMapExplOBJ3SprId], a
 	ld   a, [sMapExplOBJ0Y]
 	add  $08
 	ld   [sMapExplOBJ3Y], a
@@ -2437,7 +2437,7 @@ Map_SyrupCastle_DrawExplosion1:
 	ld   [sMapExplOBJ3X], a
 	ld   a, $10
 	ld   [sMapExplOBJ3Flags], a
-	call Map_WriteExplOBJLst3
+	call Map_WriteExplSprMap3
 	ret
 .writeSet0b:
 	xor  a
@@ -2451,10 +2451,10 @@ Map_SyrupCastle_DrawExplosion1:
 	sub  a, $20
 	ld   [sMapExplOBJ1X], a
 	ld   a, $04
-	ld   [sMapExplOBJ1LstId], a
+	ld   [sMapExplOBJ1SprId], a
 	ld   a, $10
 	ld   [sMapExplOBJ1Flags], a
-	call Map_WriteExplOBJLst1
+	call Map_WriteExplSprMap1
 	ld   a, [sMapExplOBJ0Y]
 	sub  a, $3C
 	ld   [sMapExplOBJ2Y], a
@@ -2462,10 +2462,10 @@ Map_SyrupCastle_DrawExplosion1:
 	sub  a, $1C
 	ld   [sMapExplOBJ2X], a
 	ld   a, $04
-	ld   [sMapExplOBJ2LstId], a
+	ld   [sMapExplOBJ2SprId], a
 	ld   a, $50
 	ld   [sMapExplOBJ2Flags], a
-	call Map_WriteExplOBJLst2
+	call Map_WriteExplSprMap2
 	ld   a, $01
 	jr   .writeSet0
 	
@@ -2477,10 +2477,10 @@ Map_SyrupCastle_DrawExplosion1:
 	add  $1C
 	ld   [sMapExplOBJ1X], a
 	ld   a, $04
-	ld   [sMapExplOBJ1LstId], a
+	ld   [sMapExplOBJ1SprId], a
 	ld   a, $70
 	ld   [sMapExplOBJ1Flags], a
-	call Map_WriteExplOBJLst1
+	call Map_WriteExplSprMap1
 	ld   a, [sMapExplOBJ0Y]
 	add  $14
 	ld   [sMapExplOBJ2Y], a
@@ -2488,10 +2488,10 @@ Map_SyrupCastle_DrawExplosion1:
 	add  $18
 	ld   [sMapExplOBJ2X], a
 	ld   a, $04
-	ld   [sMapExplOBJ2LstId], a
+	ld   [sMapExplOBJ2SprId], a
 	ld   a, $30
 	ld   [sMapExplOBJ2Flags], a
-	jp   Map_WriteExplOBJLst2
+	jp   Map_WriteExplSprMap2
 	
 ; =============== Map_SyrupCastle_DrawExplosion0 ===============
 ; Picks different sprite mapping ID and coordinates for the
@@ -2518,10 +2518,10 @@ Map_SyrupCastle_DrawExplosion0:
 	cp   a, $02
 	jr   z, .writeSet2
 .writeSet0:
-	ld   [sMapExplOBJ0LstId], a
+	ld   [sMapExplOBJ0SprId], a
 	ld   a, $10
 	ld   [sMapExplOBJ0Flags], a
-	call Map_WriteExplOBJLst0
+	call Map_WriteExplSprMap0
 	ret
 .writeSet0b:
 	xor  a
@@ -2535,17 +2535,17 @@ Map_SyrupCastle_DrawExplosion0:
 	ld   [sMapExplOBJ1X], a
 	ld   [sMapExplOBJ2X], a
 	ld   a, $03
-	ld   [sMapExplOBJ1LstId], a
-	ld   [sMapExplOBJ2LstId], a
+	ld   [sMapExplOBJ1SprId], a
+	ld   [sMapExplOBJ2SprId], a
 	ld   a, $50
 	ld   [sMapExplOBJ1Flags], a
-	call Map_WriteExplOBJLst1
+	call Map_WriteExplSprMap1
 	ld   a, [sMapExplOBJ0Y]
 	add  $20
 	ld   [sMapExplOBJ2Y], a
 	ld   a, $10
 	ld   [sMapExplOBJ2Flags], a
-	call Map_WriteExplOBJLst2
+	call Map_WriteExplSprMap2
 	ld   a, $01
 	jr   .writeSet0
 	
@@ -2557,17 +2557,17 @@ Map_SyrupCastle_DrawExplosion0:
 	sub  a, $20
 	ld   [sMapExplOBJ1X], a
 	ld   a, $02
-	ld   [sMapExplOBJ1LstId], a
-	ld   [sMapExplOBJ2LstId], a
+	ld   [sMapExplOBJ1SprId], a
+	ld   [sMapExplOBJ2SprId], a
 	ld   a, $10
 	ld   [sMapExplOBJ1Flags], a
-	call Map_WriteExplOBJLst1
+	call Map_WriteExplSprMap1
 	ld   a, [sMapExplOBJ0X]
 	add  $28
 	ld   [sMapExplOBJ2X], a
 	ld   a, $30
 	ld   [sMapExplOBJ2Flags], a
-	jp   Map_WriteExplOBJLst2
+	jp   Map_WriteExplSprMap2
 	
 ; =============== Map_SyrupCastle_DrawExplosion2 ===============
 ; This will add extra / replace existing sprite mappings to add variation
@@ -2599,11 +2599,11 @@ Map_SyrupCastle_DrawExplosion2:
 	; ...but .useAlt sets the same mapping IDs as .useNormal!
 	jr   nz, .useAlt
 .useNormal:
-	ld   [sMapExplOBJ3LstId], a
-	ld   [sMapExplOBJ2LstId], a
+	ld   [sMapExplOBJ3SprId], a
+	ld   [sMapExplOBJ2SprId], a
 	xor  $01
-	ld   [sMapExplOBJ1LstId], a
-	ld   [sMapExplOBJ0LstId], a
+	ld   [sMapExplOBJ1SprId], a
+	ld   [sMapExplOBJ0SprId], a
 .write:
 	ld   a, [sMapExplOBJ0Y]
 	add  $08
@@ -2634,68 +2634,68 @@ Map_SyrupCastle_DrawExplosion2:
 	ld   [sMapExplOBJ1Flags], a
 	ld   [sMapExplOBJ2Flags], a
 	ld   [sMapExplOBJ3Flags], a
-	call Map_WriteExplOBJLst0
-	call Map_WriteExplOBJLst1
-	call Map_WriteExplOBJLst2
-	jp   Map_WriteExplOBJLst3
+	call Map_WriteExplSprMap0
+	call Map_WriteExplSprMap1
+	call Map_WriteExplSprMap2
+	jp   Map_WriteExplSprMap3
 .useAlt:
-	ld   [sMapExplOBJ2LstId], a
-	ld   [sMapExplOBJ3LstId], a
+	ld   [sMapExplOBJ2SprId], a
+	ld   [sMapExplOBJ3SprId], a
 	xor  $01
-	ld   [sMapExplOBJ0LstId], a
-	ld   [sMapExplOBJ1LstId], a
+	ld   [sMapExplOBJ0SprId], a
+	ld   [sMapExplOBJ1SprId], a
 	jr   .write
 	
 	
-; =============== Map_WriteExplOBJLst? ===============	
-; Writes the OBJ list for the explosions seen in Syrup Castle cutscenes.
-Map_WriteExplOBJLst0:
-	ld   hl, OBJLstPtrTable_Map_SyrupCastle_Expl
-Map_Ending_WriteOBJLst:
+; =============== Map_WriteExplSprMap? ===============	
+; Writes the sprite mapping for the explosions seen in Syrup Castle cutscenes.
+Map_WriteExplSprMap0:
+	ld   hl, SprMapPtrTable_Map_SyrupCastle_Expl
+Map_Ending_WriteSprMap:
 	ld   a, [sMapExplOBJ0Y]
 	ld   [sMapOAMWriteY], a
 	ld   a, [sMapExplOBJ0X]
 	ld   [sMapOAMWriteX], a
-	ld   a, [sMapExplOBJ0LstId]
-	ld   [sMapOAMWriteLstId], a
+	ld   a, [sMapExplOBJ0SprId]
+	ld   [sMapOAMWriteSprId], a
 	ld   a, [sMapExplOBJ0Flags]
 	ld   [sMapOAMWriteFlags], a
-Map_WriteExplOBJLst:
-	call Map_WriteOBJLst
+Map_WriteExplSprMap:
+	call Map_WriteSprMap
 	ret
-Map_WriteExplOBJLst1:
-	ld   hl, OBJLstPtrTable_Map_SyrupCastle_Expl
+Map_WriteExplSprMap1:
+	ld   hl, SprMapPtrTable_Map_SyrupCastle_Expl
 	ld   a, [sMapExplOBJ1Y]
 	ld   [sMapOAMWriteY], a
 	ld   a, [sMapExplOBJ1X]
 	ld   [sMapOAMWriteX], a
-	ld   a, [sMapExplOBJ1LstId]
-	ld   [sMapOAMWriteLstId], a
+	ld   a, [sMapExplOBJ1SprId]
+	ld   [sMapOAMWriteSprId], a
 	ld   a, [sMapExplOBJ1Flags]
 	ld   [sMapOAMWriteFlags], a
-	jr   Map_WriteExplOBJLst
-Map_WriteExplOBJLst2:
-	ld   hl, OBJLstPtrTable_Map_SyrupCastle_Expl
+	jr   Map_WriteExplSprMap
+Map_WriteExplSprMap2:
+	ld   hl, SprMapPtrTable_Map_SyrupCastle_Expl
 	ld   a, [sMapExplOBJ2Y]
 	ld   [sMapOAMWriteY], a
 	ld   a, [sMapExplOBJ2X]
 	ld   [sMapOAMWriteX], a
-	ld   a, [sMapExplOBJ2LstId]
-	ld   [sMapOAMWriteLstId], a
+	ld   a, [sMapExplOBJ2SprId]
+	ld   [sMapOAMWriteSprId], a
 	ld   a, [sMapExplOBJ2Flags]
 	ld   [sMapOAMWriteFlags], a
-	jr   Map_WriteExplOBJLst
-Map_WriteExplOBJLst3:
-	ld   hl, OBJLstPtrTable_Map_SyrupCastle_Expl
+	jr   Map_WriteExplSprMap
+Map_WriteExplSprMap3:
+	ld   hl, SprMapPtrTable_Map_SyrupCastle_Expl
 	ld   a, [sMapExplOBJ3Y]
 	ld   [sMapOAMWriteY], a
 	ld   a, [sMapExplOBJ3X]
 	ld   [sMapOAMWriteX], a
-	ld   a, [sMapExplOBJ3LstId]
-	ld   [sMapOAMWriteLstId], a
+	ld   a, [sMapExplOBJ3SprId]
+	ld   [sMapOAMWriteSprId], a
 	ld   a, [sMapExplOBJ3Flags]
 	ld   [sMapOAMWriteFlags], a
-	jr   Map_WriteExplOBJLst
+	jr   Map_WriteExplSprMap
 	
 ; =============== Map_SyrupCastle_DoPaletteEffect ===============	
 ; Performs the palette inversion effect in Syrup Castle.
@@ -2756,74 +2756,74 @@ Map_SyrupCastle_DoPaletteEffect:
 	ld   [sMapSyrupCastleInvertPal], a
 	ret
 	
-; =============== OBJLstPtrTable_Map_SyrupCastle_Expl ===============
-OBJLstPtrTable_Map_SyrupCastle_Expl:
-	dw OBJLst_Map_SyrupCastle_Expl0
-	dw OBJLst_Map_SyrupCastle_Expl1
-	dw OBJLst_Map_SyrupCastle_Expl2
-	dw OBJLst_Map_SyrupCastle_Expl3
-	dw OBJLst_Map_SyrupCastle_Expl4
+; =============== SprMapPtrTable_Map_SyrupCastle_Expl ===============
+SprMapPtrTable_Map_SyrupCastle_Expl:
+	dw SprMap_Map_SyrupCastle_Expl0
+	dw SprMap_Map_SyrupCastle_Expl1
+	dw SprMap_Map_SyrupCastle_Expl2
+	dw SprMap_Map_SyrupCastle_Expl3
+	dw SprMap_Map_SyrupCastle_Expl4
 
-OBJLst_Map_SyrupCastle_Expl0: INCBIN "data/objlst/map/syrupcastle_expl0.bin"
-OBJLst_Map_SyrupCastle_Expl1: INCBIN "data/objlst/map/syrupcastle_expl1.bin"
-OBJLst_Map_SyrupCastle_Expl2: INCBIN "data/objlst/map/syrupcastle_expl2.bin"
-OBJLst_Map_SyrupCastle_Expl3: INCBIN "data/objlst/map/syrupcastle_expl3.bin"
-OBJLst_Map_SyrupCastle_Expl4: INCBIN "data/objlst/map/syrupcastle_expl4.bin"
+SprMap_Map_SyrupCastle_Expl0: INCBIN "data/sprmap/map/syrupcastle_expl0.bin"
+SprMap_Map_SyrupCastle_Expl1: INCBIN "data/sprmap/map/syrupcastle_expl1.bin"
+SprMap_Map_SyrupCastle_Expl2: INCBIN "data/sprmap/map/syrupcastle_expl2.bin"
+SprMap_Map_SyrupCastle_Expl3: INCBIN "data/sprmap/map/syrupcastle_expl3.bin"
+SprMap_Map_SyrupCastle_Expl4: INCBIN "data/sprmap/map/syrupcastle_expl4.bin"
 
-; =============== OBJLstPtrTable_Map_Ending_Statue ===============
+; =============== SprMapPtrTable_Map_Ending_Statue ===============
 ; Sprite mappings for the Peach statue shown in the ending.
 ; Inexplicably split in two different halves
-OBJLstPtrTable_Map_Ending_Statue:
-	dw OBJLst_Map_Ending_Statue0
-	dw OBJLst_Map_Ending_Statue1
+SprMapPtrTable_Map_Ending_Statue:
+	dw SprMap_Map_Ending_Statue0
+	dw SprMap_Map_Ending_Statue1
 
-OBJLst_Map_Ending_Statue0: INCBIN "data/objlst/map/ending_statue0.bin"
-OBJLst_Map_Ending_Statue1: INCBIN "data/objlst/map/ending_statue1.bin"
+SprMap_Map_Ending_Statue0: INCBIN "data/sprmap/map/ending_statue0.bin"
+SprMap_Map_Ending_Statue1: INCBIN "data/sprmap/map/ending_statue1.bin"
 
-; =============== OBJLstPtrTable_Map_Ending_Lamp ===============
-OBJLstPtrTable_Map_Ending_Lamp:
-	dw OBJLst_Map_Ending_Lamp
+; =============== SprMapPtrTable_Map_Ending_Lamp ===============
+SprMapPtrTable_Map_Ending_Lamp:
+	dw SprMap_Map_Ending_Lamp
 	
-OBJLst_Map_Ending_Lamp: INCBIN "data/objlst/map/ending_lamp.bin"
+SprMap_Map_Ending_Lamp: INCBIN "data/sprmap/map/ending_lamp.bin"
 
-; =============== OBJLstPtrTable_Map_Ending_Sparkle ===============
-OBJLstPtrTable_Map_Ending_Sparkle:
-	dw OBJLst_Map_Ending_Sparkle0
-	dw OBJLst_Map_Ending_Sparkle1
+; =============== SprMapPtrTable_Map_Ending_Sparkle ===============
+SprMapPtrTable_Map_Ending_Sparkle:
+	dw SprMap_Map_Ending_Sparkle0
+	dw SprMap_Map_Ending_Sparkle1
 
-OBJLst_Map_Ending_Sparkle0: INCBIN "data/objlst/map/ending_sparkle0.bin"
-OBJLst_Map_Ending_Sparkle1: INCBIN "data/objlst/map/ending_sparkle1.bin"
+SprMap_Map_Ending_Sparkle0: INCBIN "data/sprmap/map/ending_sparkle0.bin"
+SprMap_Map_Ending_Sparkle1: INCBIN "data/sprmap/map/ending_sparkle1.bin"
 
-; =============== OBJLstPtrTable_Map_Ending_Wario ===============
-OBJLstPtrTable_Map_Ending_Wario:
-	dw OBJLst_Map_Ending_Wario_Back
-	dw OBJLst_Map_Ending_Wario_Left
-	dw OBJLst_Map_Ending_Wario_Right
-	dw OBJLst_Map_Ending_Wario_Jump
-	dw OBJLst_Map_Ending_Wario_Shrug
-	dw OBJLst_Map_Ending_Wario_Front
+; =============== SprMapPtrTable_Map_Ending_Wario ===============
+SprMapPtrTable_Map_Ending_Wario:
+	dw SprMap_Map_Ending_Wario_Back
+	dw SprMap_Map_Ending_Wario_Left
+	dw SprMap_Map_Ending_Wario_Right
+	dw SprMap_Map_Ending_Wario_Jump
+	dw SprMap_Map_Ending_Wario_Shrug
+	dw SprMap_Map_Ending_Wario_Front
 
-OBJLst_Map_Ending_Wario_Back: INCBIN "data/objlst/map/ending_wario_back.bin"
-OBJLst_Map_Ending_Wario_Left: INCBIN "data/objlst/map/ending_wario_left.bin"
-OBJLst_Map_Ending_Wario_Right: INCBIN "data/objlst/map/ending_wario_right.bin"
-OBJLst_Map_Ending_Wario_Jump: INCBIN "data/objlst/map/ending_wario_jump.bin"
-OBJLst_Map_Ending_Wario_Shrug: INCBIN "data/objlst/map/ending_wario_shrug.bin"
-OBJLst_Map_Ending_Wario_Front: INCBIN "data/objlst/map/ending_wario_front.bin"
+SprMap_Map_Ending_Wario_Back: INCBIN "data/sprmap/map/ending_wario_back.bin"
+SprMap_Map_Ending_Wario_Left: INCBIN "data/sprmap/map/ending_wario_left.bin"
+SprMap_Map_Ending_Wario_Right: INCBIN "data/sprmap/map/ending_wario_right.bin"
+SprMap_Map_Ending_Wario_Jump: INCBIN "data/sprmap/map/ending_wario_jump.bin"
+SprMap_Map_Ending_Wario_Shrug: INCBIN "data/sprmap/map/ending_wario_shrug.bin"
+SprMap_Map_Ending_Wario_Front: INCBIN "data/sprmap/map/ending_wario_front.bin"
 
-; =============== OBJLstPtrTable_Map_Ending_Heli ===============
-OBJLstPtrTable_Map_Ending_Heli: 
-	dw OBJLst_Map_Ending_Heli0
-	dw OBJLst_Map_Ending_Heli1
-	dw OBJLst_Map_Ending_HeliSmall0
-	dw OBJLst_Map_Ending_HeliSmall1
-	dw OBJLst_Map_Ending_HeliHello0
-	dw OBJLst_Map_Ending_HeliHello1
-OBJLst_Map_Ending_Heli0:      INCBIN "data/objlst/map/ending_heli0.bin"
-OBJLst_Map_Ending_Heli1:      INCBIN "data/objlst/map/ending_heli1.bin"
-OBJLst_Map_Ending_HeliSmall0: INCBIN "data/objlst/map/ending_helismall0.bin"
-OBJLst_Map_Ending_HeliSmall1: INCBIN "data/objlst/map/ending_helismall1.bin"
-OBJLst_Map_Ending_HeliHello0: INCBIN "data/objlst/map/ending_helihello0.bin"
-OBJLst_Map_Ending_HeliHello1: INCBIN "data/objlst/map/ending_helihello1.bin"
+; =============== SprMapPtrTable_Map_Ending_Heli ===============
+SprMapPtrTable_Map_Ending_Heli: 
+	dw SprMap_Map_Ending_Heli0
+	dw SprMap_Map_Ending_Heli1
+	dw SprMap_Map_Ending_HeliSmall0
+	dw SprMap_Map_Ending_HeliSmall1
+	dw SprMap_Map_Ending_HeliHello0
+	dw SprMap_Map_Ending_HeliHello1
+SprMap_Map_Ending_Heli0:      INCBIN "data/sprmap/map/ending_heli0.bin"
+SprMap_Map_Ending_Heli1:      INCBIN "data/sprmap/map/ending_heli1.bin"
+SprMap_Map_Ending_HeliSmall0: INCBIN "data/sprmap/map/ending_helismall0.bin"
+SprMap_Map_Ending_HeliSmall1: INCBIN "data/sprmap/map/ending_helismall1.bin"
+SprMap_Map_Ending_HeliHello0: INCBIN "data/sprmap/map/ending_helihello0.bin"
+SprMap_Map_Ending_HeliHello1: INCBIN "data/sprmap/map/ending_helihello1.bin"
 
 ; =============== Map_Unused_ReplaceBGMap ===============
 ; [TCRF] Weird unreferenced code.
@@ -2856,13 +2856,13 @@ Map_Unused_ReplaceBGMap:
 	jr   nz, .loop			; If not, loop
 	ret
 	
-; =============== OBJLstAnim_OverworldFlags ===============
-; Determines the sequence of OBJLst IDs to use to animate a "world clear" flag. 
-OBJLstAnim_OverworldFlags: 
+; =============== SprMapAnim_OverworldFlags ===============
+; Determines the sequence of sprite mapping IDs to use to animate a "world clear" flag. 
+SprMapAnim_OverworldFlags: 
 	db $00
 	db $01
 	db $02
-OBJLstAnim_OverworldFlags_End:
+SprMapAnim_OverworldFlags_End:
 	db $FF
 ; =============== Map_Overworld_AnimFlags ===============
 ; Animates all "world clear" flags in the overworld.
@@ -2884,11 +2884,11 @@ Map_Overworld_AnimFlags:
 	ret  z								; If not, return
 	
 	call Map_RiceBeach_UpdateFlagCoords
-	ld   hl, OBJLstAnim_OverworldFlags
+	ld   hl, SprMapAnim_OverworldFlags
 	ld   de, sMapRiceBeachFlagTimer
-	ld   bc, sMapRiceBeachFlagLstId
-	call Map_SetFlagOBJLstId
-	call Map_RiceBeach_WriteFlagOBJLst
+	ld   bc, sMapRiceBeachFlagSprId
+	call Map_SetFlagSprMapId
+	call Map_RiceBeach_WriteFlagSprMap
 	ret
 .mtTeapot:
 	ld   a, [sMapMtTeapotCompletion]
@@ -2896,10 +2896,10 @@ Map_Overworld_AnimFlags:
 	ret  z
 	call Map_MtTeapot_UpdateFlagCoords
 	ld   de, sMapMtTeapotFlagTimer
-	ld   hl, OBJLstAnim_OverworldFlags
-	ld   bc, sMapMtTeapotFlagLstId
-	call Map_SetFlagOBJLstId
-	call Map_MtTeapot_WriteFlagOBJLst
+	ld   hl, SprMapAnim_OverworldFlags
+	ld   bc, sMapMtTeapotFlagSprId
+	call Map_SetFlagSprMapId
+	call Map_MtTeapot_WriteFlagSprMap
 	ret
 .stoveCanyon:
 	ld   a, [sMapStoveCanyonCompletion]
@@ -2907,10 +2907,10 @@ Map_Overworld_AnimFlags:
 	ret  z
 	call Map_StoveCanyon_UpdateFlagCoords
 	ld   de, sMapStoveCanyonFlagTimer
-	ld   hl, OBJLstAnim_OverworldFlags
-	ld   bc, sMapStoveCanyonFlagLstId
-	call Map_SetFlagOBJLstId
-	call Map_StoveCanyon_WriteFlagOBJLst
+	ld   hl, SprMapAnim_OverworldFlags
+	ld   bc, sMapStoveCanyonFlagSprId
+	call Map_SetFlagSprMapId
+	call Map_StoveCanyon_WriteFlagSprMap
 	ret
 .ssTeacup:
 	ld   a, [sMapSSTeacupCompletion]
@@ -2918,10 +2918,10 @@ Map_Overworld_AnimFlags:
 	ret  z
 	call Map_SSTeacup_UpdateFlagCoords
 	ld   de, sMapSSTeacupFlagTimer
-	ld   hl, OBJLstAnim_OverworldFlags
-	ld   bc, sMapSSTeacupFlagLstId
-	call Map_SetFlagOBJLstId
-	call Map_SSTeacup_WriteFlagOBJLst
+	ld   hl, SprMapAnim_OverworldFlags
+	ld   bc, sMapSSTeacupFlagSprId
+	call Map_SetFlagSprMapId
+	call Map_SSTeacup_WriteFlagSprMap
 	ret
 .parsleyWoods:
 	ld   a, [sMapParsleyWoodsCompletion]
@@ -2929,10 +2929,10 @@ Map_Overworld_AnimFlags:
 	ret  z
 	call Map_ParsleyWoods_UpdateFlagCoords
 	ld   de, sMapParsleyWoodsFlagTimer
-	ld   hl, OBJLstAnim_OverworldFlags
-	ld   bc, sMapParsleyWoodsFlagLstId
-	call Map_SetFlagOBJLstId
-	call Map_ParsleyWoods_WriteFlagOBJLst
+	ld   hl, SprMapAnim_OverworldFlags
+	ld   bc, sMapParsleyWoodsFlagSprId
+	call Map_SetFlagSprMapId
+	call Map_ParsleyWoods_WriteFlagSprMap
 	ret
 .sherbetLand:
 	ld   a, [sMapSherbetLandCompletion]
@@ -2940,10 +2940,10 @@ Map_Overworld_AnimFlags:
 	ret  z
 	call Map_SherbetLand_UpdateFlagCoords
 	ld   de, sMapSherbetLandFlagTimer
-	ld   hl, OBJLstAnim_OverworldFlags
-	ld   bc, sMapSherbetLandFlagLstId
-	call Map_SetFlagOBJLstId
-	call Map_SherbetLand_WriteFlagOBJLst
+	ld   hl, SprMapAnim_OverworldFlags
+	ld   bc, sMapSherbetLandFlagSprId
+	call Map_SetFlagSprMapId
+	call Map_SherbetLand_WriteFlagSprMap
 	ret
 .syrupCastle:
 	; [TCRF] This bit is never set, so the rest and all associated subroutines are never called
@@ -2953,10 +2953,10 @@ Map_Overworld_AnimFlags:
 	
 	call Map_Unused_SyrupCastle_UpdateFlagCoords
 	ld   de, sMap_Unused_SyrupCastleFlagTimer
-	ld   hl, OBJLstAnim_OverworldFlags
-	ld   bc, sMap_Unused_SyrupCastleFlagLstId
-	call Map_SetFlagOBJLstId
-	call Map_Unused_SyrupCastle_WriteFlagOBJLst
+	ld   hl, SprMapAnim_OverworldFlags
+	ld   bc, sMap_Unused_SyrupCastleFlagSprId
+	call Map_SetFlagSprMapId
+	call Map_Unused_SyrupCastle_WriteFlagSprMap
 	ret
 
 Map_RiceBeach_UpdateFlagCoords: mMap_UpdateOBJCoords sMapRiceBeachFlagY
@@ -2969,7 +2969,7 @@ Map_SherbetLand_UpdateFlagCoords: mMap_UpdateOBJCoords sMapSherbetLandFlagY
 Map_Unused_SyrupCastle_UpdateFlagCoords: mMap_UpdateOBJCoords sMap_Unused_SyrupCastleFlagY
 
 ; =============== Map_InitWorldClearFlags ===============
-; Initializes the coordinates and OBJLst for all "world clear flags" in the overworld.
+; Initializes the coordinates and sprite mappings for all "world clear flags" in the overworld.
 Map_InitWorldClearFlags:
 	; Rice Beach
 	ld   a, $E0
@@ -2985,7 +2985,7 @@ Map_InitWorldClearFlags:
 	ld   a, [hl]
 	ld   [sMapRiceBeachFlagScrollXLast], a
 	ld   a, $00
-	ld   [sMapRiceBeachFlagLstId], a
+	ld   [sMapRiceBeachFlagSprId], a
 	
 	; Mt. Teapot
 	ld   a, $01
@@ -3003,7 +3003,7 @@ Map_InitWorldClearFlags:
 	ld   a, [hl]
 	ld   [sMapMtTeapotFlagScrollXLast], a
 	ld   a, $01
-	ld   [sMapMtTeapotFlagLstId], a
+	ld   [sMapMtTeapotFlagSprId], a
 	
 	; Stove Canyon
 	ld   a, $AC
@@ -3019,7 +3019,7 @@ Map_InitWorldClearFlags:
 	ld   a, [hl]
 	ld   [sMapStoveCanyonFlagScrollXLast], a
 	ld   a, $00
-	ld   [sMapStoveCanyonFlagLstId], a
+	ld   [sMapStoveCanyonFlagSprId], a
 	
 	; SS Teacup
 	ld   a, $02
@@ -3037,7 +3037,7 @@ Map_InitWorldClearFlags:
 	ld   a, [hl]
 	ld   [sMapSSTeacupFlagScrollXLast], a
 	ld   a, $02
-	ld   [sMapSSTeacupFlagLstId], a
+	ld   [sMapSSTeacupFlagSprId], a
 	
 	; Parsley Woods
 	ld   a, $01
@@ -3055,7 +3055,7 @@ Map_InitWorldClearFlags:
 	ld   a, [hl]
 	ld   [sMapParsleyWoodsFlagScrollXLast], a
 	ld   a, $00
-	ld   [sMapParsleyWoodsFlagLstId], a
+	ld   [sMapParsleyWoodsFlagSprId], a
 	
 	; Sherbet Land
 	ld   a, $02
@@ -3073,7 +3073,7 @@ Map_InitWorldClearFlags:
 	ld   a, [hl]
 	ld   [sMapSherbetLandFlagScrollXLast], a
 	ld   a, $00
-	ld   [sMapSherbetLandFlagLstId], a
+	ld   [sMapSherbetLandFlagSprId], a
 	
 	; [TCRF] Syrup Castle (unseen normally)
 	ld   a, $20
@@ -3089,20 +3089,20 @@ Map_InitWorldClearFlags:
 	ld   a, [hl]
 	ld   [sMap_Unused_SyrupCastleFlagScrollXLast], a
 	ld   a, $00
-	ld   [sMap_Unused_SyrupCastleFlagLstId], a
+	ld   [sMap_Unused_SyrupCastleFlagSprId], a
 	ret
 	
-; =============== Map_OverworldWriteOBJLst ===============
-; Writes the specified OBJLst data in the overworld.
+; =============== Map_OverworldWriteSprMap ===============
+; Writes the specified sprite mapping data in the overworld.
 ; (this includes: Mt.Teapot's lid, the world clear flags, ...).
 ; Since the overworld is the only map screen that can scroll, 
 ; this also performs an off-screen check, to avoid rendering off-screen sprites.
 ;
 ; IN
-; - HL: Ptr to OBJLst table
+; - HL: Ptr to sprite mapping table
 ; - BC: Ptr to Y position
 ; - DE: Ptr to X position
-Map_OverworldWriteOBJLst:
+Map_OverworldWriteSprMap:
 	; As the coordinates are relative to the screen, we can easily
 	; perform an off-screen check
 	ld   a, [bc]		; Is the Y position > $B0?
@@ -3115,131 +3115,130 @@ Map_OverworldWriteOBJLst:
 	ld   a, $B0
 	sub  a, b
 	ret  c				; If so, return
-	call Map_WriteOBJLst
+	call Map_WriteSprMap
 	ret
-; =============== Map_RiceBeach_WriteFlagOBJLst ===============
-; Prepares the call to Map_WriteOBJLst for writing the flag OBJLst to OAM.
+; =============== Map_RiceBeach_WriteFlagSprMap ===============
+; Prepares the call to Map_WriteSprMap for writing the flag sprites to OAM.
 ; One exists for every overworld location.
-;
-Map_RiceBeach_WriteFlagOBJLst:
+Map_RiceBeach_WriteFlagSprMap:
 	ld   a, $10
 	ld   [sMapOverworldFlagFlags], a
-	ld   hl, OBJLstPtrTable_Map_Overworld_Flag
+	ld   hl, SprMapPtrTable_Map_Overworld_Flag
 	ld   a, [sMapRiceBeachFlagY]
 	ld   [sMapOAMWriteY], a
 	ld   a, [sMapRiceBeachFlagX]
 	ld   [sMapOAMWriteX], a
-	ld   a, [sMapRiceBeachFlagLstId]
-	ld   [sMapOAMWriteLstId], a
+	ld   a, [sMapRiceBeachFlagSprId]
+	ld   [sMapOAMWriteSprId], a
 	ld   a, [sMapOverworldFlagFlags]
 	ld   [sMapOAMWriteFlags], a
 	ld   bc, sMapRiceBeachFlagY
 	ld   de, sMapRiceBeachFlagX
-Map_WriteFlagOBJLst:
-	jr   Map_OverworldWriteOBJLst
-Map_MtTeapot_WriteFlagOBJLst:
+Map_WriteFlagSprMap:
+	jr   Map_OverworldWriteSprMap
+Map_MtTeapot_WriteFlagSprMap:
 	ld   a, $10
 	ld   [sMapOverworldFlagFlags], a
-	ld   hl, OBJLstPtrTable_Map_Overworld_Flag
+	ld   hl, SprMapPtrTable_Map_Overworld_Flag
 	ld   a, [sMapMtTeapotFlagY]
 	ld   [sMapOAMWriteY], a
 	ld   a, [sMapMtTeapotFlagX]
 	ld   [sMapOAMWriteX], a
-	ld   a, [sMapMtTeapotFlagLstId]
-	ld   [sMapOAMWriteLstId], a
+	ld   a, [sMapMtTeapotFlagSprId]
+	ld   [sMapOAMWriteSprId], a
 	ld   a, [sMapOverworldFlagFlags]
 	ld   [sMapOAMWriteFlags], a
 	ld   bc, sMapMtTeapotFlagY
 	ld   de, sMapMtTeapotFlagX
-	jr   Map_WriteFlagOBJLst
-Map_StoveCanyon_WriteFlagOBJLst:
+	jr   Map_WriteFlagSprMap
+Map_StoveCanyon_WriteFlagSprMap:
 	ld   a, $10
 	ld   [sMapOverworldFlagFlags], a
-	ld   hl, OBJLstPtrTable_Map_Overworld_Flag
+	ld   hl, SprMapPtrTable_Map_Overworld_Flag
 	ld   a, [sMapStoveCanyonFlagY]
 	ld   [sMapOAMWriteY], a
 	ld   a, [sMapStoveCanyonFlagX]
 	ld   [sMapOAMWriteX], a
-	ld   a, [sMapStoveCanyonFlagLstId]
-	ld   [sMapOAMWriteLstId], a
+	ld   a, [sMapStoveCanyonFlagSprId]
+	ld   [sMapOAMWriteSprId], a
 	ld   a, [sMapOverworldFlagFlags]
 	ld   [sMapOAMWriteFlags], a
 	ld   bc, sMapStoveCanyonFlagY
 	ld   de, sMapStoveCanyonFlagX
-	jr   Map_WriteFlagOBJLst
-Map_SSTeacup_WriteFlagOBJLst:
+	jr   Map_WriteFlagSprMap
+Map_SSTeacup_WriteFlagSprMap:
 	ld   a, $10
 	ld   [sMapOverworldFlagFlags], a
-	ld   hl, OBJLstPtrTable_Map_Overworld_Flag
+	ld   hl, SprMapPtrTable_Map_Overworld_Flag
 	ld   a, [sMapSSTeacupFlagY]
 	ld   [sMapOAMWriteY], a
 	ld   a, [sMapSSTeacupFlagX]
 	ld   [sMapOAMWriteX], a
-	ld   a, [sMapSSTeacupFlagLstId]
-	ld   [sMapOAMWriteLstId], a
+	ld   a, [sMapSSTeacupFlagSprId]
+	ld   [sMapOAMWriteSprId], a
 	ld   a, [sMapOverworldFlagFlags]
 	ld   [sMapOAMWriteFlags], a
 	ld   bc, sMapSSTeacupFlagY
 	ld   de, sMapSSTeacupFlagX
-	jr   Map_WriteFlagOBJLst
-Map_ParsleyWoods_WriteFlagOBJLst:
+	jr   Map_WriteFlagSprMap
+Map_ParsleyWoods_WriteFlagSprMap:
 	ld   a, $10
 	ld   [sMapOverworldFlagFlags], a
-	ld   hl, OBJLstPtrTable_Map_Overworld_Flag
+	ld   hl, SprMapPtrTable_Map_Overworld_Flag
 	ld   a, [sMapParsleyWoodsFlagY]
 	ld   [sMapOAMWriteY], a
 	ld   a, [sMapParsleyWoodsFlagX]
 	ld   [sMapOAMWriteX], a
-	ld   a, [sMapParsleyWoodsFlagLstId]
-	ld   [sMapOAMWriteLstId], a
+	ld   a, [sMapParsleyWoodsFlagSprId]
+	ld   [sMapOAMWriteSprId], a
 	ld   a, [sMapOverworldFlagFlags]
 	ld   [sMapOAMWriteFlags], a
 	ld   bc, sMapParsleyWoodsFlagY
 	ld   de, sMapParsleyWoodsFlagX
-	jp   Map_WriteFlagOBJLst
-Map_SherbetLand_WriteFlagOBJLst:
+	jp   Map_WriteFlagSprMap
+Map_SherbetLand_WriteFlagSprMap:
 	ld   a, $10
 	ld   [sMapOverworldFlagFlags], a
-	ld   hl, OBJLstPtrTable_Map_Overworld_Flag
+	ld   hl, SprMapPtrTable_Map_Overworld_Flag
 	ld   a, [sMapSherbetLandFlagY]
 	ld   [sMapOAMWriteY], a
 	ld   a, [sMapSherbetLandFlagX]
 	ld   [sMapOAMWriteX], a
-	ld   a, [sMapSherbetLandFlagLstId]
-	ld   [sMapOAMWriteLstId], a
+	ld   a, [sMapSherbetLandFlagSprId]
+	ld   [sMapOAMWriteSprId], a
 	ld   a, [sMapOverworldFlagFlags]
 	ld   [sMapOAMWriteFlags], a
 	ld   bc, sMapSherbetLandFlagY
 	ld   de, sMapSherbetLandFlagX
-	jp   Map_WriteFlagOBJLst
+	jp   Map_WriteFlagSprMap
 ; [TCRF] For the unused Syrup Castle flag
-Map_Unused_SyrupCastle_WriteFlagOBJLst:
+Map_Unused_SyrupCastle_WriteFlagSprMap:
 	ld   a, $10
 	ld   [sMapOverworldFlagFlags], a
-	ld   hl, OBJLstPtrTable_Map_Overworld_Flag
+	ld   hl, SprMapPtrTable_Map_Overworld_Flag
 	ld   a, [sMap_Unused_SyrupCastleFlagY]
 	ld   [sMapOAMWriteY], a
 	ld   a, [sMap_Unused_SyrupCastleFlagX]
 	ld   [sMapOAMWriteX], a
-	ld   a, [sMap_Unused_SyrupCastleFlagLstId]
-	ld   [sMapOAMWriteLstId], a
+	ld   a, [sMap_Unused_SyrupCastleFlagSprId]
+	ld   [sMapOAMWriteSprId], a
 	ld   a, [sMapOverworldFlagFlags]
 	ld   [sMapOAMWriteFlags], a
 	ld   bc, sMap_Unused_SyrupCastleFlagY
 	ld   de, sMap_Unused_SyrupCastleFlagX
-	jp   Map_WriteFlagOBJLst
-; =============== Map_SetFlagOBJLstId ===============
+	jp   Map_WriteFlagSprMap
+; =============== Map_SetFlagSprMapId ===============
 ; Sets the mapping frame and updates the timer for the specified flag sprite mapping.
 ; Every 8 frames the next mapping frame from the specified table is set.
 ;
-; Essentially, FlagOBJLstId = OBJLstAnim[FlagTimer]
+; Essentially, FlagSprMapId = SprMapAnim[FlagTimer]
 ;
 ; IN
-; - HL: Ptr to a table of sprite mapping IDs (OBJLstAnim source table)
-;       This is always OBJLstAnim_OverworldFlags
-; - BC: Ptr to flag OBJLst ID (where to save the ID)
+; - HL: Ptr to a table of sprite mapping IDs (SprMapAnim source table)
+;       This is always SprMapAnim_OverworldFlags
+; - BC: Ptr to flag sprite ID (where to save the ID)
 ; - DE: Ptr to flag timer (index to the source table)
-Map_SetFlagOBJLstId:
+Map_SetFlagSprMapId:
 	; Animate every 8 frames
 	ld   a, [sMapTimer_Low]
 	and  a, $07
@@ -3248,9 +3247,9 @@ Map_SetFlagOBJLstId:
 	;--
 	
 	ld   a, b						; Save BC
-	ld   [sMapFlagLstIdPtr_High], a
+	ld   [sMapFlagSprIdPtr_High], a
 	ld   a, c
-	ld   [sMapFlagLstIdPtr_Low], a
+	ld   [sMapFlagSprIdPtr_Low], a
 	; Determine the sprite mapping ID to use, from the table at HL
 	; The flag animation timer determines the index to this table
 	xor  a							; BC = flag timer
@@ -3259,9 +3258,9 @@ Map_SetFlagOBJLstId:
 	ld   c, a
 	add  hl, bc						; and use it to index the mapping frame table
 	
-	ld   a, [sMapFlagLstIdPtr_High]	; Restore BC
+	ld   a, [sMapFlagSprIdPtr_High]	; Restore BC
 	ld   b, a
-	ld   a, [sMapFlagLstIdPtr_Low]
+	ld   a, [sMapFlagSprIdPtr_Low]
 	ld   c, a
 	;--
 	; Update the mapping frame ID
@@ -3273,21 +3272,21 @@ Map_SetFlagOBJLstId:
 	inc  a
 	ld   [de], a
 	
-	cp   a, (OBJLstAnim_OverworldFlags_End - OBJLstAnim_OverworldFlags)						
+	cp   a, (SprMapAnim_OverworldFlags_End - SprMapAnim_OverworldFlags)						
 	ret  nz			; is the timer value going over the size of the table?
 	xor  a			; if so, reset it
 	ld   [de], a
 	ret
 	
-; =============== OBJLstPtrTable_Map_Overworld_Flag ===============
-OBJLstPtrTable_Map_Overworld_Flag:
-	dw OBJLst_Map_Overworld_Flag0
-	dw OBJLst_Map_Overworld_Flag1
-	dw OBJLst_Map_Overworld_Flag2
+; =============== SprMapPtrTable_Map_Overworld_Flag ===============
+SprMapPtrTable_Map_Overworld_Flag:
+	dw SprMap_Map_Overworld_Flag0
+	dw SprMap_Map_Overworld_Flag1
+	dw SprMap_Map_Overworld_Flag2
 
-OBJLst_Map_Overworld_Flag0: INCBIN "data/objlst/map/overworld_flag0.bin"
-OBJLst_Map_Overworld_Flag1: INCBIN "data/objlst/map/overworld_flag1.bin"
-OBJLst_Map_Overworld_Flag2: INCBIN "data/objlst/map/overworld_flag2.bin"
+SprMap_Map_Overworld_Flag0: INCBIN "data/sprmap/map/overworld_flag0.bin"
+SprMap_Map_Overworld_Flag1: INCBIN "data/sprmap/map/overworld_flag1.bin"
+SprMap_Map_Overworld_Flag2: INCBIN "data/sprmap/map/overworld_flag2.bin"
 
 ; =============== Map_BlinkLevel_Do ===============
 ; Handles the blinking level dots in a submap, if any are requested.
@@ -3312,11 +3311,11 @@ Map_BlinkLevel_Do:
 	ld   [sMapExOBJ1Flags], a
 	ld   [sMapExOBJ2Flags], a
 	ld   a, $04	; Mapping ID for black level dot
-	ld   [sMapExOBJ0LstId], a
-	ld   [sMapExOBJ1LstId], a
-	ld   [sMapExOBJ2LstId], a
+	ld   [sMapExOBJ0SprId], a
+	ld   [sMapExOBJ1SprId], a
+	ld   [sMapExOBJ2SprId], a
 	call Map_BlinkLevel_SetOBJInfo
-	call Map_BlinkLevel_WriteOBJLst
+	call Map_BlinkLevel_WriteSprMap
 	ret
 	
 ; =============== Map_BlinkLevel_SetOBJInfo ===============
@@ -3430,9 +3429,9 @@ Map_BlinkLevel_IndexPosPtrTbl:
 	ld   l, e
 	ret
 	
-; =============== Map_BlinkLevel_WriteOBJLst ===============
+; =============== Map_BlinkLevel_WriteSprMap ===============
 ; Writes the blink dots sprite mappings for all three blinking dots.
-Map_BlinkLevel_WriteOBJLst:
+Map_BlinkLevel_WriteSprMap:
 	ld   a, [sMapBlinkDoneFlags]
 	call .write0
 	ld   a, [sMapBlinkDoneFlags]

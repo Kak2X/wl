@@ -623,12 +623,12 @@ Game_Add1UP:
 	ld   [sExActOBJY_High], a
 	ld   a, [sTarget_Low]
 	ld   [sExActOBJY_Low], a
-	ld   a, [sPlX_High]		; X Pos: Same as player
+	ld   a, [sPlX_High]			; X Pos: Same as player
 	ld   [sExActOBJX_High], a
 	ld   a, [sPlX_Low]
 	ld   [sExActOBJX_Low], a
-	ld   a, OBJ_1UP				; OBJ Frame	
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_1UP				; Sprite frame	
+	ld   [sExActSprMapId], a
 	xor  a						; Flags
 	ld   [sExActOBJFlags], a
 	; Clear rest of space
@@ -681,8 +681,8 @@ Game_Add3UP:
 	ld   [sExActOBJX_High], a
 	ld   a, [sPlX_Low]
 	ld   [sExActOBJX_Low], a
-	ld   a, OBJ_3UP				; OBJ Frame
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_3UP				; Sprite frame
+	ld   [sExActSprMapId], a
 	xor  a
 	ld   [sExActOBJFlags], a
 	; Clear rest of space
@@ -712,8 +712,8 @@ ActS_SpawnBlockBreak:
 	
 	mExActS_SetCenterBlock
 	
-	ld   a, OBJ_BLOCKSMASH0
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_BLOCKSMASH0
+	ld   [sExActSprMapId], a
 	ld   a, $00
 	ld   [sExActOBJFlags], a
 	ld   a, [sBlockTopLeftPtr_High]
@@ -1500,7 +1500,7 @@ Level_GetTreasureDoorPtr:
 	ldi  a, [hl]			; Import the data over
 	ld   [sSmallWario], a
 	ldi  a, [hl]
-	ld   [sPlLstId], a
+	ld   [sPlSprId], a
 	;--
 	xor  a
 	ld   [sPlAnimTimer], a
@@ -1513,7 +1513,7 @@ Level_GetTreasureDoorPtr:
 Level_EnterEntranceDoor:
 	; Stop flashing if we're flashing
 	ld   a, [sPlFlags]		
-	res  OBJLSTB_OBP1, a
+	res  SPRMAPB_OBP1, a
 	ld   [sPlFlags], a
 	
 	; Kill dragon flame
@@ -1540,7 +1540,7 @@ Level_EnterAltClearDoor:
 ; This subroutine starts the level clear transition for entering the skull door.
 Level_EnterClearDoor:
 	ld   a, [sPlFlags]
-	res  OBJLSTB_OBP1, a		; Reset pal
+	res  SPRMAPB_OBP1, a		; Reset pal
 	ld   [sPlFlags], a
 	xor  a
 	ld   [sPlDragonHatActive], a
@@ -1566,8 +1566,8 @@ Level_EnterClearDoor:
 ; =============== Pl_SwitchToActBumpAction ===============
 ; Switches the player to the (ground) bump action.
 Pl_SwitchToActBumpAction:
-	ld   a, OBJ_WARIO_BUMP
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_BUMP
+	ld   [sPlSprId], a
 ; =============== Pl_SwitchToActBumpAction2 ===============
 ; Same as above, but without updating the frame.
 ; Used when bumping against an actor during a dash.
@@ -1769,15 +1769,15 @@ PlTarget_SetUpPos:
 	ld   [sTarget_High], a
 	ret
 	
-; =============== ExActOBJTarget_Set***Pos ===============
-; Like PlTarget_Set***Pos, except it goes off the ExAct OBJ position.
+; =============== ExActTarget_Set***Pos ===============
+; Like PlTarget_Set***Pos, except the target pointer is relative to themselves.
 ; The horizontal variations are in BANK $0D.
 
-; =============== ExActOBJTarget_SetVertPos ===============
+; =============== ExActTarget_SetVertPos ===============
 ; Sets the target pointer relative to the currently processed ExAct.
 ; IN:
 ; - B: Amount to add or remove (signed)
-ExActOBJTarget_SetVertPos:
+ExActTarget_SetVertPos:
 
 	; Because the target is a 16bit value, **and the source is 8bit**, it requires special accounting for the carry
 	; so we can't simply add the number as-is (adc $00 after adding a negative value wouldn't work).
@@ -1786,8 +1786,8 @@ ExActOBJTarget_SetVertPos:
 	; If it's already positive, the value will be added to the Y pos.
 	; [TCRF] And this never ends up happening since this is only called for 
 	;        underwater bubbles, which only checks in a single position.
-	bit  7, b									; Is the value negative?
-	jr   z, ExActOBJTarget_Unused_SetDownPos	; If not, jump
+	bit  7, b								; Is the value negative?
+	jr   z, ExActTarget_Unused_SetDownPos	; If not, jump
 	
 	; Otherwise, the value will be subtracted from the Y pos.
 	; Requires a positive number, so convert from signed negative to positive.
@@ -1795,13 +1795,13 @@ ExActOBJTarget_SetVertPos:
 	cpl			; Invert bits							
 	inc  a		; Account for $FF -> $01 instead of $00, etc...
 	ld   b, a
-	jr   ExActOBJTarget_SetUpPos
+	jr   ExActTarget_SetUpPos
 	
-; =============== ExActOBJTarget_Unused_SetDownPos ===============
+; =============== ExActTarget_Unused_SetDownPos ===============
 ; [TCRF] This ended up not being used.
 ; IN
 ; - B: Amount to add
-ExActOBJTarget_Unused_SetDownPos:
+ExActTarget_Unused_SetDownPos:
 	; sTarget = sExActOBJY + B
 	ld   a, [sExActOBJY_Low]
 	add  b
@@ -1811,10 +1811,10 @@ ExActOBJTarget_Unused_SetDownPos:
 	ld   [sTarget_High], a
 	ret
 	
-; =============== ExActOBJTarget_SetUpPos ===============
+; =============== ExActTarget_SetUpPos ===============
 ; IN
 ; - B: Amount to subtract
-ExActOBJTarget_SetUpPos:
+ExActTarget_SetUpPos:
 	; sTarget = sExActOBJY - B
 	ld   a, [sExActOBJY_Low]
 	sub  a, b
@@ -2254,8 +2254,8 @@ Pl_StartDeathAnim:
 	ld   [sPlNewAction], a
 	ld   a, $01
 	ld   [sPauseActors], a
-	ld   a, OBJ_WARIO_DEAD
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_DEAD
+	ld   [sPlSprId], a
 	xor  a
 	ld   [sHurryUp], a
 	ld   [sPlJumpYPathIndex], a
@@ -2273,8 +2273,8 @@ Pl_StartDeathAnim:
 	ld   [sExActOBJX_High], a
 	ld   a, [sPlX_Low]
 	ld   [sExActOBJX_Low], a
-	ld   a, OBJ_COIN0
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_COIN0
+	ld   [sExActSprMapId], a
 	xor  a
 	ld   [sExActOBJFlags], a
 	
@@ -2327,8 +2327,8 @@ Pl_StartDeathAnim:
 	ld   [sExActOBJX_High], a
 	ld   a, [sPlX_Low]
 	ld   [sExActOBJX_Low], a
-	ld   a, OBJ_HAT
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_HAT
+	ld   [sExActSprMapId], a
 	ld   a, [sPlFlags]
 	ld   [sExActOBJFlags], a
 	; Clear exact area
@@ -2352,8 +2352,8 @@ Pl_StartDeathAnim:
 ; - $02: Y coord (low) 
 ; - $03: X coord (high)
 ; - $04: X coord (low)
-; - $05: OBJLst Id (sprite mapping ID)
-; - $06: OBJ Flags
+; - $05: Sprite mapping ID
+; - $06: Sprite flags
 ; - $0B: Y Coord (relative)
 ; - $0C: X Coord (relative)
 ;
@@ -2434,8 +2434,8 @@ ENDC
 	ld   a, [sSmallWario]
 	and  a
 	jr   nz, .noFrame
-	ld   a, OBJ_WARIO_BUMPAIR
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_BUMPAIR
+	ld   [sPlSprId], a
 .noFrame:
 	; Set the bump direction based on the value of the "actor interaction direction" mask.
 	; ie: when the actor is being interacted on the left, the player is bumped left. 
@@ -2800,7 +2800,7 @@ ENDC
 	inc  hl
 	
 	;
-	; WARIO OBJ FLAGS / Starting coords
+	; WARIO Sprite flags / Starting coords
 	;
 	
 	; Copy bytes D-12
@@ -2953,7 +2953,7 @@ ENDC
 	ldi  a, [hl]			; Set flags and frame ID
 	ld   [sSmallWario], a
 	ldi  a, [hl]
-	ld   [sPlLstId], a
+	ld   [sPlSprId], a
 	
 	; Copy the hat GFX over from the specified ptr
 	ldi  a, [hl]			; HL = Ptr to GFX data
@@ -3543,7 +3543,7 @@ LoadGFX_WarioWithPowerHat:
 ; - HL: Ptr to uncompressed GFX
 Level_CopySharedOBJGFX:
 	ld   de, vGFXLevelSharedOBJ
-	ld   bc, vGFXLevelSharedOBJ_Size
+	ld   bc, vGFXLevelSharedSPR_Size
 	call CopyBytesEx
 	ret
 
@@ -3837,8 +3837,8 @@ Level_CopyAnimGFX:
 ; so it can be used with anything as long as there are seven frames.
 ;
 ; When the effect is first started, the currently visible frame should *always* be the last one:
-; - For normal gameplay, this is OBJ_WARIO_DASH6
-; - For the save screen, this is OBJ_SAVESEL_WARIO_DASH6
+; - For normal gameplay, this is SPR_WARIO_DASH6
+; - For the save screen, this is SPR_SAVESEL_WARIO_DASH6
 Wario_DoDashAfterimages:
 	ld   hl, Wario_DashAfterimageTbl
 	; Index++
@@ -3855,9 +3855,9 @@ Wario_DoDashAfterimages:
 	ld   d, $00
 	add  hl, de				
 	; Add the offset to the current frame id
-	ld   a, [sPlLstId]	
+	ld   a, [sPlSprId]	
 	add  [hl]
-	ld   [sPlLstId], a
+	ld   [sPlSprId], a
 	ret
 
 ; =============== Wario_DashAfterimageTbl ===============
@@ -4033,7 +4033,7 @@ ExActBGColi_DragonHatFlame:
 	; Determine where the front of the player is, so we can set the appropriate target.
 	; This is the same direction the current ExAct (the dragon flame) is facing.
 	ld   a, [sExActOBJFlags]	
-	bit  OBJLSTB_XFLIP, a		; Player facing right?
+	bit  SPRMAPB_XFLIP, a		; Player facing right?
 	jr   z, .setLeft			; If not, check for coli on left
 	call PlTarget_SetRightPos
 	jr   .setXOffset
@@ -4051,7 +4051,7 @@ ExActBGColi_DragonHatFlame:
 	; The value is relative to the ExAct Y pos, which is for the dragon hat flame.
 	; This is to make sure it always uses the correct Y position, even when crouching.
 	ld   b, $04						; 4px above the hat
-	call ExActOBJTarget_SetUpPos
+	call ExActTarget_SetUpPos
 	call PlBGColi_GetYBlockOffset	; H = Offset to high byte of level layout ptr
 	ld   a, [sBlockTopLeftPtr_Low]
 	ld   l, a
@@ -4157,9 +4157,9 @@ IF IMPROVE
 ; Meant to be used when moving horizontally on a ladder, to allow collecting coins below.
 PlBGColi_DoFrontLow:
 	;--
-	; Autodetect the X target depending on the OBJLst direction, identically to PlBGColi_DoFront
+	; Autodetect the X target depending on the sprite mapping direction, identically to PlBGColi_DoFront
 	ld   a, [sPlFlags]
-	bit  OBJLSTB_XFLIP, a		; Are we facing right?
+	bit  SPRMAPB_XFLIP, a		; Are we facing right?
 	jr   z, .left				; If not, jump
 .right:
 	ld   b, $08					; 8px right
@@ -4299,7 +4299,7 @@ PlBGColi_DoDash:
 	; Calculate and save the block X offset sBlockTopLeftPtr_Low (shared across lower/higher blocks)
 	; Depending on which direction we're facing, pick a different X pos.
 	ld   a, [sPlFlags]
-	bit  OBJLSTB_XFLIP, a
+	bit  SPRMAPB_XFLIP, a
 	jr   z, .left
 .right:
 	ld   b, $08						; 8px right	
@@ -4544,8 +4544,8 @@ BGColi_HitItemBox:
 	ld   a, EXACT_ITEMBOXHIT
 	ld   [sExActSet], a
 	mExActS_SetCenterBlock
-	ld   a, OBJ_HITBLOCK
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_HITBLOCK
+	ld   [sExActSprMapId], a
 	ld   a, $00
 	ld   [sExActOBJFlags], a
 	ld   a, [sBlockTopLeftPtr_High]
@@ -4586,10 +4586,10 @@ BGColi_HitItemBox:
 ; - 1: Label to subroutine for breaking the block.
 MACRO mBGColi_BreakGroundPound
 	; Is the player ground pounding?
-	ld   a, [sPlLstId]
-	cp   a, OBJ_WARIO_GROUNDPOUND
+	ld   a, [sPlSprId]
+	cp   a, SPR_WARIO_GROUNDPOUND
 	jr   z, \1
-	cp   a, OBJ_WARIO_HOLDGROUNDPOUND
+	cp   a, SPR_WARIO_HOLDGROUNDPOUND
 	jr   z, \1
 	; If not, treat as solid
 	ld   a, COLI_SOLID
@@ -4727,8 +4727,8 @@ BGColi_Switch0Type0:
 ExActS_SpawnSwitchHit:
 	mExActS_SetCenterBlock
 	
-	ld   a, OBJ_HITBLOCK
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_HITBLOCK
+	ld   [sExActSprMapId], a
 	ld   a, $00
 	ld   [sExActOBJFlags], a
 	ld   a, [sBlockTopLeftPtr_High]
@@ -5311,8 +5311,8 @@ BGColi_BounceUp:
 	
 	mExActS_SetCenterBlock
 	
-	ld   a, OBJ_HITBLOCK
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_HITBLOCK
+	ld   [sExActSprMapId], a
 	ld   a, $00
 	ld   [sExActOBJFlags], a
 	ld   a, [sBlockTopLeftPtr_High]
@@ -5777,9 +5777,9 @@ BGColi_BreakToWaterDoor4BJump: mBGColi_BreakToBlockIdJump BGColi_BreakToWaterDoo
 ; - (many other flags): For the detailed collision types, like sand or ice
 PlBGColi_DoFront:
 	;--
-	; Autodetect the X target depending on the OBJLst direction.
+	; Autodetect the X target depending on the sprite mapping direction.
 	ld   a, [sPlFlags]
-	bit  OBJLSTB_XFLIP, a		; Are we facing right?
+	bit  SPRMAPB_XFLIP, a		; Are we facing right?
 	jr   z, PlBGColi_DoLeft	; If not, jump
 PlBGColi_DoRight:
 	ld   b, $08					; 8px right
@@ -6092,12 +6092,12 @@ HomeCall_HeartBonus_Do: mHomeCallRet HeartBonus_Do ; BANK $1E
 HomeCall_CoinBonus_Do: mHomeCallRet CoinBonus_Do ; BANK $1E
 HomeCall_LoadVRAM_Ending_TreasureRoom: mHomeCallRet LoadVRAM_Ending_TreasureRoom ; BANK $06
 HomeCall_LoadVRAM_CourseClr: mHomeCallRet LoadVRAM_CourseClr ; BANK $05
-HomeCall_WriteExActOBJLst: mHomeCallRet WriteExActOBJLst ; BANK $05
-HomeCall_NonGame_WriteWarioOBJLst: mHomeCallRet NonGame_WriteWarioOBJLst ; BANK $05
-HomeCall_WriteWarioOBJLst: mHomeCallRet WriteWarioOBJLst ; BANK $05
-HomeCall_NonGame_WriteExActOBJLst: mHomeCallRet NonGame_WriteExActOBJLst ; BANK $05
+HomeCall_WriteExActSprMap: mHomeCallRet WriteExActSprMap ; BANK $05
+HomeCall_NonGame_WriteWarioSprMap: mHomeCallRet NonGame_WriteWarioSprMap ; BANK $05
+HomeCall_WriteWarioSprMap: mHomeCallRet WriteWarioSprMap ; BANK $05
+HomeCall_NonGame_WriteExActSprMap: mHomeCallRet NonGame_WriteExActSprMap ; BANK $05
 HomeCall_Pl_StartJump: mHomeCallRet Pl_StartJump ; BANK $0D
-HomeCall_ExActS_ExecuteAllAndWriteOBJLst: mHomeCallRet ExActS_ExecuteAllAndWriteOBJLst ; BANK $0D
+HomeCall_ExActS_ExecuteAllAndWriteSprMap: mHomeCallRet ExActS_ExecuteAllAndWriteSprMap ; BANK $0D
 HomeCall_ExActS_ExecuteAll: mHomeCallRet ExActS_ExecuteAll ; BANK $0D
 HomeCall_LoadVRAM_Treasure_TreasureRoom: mHomeCallRet LoadVRAM_Treasure_TreasureRoom ; BANK $06
 HomeCall_SaveSel_InitOBJ: mHomeCallRet SaveSel_InitOBJ ; BANK $06
@@ -6185,30 +6185,30 @@ HomeCall_Title_AnimWaterGFX: mHomeCallRet Title_AnimWaterGFX ; BANK $12
 HomeCall_Bonus_ScreenEvent_Do: mHomeCallRet Bonus_ScreenEvent_Do ; BANK $1E
 HomeCall_End_ScreenEvent_Do: mHomeCallRet End_ScreenEvent_Do ; BANK $1F
 ; ==============================
-HomeCall_Static_WriteWarioOBJLst: mHomeCallRet Static_WriteWarioOBJLst ; BANK $12
+HomeCall_Static_WriteWarioSprMap: mHomeCallRet Static_WriteWarioSprMap ; BANK $12
 HomeCall_Sound_DoStub: mHomeCallRet Sound_DoStub ; BANK $04
 	
-; =============== Static_WriteOBJLst ===============
-; Writes an entire OBJ list (sprite mappings) for use in the title screen, bonus games, and ending.
-; These are stored as a list of OAM OBJ (sprites).
+; =============== Static_WriteSprMap ===============
+; Writes an entire sprite mappings for use in the title screen, bonus games, and ending.
+; These are stored as a straight list of OAM OBJ.
 ;
-; As a result an OBJLst is made of several entries one after the other, with each entry having:
+; As a result a sprite mapping is made of several entries one after the other, with each entry having:
 ; - Y Coord (relative to the origin)
 ; - X Coord (relative to the origin)
 ; - Tile ID
 ; - Flags
 ;
-; This is similar to Map_WriteOBJLst, but:
-; - doesn't support flipping entire OBJLst.
+; This is similar to Map_WriteSprMap, but:
+; - doesn't support flipping entire sprite mappings.
 ; - input comes from different addresses.
 ; - The flags double as end separator if any bit is set in the lower nybble.
 ;   This works because the lower nybble is unused in non-CGB mode.
 ;
 ; IN
-; - DE: Ptr to OBJLst
+; - DE: Ptr to sprite mapping
 ; -  B: Always 0
 ;
-Static_WriteOBJLst:
+Static_WriteSprMap:
 	ld   hl, sWorkOAM
 	; Determine the WorkOAM offset from the OBJCount
 	; Not too sure why wStaticOBJCount is used instead of sWorkOAMPos like elsewhere,...
@@ -6327,20 +6327,20 @@ Static_Pl_WalkAnim:
 	ld   a, SFX4_08			; Play walk SFX
 	ld   [sSFX4Set], a
 .useFrame0:
-	ld   a, OBJ_WARIO_WALK0
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_WARIO_WALK0
+	ld   [wStaticPlSprId], a
 	ret
 .useFrame1:
-	ld   a, OBJ_WARIO_WALK1
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_WARIO_WALK1
+	ld   [wStaticPlSprId], a
 	ret
 .useFrame3:
-	ld   a, OBJ_WARIO_WALK3
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_WARIO_WALK3
+	ld   [wStaticPlSprId], a
 	ret
 .useFrame2:
-	ld   a, OBJ_WARIO_WALK2
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_WARIO_WALK2
+	ld   [wStaticPlSprId], a
 	ret
 	mIncJunk "L002532"
 
@@ -6350,7 +6350,7 @@ HomeCall_LoadGFX_MtTeapot_RiceBeach: mHomeCallRet LoadGFX_MtTeapot_RiceBeach ; B
 HomeCall_LoadGFX_StoveCanyon_SSTeacup: mHomeCallRet LoadGFX_StoveCanyon_SSTeacup ; BANK $09
 HomeCall_LoadGFX_SyrupCastle: mHomeCallRet LoadGFX_SyrupCastle ; BANK $09
 HomeCall_LoadGFX_ParsleyWoods_SherbetLand: mHomeCallRet LoadGFX_ParsleyWoods_SherbetLand ; BANK $14
-HomeCall_LoadGFX_SubmapOBJ: mHomeCallRet LoadGFX_SubmapOBJ ; BANK $09
+HomeCall_LoadGFX_SubmapObj: mHomeCallRet LoadGFX_SubmapObj ; BANK $09
 HomeCall_LoadBG_RiceBeach: mHomeCallRet LoadBG_RiceBeach ; BANK $09
 HomeCall_LoadBG_MtTeapot: mHomeCallRet LoadBG_MtTeapot ; BANK $09
 HomeCall_LoadBG_StoveCanyon: mHomeCallRet LoadBG_StoveCanyon ; BANK $09
@@ -6371,7 +6371,7 @@ HomeCall_Map_Overworld_WriteEv: mHomeCallRet Map_Overworld_WriteEv ; BANK $08
 HomeCall_Map_Overworld_AnimTiles: mHomeCallRet Map_Overworld_AnimTiles ; BANK $08
 HomeCall_Map_C32ClearCutscene_Init: mHomeCallRet Map_C32ClearCutscene_Init ; BANK $14
 IF IMPROVE
-HomeCall_Map_InitMtTeapotSproutOBJLst: mHomeCallRet Map_InitMtTeapotSproutOBJLst ; BANK $14
+HomeCall_Map_InitMtTeapotSproutSprMap: mHomeCallRet Map_InitMtTeapotSproutSprMap ; BANK $14
 ENDC
 HomeCall_Map_C32ClearCutscene_Do: mHomeCallRet Map_C32ClearCutscene_Do ; BANK $14
 HomeCall_Map_MoveMtTeapotLid: mHomeCallRet Map_MoveMtTeapotLid ; BANK $14
@@ -6385,13 +6385,13 @@ HomeCall_Map_InitFreeViewArrows: mHomeCallRet Map_InitFreeViewArrows ; BANK $14
 HomeCall_Map_DrawOpenPathsArrows: mHomeCallRet Map_DrawOpenPathsArrows ; BANK $14
 HomeCall_Map_Ending_Do: mHomeCallRet Map_Ending_Do ; BANK $14
 HomeCall_Map_Ending_DrawOBJ: mHomeCallRet Map_Ending_DrawOBJ ; BANK $14
-HomeCall_Map_WriteWarioOBJLst: mHomeCallRet Map_WriteWarioOBJLst ; BANK $08
+HomeCall_Map_WriteWarioSprMap: mHomeCallRet Map_WriteWarioSprMap ; BANK $08
 HomeCall_Map_SyrupCastle_DoCutscenes: mHomeCallRet Map_SyrupCastle_DoCutscenes ; BANK $14
 HomeCall_Map_SyrupCastle_RemovePath: mHomeCallRet Map_SyrupCastle_RemovePath ; BANK $14
 HomeCall_Map_BlinkLevel_Do: mHomeCallRet Map_BlinkLevel_Do ; BANK $14
 
 ; =============== Map_UpdateOBJRelCoord ===============
-; Updates the relative scroll coordinate of an overworld OBJLst.
+; Updates the relative scroll coordinate of an overworld sprite mapping.
 ; This can be used for both coordinates.
 ;
 ; This is used to keep in sync sprites positions (which are relative to the screen)
@@ -6400,25 +6400,25 @@ HomeCall_Map_BlinkLevel_Do: mHomeCallRet Map_BlinkLevel_Do ; BANK $14
 ; IN
 ; - HL: Ptr to current screen scroll coord
 ; - BC: Ptr to last screen scroll coord
-; - DE: Ptr to OBJLst coord to be updated (relative to screen)
+; - DE: Ptr to sprite mapping coord to be updated (relative to screen)
 Map_UpdateOBJRelCoord:
 	; Get the amount of px the screen was scrolled
 	ld   a, [bc]
 	sub  a, [hl]	; Get the movement offset
 	ld   b, a		; B = LastMapScroll - MapScroll
-	; Add that offset to the OBJLst coord
+	; Add that offset to the sprite mapping coord
 	ld   a, [de]	
 	add  b			; Apply it to the current mapping coord to allow movement.
 	ld   [de], a	; ItemCoord += LastMapScroll - MapScroll
 	ret
-; =============== Map_WriteOBJLst ===============
-; Writes an entire OBJ list for use in map screens.
+; =============== Map_WriteSprMap ===============
+; Draws a sprite mapping for use in map screens.
 ;
-; This is exactly the same as WriteOBJLst (in BANK $05),
+; This is exactly the same as WriteSprMap (in BANK $05),
 ; except it uses different memory addresses.
-Map_WriteOBJLst:
+Map_WriteSprMap:
 	; Index the sprite mappings table
-	ld   a, [sMapOAMWriteLstId]
+	ld   a, [sMapOAMWriteSprId]
 	ld   d, $00		; DE = A * 2
 	ld   e, a
 	sla  e			; do *2 from here, in case A would have overflowed for high mapping IDs
@@ -6497,45 +6497,44 @@ Map_WriteOBJLst:
 	inc  de
 	jr   .loop
 	
-; =============== OBJLstPtrTable_MapWario ===============
+; =============== SprMapPtrTable_MapWario ===============
 ; Sprite mappings for Wario in the Map Screen
-; $2C0F
-OBJLstPtrTable_MapWario:
+SprMapPtrTable_MapWario:
 	; [TCRF] The way these are laid out suggest that animations were intended 
 	;        at some point to be 4 frames instead of 3.
-	;        However, with the exception of the first one, all point to unused dummy OBJLst.
-	dw OBJLst_Unused_MapWarioWalk0
-	dw OBJLst_MapWarioWalk1
-	dw OBJLst_MapWarioWalk2
-	dw OBJLst_MapWarioWalk3
-	dw OBJLst_MapWarioStand0
-	dw OBJLst_MapWarioStand1
-	dw OBJLst_MapWarioStand2
-	dw OBJLst_Unused_MapWarioNone ; [TCRF] Unused dummy mapping with no sprites assigned.
-	dw OBJLst_MapWarioWalkBack0
-	dw OBJLst_MapWarioWalkBack1
-	dw OBJLst_MapWarioWalkBack2
-	dw OBJLst_Unused_MapWarioNone
-	dw OBJLst_MapWarioWaterFront
-	dw OBJLst_MapWarioWaterBack
-	dw OBJLst_MapWarioHide ; What's used when Wario is hidden. Why didn't this reuse MapWarioNone?
+	;        However, with the exception of the first one, all point to unused dummy sprite mapping.
+	dw SprMap_Unused_MapWarioWalk0
+	dw SprMap_MapWarioWalk1
+	dw SprMap_MapWarioWalk2
+	dw SprMap_MapWarioWalk3
+	dw SprMap_MapWarioStand0
+	dw SprMap_MapWarioStand1
+	dw SprMap_MapWarioStand2
+	dw SprMap_Unused_MapWarioNone ; [TCRF] Unused dummy mapping with no sprites assigned.
+	dw SprMap_MapWarioWalkBack0
+	dw SprMap_MapWarioWalkBack1
+	dw SprMap_MapWarioWalkBack2
+	dw SprMap_Unused_MapWarioNone
+	dw SprMap_MapWarioWaterFront
+	dw SprMap_MapWarioWaterBack
+	dw SprMap_MapWarioHide ; What's used when Wario is hidden. Why didn't this reuse MapWarioNone?
 
-OBJLst_Unused_MapWarioNone: INCBIN "data/objlst/map/wario_unused_none.bin"
-OBJLst_Unused_MapWarioWalk0: INCBIN "data/objlst/map/wario_unused_walk0.bin"
-OBJLst_MapWarioWalk1: INCBIN "data/objlst/map/wario_walk1.bin"
-OBJLst_MapWarioWalk2: INCBIN "data/objlst/map/wario_walk2.bin"
-OBJLst_MapWarioWalk3: INCBIN "data/objlst/map/wario_walk3.bin"
-OBJLst_MapWarioStand0: INCBIN "data/objlst/map/wario_stand0.bin"
-OBJLst_MapWarioStand1: INCBIN "data/objlst/map/wario_stand1.bin"
-OBJLst_MapWarioStand2: INCBIN "data/objlst/map/wario_stand2.bin"
-OBJLst_MapWarioWalkBack0: INCBIN "data/objlst/map/wario_walkback0.bin"
-OBJLst_MapWarioWalkBack1: INCBIN "data/objlst/map/wario_walkback1.bin"
-OBJLst_MapWarioWalkBack2: INCBIN "data/objlst/map/wario_walkback2.bin"
-OBJLst_MapWarioWaterFront: INCBIN "data/objlst/map/wario_waterfront.bin"
-OBJLst_MapWarioWaterBack: INCBIN "data/objlst/map/wario_waterback.bin"
-OBJLst_MapWarioHide: INCBIN "data/objlst/map/wario_hide.bin"
+SprMap_Unused_MapWarioNone: INCBIN "data/sprmap/map/wario_unused_none.bin"
+SprMap_Unused_MapWarioWalk0: INCBIN "data/sprmap/map/wario_unused_walk0.bin"
+SprMap_MapWarioWalk1: INCBIN "data/sprmap/map/wario_walk1.bin"
+SprMap_MapWarioWalk2: INCBIN "data/sprmap/map/wario_walk2.bin"
+SprMap_MapWarioWalk3: INCBIN "data/sprmap/map/wario_walk3.bin"
+SprMap_MapWarioStand0: INCBIN "data/sprmap/map/wario_stand0.bin"
+SprMap_MapWarioStand1: INCBIN "data/sprmap/map/wario_stand1.bin"
+SprMap_MapWarioStand2: INCBIN "data/sprmap/map/wario_stand2.bin"
+SprMap_MapWarioWalkBack0: INCBIN "data/sprmap/map/wario_walkback0.bin"
+SprMap_MapWarioWalkBack1: INCBIN "data/sprmap/map/wario_walkback1.bin"
+SprMap_MapWarioWalkBack2: INCBIN "data/sprmap/map/wario_walkback2.bin"
+SprMap_MapWarioWaterFront: INCBIN "data/sprmap/map/wario_waterfront.bin"
+SprMap_MapWarioWaterBack: INCBIN "data/sprmap/map/wario_waterback.bin"
+SprMap_MapWarioHide: INCBIN "data/sprmap/map/wario_hide.bin"
 	mIncJunk "L002CFB"
-SubCall_ActS_SetOBJLstTableForDefault: mSubCallRet ActS_SetOBJLstTableForDefault ; BANK $0F
+SubCall_ActS_SetSprMapTableForDefault: mSubCallRet ActS_SetSprMapTableForDefault ; BANK $0F
 ; =============== ActS_GetPlDirHRel ===============
 ; This subroutine gets the player's horizontal position (as a direction value) 
 ; relative to the current actor's position.
@@ -6632,7 +6631,7 @@ Pl_ActHurt:
 ; Sets the player direction to the right. 
 Pl_SetDirRight:
 	ld   a, [sPlFlags]
-	set  OBJLSTB_XFLIP, a
+	set  SPRMAPB_XFLIP, a
 	ld   [sPlFlags], a
 	ret
 ; =============== ActS_DespawnAllNormExceptCur_Broken ===============
@@ -6694,15 +6693,15 @@ ActS_DespawnAllNormExceptCur_Broken:
 	ret
 ENDC
 
-; =============== ActS_SetOBJLstSharedTablePtr ===============
-; Updates the shared OBJLstPtrTable pointer of the currently processed actor.
+; =============== ActS_SetSprMapSharedTablePtr ===============
+; Updates the shared SprMapPtrTable pointer of the currently processed actor.
 ; IN
 ; - BC: Updated shared table ptr
-ActS_SetOBJLstSharedTablePtr:
+ActS_SetSprMapSharedTablePtr:
 	ld   a, c
-	ld   [sActSetOBJLstSharedTablePtr], a
+	ld   [sActSetSprMapSharedTablePtr], a
 	ld   a, b
-	ld   [sActSetOBJLstSharedTablePtr+1], a
+	ld   [sActSetSprMapSharedTablePtr+1], a
 	ret
 ; =============== ActS_SetCodePtr ===============
 ; Updates the code pointer of the currently processed actor.
@@ -6723,28 +6722,28 @@ ActS_ClearRoutineId:
 	ld   [sActSetRoutineId], a
 	ret
 	
-; =============== ActS_SetOBJLstPtr ===============
-; Sets the specified OBJLst for the currently processed actor.
+; =============== ActS_SetSprMapPtr ===============
+; Sets the specified sprite mapping for the currently processed actor.
 ; IN
-; - BC: Ptr to OBJLstPtrTable
-ActS_SetOBJLstPtr:
+; - BC: Ptr to SprMapPtrTable
+ActS_SetSprMapPtr:
 	ld   a, c
-	ld   [sActSetOBJLstPtrTablePtr], a
+	ld   [sActSetSprMapPtrTablePtr], a
 	ld   a, b
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	xor  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	ret
-; =============== ActS_IncOBJLstIdEvery8 ===============
-; Increases the OBJLstId for the currently processed actor every 8 frames.
-ActS_IncOBJLstIdEvery8:
+; =============== ActS_IncSprMapIdEvery8 ===============
+; Increases the SprMapId for the currently processed actor every 8 frames.
+ActS_IncSprMapIdEvery8:
 	; Every 8 frames
 	ld   a, [sTimer]
 	and  a, $07
 	ret  nz
-	ld   a, [sActSetOBJLstId] 	; sActSetOBJLstId++
+	ld   a, [sActSetSprMapId] 	; sActSetSprMapId++
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	ret
 	
 ; =============== Rand ===============
@@ -6864,13 +6863,13 @@ ActS_ReloadInitial:
 	ld   [sActSetOpts], a	; sActSetOpts = A | B
 	
 	;
-	; OBJLST BANK NUM
+	; SPRMAP BANK NUM
 	;
-	ld   a, [hl]				; B = OBJLst bank num
+	ld   a, [hl]				; B = Bank number for sprite mapping
 	ld   b, a
-	; There's a table for saving OBJLst bank numbers, indexed by actor ID
+	; There's a table for saving sprite mapping bank numbers, indexed by actor ID.
 	; Save this info there.
-	ld   hl, sActOBJLstBank		; HL = Bank num table
+	ld   hl, sActSprMapBank		; HL = Bank num table
 	ld   a, [sActNumProc]		; DE = current actor id
 	ld   d, $00
 	ld   e, a
@@ -6928,7 +6927,7 @@ ENDC
 .chkDir:
 	ld   de, +$0C				; DE = when facing right
 	ld   a, [sPlFlags]
-	bit  OBJLSTB_XFLIP, a		; Is the player facing right?
+	bit  SPRMAPB_XFLIP, a		; Is the player facing right?
 	jr   nz, .chkSmall			; If so, jump
 	ld   de, -$0C				; DE = when facing left
 	
@@ -7545,10 +7544,10 @@ ActS_InitToSlot:
 	ldi  a, [hl]			; 2: Misc flags
 	ld   [sActSetOpts], a
 	
-	ld   a, [hl]			; 3: Bank number for OBJLst (not used yet; since all actors are set the blank objlst)
+	ld   a, [hl]			; 3: Sprite mapping bank number (not used yet; since all actors are set the blank sprmap)
 	ld   b, a
 	; Index the table by actor number
-	ld   hl, sActOBJLstBank
+	ld   hl, sActSprMapBank
 	ld   a, [sActNumProc]	; DE = sActNumProc
 	ld   d, $00
 	ld   e, a
@@ -7848,12 +7847,12 @@ ActS_CopyGFX:
 	ld   [hl], a
 .end:
 	ret
-; =============== ActS_LoadAndWriteOBJLst ===============
-; This subroutine prepares the call to ActS_WriteOBJLst, 
-; setting up the neede actor data and OBJLst pointers.
-ActS_LoadAndWriteOBJLst:
+; =============== ActS_LoadAndWriteSprMap ===============
+; This subroutine prepares the call to ActS_WriteSprMap, 
+; setting up the needed actor data and sprite mapping pointers.
+ActS_LoadAndWriteSprMap:
 	; Perform a cut down version of ActS_CopyFromSet.
-	; Cut down in the sense that we only copy the needed bytes for the OBJLst copy.
+	; Cut down in the sense that we only copy the needed bytes for the sprite mapping copy.
 	
 	; Get the ptr to the current actor slot
 	ld   h, HIGH(sAct)
@@ -7879,19 +7878,19 @@ ActS_LoadAndWriteOBJLst:
 	ldi  a, [hl]
 	ld   [sActSetRelX], a
 	ldi  a, [hl]
-	ld   [sActSetOBJLstPtrTablePtr], a
+	ld   [sActSetSprMapPtrTablePtr], a
 	ldi  a, [hl]
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	inc  hl
 	ldi  a, [hl]
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	ldd  a, [hl]
 	ld   [sActSetId], a
 	;--
 	push hl
 	
-	; Pick the bank to load the OBJLst from, as set in the table
-	ld   hl, sActOBJLstBank
+	; Pick the bank to load the sprite mapping from, as set in the table
+	ld   hl, sActSprMapBank
 	ld   a, [sActNumProc] ; DE = sActNumProc
 	ld   d, $00
 	ld   e, a
@@ -7908,44 +7907,38 @@ ActS_LoadAndWriteOBJLst:
 	ld   a, [sSubCallTmpA]	; Restore A
 	;@@
 	
-	; Index the OBJLst ptr table
-	ld   a, [sActSetOBJLstPtrTablePtr]		; DE = Ptr to OBJLst pointer table
+	; Index the animation table
+	ld   a, [sActSetSprMapPtrTablePtr]		; DE = Ptr to animation table
 	ld   e, a
-	ld   a, [sActSetOBJLstPtrTablePtr+1]
+	ld   a, [sActSetSprMapPtrTablePtr+1]
 	ld   d, a
-	ld   a, [sActSetOBJLstId]				; HL = sActSetOBJLstId * 2
+	ld   a, [sActSetSprMapId]				; HL = sActSetSprMapId * 2
 	add  a
 	ld   l, a									
 	ld   h, $00
 	add  hl, de								; Offset the ptr table
-	ld   c, [hl]							; BC = Ptr to OBJLst proper
+	ld   c, [hl]							; BC = Ptr to sprite mapping proper
 	inc  hl
 	ld   b, [hl]
 	
-	; Verify that the indexed OBJLst pointer isn't out of range / null.
-	
-	; Is the OBJLst pointer null?
+	; Animation tables end with a null pointer, which causes the animation to loop from the start.
 	ld   a, b								
-	or   a, c
-	jr   z, .nullPtr ; If so, jump
-
-	; If it isn't null, use the pointer as normal 
-	ld   e, c		; DE = OBJLst Ptr
+	or   a, c			; BC == 0?
+	jr   z, .reset 		; If so, jump
+	; Otherwise, draw whatever sprite we're pointing to.
+	ld   e, c			; DE = Sprite mapping ptr
 	ld   d, b
 	jr   .writeOBJ
-.nullPtr:
-	; If it is, disregard the sActSetOBJLstId index and always use the first entry of the ptr table.
-	; This is used in practice to loop animations.
-	; OBJLst for actors always contain at least one null entry, which will trigger this anim frame reset.
-	xor  a
-	ld   [sActSetOBJLstId], a
-	ld   h, d		; Restore sActSetOBJLstPtrTablePtr
+.reset:
+	xor  a			; Reset sprite id
+	ld   [sActSetSprMapId], a
+	ld   h, d		; "Re-index" the first entry of the animation table (HL = sActSetSprMapPtrTablePtr)
 	ld   l, e
-	ld   e, [hl]	; DE = First OBJLst ptr of the table
+	ld   e, [hl]	; DE = Sprite mapping ptr of first entry
 	inc  hl
 	ld   d, [hl]
 .writeOBJ:
-	call ActS_WriteOBJLst
+	call ActS_WriteSprMap
 	; Restore the original bank
 	ld   [sSubCallTmpA], a
 	pop  af
@@ -7956,17 +7949,16 @@ ActS_LoadAndWriteOBJLst:
 	pop  hl
 	;--
 	; This does... nothing! 
-	; HL = sActSetOBJLstId when we get here.
-	ld   a, [sActSetOBJLstId]
+	; HL = sActSetSprMapId when we get here.
+	ld   a, [sActSetSprMapId]
 	ld   [hl], a
 	ret
 	
-; =============== ActS_WriteOBJLst ===============
-; Writes an entire OBJ list (sprite mappings) for the currently handled actor.
-; Unlike other OAM writer subroutines, this is handled substantially differently and it's in a slightly different format.
-; To save space each OBJ entry is 3 bytes large instead of the usual 4.
+; =============== ActS_WriteSprMap ===============
+; Draws a sprite mapping for the currently handled actor.
 ;
-; The format for this is:
+; Unlike other OAM writer subroutines, this is handled substantially differently 
+; and uses only 3 bytes / OBJ entry to save space:
 ; 0: <global flags>
 ; 1: <OBJ#0 Rel. Y> X Position
 ; 2: <OBJ#0 Rel. X> Y Position
@@ -7974,18 +7966,18 @@ ActS_LoadAndWriteOBJLst:
 ; ...
 ; X: $80 end separator
 ; 
-; The OBJLst for actors include an extra byte at the beginning, which specifies
+; The sprite mapping for actors include an extra byte at the beginning, which specifies
 ; global flags *set* for all OBJ.
 ;
-; Since actors can be potentially loaded at any location in VRAM, the OBJLst data
+; Since actors can potentially be loaded at any location in VRAM, the sprite mapping data
 ; for actors has "tile IDs" relative to the start of their GFX data.
 ; This frees up enough bits to store the local flags in the third byte.
 ;
-; See also: WriteOBJLst
+; See also: WriteSprMap
 ; 
 ; IN
-; - DE: Ptr to OBJLst
-ActS_WriteOBJLst:
+; - DE: Ptr to sprite mapping
+ActS_WriteSprMap:
 	;--
 	; Set the default tile offset for actors without a valid ID
 	ld   a, $99
@@ -8032,7 +8024,7 @@ ActS_WriteOBJLst:
 	; Calculate the global flags to set on every OBJ tile.
 	;
 	; A = (DefaultGlobFlags v CustomGlobFlags) & $90
-	ld   a, [de]			; B = Normal OBJ Flags
+	ld   a, [de]			; B = Normal Sprite flags
 	inc  de
 	ld   b, a
 	
@@ -8047,7 +8039,7 @@ ActS_WriteOBJLst:
 	ld   c, a
 	
 	;
-	; OBJLst write loop
+	; SprMap write loop
 	;
 .loop:
 	;--
@@ -8113,22 +8105,22 @@ SubCall_ActHeldOrThrownActColi_Do: mSubCallRet ActHeldOrThrownActColi_Do ; BANK 
 SubCall_Level_LoadActLayout: mSubCallRet Level_LoadActLayout ; BANK $07
 	ret
 
-; =============== Empty OBJLst ===============
-; This is the default "empty" OBJLst, which is the default OBJ representation of an actor.
-OBJLst_Act_None: db $00,$80
-OBJLstPtrTable_Act_None: 
-	dw OBJLst_Act_None
+; =============== Empty SprMap ===============
+; This is the default "empty" sprite mapping, which is the default representation of an actor.
+SprMap_Act_None: db $00,$80
+SprMapPtrTable_Act_None: 
+	dw SprMap_Act_None
 	dw $0000
 ; As well as the shared table. None of the entries are used directly.
-OBJLstSharedPtrTable_Act_None:
-	dw OBJLstPtrTable_Act_None;X
-	dw OBJLstPtrTable_Act_None;X
-	dw OBJLstPtrTable_Act_None;X
-	dw OBJLstPtrTable_Act_None;X
-	dw OBJLstPtrTable_Act_None;X
-	dw OBJLstPtrTable_Act_None;X
-	dw OBJLstPtrTable_Act_None;X
-	dw OBJLstPtrTable_Act_None;X
+SprMapSharedPtrTable_Act_None:
+	dw SprMapPtrTable_Act_None;X
+	dw SprMapPtrTable_Act_None;X
+	dw SprMapPtrTable_Act_None;X
+	dw SprMapPtrTable_Act_None;X
+	dw SprMapPtrTable_Act_None;X
+	dw SprMapPtrTable_Act_None;X
+	dw SprMapPtrTable_Act_None;X
+	dw SprMapPtrTable_Act_None;X
 	
 ; ==============================	
 SubCall_ActS_OnPlColiH: mSubCallRet ActS_OnPlColiH ; BANK $02
@@ -8293,15 +8285,15 @@ SubCall_ActS_Spawn10CoinHeld: mSubCallRet ActS_Spawn10CoinHeld ; BANK $0F
 SubCall_ActS_SpawnKeyHeld: mSubCallRet ActS_SpawnKeyHeld ; BANK $0F
 SubCall_ActS_SpawnCoinFromBlock: mSubCallRet ActS_SpawnCoinFromBlock ; BANK $0F
 SubCall_ActS_SpawnBridge: mSubCallRet ActS_SpawnBridge ; BANK $18
-; =============== ActS_SetIndexedOBJLstPtrTable ===============
-; Sets a new OBJLstPtrTable for the currently processed actor.
+; =============== ActS_SetIndexedSprMapPtrTable ===============
+; Sets a new SprMapPtrTable for the currently processed actor.
 ; 
 ; How it works:
-; Each actor has a table of pointers to *other* OBJLstPtrTable.
+; Each actor has a table of pointers to *other* SprMapPtrTable.
 ; After indexing this shared table (with BC), the pointer is read and stored to the actor slot,
-; replacing the current OBJLstPtrTable.
+; replacing the current SprMapPtrTable.
 ;
-; This shared table system exists since the game uses different OBJLstPtrTable depending on the different actions.
+; This shared table system exists since the game uses different SprMapPtrTable depending on the different actions.
 ; To know which to apply for certain shared actions (like the death anim), using an indexed table makes
 ; it easy since all that's necessary is to have the entries in a specific order.
 ;
@@ -8311,12 +8303,12 @@ SubCall_ActS_SpawnBridge: mSubCallRet ActS_SpawnBridge ; BANK $18
 ;
 ; IN
 ; - BC: Offset to this shared table (must be always even)
-ActS_SetIndexedOBJLstPtrTable:
+ActS_SetIndexedSprMapPtrTable:
 	;--
-	; Switch to the bank the current actor's OBJLst is stored.
+	; Switch to the bank the current actor's sprite mapping is stored.
 	
 	; Get the bank number from the table
-	ld   hl, sActOBJLstBank		; HL = sActOBJLstBank
+	ld   hl, sActSprMapBank		; HL = sActSprMapBank
 	ld   a, [sActNumProc]		; DE = sActNumProc
 	ld   d, $00
 	ld   e, a
@@ -8329,30 +8321,30 @@ ActS_SetIndexedOBJLstPtrTable:
 	ld   a, [sROMBank]			; A = Current bank num
 	;##
 	push af						; Save bank num
-	ld   a, d					; Switch to bank the OBJLst is in
+	ld   a, d					; Switch to bank the sprite mapping is in
 	ld   [sROMBank], a
 	ld   [MBC1RomBank2], a
 	ld   a, [sSubCallTmpA]		; Restore A
 	;--
 	
 	;--
-	; Set the new OBJLst ptr.
+	; Set the new sprite mapping ptr.
 	
-	; sActSetOBJLstSharedTablePtr points to a table of pointers to *other* OBJLstPtrTbl.
+	; sActSetSprMapSharedTablePtr points to a table of pointers to *other* SprMapPtrTbl.
 	; BC has the index to this shared table.	
-	ld   a, [sActSetOBJLstSharedTablePtr]		; HL = Ptr to secondary OBJLst (for death/stun?)
+	ld   a, [sActSetSprMapSharedTablePtr]		; HL = Ptr to secondary sprite mapping (for death/stun?)
 	ld   l, a
-	ld   a, [sActSetOBJLstSharedTablePtr+1]
+	ld   a, [sActSetSprMapSharedTablePtr+1]
 	ld   h, a
 	add  hl, bc								; Offset it with BC
-	; Set the indexed pointer as OBJLstPtrTable.
+	; Set the indexed pointer as SprMapPtrTable.
 	ldi  a, [hl]
-	ld   [sActSetOBJLstPtrTablePtr], a
+	ld   [sActSetSprMapPtrTablePtr], a
 	ld   a, [hl]
-	ld   [sActSetOBJLstPtrTablePtr+1], a
-	; Reset the OBJLstId 
+	ld   [sActSetSprMapPtrTablePtr+1], a
+	; Reset the SprMapId 
 	xor  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	; Restore the previous values
 	ld   [sSubCallTmpA], a
 	pop  af						; A = Previous bank number

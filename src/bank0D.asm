@@ -10,9 +10,9 @@ Pl_Anim2Frame:
 	ret  nz
 	; This requires the two frames to be one after the other,
 	; since we end up setting and resetting bit 0
-	ld   a, [sPlLstId]
+	ld   a, [sPlSprId]
 	xor  $01
-	ld   [sPlLstId], a
+	ld   [sPlSprId], a
 	ret
 ; =============== Pl_HatSwitchAnim_SetNextAction ===============
 ; This subroutines determines the player action to switch to when
@@ -66,14 +66,14 @@ ENDC
 	ld   [sPlJetDashTimer], a
 	
 	; Pick the correct anim frame
-	ld   a, OBJ_WARIO_JUMP
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_JUMP
+	ld   [sPlSprId], a
 	ld   a, [sSmallWario]
 	and  a
 	ret  z
-	ld   a, [sPlLstId]
-	add  OBJ_SMALLWARIO_JUMP-OBJ_WARIO_JUMP
-	ld   [sPlLstId], a
+	ld   a, [sPlSprId]
+	add  SPR_SMALLWARIO_JUMP-SPR_WARIO_JUMP
+	ld   [sPlSprId], a
 	ret
 	
 ; =============== Level_Screen_DoTrainShake ===============
@@ -650,7 +650,7 @@ Game_CheckSpecClear:
 	ld   a, GM_LEVELCLEAR2
 	ld   [sGameMode], a
 	ld   a, [sPlFlags]
-	res  OBJLSTB_OBP1, a			; Clear inverted palette, if any
+	res  SPRMAPB_OBP1, a			; Clear inverted palette, if any
 	ld   [sPlFlags], a
 	xor  a
 	ld   [sMapRetVal], a
@@ -917,7 +917,7 @@ Game_DoPostHitInvuln:
 	ld   [sPlHurtType], a
 	; Reset palette
 	ld   hl, sPlFlags
-	res  OBJLSTB_OBP1, [hl]
+	res  SPRMAPB_OBP1, [hl]
 	
 	; Check which block we're colliding with on the lower portion of the body.
 	; This is necessary since damage collision isn't checked when the player stands still.
@@ -1090,20 +1090,20 @@ Pl_SetClimbAction:
 	ld   a, $01
 	ld   [sPlNewAction], a
 	; Set the correct climb frame
-	ld   a, OBJ_WARIO_CLIMB0
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_CLIMB0
+	ld   [sPlSprId], a
 	ld   a, [sSmallWario]
 	and  a
 	ret  z
-	ld   a, [sPlLstId]
-	add  OBJ_SMALLWARIO_CLIMB0-OBJ_WARIO_CLIMB0
-	ld   [sPlLstId], a
+	ld   a, [sPlSprId]
+	add  SPR_SMALLWARIO_CLIMB0-SPR_WARIO_CLIMB0
+	ld   [sPlSprId], a
 	ret
 ; =============== Pl_DoCtrl_Stand_CheckB ===============
 ; Checks the action mapped to the B button.
 Pl_DoCtrl_Stand_CheckB:
-	ld   a, [sPlLstId]
-	cp   a, OBJ_WARIO_HOLD			; Holding something?
+	ld   a, [sPlSprId]
+	cp   a, SPR_WARIO_HOLD			; Holding something?
 	jr   z, .checkDownLadder		; If so, ignore
 	
 	; Can't be a jump since we don't necessarily trigger any action in Pl_StartActionB
@@ -1169,13 +1169,13 @@ Pl_SetDuckAction:
 	ld   a, $01
 	ld   [sPlDuck], a
 	; Use a different frame if holding something
-	ld   a, OBJ_WARIO_DUCK
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_DUCK
+	ld   [sPlSprId], a
 	ld   a, [sActHeld]
 	and  a
 	ret  z
-	ld   a, OBJ_WARIO_DUCKHOLD
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_DUCKHOLD
+	ld   [sPlSprId], a
 	ret
 	
 ; =============== Pl_DoCtrl_Stand_CheckRight ===============
@@ -1199,7 +1199,7 @@ Pl_DoCtrl_Stand_CheckRight:
 Pl_SetMoveRightAction:
 	; Set the obj direction
 	ld   hl, sPlFlags
-	set  OBJLSTB_XFLIP, [hl]
+	set  SPRMAPB_XFLIP, [hl]
 	
 ; =============== Pl_SetMoveAction ===============
 ; Switches to the player walking action.
@@ -1223,23 +1223,23 @@ Pl_SetMoveAction:
 	and  a
 	jr   nz, .heldFrame
 .normalFrame:
-	ld   a, OBJ_WARIO_WALK0
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_WALK0
+	ld   [sPlSprId], a
 	ld   a, [sSmallWario]
 	and  a
 	ret  z
-	ld   a, [sPlLstId]
-	add  OBJ_SMALLWARIO_WALK0-OBJ_WARIO_WALK0
-	ld   [sPlLstId], a
+	ld   a, [sPlSprId]
+	add  SPR_SMALLWARIO_WALK0-SPR_WARIO_WALK0
+	ld   [sPlSprId], a
 	ret
 .heldFrame:
-	ld   a, OBJ_WARIO_HOLDWALK0
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_HOLDWALK0
+	ld   [sPlSprId], a
 	ld   a, [sSmallWario]
 	and  a
 	ret  z
-	ld   a, OBJ_SMALLWARIO_HOLDWALK0
-	ld   [sPlLstId], a
+	ld   a, SPR_SMALLWARIO_HOLDWALK0
+	ld   [sPlSprId], a
 	ret
 	
 ; =============== Pl_DoCtrl_Stand_CheckLeft ===============
@@ -1261,7 +1261,7 @@ Pl_DoCtrl_Stand_CheckLeft:
 ; Switches to the player walking action; moving left.
 Pl_SetMoveLeftAction:
 	ld   hl, sPlFlags
-	res  OBJLSTB_XFLIP, [hl]		; Left direction
+	res  SPRMAPB_XFLIP, [hl]		; Left direction
 	jr   Pl_SetMoveAction
 	
 ; =============== Pl_DoCtrl_Stand_CheckIceSlide ===============
@@ -1342,13 +1342,13 @@ Pl_DoCtrl_Stand_CheckUp2:
 	and  a
 	ret  nz
 	; Pick the correct frame
-	ld   a, OBJ_WARIO_HOLD
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_HOLD
+	ld   [sPlSprId], a
 	ld   a, [sSmallWario]
 	and  a
 	jr   z, .checkHoldCoin
-	ld   a, OBJ_SMALLWARIO_HOLD
-	ld   [sPlLstId], a
+	ld   a, SPR_SMALLWARIO_HOLD
+	ld   [sPlSprId], a
 	
 .checkHoldCoin:
 	; When holding UP and pressing B, generate a 10-coin
@@ -1417,26 +1417,26 @@ IF FIX_BUGS
 		jr   nz, .plDuck		; If so, jump
 		
 	.plBig:
-		ld   a, OBJ_WARIO_GRAB
-		ld   [sPlLstId], a
+		ld   a, SPR_WARIO_GRAB
+		ld   [sPlSprId], a
 		ret
 	.plDuck:
-		ld   a, OBJ_WARIO_DUCKHOLD
-		ld   [sPlLstId], a
+		ld   a, SPR_WARIO_DUCKHOLD
+		ld   [sPlSprId], a
 		ret
 	.plSmall:	
-		ld   a, OBJ_SMALLWARIO_HOLD
-		ld   [sPlLstId], a
+		ld   a, SPR_SMALLWARIO_HOLD
+		ld   [sPlSprId], a
 		ret
 	
 ELSE
-	ld   a, OBJ_WARIO_GRAB	; Default to normal grab
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_GRAB	; Default to normal grab
+	ld   [sPlSprId], a
 	ld   a, [sSmallWario]	; If we're small, pick the other one
 	and  a
 	ret  z
-	ld   a, OBJ_SMALLWARIO_HOLD
-	ld   [sPlLstId], a
+	ld   a, SPR_SMALLWARIO_HOLD
+	ld   [sPlSprId], a
 	
 
 	; [BUG] Badly placed check.
@@ -1447,8 +1447,8 @@ ELSE
 	ret  z
 	;--
 	; [TCRF] So this is unreachable as a result.
-	ld   a, OBJ_WARIO_DUCKHOLD
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_DUCKHOLD
+	ld   [sPlSprId], a
 	ret
 ENDC
 	
@@ -1549,7 +1549,7 @@ ENDC
 
 	; Pick the direction depending on OBJ orientation
 	ld   a, [sPlFlags]
-	bit  OBJLSTB_XFLIP, a		; Player facing right?
+	bit  SPRMAPB_XFLIP, a		; Player facing right?
 	jr   nz, .iceRight			; If so, jump
 .iceLeft:
 	ld   a, $20
@@ -1568,7 +1568,7 @@ ENDC
 
 	; Pick the direction depending on OBJ orientation
 	ld   a, [sPlFlags]
-	bit  OBJLSTB_XFLIP, a		; Player facing right?
+	bit  SPRMAPB_XFLIP, a		; Player facing right?
 	jr   nz, .iceRight2			; If so, jump
 .iceLeft2:
 	ld   a, $10
@@ -1694,7 +1694,7 @@ ENDC
 	jr   z, .checkMoveLeft
 	;--
 	ld   hl, sPlFlags			; Set dir
-	set  OBJLSTB_XFLIP, [hl]
+	set  SPRMAPB_XFLIP, [hl]
 	call Pl_Anim2FrameSlow
 	
 	; If there's a solid block in front of the player, don't move
@@ -1717,7 +1717,7 @@ ENDC
 	jr   z, .end
 	;--
 	ld   hl, sPlFlags			; Set dir
-	res  OBJLSTB_XFLIP, [hl]
+	res  SPRMAPB_XFLIP, [hl]
 	call Pl_Anim2FrameSlow
 	
 	; If there's a solid block in front of the player, don't move
@@ -1737,13 +1737,13 @@ ENDC
 	xor  a
 	ld   [sPlAnimTimer], a
 	
-	ld   a, OBJ_WARIO_DUCK		; Set main frame
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_DUCK		; Set main frame
+	ld   [sPlSprId], a
 	ld   a, [sActHeld]			
 	and  a						; Are we holding something?
 	ret  z						; If not, return
-	ld   a, OBJ_WARIO_DUCKHOLD	; If so, Set the hold frame
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_DUCKHOLD	; If so, Set the hold frame
+	ld   [sPlSprId], a
 	ret
 ; =============== Pl_DoCtrl_Climb ===============
 Pl_DoCtrl_Climb:
@@ -2142,16 +2142,16 @@ Pl_SwimUp:
 	
 .useAltFrame:
 	; Pick correct frame depending on player status.
-	; Because of how the timer works, OBJ_WARIO_SWIM0 always ends up being picked before starting the descent.
-	; Which is important since OBJ_WARIO_SWIM0 is next to OBJ_WARIO_SWIM1, allowing the descent code to use Anim2Frame.
-	ld   a, OBJ_WARIO_SWIM0		
-	ld   [sPlLstId], a
+	; Because of how the timer works, SPR_WARIO_SWIM0 always ends up being picked before starting the descent.
+	; Which is important since SPR_WARIO_SWIM0 is next to SPR_WARIO_SWIM1, allowing the descent code to use Anim2Frame.
+	ld   a, SPR_WARIO_SWIM0		
+	ld   [sPlSprId], a
 	ld   a, [sSmallWario]
 	and  a						
 	ret  z						
-	ld   a, [sPlLstId]
-	add  OBJ_SMALLWARIO_SWIM0-OBJ_WARIO_SWIM0
-	ld   [sPlLstId], a
+	ld   a, [sPlSprId]
+	add  SPR_SMALLWARIO_SWIM0-SPR_WARIO_SWIM0
+	ld   [sPlSprId], a
 	ret
 ; =============== Pl_StartSwimUpFromGround ===============
 ; This subroutine makes the player start swimming up.
@@ -2170,14 +2170,14 @@ Pl_StartSwimUp:
 	ld   a, $01				; the important part
 	ld   [sPlSwimUpTimer], a
 	
-	ld   a, OBJ_WARIO_SWIM2	; set frame
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_SWIM2	; set frame
+	ld   [sPlSprId], a
 	ld   a, [sSmallWario]
 	and  a
 	ret  z
-	ld   a, [sPlLstId]
-	add  OBJ_SMALLWARIO_SWIM2-OBJ_WARIO_SWIM2
-	ld   [sPlLstId], a
+	ld   a, [sPlSprId]
+	add  SPR_SMALLWARIO_SWIM2-SPR_WARIO_SWIM2
+	ld   [sPlSprId], a
 	ret
 	
 ; =============== Pl_SwimGroundWalk ===============
@@ -2240,11 +2240,11 @@ Pl_SwimGroundWalk_DoStandColi:
 	; the player can move while facing the opposite direction.
 	; The normal collision check on the front ignores what's behind the player. 
 	ld   a, [sPlFlags]
-	xor  OBJLST_XFLIP
+	xor  SPRMAP_XFLIP
 	ld   [sPlFlags], a
 	call PlBGColi_DoFront
 	ld   a, [sPlFlags]
-	xor  OBJLST_XFLIP
+	xor  SPRMAP_XFLIP
 	ld   [sPlFlags], a
 	;--
 	; Handle what's ground-specific
@@ -2308,35 +2308,35 @@ Pl_SwimGroundWalk_SetDuck:
 	xor  a
 	ld   [sPlBGColiSolidReadOnly], a
 	ld   [sPlAnimTimer], a
-	ld   a, OBJ_WARIO_DUCK
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_DUCK
+	ld   [sPlSprId], a
 	jr   Pl_SwimGroundWalk_DoStandColi
 	
 ; =============== Pl_StartSwimWalkRight ===============
 ; Makes the player start walking right underwater.
 Pl_StartSwimWalkRight:
 	ld   hl, sPlFlags
-	set  OBJLSTB_XFLIP, [hl]	; Set right orientation
+	set  SPRMAPB_XFLIP, [hl]	; Set right orientation
 	jr   Pl_StartSwimWalk
 ; =============== Pl_StartSwimWalkRight ===============
 Pl_StartSwimWalkLeft:
 	; Makes the player start walking right underwater.
 	ld   hl, sPlFlags
-	res  OBJLSTB_XFLIP, [hl]	; Set left orientation
+	res  SPRMAPB_XFLIP, [hl]	; Set left orientation
 ; =============== Pl_StartSwimWalk ===============
 Pl_StartSwimWalk:
 	xor  a
 	ld   [sPlAnimTimer], a
-	ld   a, OBJ_WARIO_WALK0		; Set initial frame (when big)
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_WALK0		; Set initial frame (when big)
+	ld   [sPlSprId], a
 	ld   a, PL_SGM_WALK			; Set ground mode
 	ld   [sPlSwimGround], a
 	ld   a, [sSmallWario]		; Replace frame if small
 	and  a
 	ret  z
-	ld   a, [sPlLstId]
-	add  OBJ_SMALLWARIO_WALK0-OBJ_WARIO_WALK0
-	ld   [sPlLstId], a
+	ld   a, [sPlSprId]
+	add  SPR_SMALLWARIO_WALK0-SPR_WARIO_WALK0
+	ld   [sPlSprId], a
 	ret
 ; =============== Pl_StartSwimDuck ===============
 ; Makes the player start ducking underwater.
@@ -2358,20 +2358,20 @@ Pl_SwitchToSwimStand:
 	ld   [sPlY_Low], a
 	ld   a, $01					; Set ground walk mode
 	ld   [sPlSwimGround], a
-	ld   a, OBJ_WARIO_STAND		; Set anim frame
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_STAND		; Set anim frame
+	ld   [sPlSprId], a
 	ld   a, [sSmallWario]
 	and  a
 	ret  z
-	ld   a, [sPlLstId]
-	add  OBJ_SMALLWARIO_STAND-OBJ_WARIO_STAND
-	ld   [sPlLstId], a
+	ld   a, [sPlSprId]
+	add  SPR_SMALLWARIO_STAND-SPR_WARIO_STAND
+	ld   [sPlSprId], a
 	ret
 ; =============== Pl_SwimGroundWalk_Walk ===============
 ; The player is walking on the ground underwater.
 Pl_SwimGroundWalk_Walk:
 	ld   a, [sPlFlags]
-	bit  OBJLSTB_XFLIP, a	; Are we facing right?
+	bit  SPRMAPB_XFLIP, a	; Are we facing right?
 	jr   z, .left			; If not, jump
 .right:
 	ldh  a, [hJoyKeys]
@@ -2471,14 +2471,14 @@ Pl_SwimGroundWalk_StartSwimFall:
 	ld   [sPlSwimGround], a
 	ld   [sPlDuck], a
 	; Set anim frame
-	ld   a, OBJ_WARIO_SWIM0
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_SWIM0
+	ld   [sPlSprId], a
 	ld   a, [sSmallWario]
 	and  a
 	ret  z
-	ld   a, [sPlLstId]
-	add  OBJ_SMALLWARIO_SWIM0-OBJ_WARIO_SWIM0
-	ld   [sPlLstId], a
+	ld   a, [sPlSprId]
+	add  SPR_SMALLWARIO_SWIM0-SPR_WARIO_SWIM0
+	ld   [sPlSprId], a
 	ret
 ; =============== ExActS_SpawnBubble ===============
 ; Spawns the underwater bubble coming in front of the player.
@@ -2507,7 +2507,7 @@ ExActS_SpawnBubble:
 	; Set X coord
 	; Place bubble around the front of the player
 	ld   a, [sPlFlags]		
-	bit  OBJLSTB_XFLIP, a		; meaning it's different depending on orientation
+	bit  SPRMAPB_XFLIP, a		; meaning it's different depending on orientation
 	jr   nz, .objRight
 .objLeft:
 	ld   b, $07
@@ -2522,8 +2522,8 @@ ExActS_SpawnBubble:
 	ld   a, [sTarget_Low]
 	ld   [sExActOBJX_Low], a
 	
-	ld   a, OBJ_JETHATFLAME0	; nice reuse
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_JETHATFLAME0	; nice reuse
+	ld   [sExActSprMapId], a
 	xor  a
 	ld   [sExActOBJFlags], a
 	; Clear rest
@@ -2596,7 +2596,7 @@ ELSE
 	
 	; Move player depending on the direction we're facing
 	ld   a, [sPlFlags]
-	bit  OBJLSTB_XFLIP, a	; Facing right?
+	bit  SPRMAPB_XFLIP, a	; Facing right?
 	jp   z, Pl_AirMoveLeft	; If not, move left
 	jp   Pl_AirMoveRight
 	;--
@@ -2672,12 +2672,12 @@ Pl_DoCtrl_HardBumpGround:
 	; sPlHardBumpGround is set to the previous action, which here is always PL_ACT_DUCK
 	ld   a, [sPlHardBumpGround]		; A = PL_ACT_DUCK
 	ld   [sPlAction], a
-	; [BUG] This doesn't explicitly set the OBJLst frame to OBJ_WARIO_DUCKWALK.
+	; [BUG] This doesn't explicitly set the sprite to SPR_WARIO_DUCKWALK.
 	;       Because of this, when holding LEFT/RIGHT after a ground bump,
-	;		the game does Anim2Frame with incorrect frames. (alternates between OBJ_WARIO_BUMPAIR and OBJ_WARIO_SWIM2)
+	;		the game does Anim2Frame with incorrect frames. (alternates between SPR_WARIO_BUMPAIR and SPR_WARIO_SWIM2)
 IF FIX_BUGS
-	ld   a, OBJ_WARIO_DUCKWALK
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_DUCKWALK
+	ld   [sPlSprId], a
 ENDC
 	xor  a
 	ld   [sPlBumpYPathIndex], a
@@ -3120,10 +3120,10 @@ ENDC
 	
 	; If we're ground pounding, trigger the screen shake effect
 	; Otherwise just land normally
-	ld   a, [sPlLstId]
-	cp   a, OBJ_WARIO_GROUNDPOUND
+	ld   a, [sPlSprId]
+	cp   a, SPR_WARIO_GROUNDPOUND
 	jr   z, .groundPound
-	cp   a, OBJ_WARIO_HOLDGROUNDPOUND
+	cp   a, SPR_WARIO_HOLDGROUNDPOUND
 	jp   nz, Pl_SwitchToStand
 .groundPound:
 	; [TCRF] This is never set anywhere, but it would disable the ground pound once.
@@ -3336,17 +3336,17 @@ ENDC
 	ld   [sPlAnimTimer], a
 	ld   [sPlDuck], a
 	ld   hl, sPlFlags
-	res  OBJLSTB_OBP1, [hl]
+	res  SPRMAPB_OBP1, [hl]
 	
 	; Set the swimming frame
-	ld   a, OBJ_WARIO_SWIM0
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_SWIM0
+	ld   [sPlSprId], a
 	ld   a, [sSmallWario]			
 	and  a
 	jr   z, .setAct
-	ld   a, [sPlLstId]
-	add  OBJ_SMALLWARIO_SWIM0-OBJ_WARIO_SWIM0
-	ld   [sPlLstId], a
+	ld   a, [sPlSprId]
+	add  SPR_SMALLWARIO_SWIM0-SPR_WARIO_SWIM0
+	ld   [sPlSprId], a
 	
 .setAct:
 	; Since we're most likely coming from a jump
@@ -3382,8 +3382,8 @@ ENDC
 	ld   [sExActOBJX_High], a
 	ld   a, [sPlX_Low]
 	ld   [sExActOBJX_Low], a
-	ld   a, OBJ_WATERSPLASH0		; Frame
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_WATERSPLASH0		; Frame
+	ld   [sExActSprMapId], a
 	xor  a							; Flags
 	ld   [sExActOBJFlags], a
 	; Clear rest
@@ -3403,7 +3403,7 @@ Pl_SwitchToSand:
 	ld   [sPlDuck], a
 	
 	ld   hl, sPlFlags
-	res  OBJLSTB_OBP1, [hl]
+	res  SPRMAPB_OBP1, [hl]
 	
 	; Switch to the sand action
 	ld   a, PL_ACT_SAND
@@ -3418,22 +3418,22 @@ Pl_SwitchToSand:
 	and  a						; Small Wario?
 	jr   nz, .small				; If not, jump
 .norm:
-	ld   a, OBJ_WARIO_JUMP
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_JUMP
+	ld   [sPlSprId], a
 	ld   a, [sActHeld]			
 	and  a						; Holding something?
 	ret  z						; If not, return
-	ld   a, OBJ_WARIO_HOLDJUMP
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_HOLDJUMP
+	ld   [sPlSprId], a
 	ret
 .small:
-	ld   a, OBJ_SMALLWARIO_JUMP
-	ld   [sPlLstId], a
+	ld   a, SPR_SMALLWARIO_JUMP
+	ld   [sPlSprId], a
 	ld   a, [sActHeld]
 	and  a						; Holding something?
 	ret  z						; If not, return
-	ld   a, OBJ_SMALLWARIO_HOLDJUMP
-	ld   [sPlLstId], a
+	ld   a, SPR_SMALLWARIO_HOLDJUMP
+	ld   [sPlSprId], a
 	ret
 	
 ; =============== Pl_DoCtrl_Dead ===============
@@ -3534,7 +3534,7 @@ Pl_DoCtrl_Dash:
 	
 	; In which direction this dash is?
 	ld   hl, sPlFlags
-	bit  OBJLSTB_XFLIP, [hl]
+	bit  SPRMAPB_XFLIP, [hl]
 	jr   z, .leftDash
 .rightDash:
 	; End the dash when pressing the opposite direction
@@ -3621,8 +3621,8 @@ Pl_DoCtrl_Dash:
 Pl_SwitchToDashRebound:
 	ld   a, SFX4_03
 	ld   [sSFX4Set], a
-	ld   a, OBJ_WARIO_DASH1	; DASH0 would look wrong in the air
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_DASH1	; DASH0 would look wrong in the air
+	ld   [sPlSprId], a
 	xor  a
 	ld   [sPlBumpYPathIndex], a
 IF !IMPROVE
@@ -3639,8 +3639,8 @@ ENDC
 ; =============== Pl_SwitchToDashJump ===============
 ; Switches the ground dash action to a jumpdash action.
 Pl_SwitchToDashJump:
-	ld   a, OBJ_WARIO_DASHJUMP
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_DASHJUMP
+	ld   [sPlSprId], a
 	xor  a
 	ld   [sPlAnimTimer], a
 	ld   [sPlJumpYPathIndex], a
@@ -3685,7 +3685,7 @@ Pl_DoCtrl_DashRebound:
 	
 	; Do automatic movement in the opposite direction the player's facing
 	ld   a, [sPlFlags]
-	bit  OBJLSTB_XFLIP, a			; Facing right?
+	bit  SPRMAPB_XFLIP, a			; Facing right?
 	jr   z, .faceLeft				; If not, jump
 .faceRight:
 	; Of course it needs to check for collision.
@@ -3885,7 +3885,7 @@ Pl_DoCtrl_DashJump:
 	
 	; Move horizontally depending on the direction the player's facing
 	ld   a, [sPlFlags]
-	bit  OBJLSTB_XFLIP, a	; Facing right?
+	bit  SPRMAPB_XFLIP, a	; Facing right?
 	jr   nz, .moveRight		; If so, move right
 .moveLeft:
 	; This seems suspicious -- this collision check is already performed by PlBGColi_DoDash!
@@ -3946,7 +3946,7 @@ Pl_DoCtrl_DashJet:
 	
 	; Determine dash direction
 	ld   hl, sPlFlags
-	bit  OBJLSTB_XFLIP, [hl]	; Facing right?
+	bit  SPRMAPB_XFLIP, [hl]	; Facing right?
 	jr   z, .leftDash			; If not, jump
 .rightDash:
 	; Pressing/holding the opposite direction ends the dash
@@ -4130,18 +4130,18 @@ Pl_StartThrowAction:
 	and  a					
 	jr   nz, .small
 .normal:
-	ld   a, OBJ_WARIO_THROW
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_THROW
+	ld   [sPlSprId], a
 	ld   a, [sPlDuck]
 	and  a
 	ret  z
-	ld   a, OBJ_WARIO_DUCKTHROW
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_DUCKTHROW
+	ld   [sPlSprId], a
 	ret
 .small:
 	; No special throw anim for small wario
-	ld   a, OBJ_SMALLWARIO_STAND
-	ld   [sPlLstId], a
+	ld   a, SPR_SMALLWARIO_STAND
+	ld   [sPlSprId], a
 	ret
 ; =============== Pl_DoCtrl_Throw ===============
 ; Handles the throw animation when standing on the ground.
@@ -4168,7 +4168,7 @@ Pl_DoCtrl_Throw:
 Pl_WalkRight:
 	call Pl_WalkAnim			; Normal walk cycle
 	ld   hl, sPlFlags		; Set obj direction
-	set  OBJLSTB_XFLIP, [hl]	
+	set  SPRMAPB_XFLIP, [hl]	
 	
 	ld   a, [sPlIceDelayTimer]	
 	and  a						; Is there a delay before moving (by standing on ice)?
@@ -4203,7 +4203,7 @@ Pl_WalkRight:
 ; and without checking for the auto-crouching.
 Pl_AirMoveRight:
 	ld   hl, sPlFlags		; Set OBJ direction
-	set  OBJLSTB_XFLIP, [hl]
+	set  SPRMAPB_XFLIP, [hl]
 	
 	; The timer should count down normally, even in the air
 	ld   a, [sPlIceDelayTimer]
@@ -4326,7 +4326,7 @@ Pl_MoveRightStub:
 Pl_WalkLeft:
 	call Pl_WalkAnim			; Normal walk cycle
 	ld   hl, sPlFlags		; Set obj direction
-	res  OBJLSTB_XFLIP, [hl]	
+	res  SPRMAPB_XFLIP, [hl]	
 	
 	ld   a, [sPlIceDelayTimer]	
 	and  a						; Is there a delay before moving (by standing on ice)?
@@ -4363,7 +4363,7 @@ Pl_WalkLeft:
 ; and without checking for the auto-crouching.
 Pl_AirMoveLeft:
 	ld   hl, sPlFlags		; Set OBJ direction
-	res  OBJLSTB_XFLIP, [hl]
+	res  SPRMAPB_XFLIP, [hl]
 	
 	; The timer should count down normally, even in the air
 	ld   a, [sPlIceDelayTimer]
@@ -4500,8 +4500,8 @@ Pl_Unused_SwitchToDuck:
 	ret  z					; If so, return
 	
 	; Otherwise, make the player duck
-	ld   a, OBJ_WARIO_DUCK
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_DUCK
+	ld   [sPlSprId], a
 	ld   a, PL_ACT_DUCK
 	ld   [sPlAction], a
 	ret
@@ -4513,7 +4513,7 @@ Pl_WalkAnimSlow:
 	ld   a, [sTimer]
 	and  a, $07
 	ret  nz
-	jr   Pl_WalkAnimOBJLst
+	jr   Pl_WalkAnimSprMap
 ; =============== Pl_WalkAnim ===============
 ; Handles the player walk animation (frame setup + SFX).
 Pl_WalkAnim:
@@ -4539,7 +4539,7 @@ Pl_WalkAnim:
 	ld   a, [sTimer]
 	and  a, $03
 	ret  nz
-	jr   Pl_WalkAnimOBJLst
+	jr   Pl_WalkAnimSprMap
 .fastSFX:
 	; Fast uses a different SFX
 	call Wario_PlayWalkSFX_Fast
@@ -4548,19 +4548,19 @@ Pl_WalkAnim:
 	and  a, $01
 	ret  nz
 	;--
-; =============== Pl_WalkAnimOBJLst ===============
+; =============== Pl_WalkAnimSprMap ===============
 ; Updates the player animation frames to perform the walk cycle.
-Pl_WalkAnimOBJLst:
+Pl_WalkAnimSprMap:
 	; Small Wario has a different cycle
 	ld   a, [sSmallWario]
 	and  a
-	jr   nz, Pl_WalkAnimOBJLst_Small
+	jr   nz, Pl_WalkAnimSprMap_Small
 	;--
-	; Update the player OBJLstId
-	ld   hl, OBJLstAnimOff_WarioWalk	
+	; Update the player SprMapId
+	ld   hl, SprMapAnimOff_WarioWalk	
 	ld   a, [sPlAnimTimer]	; Index++			
 	inc  a
-	cp   a, OBJLstAnimOff_WarioWalk.end-OBJLstAnimOff_WarioWalk	; Have we reached the end of the table?
+	cp   a, SprMapAnimOff_WarioWalk.end-SprMapAnimOff_WarioWalk	; Have we reached the end of the table?
 	jr   nz, .noReset		; If not, jump
 	xor  a					; Otherwise, reset the index
 .noReset:
@@ -4568,20 +4568,20 @@ Pl_WalkAnimOBJLst:
 	ld   e, a
 	ld   d, $00
 	add  hl, de				; Offset the anim table
-	ld   a, [sPlLstId]	; Add the offset to the frame id
+	ld   a, [sPlSprId]	; Add the offset to the frame id
 	add  [hl]
-	ld   [sPlLstId], a
+	ld   [sPlSprId], a
 	ret
-OBJLstAnimOff_WarioWalk:
+SprMapAnimOff_WarioWalk:
 	db -$02,+$01,+$01,-$02,+$03,-$01
 .end:
-Pl_WalkAnimOBJLst_Small:
+Pl_WalkAnimSprMap_Small:
 	; Same thing for Small Wario
-	ld   hl, OBJLstAnimOff_SmallWarioWalk
+	ld   hl, SprMapAnimOff_SmallWarioWalk
 	ld   a, [sPlAnimTimer]		; Timer++
 	inc  a
 	; Reset if we reached the end of the table
-	cp   a, OBJLstAnimOff_SmallWarioWalk.end-OBJLstAnimOff_SmallWarioWalk
+	cp   a, SprMapAnimOff_SmallWarioWalk.end-SprMapAnimOff_SmallWarioWalk
 	jr   nz, .noReset
 	xor  a
 .noReset:
@@ -4589,11 +4589,11 @@ Pl_WalkAnimOBJLst_Small:
 	ld   e, a
 	ld   d, $00
 	add  hl, de				; Offset the anim table
-	ld   a, [sPlLstId]	; Add the offset to the frame id
+	ld   a, [sPlSprId]	; Add the offset to the frame id
 	add  [hl]
-	ld   [sPlLstId], a
+	ld   [sPlSprId], a
 	ret
-OBJLstAnimOff_SmallWarioWalk:
+SprMapAnimOff_SmallWarioWalk:
 	db -$02,+$01,+$01
 .end:
 
@@ -4626,14 +4626,14 @@ Pl_JumpAnim:
 	ld   a, $05-$01
 	ld   [sPlJumpThrowTimer], a
 .setThrow:
-	; sPlDuck ? OBJ_WARIO_DUCKTHROW : OBJ_WARIO_JUMPTHROW
-	ld   a, OBJ_WARIO_JUMPTHROW
-	ld   [sPlLstId], a
+	; sPlDuck ? SPR_WARIO_DUCKTHROW : SPR_WARIO_JUMPTHROW
+	ld   a, SPR_WARIO_JUMPTHROW
+	ld   [sPlSprId], a
 	ld   a, [sPlDuck]			
 	and  a
 	ret  z
-	ld   a, OBJ_WARIO_DUCKTHROW
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_DUCKTHROW
+	ld   [sPlSprId], a
 	ret
 	;--
 .chkGroundPound:
@@ -4651,35 +4651,35 @@ Pl_JumpAnim:
 	
 	; Otherwise, fall back to the standard jumping frame
 .setJump:
-	; sActHeld ? OBJ_WARIO_HOLDJUMP : OBJ_WARIO_JUMP
-	ld   a, OBJ_WARIO_JUMP
-	ld   [sPlLstId], a
+	; sActHeld ? SPR_WARIO_HOLDJUMP : SPR_WARIO_JUMP
+	ld   a, SPR_WARIO_JUMP
+	ld   [sPlSprId], a
 	ld   a, [sActHeld]
 	and  a
 	ret  z
-	ld   a, OBJ_WARIO_HOLDJUMP
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_HOLDJUMP
+	ld   [sPlSprId], a
 	ret
 .setGroundPound:
-	; sActHeld ? OBJ_WARIO_HOLDGROUNDPOUND : OBJ_WARIO_GROUNDPOUND
-	ld   a, OBJ_WARIO_GROUNDPOUND
-	ld   [sPlLstId], a
+	; sActHeld ? SPR_WARIO_HOLDGROUNDPOUND : SPR_WARIO_GROUNDPOUND
+	ld   a, SPR_WARIO_GROUNDPOUND
+	ld   [sPlSprId], a
 	ld   a, [sActHeld]
 	and  a
 	ret  z
-	ld   a, OBJ_WARIO_HOLDGROUNDPOUND
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_HOLDGROUNDPOUND
+	ld   [sPlSprId], a
 	ret
 .setJumpSmall:
 	; Small Wario lacks many of the special frames while jumping.
 	; Only one for holding something exists.
-	ld   a, OBJ_SMALLWARIO_JUMP
-	ld   [sPlLstId], a
+	ld   a, SPR_SMALLWARIO_JUMP
+	ld   [sPlSprId], a
 	ld   a, [sActHeld]
 	and  a
 	ret  z
-	ld   a, OBJ_SMALLWARIO_HOLDJUMP
-	ld   [sPlLstId], a
+	ld   a, SPR_SMALLWARIO_HOLDJUMP
+	ld   [sPlSprId], a
 	ret
 .chkDuck:
 	; If we aren't holding DOWN, try to unduck
@@ -4693,12 +4693,12 @@ Pl_JumpAnim:
 	and  a
 	jr   nz, .setDuckHold
 .setDuckNorm:
-	ld   a, OBJ_WARIO_DUCK
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_DUCK
+	ld   [sPlSprId], a
 	ret
 .setDuckHold:
-	ld   a, OBJ_WARIO_DUCKHOLD
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_DUCKHOLD
+	ld   [sPlSprId], a
 	ret
 .chkJump:
 	; The duck flag in the air ends up being set here.
@@ -4710,7 +4710,7 @@ Pl_JumpAnim:
 	;		even though he's actually not. (which is why you can't jet dash in the "clipping" state)
 	
 	ld   hl, sPlFlags
-	res  OBJLSTB_OBP1, [hl]
+	res  SPRMAPB_OBP1, [hl]
 	
 	xor  a				; Handle the collision for the block above		
 	ld   [sPlDuck], a	; which requires unducking, at least temporarily
@@ -4792,8 +4792,8 @@ Pl_StartActionB_Garlic:
 	xor  a
 	ld   [sPlBGColiSolidReadOnly], a
 .start:
-	ld   a, OBJ_WARIO_DASH0			; Set initial frame
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_DASH0			; Set initial frame
+	ld   [sPlSprId], a
 	xor  a							; Reset timers
 	ld   [sPlAnimTimer], a
 	ld   [sPlDuck], a
@@ -4862,10 +4862,10 @@ Pl_StartActionB_Jet:
 	ld   [sPlAction], a
 	ld   a, $01
 	ld   [sPlNewAction], a
-	ld   a, OBJ_WARIO_DASHFLY
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_DASHFLY
+	ld   [sPlSprId], a
 	ld   hl, sPlFlags		; Not sure why the palette's reset 
-	res  OBJLSTB_OBP1, [hl]
+	res  SPRMAPB_OBP1, [hl]
 	;--
 	; Spawn the jet flame actor
 	ld   a, EXACT_JETHATFLAME
@@ -4879,7 +4879,7 @@ Pl_StartActionB_Jet:
 	; (opposite direction since it's behind the player)
 	ld   b, $16
 	ld   a, [sPlFlags]
-	bit  OBJLSTB_XFLIP, a		; Is the X flip set?
+	bit  SPRMAPB_XFLIP, a		; Is the X flip set?
 	jr   nz, .right				; If so, the player is facing right
 .left:
 	call PlTarget_SetRightPos
@@ -4892,8 +4892,8 @@ Pl_StartActionB_Jet:
 	ld   a, [sTarget_Low]
 	ld   [sExActOBJX_Low], a
 	
-	ld   a, OBJ_JETHATFLAME0
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_JETHATFLAME0
+	ld   [sExActSprMapId], a
 	ld   a, [sPlFlags]
 	ld   [sExActOBJFlags], a
 	; Clear unused area
@@ -4940,7 +4940,7 @@ Pl_StartActionB_JetOrDragon:
 	; Pick a different X pos depending on the player direction
 	ld   b, $14						
 	ld   a, [sPlFlags]
-	bit  OBJLSTB_XFLIP, a			; Is the X flip set?
+	bit  SPRMAPB_XFLIP, a			; Is the X flip set?
 	jr   nz, .right					; If so, the player is facing right
 .left:
 	call PlTarget_SetLeftPos		; $14 left: When facing left
@@ -4953,8 +4953,8 @@ Pl_StartActionB_JetOrDragon:
 	ld   a, [sTarget_Low]
 	ld   [sExActOBJX_Low], a
 	
-	ld   a, OBJ_DRAGONHATFLAME_A0
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_DRAGONHATFLAME_A0
+	ld   [sExActSprMapId], a
 	ld   a, [sPlFlags]
 	ld   [sExActOBJFlags], a
 	; Clear rest of space
@@ -4997,24 +4997,24 @@ Pl_IdleAnim:
 	;--
 	; If we've stopped holding something but we're still using that frame,
 	; reset it to the standing frame.
-	ld   a, [sPlLstId]	
-	cp   a, OBJ_WARIO_HOLD
+	ld   a, [sPlSprId]	
+	cp   a, SPR_WARIO_HOLD
 	jr   nz, .noStandReset
 	
 	xor  a
 	ld   [sPlAnimTimer], a
-	ld   a, OBJ_WARIO_STAND
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_STAND
+	ld   [sPlSprId], a
 	;--
 .noStandReset:	
-	; Each entry in this table marks the amount to add to sPlLstId.
-	ld   hl, OBJLstAnimOff_WarioIdle		; HL = Ptr to anim offset table
+	; Each entry in this table marks the amount to add to sPlSprId.
+	ld   hl, SprMapAnimOff_WarioIdle		; HL = Ptr to anim offset table
 	
 	; Update the idle frame timer, which will be treated as as index
 	; sPlAnimTimer = ((sPlAnimTimer+1) & $1C) (+8 on folliwing loops)
 	ld   a, [sPlAnimTimer]	
 	inc  a
-	cp   a, (OBJLstAnimOff_WarioIdle.end-OBJLstAnimOff_WarioIdle) ; Did we reach the end of the table?
+	cp   a, (SprMapAnimOff_WarioIdle.end-SprMapAnimOff_WarioIdle) ; Did we reach the end of the table?
 	jr   nz, .noTimerReset	; If not, jump
 	ld   a, $08				; If so, reset the index back to $08 (skipping the initial delay)
 .noTimerReset:
@@ -5024,9 +5024,9 @@ Pl_IdleAnim:
 	ld   d, $00
 	add  hl, de
 	
-	ld   a, [sPlLstId]	; sPlLstId += OBJLstAnimOff_WarioIdle[sPlAnimTimer]
+	ld   a, [sPlSprId]	; sPlSprId += SprMapAnimOff_WarioIdle[sPlAnimTimer]
 	add  [hl]
-	ld   [sPlLstId], a
+	ld   [sPlSprId], a
 	ret
 	
 .small:
@@ -5041,20 +5041,20 @@ Pl_IdleAnim:
 	
 	;--
 	; Reset held anim
-	ld   a, [sPlLstId]
-	cp   a, OBJ_SMALLWARIO_HOLD
+	ld   a, [sPlSprId]
+	cp   a, SPR_SMALLWARIO_HOLD
 	jr   nz, .noStandResetS
 	xor  a
 	ld   [sPlAnimTimer], a
-	ld   a, OBJ_SMALLWARIO_STAND
-	ld   [sPlLstId], a
+	ld   a, SPR_SMALLWARIO_STAND
+	ld   [sPlSprId], a
 .noStandResetS:
 	; Index the anim offsets table
 	; Once we go past it, reset the index to $00
-	ld   hl, OBJLstAnimOff_SmallWarioIdle
+	ld   hl, SprMapAnimOff_SmallWarioIdle
 	ld   a, [sPlAnimTimer]	; Index++
 	inc  a
-	cp   a, (OBJLstAnimOff_SmallWarioIdle.end-OBJLstAnimOff_SmallWarioIdle)
+	cp   a, (SprMapAnimOff_SmallWarioIdle.end-SprMapAnimOff_SmallWarioIdle)
 	jr   nz, .noTimerResetS
 	xor  a
 .noTimerResetS:
@@ -5063,9 +5063,9 @@ Pl_IdleAnim:
 	ld   d, $00
 	add  hl, de
 	
-	ld   a, [sPlLstId]	; sPlLstId += OBJLstAnimOff_SmallWarioIdle[sPlAnimTimer]
+	ld   a, [sPlSprId]	; sPlSprId += SprMapAnimOff_SmallWarioIdle[sPlAnimTimer]
 	add  [hl]
-	ld   [sPlLstId], a
+	ld   [sPlSprId], a
 	ret
 ; =============== Pl_SwitchToStand ===============
 ; Switches to the stand action.
@@ -5112,16 +5112,16 @@ ENDC
 	ld   [sPlJumpYPathIndex], a
 	
 	ld   hl, sPlFlags
-	res  OBJLSTB_OBP1, [hl]
+	res  SPRMAPB_OBP1, [hl]
 	; Set the stand anim depending on small/big Wario
-	ld   a, OBJ_WARIO_STAND
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_STAND
+	ld   [sPlSprId], a
 	ld   a, [sSmallWario]
 	and  a
 	jr   z, Pl_SwitchToStand2
-	ld   a, [sPlLstId]
-	add  OBJ_SMALLWARIO_STAND-OBJ_WARIO_STAND
-	ld   [sPlLstId], a
+	ld   a, [sPlSprId]
+	add  SPR_SMALLWARIO_STAND-SPR_WARIO_STAND
+	ld   [sPlSprId], a
 ; =============== Pl_SwitchToStand2 ===============
 ; Switches to the stand action without updating the player frame (though the hold frame will be set regardless).
 ; Can be used to set an alternate standing frame.
@@ -5157,17 +5157,17 @@ ENDC
 	ld   a, [sActHeld]
 	and  a					; Holding something?
 	ret  z					; If not, return
-	ld   a, OBJ_WARIO_HOLD
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_HOLD
+	ld   [sPlSprId], a
 	ld   a, [sSmallWario]
 	and  a					; Small Wario?
 	ret  z					; If not, return
-	ld   a, OBJ_SMALLWARIO_HOLD
-	ld   [sPlLstId], a
+	ld   a, SPR_SMALLWARIO_HOLD
+	ld   [sPlSprId], a
 	ret
-; =============== OBJLstAnimOff_WarioIdle ===============
+; =============== SprMapAnimOff_WarioIdle ===============
 ; Table of offsets (inc amount to current anim frame) for playing the idle anim.
-OBJLstAnimOff_WarioIdle: 
+SprMapAnimOff_WarioIdle: 
 	db +$00
 	db +$00
 	db +$00
@@ -5197,7 +5197,7 @@ OBJLstAnimOff_WarioIdle:
 	db +$01
 	db -$01
 .end:
-OBJLstAnimOff_SmallWarioIdle:
+SprMapAnimOff_SmallWarioIdle:
 	db -$01
 	db +$00
 	db +$00
@@ -5357,10 +5357,10 @@ Pl_Anim2FrameSlow:
 	ld   a, [sTimer]
 	and  a, $0F
 	ret  nz
-	; Alternate between OBJ_WARIO_DUCK ($10) and OBJ_WARIO_DUCKWALK ($11)
-	ld   a, [sPlLstId]
+	; Alternate between SPR_WARIO_DUCK ($10) and SPR_WARIO_DUCKWALK ($11)
+	ld   a, [sPlSprId]
 	xor  $01
-	ld   [sPlLstId], a
+	ld   [sPlSprId], a
 	ret
 	
 ; =============== Pl_DoCtrl_Sand ===============
@@ -5409,22 +5409,22 @@ Pl_DoCtrl_Sand:
 	and  a						; Are we small?
 	jr   nz, .sjSmall			; If so, jump
 .sjNormal:
-	ld   a, OBJ_WARIO_JUMP		; Set normal frame
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_JUMP		; Set normal frame
+	ld   [sPlSprId], a
 	ld   a, [sActHeld]
 	and  a						; Are we holding something?
 	jr   z, .doJump				; If not, jump
-	ld   a, OBJ_WARIO_HOLDJUMP	; Set held frame
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_HOLDJUMP	; Set held frame
+	ld   [sPlSprId], a
 	jr   .doJump
 .sjSmall:
-	ld   a, OBJ_SMALLWARIO_JUMP	; Set normal small frame
-	ld   [sPlLstId], a
+	ld   a, SPR_SMALLWARIO_JUMP	; Set normal small frame
+	ld   [sPlSprId], a
 	ld   a, [sActHeld]
 	and  a						; Holding something?
 	jr   z, .doJump				; If not, jump
-	ld   a, OBJ_SMALLWARIO_HOLDJUMP ; Set held small frame
-	ld   [sPlLstId], a
+	ld   a, SPR_SMALLWARIO_HOLDJUMP ; Set held small frame
+	ld   [sPlSprId], a
 .doJump:
 	;--
 	ldh  a, [hJoyKeys]
@@ -5523,36 +5523,36 @@ ENDC
 	jr   nz, .gDuck			; If so, jump
 .gNormal:
 	; Pick correct anim frame
-	ld   a, OBJ_WARIO_IDLE0
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_IDLE0
+	ld   [sPlSprId], a
 	ld   a, [sActHeld]
 	and  a
 	ret  z
-	ld   a, OBJ_WARIO_HOLD
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_HOLD
+	ld   [sPlSprId], a
 	ret
 .gSmall:
 	; Pick correct anim frame for Small Wario
-	ld   a, OBJ_SMALLWARIO_STAND
-	ld   [sPlLstId], a
+	ld   a, SPR_SMALLWARIO_STAND
+	ld   [sPlSprId], a
 	ld   a, [sActHeld]
 	and  a
 	ret  z
-	ld   a, OBJ_SMALLWARIO_HOLD
-	ld   [sPlLstId], a
+	ld   a, SPR_SMALLWARIO_HOLD
+	ld   [sPlSprId], a
 	ret
 .gDuck:
 	; Set duck flag
 	ld   a, $01
 	ld   [sPlDuck], a
 	; Pick correct anim frame when ducking
-	ld   a, OBJ_WARIO_DUCK
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_DUCK
+	ld   [sPlSprId], a
 	ld   a, [sActHeld]
 	and  a
 	ret  z
-	ld   a, OBJ_WARIO_DUCKHOLD
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_DUCKHOLD
+	ld   [sPlSprId], a
 	ret
 	
 IF IMPROVE
@@ -5596,7 +5596,7 @@ Pl_SandJumpYOffTable:
 	db $80 ; END
 	
 ; =============== Pl_SetFlipByJoyKeys ===============
-; This subroutine sets the player's OBJLst flip status depending on the direction held.
+; This subroutine sets the player's sprite flip status depending on the direction held.
 Pl_SetFlipByJoyKeys:
 	ldh  a, [hJoyKeys]
 	bit  KEYB_RIGHT, a
@@ -5606,19 +5606,19 @@ Pl_SetFlipByJoyKeys:
 	ret
 .right:
 	ld   hl, sPlFlags
-	set  OBJLSTB_XFLIP, [hl]
+	set  SPRMAPB_XFLIP, [hl]
 	ret
 .left:
 	ld   hl, sPlFlags
-	res  OBJLSTB_XFLIP, [hl]
+	res  SPRMAPB_XFLIP, [hl]
 	ret
 ; =============== Pl_DoCtrl_TreasureGet ===============
 ; This is a special action used when controls are frozen after holding an hidden treasure.
 ; After a while, the game switches to the treasure room and plays the anim.
 Pl_DoCtrl_TreasureGet:
 	; The anim frame is handled "automatically" elsewhere
-	ld   a, [sPlLstId]
-	cp   a, OBJ_WARIO_HOLD	; Is the player in the *standing* hold anim?
+	ld   a, [sPlSprId]
+	cp   a, SPR_WARIO_HOLD	; Is the player in the *standing* hold anim?
 	jr   z, .ground			; If so, jump
 	
 .air:
@@ -5628,7 +5628,7 @@ Pl_DoCtrl_TreasureGet:
 	dec  a ; COLI_SOLID			; Is there a solid block below?
 	jr   z, .switchToGround				; If so, switch to ground
 	ld   a, $70
-	ld   [sPlLstId], a
+	ld   [sPlSprId], a
 	ld   hl, Pl_JumpYPath
 	ld   d, $00
 	ld   a, [sPlJumpYPathIndex]
@@ -5651,8 +5651,8 @@ Pl_DoCtrl_TreasureGet:
 	ld   [sSFX1Set], a
 	ld   a, BGM_TREASUREGET
 	ld   [sBGMSet], a
-	ld   a, OBJ_WARIO_HOLD		; Set anim frame
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_HOLD		; Set anim frame
+	ld   [sPlSprId], a
 	ld   a, $E0					; Set delay before fading out to treasure screen
 	ld   [sPlDelayTimer], a
 	ret
@@ -5772,7 +5772,7 @@ ExActActColi_DragonHatFlame:
 	ld   a, l
 	ld   [sActSlotPtr_Low], a
 	
-	; As a side effect of going by the relative position calculated by writing the OBJLst,
+	; As a side effect of going by the relative position calculated by writing the sprite mapping,
 	; we can only interact with visible actors.
 	ld   a, [hl]				; Read active status
 	cp   a, $02					; Is it visible and active?
@@ -5810,7 +5810,7 @@ ExActActColi_DragonHatFlame:
 	; Perform the bounding box check to determine if the dragon hat flame is colliding with an actor.
 	; For each of these we simply compare the range values.
 	;
-	; As usual this is based on the relative coords OBJLst are drawn,
+	; As usual this is based on the relative coords sprite mappings are drawn,
 	; which is why you can interact with them even after triggering the scroll glitch.
 	
 	; [POI] Curiously, the bounding box of the dragon hat flame isn't hardcoded
@@ -6475,8 +6475,8 @@ ENDC
 	; When doing a ground pound, set actor routine $03 to crush it.
 	; Otherwise, set routine $02 to stun it.
 	ld   b, ACTRTN_02
-	ld   a, [sPlLstId]
-	cp   a, OBJ_WARIO_GROUNDPOUND				; Are we ground pounding?
+	ld   a, [sPlSprId]
+	cp   a, SPR_WARIO_GROUNDPOUND				; Are we ground pounding?
 	jr   nz, PlActColiMask_CheckType_SetRoutineId	; If not, jump
 	jp   ActS_SetCrushRoutineId
 	
@@ -6505,8 +6505,8 @@ PlActColiMask_CheckType_SetRoutineId:
 	ret
 PlActColi_GroundDash:
 	; Freeze the player for a bit after hitting an actor during a dash
-	ld   a, OBJ_WARIO_DASHENEMY
-	ld   [sPlLstId], a
+	ld   a, SPR_WARIO_DASHENEMY
+	ld   [sPlSprId], a
 	call Pl_SwitchToActBumpAction2
 	; But not if it's a jet dash
 PlActColi_JetDash:
@@ -6929,15 +6929,15 @@ Pl_SwitchToTreasureGet:
 	ld   a, SFX1_04				; Play SFX
 	ld   [sSFX1Set], a
 	ret
-; =============== ExActS_ExecuteAllAndWriteOBJLst ===============
+; =============== ExActS_ExecuteAllAndWriteSprMap ===============
 ; This subroutine executes the Extra Actor code for all slots and draws their sprite mappings.
 ; Used during main gameplay.
-ExActS_ExecuteAllAndWriteOBJLst:
+ExActS_ExecuteAllAndWriteSprMap:
 	ld   a, [sExActCount]
 	and  a					; Are there any ExAct?
 	ret  z					; If not, we have nothing to do here
 	
-	; Search along the ExAct area for OBJLst to draw.
+	; Search along the ExAct area for sprite mapping to draw.
 	ld   [sExActLeft], a	
 	ld   hl, sExAct			; HL = ExAct slot
 .loop:
@@ -6950,8 +6950,8 @@ ExActS_ExecuteAllAndWriteOBJLst:
 	call ExActS_CopyFromSet
 	
 	call ExActS_Execute				; Execute code
-	call HomeCall_WriteExActOBJLst	; Write OBJLst
-	; Save back/update the calculated relative coords we got from WriteExActOBJLst
+	call HomeCall_WriteExActSprMap	; Write sprite mapping
+	; Save back/update the calculated relative coords we got from WriteExActSprMap
 	ld   a, [sExActOBJYRel]
 	ld   [sExActOBJFixY], a
 	ld   a, [sExActOBJXRel]
@@ -7217,8 +7217,8 @@ ExAct_JetHatFlame:
 	call ExAct_JetHatFlame_DoAnim
 	ret
 .switchToEnd:
-	ld   a, OBJ_JETHATFLAME2	
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_JETHATFLAME2	
+	ld   [sExActSprMapId], a
 	ld   a, $01					; Switch to end 1
 	ld   [sExActRoutineId], a
 .dashEnd:
@@ -7358,7 +7358,7 @@ MACRO mDragonHatFlame_Draw
 .setFrame\@:
 	call ExActS_GetAnim3FrameIdx	; A = Updated anim timer
 	add  b							; Add the base frame
-	ld   [sExActOBJLstId], a		; Set the resulting anim frame
+	ld   [sExActSprMapId], a		; Set the resulting anim frame
 	;--
 ENDM
 
@@ -7408,7 +7408,7 @@ ExAct_DragonHatFlame_Act1:
 	call ExActS_SetRelUpFrontPos
 	call ExActBGColi_DragonHatFlame_08	; Do collision (low distance)
 	
-	mDragonHatFlame_Draw OBJ_DRAGONHATFLAME_A0, OBJ_DRAGONHATWATER_A0
+	mDragonHatFlame_Draw SPR_DRAGONHATFLAME_A0, SPR_DRAGONHATWATER_A0
 	mDragonHatFlame_WaitAnimTimer
 	mDragonHatFlame_SetSFX SFX4_04
 	mDragonHatFlame_WaitNextAct $03 ; repeat 3 times before next act switch
@@ -7432,7 +7432,7 @@ ExAct_DragonHatFlame_Act2:
 	call ExActBGColi_DragonHatFlame_18
 .draw:
 	;--
-	mDragonHatFlame_Draw OBJ_DRAGONHATFLAME_B0, OBJ_DRAGONHATWATER_B0
+	mDragonHatFlame_Draw SPR_DRAGONHATFLAME_B0, SPR_DRAGONHATWATER_B0
 	mDragonHatFlame_WaitAnimTimer
 	mDragonHatFlame_SetSFX SFX4_05
 	mDragonHatFlame_WaitNextAct $03
@@ -7467,7 +7467,7 @@ ExAct_DragonHatFlame_Act3:
 	; no collision check on == 4
 .draw:
 	;--
-	mDragonHatFlame_Draw OBJ_DRAGONHATFLAME_C0, OBJ_DRAGONHATWATER_C0
+	mDragonHatFlame_Draw SPR_DRAGONHATFLAME_C0, SPR_DRAGONHATWATER_C0
 	mDragonHatFlame_WaitAnimTimer
 	mDragonHatFlame_SetSFX SFX4_06
 	mDragonHatFlame_WaitNextAct $18
@@ -7499,7 +7499,7 @@ ExAct_DragonHatFlame_NextAct:
 ExAct_DragonHatFlame_Act4:
 	ld   c, $20
 	call ExActS_SetRelUpFrontPos
-	mDragonHatFlame_Draw OBJ_DRAGONHATFLAME_D0, OBJ_DRAGONHATWATER_D0
+	mDragonHatFlame_Draw SPR_DRAGONHATFLAME_D0, SPR_DRAGONHATWATER_D0
 	mDragonHatFlame_WaitAnimTimer
 	mDragonHatFlame_WaitNextAct $04
 	jr   ExAct_DragonHatFlame_NextAct
@@ -7507,7 +7507,7 @@ ExAct_DragonHatFlame_Act4:
 ExAct_DragonHatFlame_Act5:
 	ld   c, $18
 	call ExActS_SetRelUpFrontPos
-	mDragonHatFlame_Draw OBJ_DRAGONHATFLAME_E0, OBJ_DRAGONHATWATER_E0
+	mDragonHatFlame_Draw SPR_DRAGONHATFLAME_E0, SPR_DRAGONHATWATER_E0
 	mDragonHatFlame_WaitAnimTimer
 	mDragonHatFlame_WaitNextAct $04
 	jr   ExAct_DragonHatFlame_NextAct
@@ -7515,14 +7515,14 @@ ExAct_DragonHatFlame_Act5:
 ExAct_DragonHatFlame_Act6:
 	ld   c, $14
 	call ExActS_SetRelUpFrontPos
-	mDragonHatFlame_Draw OBJ_DRAGONHATFLAME_F0, OBJ_DRAGONHATWATER_F0
+	mDragonHatFlame_Draw SPR_DRAGONHATFLAME_F0, SPR_DRAGONHATWATER_F0
 	mDragonHatFlame_WaitAnimTimer
 	mDragonHatFlame_WaitNextAct $04
 	jp   ExAct_DragonHatFlame_Despawn
 	
 ; =============== ExActS_GetAnim3FrameIdx ===============
 ; This subroutine is used to update/get the index to a 3 frame animation cycle.
-; The value this returns is expected to be added over base OBJLst frame (ie: OBJ_DRAGONHATFLAME_A0).
+; The value this returns is expected to be added over base sprite mapping frame (ie: SPR_DRAGONHATFLAME_A0).
 ; OUT
 ; - A: Anim frame index
 ExActS_GetAnim3FrameIdx:
@@ -7538,20 +7538,20 @@ ExActS_GetAnim3FrameIdx:
 ; =============== ExAct_BlockSmash ===============
 ; ID: $05
 ; Destroyable block debris, appears after one is destroyed.
-; Expects sExActOBJLstId to start at OBJ_BLOCKSMASH0
+; Expects sExActSprMapId to start at SPR_BLOCKSMASH0
 ExAct_BlockSmash:
 	; Every other frame
 	ld   a, [sTimer]
 	and  a, $01
 	ret  nz
 	; Increase the anim frame until the target is reached
-	; This works since the OBJLst table places them one after the other, in the proper order.
-	ld   a, [sExActOBJLstId]
+	; This works since the sprite mapping table places them one after the other, in the proper order.
+	ld   a, [sExActSprMapId]
 	inc  a
-	ld   [sExActOBJLstId], a
-	; [TCRF] This could have ended on OBJ_UNUSED_BLOCKSMASH9+1, so the last one goes unused
+	ld   [sExActSprMapId], a
+	; [TCRF] This could have ended on SPR_UNUSED_BLOCKSMASH9+1, so the last one goes unused
 	;        Possible off by one?
-	cp   a, OBJ_BLOCKSMASH8+1	; Target reached?
+	cp   a, SPR_BLOCKSMASH8+1	; Target reached?
 	ret  nz						; If not, return
 	; Otherwise despawn the actor
 	call ExActS_Despawn
@@ -7569,10 +7569,10 @@ ExAct_WaterSplash:
 	and  a, $03
 	ret  nz
 	; Increase the anim frame until the target is reached
-	ld   a, [sExActOBJLstId]
+	ld   a, [sExActSprMapId]
 	inc  a
-	ld   [sExActOBJLstId], a
-	cp   a, OBJ_WATERSPLASH2+1
+	ld   [sExActSprMapId], a
+	cp   a, SPR_WATERSPLASH2+1
 	ret  nz
 	; Then despawn the actor
 	call ExActS_Despawn
@@ -7642,14 +7642,14 @@ ExAct_SaveSel_OldHat:
 	; When it reaches a certain index, change OBJ frame
 	cp   a, $06					; Is the index $06?
 	jr   nz, .checkFr2			
-	ld   a, OBJ_SAVESEL_OLDHAT1	; If so, switch to the second frame
-	ld   [sExActOBJLstId], a	
+	ld   a, SPR_SAVESEL_OLDHAT1	; If so, switch to the second frame
+	ld   [sExActSprMapId], a	
 	jr   .setNewPos
 .checkFr2:
 	cp   a, $0C					; Is the index $0C?
 	jr   nz, .setNewPos
-	ld   a, OBJ_SAVESEL_OLDHAT2	; If so, switch to the third frame
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_SAVESEL_OLDHAT2	; If so, switch to the third frame
+	ld   [sExActSprMapId], a
 	
 .setNewPos:
 	; Index the hat offset table
@@ -7726,10 +7726,10 @@ ExAct_TrRoom_Arrow:
 	and  a, $07
 	ret  nz
 	
-	; Alternate between OBJ_BLANK_36 ($36) and OBJ_TRROOM_ARROW ($37)
-	ld   a, [sExActOBJLstId]
+	; Alternate between SPR_BLANK_36 ($36) and SPR_TRROOM_ARROW ($37)
+	ld   a, [sExActSprMapId]
 	xor  $01
-	ld   [sExActOBJLstId], a
+	ld   [sExActSprMapId], a
 	ret
 .despawn:
 	xor  a
@@ -7753,9 +7753,9 @@ ExAct_TreasureGet:
 	ld   a, [sTimer]
 	and  a, $03
 	jr   nz, .chkMoveType
-	ld   a, [sExActOBJLstId]
+	ld   a, [sExActSprMapId]
 	xor  $01
-	ld   [sExActOBJLstId], a
+	ld   [sExActSprMapId], a
 .chkMoveType:
 	
 	ld   a, [sTreasureTrRoomMode]
@@ -7883,9 +7883,9 @@ ExAct_TrRoom_Sparkle:
 	ld   a, [sTimer]
 	and  a, $07
 	ret  nz
-	ld   a, [sExActOBJLstId]		; Frame++
+	ld   a, [sExActSprMapId]		; Frame++
 	inc  a
-	ld   [sExActOBJLstId], a
+	ld   [sExActSprMapId], a
 	ld   a, [sExActSparkle_FrameId]	; as well as the internal counter
 	inc  a
 	ld   [sExActSparkle_FrameId], a
@@ -7898,9 +7898,9 @@ ExAct_TrRoom_Sparkle:
 	; Otherwise, reset the frame back to $00
 	xor  a								
 	ld   [sExActSparkle_FrameId], a
-	ld   a, [sExActOBJLstId]			
+	ld   a, [sExActSprMapId]			
 	sub  a, $04
-	ld   [sExActOBJLstId], a
+	ld   [sExActSprMapId], a
 	
 	; Make the sparkle loop its animation twice
 	ld   a, [sExActSparkle_LoopCount]	; LoopCount++
@@ -8205,15 +8205,15 @@ ExAct_DeadCoin_DoAnim:
 	and  a, $03
 	ret  nz
 	
-	; Cycle between frames OBJ_COIN0 - OBJ_COIN3
-	ld   a, [sExActOBJLstId]	; Frame++
+	; Cycle between frames SPR_COIN0 - SPR_COIN3
+	ld   a, [sExActSprMapId]	; Frame++
 	inc  a
-	ld   [sExActOBJLstId], a
+	ld   [sExActSprMapId], a
 	
-	cp   a, OBJ_COIN3+1			; Reached the end?
+	cp   a, SPR_COIN3+1			; Reached the end?
 	ret  nz						; If not, return
-	ld   a, OBJ_COIN0			; Otherwise, reset it
-	ld   [sExActOBJLstId], a
+	ld   a, SPR_COIN0			; Otherwise, reset it
+	ld   [sExActSprMapId], a
 	ret
 ; =============== ExAct_1UPMarker ===============
 ; ID: $15
@@ -8248,11 +8248,11 @@ ExAct_TreasureEnding:
 	ld   a, [sTimer]
 	and  a, $03
 	jr   nz, .moveL
-	; ...by alternating between OBJ_TRROOM_TREASURE_*0 and OBJ_TRROOM_TREASURE_*1
+	; ...by alternating between SPR_TRROOM_TREASURE_*0 and SPR_TRROOM_TREASURE_*1
 	; This requires the first frame ID to be aligned to an even value.
-	ld   a, [sExActOBJLstId]
+	ld   a, [sExActSprMapId]
 	xor  $01					
-	ld   [sExActOBJLstId], a
+	ld   [sExActSprMapId], a
 .moveL:
 	; Move the treasure left.
 	ld   a, [sExActOBJFixX]		; X--
@@ -8346,7 +8346,7 @@ ExAct_Moneybag:
 	ldi  [hl], a
 	ld   a, $01					; Init moneybag count
 	ld   [sTrRoomMoneybagCount], a
-	ld   a, OBJ_TRROOM_MONEYBAGS1	; Set initial frame
+	ld   a, SPR_TRROOM_MONEYBAGS1	; Set initial frame
 	ldi  [hl], a
 	xor  a
 	ldi  [hl], a
@@ -8387,8 +8387,8 @@ ExAct_MoneybagStack:
 	inc  a
 	ld   [sTrRoomMoneybagCount], a
 	; Update stack frame
-	add  OBJ_TRROOM_MONEYBAGS1 - $01						
-	ld   [sExActOBJLstId], a
+	add  SPR_TRROOM_MONEYBAGS1 - $01						
+	ld   [sExActSprMapId], a
 	ret
 .syncPos:
 	; Set the moneybag position to be relative to the player.
@@ -8410,11 +8410,11 @@ ExAct_SaveSel_Smoke:
 	and  a, $07
 	ret  nz
 	
-	; NOTE: This starts at OBJ_SAVESEL_SMOKE0
-	ld   a, [sExActOBJLstId]
+	; NOTE: This starts at SPR_SAVESEL_SMOKE0
+	ld   a, [sExActSprMapId]
 	inc  a							; Switch to next frame
-	ld   [sExActOBJLstId], a
-	cp   a, OBJ_SAVESEL_SMOKE2+1	; Did we went past the last frame?
+	ld   [sExActSprMapId], a
+	cp   a, SPR_SAVESEL_SMOKE2+1	; Did we went past the last frame?
 	ret  nz							; If not, return
 	jp   ExActS_Despawn				; If so, despawn the actor
 	
@@ -8426,11 +8426,11 @@ ExAct_TreasureLost:
 	ld   a, [sTimer]
 	and  a, $03
 	jr   nz, .moveUp
-	; ...by alternating between OBJ_TRROOM_TREASURE_*0 and OBJ_TRROOM_TREASURE_*1
+	; ...by alternating between SPR_TRROOM_TREASURE_*0 and SPR_TRROOM_TREASURE_*1
 	; This requires the first frame ID to be aligned to an even value.
-	ld   a, [sExActOBJLstId]
+	ld   a, [sExActSprMapId]
 	xor  $01				
-	ld   [sExActOBJLstId], a
+	ld   [sExActSprMapId], a
 .moveUp:
 	; Move the treasure up until it goes off screen.
 	; When that happens, signal out that we've despawned.
@@ -8452,7 +8452,7 @@ ExAct_TreasureLost:
 ; - C: Rel. X position (back)
 ExActS_SetRelUpBackPos:
 	ld   a, [sPlFlags]
-	bit  OBJLSTB_XFLIP, a					; Player facing right?
+	bit  SPRMAPB_XFLIP, a					; Player facing right?
 	jr   nz, ExActS_SetRelUpLeftPosStub		; If so, set it relative to the left
 	jr   ExActS_SetRelUpRightPosStub		; Otherwise, set it relative to the right
 ; =============== ExActS_SetRelUpFrontPos ===============
@@ -8463,7 +8463,7 @@ ExActS_SetRelUpBackPos:
 ; - C: Rel. X position (front)
 ExActS_SetRelUpFrontPos:
 	ld   a, [sPlFlags]
-	bit  OBJLSTB_XFLIP, a					; Player facing right?
+	bit  SPRMAPB_XFLIP, a					; Player facing right?
 	jr   nz, ExActS_SetRelUpRightPosStub	; If so, set it relative to the right
 	
 ExActS_SetRelUpLeftPosStub:
@@ -8629,15 +8629,15 @@ ExActS_Unused_MoveLeftAndIncRtn:
 	ld   [sExActOBJX_High], a
 	jr   ExActS_Unused_IncRtnBy2
 	
-; =============== ExActS_Unused_IncOBJLstIdAndIncRtn ===============
+; =============== ExActS_Unused_IncSprMapIdAndIncRtn ===============
 ; Increases the current animation frame by the specified amount,
 ; then it also increses the routine ID by 2.
 ; IN
 ; - B: Number added to the anim. frame id
-ExActS_Unused_IncOBJLstIdAndIncRtn:
-	ld   a, [sExActOBJLstId]
+ExActS_Unused_IncSprMapIdAndIncRtn:
+	ld   a, [sExActSprMapId]
 	add  b
-	ld   [sExActOBJLstId], a
+	ld   [sExActSprMapId], a
 	
 ; =============== ExActS_Unused_IncRtnBy2 ===============
 ; Increases the routine ID of the current ExActor by $02.
@@ -8647,15 +8647,15 @@ ExActS_Unused_IncRtnBy2:
 	ld   [sExActRoutineId], a
 	ret  
 	
-; =============== ExActS_Unused_DecOBJLstIdAndIncRtn ===============
+; =============== ExActS_Unused_DecSprMapIdAndIncRtn ===============
 ; Decreases the current animation frame by the specified amount,
 ; then it also increses the routine ID by 2.
 ; IN
 ; - B: Number renoved to the anim. frame id
-ExActS_Unused_DecOBJLstIdAndIncRtn:
-	ld   a, [sExActOBJLstId]
+ExActS_Unused_DecSprMapIdAndIncRtn:
+	ld   a, [sExActSprMapId]
 	sub  b
-	ld   [sExActOBJLstId], a
+	ld   [sExActSprMapId], a
 	jr   ExActS_Unused_IncRtnBy2
 	
 ; =============== ExActS_Unused_IncTimerToValAndIncRtn ===============
@@ -8685,14 +8685,14 @@ ExActS_Unused_IncTimerToValAndIncRtn:
 ;  - A: Block ID
 ExActBGColi_GetBlockId:
 	; Set X component
-	call ExActOBJTarget_SetHorzPos
+	call ExActTarget_SetHorzPos
 	call PlBGColi_GetXBlockOffset	; L = Low byte of offset (and level layout ptr)
 	ld   a, l
 	ld   [sBlockTopLeftPtr_Low], a
 	
 	; Set Y component
 	ld   b, c
-	call ExActOBJTarget_SetVertPos
+	call ExActTarget_SetVertPos
 	call PlBGColi_GetYBlockOffset
 	; Calculate level layout ptr
 	ld   a, h						; H = High byte of offset
@@ -8706,18 +8706,18 @@ ExActBGColi_GetBlockId:
 	and  a, $7F						; Remove actor flag
 	ret
 	
-; =============== ExActOBJTarget_SetHorzPos ===============
+; =============== ExActTarget_SetHorzPos ===============
 ; Sets the target pointer relative to the currently processed ExAct.
-; See also: ExActOBJTarget_SetVertPos
+; See also: ExActTarget_SetVertPos
 ; IN
 ; - B: Amount to add or remove (signed)
-ExActOBJTarget_SetHorzPos:
+ExActTarget_SetHorzPos:
 
 	; Make sure to pass a positive number
 	
 	; If it's positive, move target right (+= value)
 	bit  7, b									; Is the value negative?
-	jr   z, ExActOBJTarget_Unused_SetRightPos	; If not, jump
+	jr   z, ExActTarget_Unused_SetRightPos	; If not, jump
 	
 	; Otherwise, move target left (-= value)
 	; Convert from signed negative to positive
@@ -8725,13 +8725,13 @@ ExActOBJTarget_SetHorzPos:
 	cpl				; Invert bits
 	inc  a			; Account for $FF -> $01 instead of $00, etc...
 	ld   b, a
-	jr   ExActOBJTarget_SetLeftPos
+	jr   ExActTarget_SetLeftPos
 	
-; =============== ExActOBJTarget_Unused_SetRightPos ===============
+; =============== ExActTarget_Unused_SetRightPos ===============
 ; [TCRF] This ended up not being used.
 ; IN
 ; - B: Amount to subtract
-ExActOBJTarget_Unused_SetRightPos:;R
+ExActTarget_Unused_SetRightPos:;R
 	ld   a, [sExActOBJX_Low]
 	add  b
 	ld   [sTarget_Low], a
@@ -8740,10 +8740,10 @@ ExActOBJTarget_Unused_SetRightPos:;R
 	ld   [sTarget_High], a
 	ret
 	
-; =============== ExActOBJTarget_SetLeftPos ===============
+; =============== ExActTarget_SetLeftPos ===============
 ; IN
 ; - B: Amount to subtract
-ExActOBJTarget_SetLeftPos:;R
+ExActTarget_SetLeftPos:;R
 	ld   a, [sExActOBJX_Low]
 	sub  a, b
 	ld   [sTarget_Low], a
@@ -8775,7 +8775,7 @@ ExActS_ExecuteAll:
 	;--
 	; Main processing
 	call ExActS_Execute
-	call HomeCall_NonGame_WriteExActOBJLst
+	call HomeCall_NonGame_WriteExActSprMap
 	;--
 	pop  hl
 	call ExActS_CopyToSet
@@ -8800,14 +8800,14 @@ ExAct_JetHatFlame_DoAnim:
 	and  a, $03
 	ret  nz
 	
-	; Do the anim by adding values to sExActOBJLstId
-	ld   hl, OBJLstAnimOff_JetHatFlame	; HL = OBJLst anim offset table
+	; Do the anim by adding values to sExActSprMapId
+	ld   hl, SprMapAnimOff_JetHatFlame	; HL = Sprite mapping anim offset table
 	;--
 	; Update the index
 	ld   a, [sExActAnimTimer]			; Index++
 	inc  a
 	; If we've reached the end of the table, reset the index
-	cp   a, OBJLstAnimOff_JetHatFlame.end-OBJLstAnimOff_JetHatFlame
+	cp   a, SprMapAnimOff_JetHatFlame.end-SprMapAnimOff_JetHatFlame
 	jr   nz, .setFrame
 	xor  a
 .setFrame:
@@ -8817,12 +8817,12 @@ ExAct_JetHatFlame_DoAnim:
 	ld   e, a					; DE = sExActAnimTimer
 	ld   d, $00
 	add  hl, de					; Index it
-	ld   a, [sExActOBJLstId]	; Add the indexed value to the current ExAct anim frame
+	ld   a, [sExActSprMapId]	; Add the indexed value to the current ExAct anim frame
 	add  [hl]
-	ld   [sExActOBJLstId], a
+	ld   [sExActSprMapId], a
 	ret
 	
-OBJLstAnimOff_JetHatFlame:
+SprMapAnimOff_JetHatFlame:
 	db -$02
 	db +$01
 	db +$01

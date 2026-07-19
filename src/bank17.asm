@@ -20,15 +20,15 @@ ActInit_ChickenDuck:
 	ld   bc, SubCall_Act_ChickenDuck
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
+	; Set initial animation
 	push bc
-	ld   bc, OBJLstPtrTable_ActInit_ChickenDuck
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_ActInit_ChickenDuck
+	call ActS_SetSprMapPtr
 	pop  bc
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_ChickenDuck
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_ChickenDuck
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Set as safe to touch
 	mActColiMask ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM
@@ -41,13 +41,13 @@ ActInit_ChickenDuck:
 	ld   [sActLocalRoutineId], a
 	ld   [sActChickenDuckModeTimer], a
 	
-	; Set initial OBJLst
-	mActOBJLstPtrTableByDir OBJLstPtrTable_Act_ChickenDuck_FlyL, OBJLstPtrTable_Act_ChickenDuck_FlyR
+	; Set initial animation
+	mActSprMapPtrTableByDir SprMapPtrTable_Act_ChickenDuck_FlyL, SprMapPtrTable_Act_ChickenDuck_FlyR
 	
 	ret
 	
-OBJLstPtrTable_ActInit_ChickenDuck:
-	dw OBJLst_Act_ChickenDuck_WakeL0;X
+SprMapPtrTable_ActInit_ChickenDuck:
+	dw SprMap_Act_ChickenDuck_WakeL0;X
 	dw $0000;X
 
 ; =============== Act_ChickenDuck ===============
@@ -92,7 +92,7 @@ Act_ChickenDuck_SwitchToFlyUp:
 	ld   [sActChickenDuckModeTimer], a
 	
 	; Set animation depending on direction faced
-	mActOBJLstPtrTableByDir OBJLstPtrTable_Act_ChickenDuck_FlyL, OBJLstPtrTable_Act_ChickenDuck_FlyR
+	mActSprMapPtrTableByDir SprMapPtrTable_Act_ChickenDuck_FlyL, SprMapPtrTable_Act_ChickenDuck_FlyR
 	ret
 	
 ; =============== Act_ChickenDuck_FlyUp ===============
@@ -103,7 +103,7 @@ Act_ChickenDuck_SwitchToFlyUp:
 ; - When the actor is first executed, but it ends up immediately switching to Move14.
 ; - After WakeUp ends, it switches to this mode.
 Act_ChickenDuck_FlyUp:
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	; Handle horizontal movement
 	ld   a, [sActSetDir]
@@ -164,7 +164,7 @@ Act_ChickenDuck_Move14:
 	jr   nc, .endMode					; If so, switch to the next mode
 	;--
 	
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	; Handle horizontal movement
 	ld   a, [sActSetDir]
 	bit  DIRB_R, a
@@ -192,7 +192,7 @@ Act_ChickenDuck_Move78:
 	cp   a, $78							; Timer >= $78?
 	jp   nc, Act_ChickenDuck_SetAirWait	; If so, switch to the next mode
 	;--
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	; Handle horizontal movement
 	ld   a, [sActSetDir]
 	bit  DIRB_R, a
@@ -208,10 +208,10 @@ Act_ChickenDuck_MoveRight:
 	and  a, $01
 	ret  nz
 	
-	ld   a, LOW(OBJLstPtrTable_Act_ChickenDuck_FlyR)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_ChickenDuck_FlyR)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_ChickenDuck_FlyR)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_ChickenDuck_FlyR)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	ld   bc, +$01
 	call ActS_MoveRight
@@ -229,10 +229,10 @@ Act_ChickenDuck_MoveLeft:
 	and  a, $01
 	ret  nz
 	
-	ld   a, LOW(OBJLstPtrTable_Act_ChickenDuck_FlyL)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_ChickenDuck_FlyL)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_ChickenDuck_FlyL)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_ChickenDuck_FlyL)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	ld   bc, -$01
 	call ActS_MoveRight
@@ -275,7 +275,7 @@ Act_ChickenDuck_AirWait:
 	jr   nc, .endMode					; If so, switch to the next mode
 	;--
 	; Only animate the flight anim
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	ret
 .endMode:
 	ld   a, CDUCK_RTN_FLYDOWN
@@ -285,7 +285,7 @@ Act_ChickenDuck_AirWait:
 ; =============== Act_ChickenDuck_FlyDown ===============	
 ; Moves down until landing on solid ground.
 Act_ChickenDuck_FlyDown:
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	; Move down 0.5px/frame
 	ld   a, [sActSetTimer]
@@ -308,7 +308,7 @@ Act_ChickenDuck_FlyDown:
 	ld   [sActChickenDuckModeTimer], a
 	
 	; Set ground anim depending on direction faced
-	mActOBJLstPtrTableByDir OBJLstPtrTable_Act_ChickenDuck_SleepL, OBJLstPtrTable_Act_ChickenDuck_SleepR
+	mActSprMapPtrTableByDir SprMapPtrTable_Act_ChickenDuck_SleepL, SprMapPtrTable_Act_ChickenDuck_SleepR
 	ret
 	
 ; =============== Act_ChickenDuck_Sleep ===============	
@@ -327,14 +327,14 @@ Act_ChickenDuck_Sleep:
 	ld   a, [sTimer]
 	and  a, $0F
 	jr   nz, .tryPlaySFX
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .tryPlaySFX:
 	ld   a, [sActChickenDuckModeTimer]	; not sTimer like above but doesn't really matter
 	and  a, $0F							; Try every $10 execution frames
 	ret  nz								
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	or   a								; Only it lands on the first frame
 	ret  nz								
 	ld   a, SFX1_29
@@ -346,7 +346,7 @@ Act_ChickenDuck_Sleep:
 	xor  a
 	ld   [sActChickenDuckModeTimer], a	
 	; Set wake up anim
-	mActOBJLstPtrTableByDir OBJLstPtrTable_Act_ChickenDuck_WakeL, OBJLstPtrTable_Act_ChickenDuck_WakeR
+	mActSprMapPtrTableByDir SprMapPtrTable_Act_ChickenDuck_WakeL, SprMapPtrTable_Act_ChickenDuck_WakeR
 	ret
 	
 ; =============== Act_ChickenDuck_WakeUp ===============	
@@ -360,7 +360,7 @@ Act_ChickenDuck_WakeUp:
 	cp   a, $32								; Timer >= $32?
 	jp   nc, Act_ChickenDuck_SwitchToFlyUp	; If so, fly up and repeat the cycle again
 	;--
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	ret
 	
 ; =============== Act_ChickenDuck_CheckOtherThrown ===============	
@@ -402,7 +402,7 @@ Act_ChickenDuck_CheckOtherThrown:
 	ld   a, SFX1_2F				; Mark success
 	ld   [sSFX1Set], a
 	
-	mActOBJLstPtrTableByDir OBJLstPtrTable_Act_ChickenDuck_EjectL, OBJLstPtrTable_Act_ChickenDuck_EjectR
+	mActSprMapPtrTableByDir SprMapPtrTable_Act_ChickenDuck_EjectL, SprMapPtrTable_Act_ChickenDuck_EjectR
 	ret
 	
 ; =============== Act_ChickenDuck_GiveCoins ===============	
@@ -417,7 +417,7 @@ Act_ChickenDuck_GiveCoins:
 	jp   nc, .endMode					; If so, switch to the next mode
 	;--
 	
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	; Every $40 frames spawn a coin
 	ld   a, [sActChickenDuckModeTimer]
@@ -474,13 +474,13 @@ Act_ChickenDuck_GiveCoins:
 	ld   [sActSetYSpeed_Low], a
 	ld   [sActSetYSpeed_High], a
 	
-	mActOBJLstPtrTableByDir OBJLstPtrTable_Act_ChickenDuck_FlyL, OBJLstPtrTable_Act_ChickenDuck_FlyR
+	mActSprMapPtrTableByDir SprMapPtrTable_Act_ChickenDuck_FlyL, SprMapPtrTable_Act_ChickenDuck_FlyR
 	ret
 	
 ; =============== Act_ChickenDuck_FlyOut ===============	
 ; Makes the actor fly out, into the off-screen.
 Act_ChickenDuck_FlyOut:
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	ld   a, [sActSetYSpeed_Low]		; BC = sActSetYSpeed
 	ld   c, a
@@ -508,75 +508,75 @@ Act_ChickenDuck_FlyOut:
 	ld   [sActSetYSpeed_High], a
 	ret
 	
-OBJLstPtrTable_Act_ChickenDuck_FlyL:
-	dw OBJLst_Act_ChickenDuck_FlyL0
-	dw OBJLst_Act_ChickenDuck_FlyL1
-	dw OBJLst_Act_ChickenDuck_FlyL2
+SprMapPtrTable_Act_ChickenDuck_FlyL:
+	dw SprMap_Act_ChickenDuck_FlyL0
+	dw SprMap_Act_ChickenDuck_FlyL1
+	dw SprMap_Act_ChickenDuck_FlyL2
 	dw $0000
-OBJLstPtrTable_Act_ChickenDuck_FlyR:
-	dw OBJLst_Act_ChickenDuck_FlyR0
-	dw OBJLst_Act_ChickenDuck_FlyR1
-	dw OBJLst_Act_ChickenDuck_FlyR2
+SprMapPtrTable_Act_ChickenDuck_FlyR:
+	dw SprMap_Act_ChickenDuck_FlyR0
+	dw SprMap_Act_ChickenDuck_FlyR1
+	dw SprMap_Act_ChickenDuck_FlyR2
 	dw $0000
-OBJLstPtrTable_Act_ChickenDuck_SleepL:
-	dw OBJLst_Act_ChickenDuck_SleepL0
-	dw OBJLst_Act_ChickenDuck_SleepL1
+SprMapPtrTable_Act_ChickenDuck_SleepL:
+	dw SprMap_Act_ChickenDuck_SleepL0
+	dw SprMap_Act_ChickenDuck_SleepL1
 	dw $0000
-OBJLstPtrTable_Act_ChickenDuck_SleepR:
-	dw OBJLst_Act_ChickenDuck_SleepR0
-	dw OBJLst_Act_ChickenDuck_SleepR1
+SprMapPtrTable_Act_ChickenDuck_SleepR:
+	dw SprMap_Act_ChickenDuck_SleepR0
+	dw SprMap_Act_ChickenDuck_SleepR1
 	dw $0000
-OBJLstPtrTable_Act_ChickenDuck_StunL:
-	dw OBJLst_Act_ChickenDuck_StunL
+SprMapPtrTable_Act_ChickenDuck_StunL:
+	dw SprMap_Act_ChickenDuck_StunL
 	dw $0000
-OBJLstPtrTable_Act_ChickenDuck_StunR:
-	dw OBJLst_Act_ChickenDuck_StunR
+SprMapPtrTable_Act_ChickenDuck_StunR:
+	dw SprMap_Act_ChickenDuck_StunR
 	dw $0000
-OBJLstPtrTable_Act_ChickenDuck_WakeL:
-	dw OBJLst_Act_ChickenDuck_WakeL0
-	dw OBJLst_Act_ChickenDuck_WakeL1
+SprMapPtrTable_Act_ChickenDuck_WakeL:
+	dw SprMap_Act_ChickenDuck_WakeL0
+	dw SprMap_Act_ChickenDuck_WakeL1
 	dw $0000
-OBJLstPtrTable_Act_ChickenDuck_WakeR:
-	dw OBJLst_Act_ChickenDuck_WakeR0
-	dw OBJLst_Act_ChickenDuck_WakeR1
+SprMapPtrTable_Act_ChickenDuck_WakeR:
+	dw SprMap_Act_ChickenDuck_WakeR0
+	dw SprMap_Act_ChickenDuck_WakeR1
 	dw $0000
-OBJLstPtrTable_Act_ChickenDuck_EjectL:
-	dw OBJLst_Act_ChickenDuck_WakeL0
-	dw OBJLst_Act_ChickenDuck_WakeL2
+SprMapPtrTable_Act_ChickenDuck_EjectL:
+	dw SprMap_Act_ChickenDuck_WakeL0
+	dw SprMap_Act_ChickenDuck_WakeL2
 	dw $0000
-OBJLstPtrTable_Act_ChickenDuck_EjectR:
-	dw OBJLst_Act_ChickenDuck_WakeR0
-	dw OBJLst_Act_ChickenDuck_WakeR2
+SprMapPtrTable_Act_ChickenDuck_EjectR:
+	dw SprMap_Act_ChickenDuck_WakeR0
+	dw SprMap_Act_ChickenDuck_WakeR2
 	dw $0000
 
-OBJLstSharedPtrTable_Act_ChickenDuck:
-	dw OBJLstPtrTable_Act_ChickenDuck_StunL;X
-	dw OBJLstPtrTable_Act_ChickenDuck_StunR;X
-	dw OBJLstPtrTable_Act_ChickenDuck_StunL;X
-	dw OBJLstPtrTable_Act_ChickenDuck_StunR;X
-	dw OBJLstPtrTable_Act_ChickenDuck_StunL
-	dw OBJLstPtrTable_Act_ChickenDuck_StunR
-	dw OBJLstPtrTable_Act_ChickenDuck_StunL;X
-	dw OBJLstPtrTable_Act_ChickenDuck_StunR;X
+SprMapSharedPtrTable_Act_ChickenDuck:
+	dw SprMapPtrTable_Act_ChickenDuck_StunL;X
+	dw SprMapPtrTable_Act_ChickenDuck_StunR;X
+	dw SprMapPtrTable_Act_ChickenDuck_StunL;X
+	dw SprMapPtrTable_Act_ChickenDuck_StunR;X
+	dw SprMapPtrTable_Act_ChickenDuck_StunL
+	dw SprMapPtrTable_Act_ChickenDuck_StunR
+	dw SprMapPtrTable_Act_ChickenDuck_StunL;X
+	dw SprMapPtrTable_Act_ChickenDuck_StunR;X
 	
-OBJLst_Act_ChickenDuck_WakeL0: INCBIN "data/objlst/actor/chickenduck_wakel0.bin"
-OBJLst_Act_ChickenDuck_FlyL0: INCBIN "data/objlst/actor/chickenduck_flyl0.bin"
-OBJLst_Act_ChickenDuck_FlyL1: INCBIN "data/objlst/actor/chickenduck_flyl1.bin"
-OBJLst_Act_ChickenDuck_FlyL2: INCBIN "data/objlst/actor/chickenduck_flyl2.bin"
-OBJLst_Act_ChickenDuck_WakeL1: INCBIN "data/objlst/actor/chickenduck_wakel1.bin"
-OBJLst_Act_ChickenDuck_SleepL0: INCBIN "data/objlst/actor/chickenduck_sleepl0.bin"
-OBJLst_Act_ChickenDuck_SleepL1: INCBIN "data/objlst/actor/chickenduck_sleepl1.bin"
-OBJLst_Act_ChickenDuck_WakeL2: INCBIN "data/objlst/actor/chickenduck_wakel2.bin"
-OBJLst_Act_ChickenDuck_StunL: INCBIN "data/objlst/actor/chickenduck_stunl.bin"
-OBJLst_Act_ChickenDuck_WakeR0: INCBIN "data/objlst/actor/chickenduck_waker0.bin"
-OBJLst_Act_ChickenDuck_FlyR0: INCBIN "data/objlst/actor/chickenduck_flyr0.bin"
-OBJLst_Act_ChickenDuck_FlyR1: INCBIN "data/objlst/actor/chickenduck_flyr1.bin"
-OBJLst_Act_ChickenDuck_FlyR2: INCBIN "data/objlst/actor/chickenduck_flyr2.bin"
-OBJLst_Act_ChickenDuck_WakeR1: INCBIN "data/objlst/actor/chickenduck_waker1.bin"
-OBJLst_Act_ChickenDuck_SleepR0: INCBIN "data/objlst/actor/chickenduck_sleepr0.bin"
-OBJLst_Act_ChickenDuck_SleepR1: INCBIN "data/objlst/actor/chickenduck_sleepr1.bin"
-OBJLst_Act_ChickenDuck_WakeR2: INCBIN "data/objlst/actor/chickenduck_waker2.bin"
-OBJLst_Act_ChickenDuck_StunR: INCBIN "data/objlst/actor/chickenduck_stunr.bin"
+SprMap_Act_ChickenDuck_WakeL0: INCBIN "data/sprmap/actor/chickenduck_wakel0.bin"
+SprMap_Act_ChickenDuck_FlyL0: INCBIN "data/sprmap/actor/chickenduck_flyl0.bin"
+SprMap_Act_ChickenDuck_FlyL1: INCBIN "data/sprmap/actor/chickenduck_flyl1.bin"
+SprMap_Act_ChickenDuck_FlyL2: INCBIN "data/sprmap/actor/chickenduck_flyl2.bin"
+SprMap_Act_ChickenDuck_WakeL1: INCBIN "data/sprmap/actor/chickenduck_wakel1.bin"
+SprMap_Act_ChickenDuck_SleepL0: INCBIN "data/sprmap/actor/chickenduck_sleepl0.bin"
+SprMap_Act_ChickenDuck_SleepL1: INCBIN "data/sprmap/actor/chickenduck_sleepl1.bin"
+SprMap_Act_ChickenDuck_WakeL2: INCBIN "data/sprmap/actor/chickenduck_wakel2.bin"
+SprMap_Act_ChickenDuck_StunL: INCBIN "data/sprmap/actor/chickenduck_stunl.bin"
+SprMap_Act_ChickenDuck_WakeR0: INCBIN "data/sprmap/actor/chickenduck_waker0.bin"
+SprMap_Act_ChickenDuck_FlyR0: INCBIN "data/sprmap/actor/chickenduck_flyr0.bin"
+SprMap_Act_ChickenDuck_FlyR1: INCBIN "data/sprmap/actor/chickenduck_flyr1.bin"
+SprMap_Act_ChickenDuck_FlyR2: INCBIN "data/sprmap/actor/chickenduck_flyr2.bin"
+SprMap_Act_ChickenDuck_WakeR1: INCBIN "data/sprmap/actor/chickenduck_waker1.bin"
+SprMap_Act_ChickenDuck_SleepR0: INCBIN "data/sprmap/actor/chickenduck_sleepr0.bin"
+SprMap_Act_ChickenDuck_SleepR1: INCBIN "data/sprmap/actor/chickenduck_sleepr1.bin"
+SprMap_Act_ChickenDuck_WakeR2: INCBIN "data/sprmap/actor/chickenduck_waker2.bin"
+SprMap_Act_ChickenDuck_StunR: INCBIN "data/sprmap/actor/chickenduck_stunr.bin"
 GFX_Act_ChickenDuck: INCBIN "data/gfx/actor/chickenduck.bin"
 
 ; =============== ActInit_MtTeapotBoss ===============
@@ -595,15 +595,15 @@ ActInit_MtTeapotBoss:
 	ld   bc, SubCall_Act_MtTeapotBoss
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
+	; Set initial animation
 	push bc
-	ld   bc, OBJLstPtrTable_ActInit_MtTeapotBoss
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_ActInit_MtTeapotBoss
+	call ActS_SetSprMapPtr
 	pop  bc
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_MtTeapotBoss
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_MtTeapotBoss
+	call ActS_SetSprMapSharedTablePtr
 	
 	xor  a
 	ld   [sActLocalRoutineId], a
@@ -681,8 +681,8 @@ Act_MtTeapotBoss_IntroFall:
 	ld   [sSFX4Set], a
 	
 	push bc
-	ld   bc, OBJLstPtrTable_Act_MtTeapotBoss_IntroA
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_MtTeapotBoss_IntroA
+	call ActS_SetSprMapPtr
 	pop  bc
 	
 	ld   a, $3C					; Stay in next mode for $3C frames
@@ -702,14 +702,14 @@ Act_MtTeapotBoss_Intro1:
 	or   a
 	jr   z, .endMode
 	;--
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	ret
 .endMode:
 	ld   a, MTBOSS_RTN_INTRO2
 	ld   [sActLocalRoutineId], a
 	push bc
-	ld   bc, OBJLstPtrTable_Act_MtTeapotBoss_IntroB
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_MtTeapotBoss_IntroB
+	call ActS_SetSprMapPtr
 	pop  bc
 	ld   a, $28
 	ld   [sActMtTeapotBossModeTimer], a
@@ -723,7 +723,7 @@ Act_MtTeapotBoss_Intro2:
 	or   a
 	jr   z, Act_MtTeapotBoss_SwitchToJump
 	;--
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	ret
 	
 ; =============== Act_MtTeapotBoss_SwitchToJump ===============
@@ -749,8 +749,8 @@ Act_MtTeapotBoss_SwitchToJump:
 	
 	; Set the left direction first
 	push bc
-	ld   bc, OBJLstPtrTable_Act_MtTeapotBoss_JumpL			
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_MtTeapotBoss_JumpL			
+	call ActS_SetSprMapPtr
 	pop  bc
 	ld   a, DIR_L				; Make actor face left
 	ld   [sActSetDir], a
@@ -761,8 +761,8 @@ Act_MtTeapotBoss_SwitchToJump:
 	
 	; If on the left side, make him face right instead
 	push bc
-	ld   bc, OBJLstPtrTable_Act_MtTeapotBoss_JumpR			
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_MtTeapotBoss_JumpR			
+	call ActS_SetSprMapPtr
 	pop  bc
 	ld   a, DIR_R
 	ld   [sActSetDir], a
@@ -845,7 +845,7 @@ Act_MtTeapotBoss_Jump_Main:
 	ld   [sActSetY_Low], a
 	ld   a, MTBOSS_RTN_CHARGE		; Set mode
 	ld   [sActLocalRoutineId], a
-	mActOBJLstPtrTableByDir OBJLstPtrTable_Act_MtTeapotBoss_ChargeL, OBJLstPtrTable_Act_MtTeapotBoss_ChargeR
+	mActSprMapPtrTableByDir SprMapPtrTable_Act_MtTeapotBoss_ChargeL, SprMapPtrTable_Act_MtTeapotBoss_ChargeR
 	ret
 	
 ; =============== Act_MtTeapotBoss_Charge ===============
@@ -882,9 +882,9 @@ Act_MtTeapotBoss_Charge_Main:
 	ld   a, [sTimer]
 	and  a, $03
 	jr   nz, .chkMoveH
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	
 .chkMoveH:
 	; Handle horizontal movement
@@ -951,7 +951,7 @@ Act_MtTeapotBoss_SwitchToStun:
 	ld   [sSFX1Set], a
 	call SubCall_ActS_SpawnStunStar
 	
-	mActOBJLstPtrTableByDir OBJLstPtrTable_Act_MtTeapotBoss_StunL, OBJLstPtrTable_Act_MtTeapotBoss_StunR
+	mActSprMapPtrTableByDir SprMapPtrTable_Act_MtTeapotBoss_StunL, SprMapPtrTable_Act_MtTeapotBoss_StunR
 	ret
 ; =============== Act_MtTeapotBoss_Stun ===============
 ; Actor stunned.
@@ -970,7 +970,7 @@ Act_MtTeapotBoss_Stun:
 	dw Act_MtTeapotBoss_Stun_Main
 ; =============== Act_MtTeapotBoss_Stun_Main ===============
 Act_MtTeapotBoss_Stun_Main:
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	; If the stunned actor is thrown into lava, the boss is defeated
 	call ActColi_GetBlockId_Ground
@@ -1052,14 +1052,14 @@ Act_MtTeapotBoss_SwitchToHeld:
 	ld   a, $01							; mark as held
 	ld   [sActHeld], a
 	
-	mActOBJLstPtrTableByDir OBJLstPtrTable_Act_MtTeapotBoss_StunL, OBJLstPtrTable_Act_MtTeapotBoss_StunR
+	mActSprMapPtrTableByDir SprMapPtrTable_Act_MtTeapotBoss_StunL, SprMapPtrTable_Act_MtTeapotBoss_StunR
 	ret
 	
 ; =============== Act_MtTeapotBoss_Held ===============
 ; When the boss is held.
 Act_MtTeapotBoss_Held:
 	call ActS_SyncHeldPos
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	; Decrease the timer left before the boss escapes...
 	ld   a, [sActMtTeapotBossModeTimer]	; TimerLeft--;
@@ -1114,7 +1114,7 @@ Act_MtTeapotBoss_Held:
 	ld   a, DIR_R
 	ld   [sActSetDir], a
 	ld   a, [sPlFlags]
-	bit  OBJLSTB_XFLIP, a	; Is the player facing right?
+	bit  SPRMAPB_XFLIP, a	; Is the player facing right?
 	ret  nz					; If so, return
 	ld   a, DIR_L			; Otherwise, make actor face left
 	ld   [sActSetDir], a
@@ -1204,13 +1204,13 @@ IF !OPTIMIZE
 	call ActS_DespawnAllNormExceptCur_Broken
 ENDC
 	
-	mActOBJLstPtrTableByDir OBJLstPtrTable_Act_MtTeapotBoss_DeadL, OBJLstPtrTable_Act_MtTeapotBoss_DeadR
+	mActSprMapPtrTableByDir SprMapPtrTable_Act_MtTeapotBoss_DeadL, SprMapPtrTable_Act_MtTeapotBoss_DeadR
 	ret
 	
 ; =============== Act_MtTeapotBoss_Dead ===============
 ; Jump death routine and coin game.
 Act_MtTeapotBoss_Dead:
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	ld   a, [sActMtTeapotBossCoinGameStarted]
 	or   a									; Did we start the coin game?
@@ -1261,7 +1261,7 @@ Act_MtTeapotBoss_SwitchToHoldPl:
 	ld   [sPlY_High], a
 	
 	;
-	; X POSITION + ACTOR OBJLST
+	; X POSITION + ACTOR SPRITE
 	;
 	; The X position is different depending on the direction the boss is facing
 	; The X offset is the same because in practice the animation is flipped.
@@ -1271,8 +1271,8 @@ Act_MtTeapotBoss_SwitchToHoldPl:
 .setL:
 	; Facing left (arm is on the left)
 	push bc
-	ld   bc, OBJLstPtrTable_Act_MtTeapotBoss_HoldL
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_MtTeapotBoss_HoldL
+	call ActS_SetSprMapPtr
 	pop  bc
 	ld   a, [sActSetX_Low]			; PlX = ActX - $14 
 	sub  a, MTBOSS_PLHOLD_XREL
@@ -1284,8 +1284,8 @@ Act_MtTeapotBoss_SwitchToHoldPl:
 .setR:
 	; Facing right (arm is on the right)
 	push bc
-	ld   bc, OBJLstPtrTable_Act_MtTeapotBoss_HoldR
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_MtTeapotBoss_HoldR
+	call ActS_SetSprMapPtr
 	pop  bc
 	ld   a, [sActSetX_Low]			; PlX = ActX + $14
 	add  MTBOSS_PLHOLD_XREL
@@ -1303,7 +1303,7 @@ Act_MtTeapotBoss_HoldPl:
 	or   a						
 	jp   z, Act_MtTeapotBoss_SwitchToJump
 	
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 .moveV:
 	;--
@@ -1351,10 +1351,10 @@ Act_MtTeapotBoss_HoldPl:
 ; =============== .moveRight ===============
 ; Makes the boss walk right until reaching the end of the solid platform.
 .moveRight:
-	ld   a, LOW(OBJLstPtrTable_Act_MtTeapotBoss_HoldWalkR)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_MtTeapotBoss_HoldWalkR)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_MtTeapotBoss_HoldWalkR)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_MtTeapotBoss_HoldWalkR)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; Check if we've reached the end of the platform.
 	;
@@ -1378,10 +1378,10 @@ Act_MtTeapotBoss_HoldPl:
 ; =============== .moveLeft ===============
 ; Makes the boss walk left until reaching the end of the solid platform.
 .moveLeft:
-	ld   a, LOW(OBJLstPtrTable_Act_MtTeapotBoss_HoldWalkL)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_MtTeapotBoss_HoldWalkL)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_MtTeapotBoss_HoldWalkL)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_MtTeapotBoss_HoldWalkL)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	ld   a, [sActSetRelX]
 	cp   a, $48					; ActX <= $48?
@@ -1408,7 +1408,7 @@ Act_MtTeapotBoss_HoldPl:
 	xor  a
 	ld   [sActSetTimer], a
 	ld   [sActMtTeapotBossModeTimer], a
-	mActOBJLstPtrTableByDir OBJLstPtrTable_Act_MtTeapotBoss_ThrowL, OBJLstPtrTable_Act_MtTeapotBoss_ThrowR
+	mActSprMapPtrTableByDir SprMapPtrTable_Act_MtTeapotBoss_ThrowL, SprMapPtrTable_Act_MtTeapotBoss_ThrowR
 	ret
 	
 ; =============== Act_MtTeapotBoss_ThrowPl ===============
@@ -1419,7 +1419,7 @@ Act_MtTeapotBoss_ThrowPl:
 	or   a
 	jp   z, Act_MtTeapotBoss_SwitchToJump
 	
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	; Move player horizontally in a diagonal arc
 	ld   a, [sActSetDir]
@@ -1469,171 +1469,171 @@ Act_MtTeapotBoss_ThrowPl:
 	ld   [sPlY_High], a
 	ret
 	
-OBJLstSharedPtrTable_Act_MtTeapotBoss:
-	dw OBJLstPtrTable_Act_MtTeapotBoss_DeadL;X
-	dw OBJLstPtrTable_Act_MtTeapotBoss_DeadR;X
-	dw OBJLstPtrTable_Act_MtTeapotBoss_DeadL;X
-	dw OBJLstPtrTable_Act_MtTeapotBoss_DeadR;X
-	dw OBJLstPtrTable_Act_MtTeapotBoss_DeadL;X
-	dw OBJLstPtrTable_Act_MtTeapotBoss_DeadR;X
-	dw OBJLstPtrTable_Act_MtTeapotBoss_DeadL;X
-	dw OBJLstPtrTable_Act_MtTeapotBoss_DeadR;X
+SprMapSharedPtrTable_Act_MtTeapotBoss:
+	dw SprMapPtrTable_Act_MtTeapotBoss_DeadL;X
+	dw SprMapPtrTable_Act_MtTeapotBoss_DeadR;X
+	dw SprMapPtrTable_Act_MtTeapotBoss_DeadL;X
+	dw SprMapPtrTable_Act_MtTeapotBoss_DeadR;X
+	dw SprMapPtrTable_Act_MtTeapotBoss_DeadL;X
+	dw SprMapPtrTable_Act_MtTeapotBoss_DeadR;X
+	dw SprMapPtrTable_Act_MtTeapotBoss_DeadL;X
+	dw SprMapPtrTable_Act_MtTeapotBoss_DeadR;X
 
 ; [TCRF] Some of the right-facing variations are unused.
-OBJLstPtrTable_ActInit_MtTeapotBoss:
-	dw OBJLst_Act_MtTeapotBoss_IntroL0
+SprMapPtrTable_ActInit_MtTeapotBoss:
+	dw SprMap_Act_MtTeapotBoss_IntroL0
 	dw $0000;X
-OBJLstPtrTable_ActInit_MtTeapotBoss_Unused_R:
-	dw OBJLst_Act_MtTeapotBoss_Unused_IntroR0;X
+SprMapPtrTable_ActInit_MtTeapotBoss_Unused_R:
+	dw SprMap_Act_MtTeapotBoss_Unused_IntroR0;X
 	dw $0000;X
-OBJLstPtrTable_Act_MtTeapotBoss_IntroA:
-	dw OBJLst_Act_MtTeapotBoss_IntroL0
-	dw OBJLst_Act_MtTeapotBoss_IntroL1
+SprMapPtrTable_Act_MtTeapotBoss_IntroA:
+	dw SprMap_Act_MtTeapotBoss_IntroL0
+	dw SprMap_Act_MtTeapotBoss_IntroL1
 	dw $0000
-OBJLstPtrTable_Act_MtTeapotBoss_IntroA_Unused_R:
-	dw OBJLst_Act_MtTeapotBoss_Unused_IntroR0;X
-	dw OBJLst_Act_MtTeapotBoss_Unused_IntroR1;X
+SprMapPtrTable_Act_MtTeapotBoss_IntroA_Unused_R:
+	dw SprMap_Act_MtTeapotBoss_Unused_IntroR0;X
+	dw SprMap_Act_MtTeapotBoss_Unused_IntroR1;X
 	dw $0000;X
-OBJLstPtrTable_Act_MtTeapotBoss_IntroB:
-	dw OBJLst_Act_MtTeapotBoss_IntroL0
-	dw OBJLst_Act_MtTeapotBoss_IntroL2
-	dw OBJLst_Act_MtTeapotBoss_IntroL0
-	dw OBJLst_Act_MtTeapotBoss_IntroL3
+SprMapPtrTable_Act_MtTeapotBoss_IntroB:
+	dw SprMap_Act_MtTeapotBoss_IntroL0
+	dw SprMap_Act_MtTeapotBoss_IntroL2
+	dw SprMap_Act_MtTeapotBoss_IntroL0
+	dw SprMap_Act_MtTeapotBoss_IntroL3
 	dw $0000
-OBJLstPtrTable_Act_MtTeapotBoss_IntroB_Unused_R:
-	dw OBJLst_Act_MtTeapotBoss_Unused_IntroR0;X
-	dw OBJLst_Act_MtTeapotBoss_Unused_IntroR2;X
-	dw OBJLst_Act_MtTeapotBoss_Unused_IntroR0;X
-	dw OBJLst_Act_MtTeapotBoss_Unused_IntroR3;X
+SprMapPtrTable_Act_MtTeapotBoss_IntroB_Unused_R:
+	dw SprMap_Act_MtTeapotBoss_Unused_IntroR0;X
+	dw SprMap_Act_MtTeapotBoss_Unused_IntroR2;X
+	dw SprMap_Act_MtTeapotBoss_Unused_IntroR0;X
+	dw SprMap_Act_MtTeapotBoss_Unused_IntroR3;X
 	dw $0000;X
 ; [TCRF] Placeholder anims? These use a single-frame from the walk cycle.
-OBJLstPtrTable_Act_MtTeapotBoss_Unused_ChargeL:
-	dw OBJLst_Act_MtTeapotBoss_ChargeL0;X
+SprMapPtrTable_Act_MtTeapotBoss_Unused_ChargeL:
+	dw SprMap_Act_MtTeapotBoss_ChargeL0;X
 	dw $0000;X
-OBJLstPtrTable_Act_MtTeapotBoss_Unused_ChargeR:
-	dw OBJLst_Act_MtTeapotBoss_ChargeR0;X
+SprMapPtrTable_Act_MtTeapotBoss_Unused_ChargeR:
+	dw SprMap_Act_MtTeapotBoss_ChargeR0;X
 	dw $0000;X
-OBJLstPtrTable_Act_MtTeapotBoss_JumpL:
-	dw OBJLst_Act_MtTeapotBoss_JumpL
+SprMapPtrTable_Act_MtTeapotBoss_JumpL:
+	dw SprMap_Act_MtTeapotBoss_JumpL
 	dw $0000;X
-OBJLstPtrTable_Act_MtTeapotBoss_JumpR:
-	dw OBJLst_Act_MtTeapotBoss_JumpR
+SprMapPtrTable_Act_MtTeapotBoss_JumpR:
+	dw SprMap_Act_MtTeapotBoss_JumpR
 	dw $0000;X
-OBJLstPtrTable_Act_MtTeapotBoss_ChargeL:
-	dw OBJLst_Act_MtTeapotBoss_ChargeL0
-	dw OBJLst_Act_MtTeapotBoss_ChargeL1
-	dw OBJLst_Act_MtTeapotBoss_ChargeL0
-	dw OBJLst_Act_MtTeapotBoss_ChargeL2
+SprMapPtrTable_Act_MtTeapotBoss_ChargeL:
+	dw SprMap_Act_MtTeapotBoss_ChargeL0
+	dw SprMap_Act_MtTeapotBoss_ChargeL1
+	dw SprMap_Act_MtTeapotBoss_ChargeL0
+	dw SprMap_Act_MtTeapotBoss_ChargeL2
 	dw $0000
-OBJLstPtrTable_Act_MtTeapotBoss_ChargeR:
-	dw OBJLst_Act_MtTeapotBoss_ChargeR0
-	dw OBJLst_Act_MtTeapotBoss_ChargeR1
-	dw OBJLst_Act_MtTeapotBoss_ChargeR0
-	dw OBJLst_Act_MtTeapotBoss_ChargeR2
+SprMapPtrTable_Act_MtTeapotBoss_ChargeR:
+	dw SprMap_Act_MtTeapotBoss_ChargeR0
+	dw SprMap_Act_MtTeapotBoss_ChargeR1
+	dw SprMap_Act_MtTeapotBoss_ChargeR0
+	dw SprMap_Act_MtTeapotBoss_ChargeR2
 	dw $0000
-OBJLstPtrTable_Act_MtTeapotBoss_HoldL:
-	dw OBJLst_Act_MtTeapotBoss_HoldL
-	dw OBJLst_Act_MtTeapotBoss_HoldWalkL0
-	dw OBJLst_Act_MtTeapotBoss_HoldWalkL0
-	dw OBJLst_Act_MtTeapotBoss_HoldWalkL0
+SprMapPtrTable_Act_MtTeapotBoss_HoldL:
+	dw SprMap_Act_MtTeapotBoss_HoldL
+	dw SprMap_Act_MtTeapotBoss_HoldWalkL0
+	dw SprMap_Act_MtTeapotBoss_HoldWalkL0
+	dw SprMap_Act_MtTeapotBoss_HoldWalkL0
 	dw $0000;X
-OBJLstPtrTable_Act_MtTeapotBoss_HoldR:
-	dw OBJLst_Act_MtTeapotBoss_HoldR
-	dw OBJLst_Act_MtTeapotBoss_HoldWalkR0
-	dw OBJLst_Act_MtTeapotBoss_HoldWalkR0
-	dw OBJLst_Act_MtTeapotBoss_HoldWalkR0
+SprMapPtrTable_Act_MtTeapotBoss_HoldR:
+	dw SprMap_Act_MtTeapotBoss_HoldR
+	dw SprMap_Act_MtTeapotBoss_HoldWalkR0
+	dw SprMap_Act_MtTeapotBoss_HoldWalkR0
+	dw SprMap_Act_MtTeapotBoss_HoldWalkR0
 	dw $0000;X
-OBJLstPtrTable_Act_MtTeapotBoss_HoldWalkL:
-	dw OBJLst_Act_MtTeapotBoss_HoldWalkL0
-	dw OBJLst_Act_MtTeapotBoss_HoldWalkL1
-	dw OBJLst_Act_MtTeapotBoss_HoldWalkL0
-	dw OBJLst_Act_MtTeapotBoss_HoldWalkL2
+SprMapPtrTable_Act_MtTeapotBoss_HoldWalkL:
+	dw SprMap_Act_MtTeapotBoss_HoldWalkL0
+	dw SprMap_Act_MtTeapotBoss_HoldWalkL1
+	dw SprMap_Act_MtTeapotBoss_HoldWalkL0
+	dw SprMap_Act_MtTeapotBoss_HoldWalkL2
 	dw $0000
-OBJLstPtrTable_Act_MtTeapotBoss_HoldWalkR:
-	dw OBJLst_Act_MtTeapotBoss_HoldWalkR0
-	dw OBJLst_Act_MtTeapotBoss_HoldWalkR1
-	dw OBJLst_Act_MtTeapotBoss_HoldWalkR0
-	dw OBJLst_Act_MtTeapotBoss_HoldWalkR2
+SprMapPtrTable_Act_MtTeapotBoss_HoldWalkR:
+	dw SprMap_Act_MtTeapotBoss_HoldWalkR0
+	dw SprMap_Act_MtTeapotBoss_HoldWalkR1
+	dw SprMap_Act_MtTeapotBoss_HoldWalkR0
+	dw SprMap_Act_MtTeapotBoss_HoldWalkR2
 	dw $0000
 ; [TCRF] Last frame doesn't get played, but it's more of the same
-OBJLstPtrTable_Act_MtTeapotBoss_ThrowL:
-	dw OBJLst_Act_MtTeapotBoss_HoldWalkL0
-	dw OBJLst_Act_MtTeapotBoss_HoldL
-	dw OBJLst_Act_MtTeapotBoss_HoldL
-	dw OBJLst_Act_MtTeapotBoss_HoldL;X
+SprMapPtrTable_Act_MtTeapotBoss_ThrowL:
+	dw SprMap_Act_MtTeapotBoss_HoldWalkL0
+	dw SprMap_Act_MtTeapotBoss_HoldL
+	dw SprMap_Act_MtTeapotBoss_HoldL
+	dw SprMap_Act_MtTeapotBoss_HoldL;X
 	dw $0000;X
-OBJLstPtrTable_Act_MtTeapotBoss_ThrowR:
-	dw OBJLst_Act_MtTeapotBoss_HoldWalkR0
-	dw OBJLst_Act_MtTeapotBoss_HoldR
-	dw OBJLst_Act_MtTeapotBoss_HoldR
-	dw OBJLst_Act_MtTeapotBoss_HoldR;X
+SprMapPtrTable_Act_MtTeapotBoss_ThrowR:
+	dw SprMap_Act_MtTeapotBoss_HoldWalkR0
+	dw SprMap_Act_MtTeapotBoss_HoldR
+	dw SprMap_Act_MtTeapotBoss_HoldR
+	dw SprMap_Act_MtTeapotBoss_HoldR;X
 	dw $0000;X
 ; [TCRF] Placeholder anims? These use a single-frame from the stun anim.
-OBJLstPtrTable_Act_MtTeapotBoss_Unused_StunL:
-	dw OBJLst_Act_MtTeapotBoss_StunL0;X
+SprMapPtrTable_Act_MtTeapotBoss_Unused_StunL:
+	dw SprMap_Act_MtTeapotBoss_StunL0;X
 	dw $0000;X
-OBJLstPtrTable_Act_MtTeapotBoss_Unused_StunR:
-	dw OBJLst_Act_MtTeapotBoss_StunR0;X
+SprMapPtrTable_Act_MtTeapotBoss_Unused_StunR:
+	dw SprMap_Act_MtTeapotBoss_StunR0;X
 	dw $0000;X
-OBJLstPtrTable_Act_MtTeapotBoss_StunL:
-	dw OBJLst_Act_MtTeapotBoss_StunL0
-	dw OBJLst_Act_MtTeapotBoss_StunL1
+SprMapPtrTable_Act_MtTeapotBoss_StunL:
+	dw SprMap_Act_MtTeapotBoss_StunL0
+	dw SprMap_Act_MtTeapotBoss_StunL1
 	dw $0000
-OBJLstPtrTable_Act_MtTeapotBoss_StunR:
-	dw OBJLst_Act_MtTeapotBoss_StunR0
-	dw OBJLst_Act_MtTeapotBoss_StunR1
+SprMapPtrTable_Act_MtTeapotBoss_StunR:
+	dw SprMap_Act_MtTeapotBoss_StunR0
+	dw SprMap_Act_MtTeapotBoss_StunR1
 	dw $0000
-OBJLstPtrTable_Act_MtTeapotBoss_DeadL:
-	dw OBJLst_Act_MtTeapotBoss_DeadL0
-	dw OBJLst_Act_MtTeapotBoss_DeadL1
+SprMapPtrTable_Act_MtTeapotBoss_DeadL:
+	dw SprMap_Act_MtTeapotBoss_DeadL0
+	dw SprMap_Act_MtTeapotBoss_DeadL1
 	dw $0000
-OBJLstPtrTable_Act_MtTeapotBoss_DeadR:
-	dw OBJLst_Act_MtTeapotBoss_DeadR0
-	dw OBJLst_Act_MtTeapotBoss_DeadR1
+SprMapPtrTable_Act_MtTeapotBoss_DeadR:
+	dw SprMap_Act_MtTeapotBoss_DeadR0
+	dw SprMap_Act_MtTeapotBoss_DeadR1
 	dw $0000
 
-OBJLst_Act_MtTeapotBoss_IntroL0: INCBIN "data/objlst/actor/mtteapotboss_introl0.bin"
-OBJLst_Act_MtTeapotBoss_IntroL1: INCBIN "data/objlst/actor/mtteapotboss_introl1.bin"
-OBJLst_Act_MtTeapotBoss_IntroL2: INCBIN "data/objlst/actor/mtteapotboss_introl2.bin"
-OBJLst_Act_MtTeapotBoss_IntroL3: INCBIN "data/objlst/actor/mtteapotboss_introl3.bin"
+SprMap_Act_MtTeapotBoss_IntroL0: INCBIN "data/sprmap/actor/mtteapotboss_introl0.bin"
+SprMap_Act_MtTeapotBoss_IntroL1: INCBIN "data/sprmap/actor/mtteapotboss_introl1.bin"
+SprMap_Act_MtTeapotBoss_IntroL2: INCBIN "data/sprmap/actor/mtteapotboss_introl2.bin"
+SprMap_Act_MtTeapotBoss_IntroL3: INCBIN "data/sprmap/actor/mtteapotboss_introl3.bin"
 ; [TCRF] Unused sprite mappings pointing to unused graphics.
 ;        It looks like steam was going to come out of the nose, given this boss is a bull and all.
 ;        Being a separate sprite mapping, it would have required its own actor.
-OBJLst_Act_MtTeapotBoss_Unused_SteamL0: INCBIN "data/objlst/actor/mtteapotboss_unused_steaml0.bin"
-OBJLst_Act_MtTeapotBoss_Unused_SteamL1: INCBIN "data/objlst/actor/mtteapotboss_unused_steaml1.bin"
-OBJLst_Act_MtTeapotBoss_Unused_SteamL2: INCBIN "data/objlst/actor/mtteapotboss_unused_steaml2.bin"
-OBJLst_Act_MtTeapotBoss_ChargeL0: INCBIN "data/objlst/actor/mtteapotboss_chargel0.bin"
-OBJLst_Act_MtTeapotBoss_JumpL: INCBIN "data/objlst/actor/mtteapotboss_jumpl.bin"
-OBJLst_Act_MtTeapotBoss_ChargeL1: INCBIN "data/objlst/actor/mtteapotboss_chargel1.bin"
-OBJLst_Act_MtTeapotBoss_ChargeL2: INCBIN "data/objlst/actor/mtteapotboss_chargel2.bin"
-OBJLst_Act_MtTeapotBoss_HoldWalkL0: INCBIN "data/objlst/actor/mtteapotboss_holdwalkl0.bin"
-OBJLst_Act_MtTeapotBoss_HoldWalkL1: INCBIN "data/objlst/actor/mtteapotboss_holdwalkl1.bin"
-OBJLst_Act_MtTeapotBoss_HoldWalkL2: INCBIN "data/objlst/actor/mtteapotboss_holdwalkl2.bin"
-OBJLst_Act_MtTeapotBoss_HoldL: INCBIN "data/objlst/actor/mtteapotboss_holdl.bin"
-OBJLst_Act_MtTeapotBoss_DeadL0: INCBIN "data/objlst/actor/mtteapotboss_deadl0.bin"
-OBJLst_Act_MtTeapotBoss_StunL0: INCBIN "data/objlst/actor/mtteapotboss_stunl0.bin"
-OBJLst_Act_MtTeapotBoss_StunL1: INCBIN "data/objlst/actor/mtteapotboss_stunl1.bin"
-OBJLst_Act_MtTeapotBoss_DeadL1: INCBIN "data/objlst/actor/mtteapotboss_deadl1.bin"
-OBJLst_Act_MtTeapotBoss_Unused_IntroR0: INCBIN "data/objlst/actor/mtteapotboss_unused_intror0.bin"
-OBJLst_Act_MtTeapotBoss_Unused_IntroR1: INCBIN "data/objlst/actor/mtteapotboss_unused_intror1.bin"
-OBJLst_Act_MtTeapotBoss_Unused_IntroR2: INCBIN "data/objlst/actor/mtteapotboss_unused_intror2.bin"
-OBJLst_Act_MtTeapotBoss_Unused_IntroR3: INCBIN "data/objlst/actor/mtteapotboss_unused_intror3.bin"
+SprMap_Act_MtTeapotBoss_Unused_SteamL0: INCBIN "data/sprmap/actor/mtteapotboss_unused_steaml0.bin"
+SprMap_Act_MtTeapotBoss_Unused_SteamL1: INCBIN "data/sprmap/actor/mtteapotboss_unused_steaml1.bin"
+SprMap_Act_MtTeapotBoss_Unused_SteamL2: INCBIN "data/sprmap/actor/mtteapotboss_unused_steaml2.bin"
+SprMap_Act_MtTeapotBoss_ChargeL0: INCBIN "data/sprmap/actor/mtteapotboss_chargel0.bin"
+SprMap_Act_MtTeapotBoss_JumpL: INCBIN "data/sprmap/actor/mtteapotboss_jumpl.bin"
+SprMap_Act_MtTeapotBoss_ChargeL1: INCBIN "data/sprmap/actor/mtteapotboss_chargel1.bin"
+SprMap_Act_MtTeapotBoss_ChargeL2: INCBIN "data/sprmap/actor/mtteapotboss_chargel2.bin"
+SprMap_Act_MtTeapotBoss_HoldWalkL0: INCBIN "data/sprmap/actor/mtteapotboss_holdwalkl0.bin"
+SprMap_Act_MtTeapotBoss_HoldWalkL1: INCBIN "data/sprmap/actor/mtteapotboss_holdwalkl1.bin"
+SprMap_Act_MtTeapotBoss_HoldWalkL2: INCBIN "data/sprmap/actor/mtteapotboss_holdwalkl2.bin"
+SprMap_Act_MtTeapotBoss_HoldL: INCBIN "data/sprmap/actor/mtteapotboss_holdl.bin"
+SprMap_Act_MtTeapotBoss_DeadL0: INCBIN "data/sprmap/actor/mtteapotboss_deadl0.bin"
+SprMap_Act_MtTeapotBoss_StunL0: INCBIN "data/sprmap/actor/mtteapotboss_stunl0.bin"
+SprMap_Act_MtTeapotBoss_StunL1: INCBIN "data/sprmap/actor/mtteapotboss_stunl1.bin"
+SprMap_Act_MtTeapotBoss_DeadL1: INCBIN "data/sprmap/actor/mtteapotboss_deadl1.bin"
+SprMap_Act_MtTeapotBoss_Unused_IntroR0: INCBIN "data/sprmap/actor/mtteapotboss_unused_intror0.bin"
+SprMap_Act_MtTeapotBoss_Unused_IntroR1: INCBIN "data/sprmap/actor/mtteapotboss_unused_intror1.bin"
+SprMap_Act_MtTeapotBoss_Unused_IntroR2: INCBIN "data/sprmap/actor/mtteapotboss_unused_intror2.bin"
+SprMap_Act_MtTeapotBoss_Unused_IntroR3: INCBIN "data/sprmap/actor/mtteapotboss_unused_intror3.bin"
 ; [TCRF] Right facing nose steam
-OBJLst_Act_MtTeapotBoss_Unused_SteamR0: INCBIN "data/objlst/actor/mtteapotboss_unused_steamr0.bin"
-OBJLst_Act_MtTeapotBoss_Unused_SteamR1: INCBIN "data/objlst/actor/mtteapotboss_unused_steamr1.bin"
-OBJLst_Act_MtTeapotBoss_Unused_SteamR2: INCBIN "data/objlst/actor/mtteapotboss_unused_steamr2.bin"
-OBJLst_Act_MtTeapotBoss_ChargeR0: INCBIN "data/objlst/actor/mtteapotboss_charger0.bin"
-OBJLst_Act_MtTeapotBoss_JumpR: INCBIN "data/objlst/actor/mtteapotboss_jumpr.bin"
-OBJLst_Act_MtTeapotBoss_ChargeR1: INCBIN "data/objlst/actor/mtteapotboss_charger1.bin"
-OBJLst_Act_MtTeapotBoss_ChargeR2: INCBIN "data/objlst/actor/mtteapotboss_charger2.bin"
-OBJLst_Act_MtTeapotBoss_HoldWalkR0: INCBIN "data/objlst/actor/mtteapotboss_holdwalkr0.bin"
-OBJLst_Act_MtTeapotBoss_HoldWalkR1: INCBIN "data/objlst/actor/mtteapotboss_holdwalkr1.bin"
-OBJLst_Act_MtTeapotBoss_HoldWalkR2: INCBIN "data/objlst/actor/mtteapotboss_holdwalkr2.bin"
-OBJLst_Act_MtTeapotBoss_HoldR: INCBIN "data/objlst/actor/mtteapotboss_holdr.bin"
-OBJLst_Act_MtTeapotBoss_DeadR0: INCBIN "data/objlst/actor/mtteapotboss_deadr0.bin"
-OBJLst_Act_MtTeapotBoss_StunR0: INCBIN "data/objlst/actor/mtteapotboss_stunr0.bin"
-OBJLst_Act_MtTeapotBoss_StunR1: INCBIN "data/objlst/actor/mtteapotboss_stunr1.bin"
-OBJLst_Act_MtTeapotBoss_DeadR1: INCBIN "data/objlst/actor/mtteapotboss_deadr1.bin"
+SprMap_Act_MtTeapotBoss_Unused_SteamR0: INCBIN "data/sprmap/actor/mtteapotboss_unused_steamr0.bin"
+SprMap_Act_MtTeapotBoss_Unused_SteamR1: INCBIN "data/sprmap/actor/mtteapotboss_unused_steamr1.bin"
+SprMap_Act_MtTeapotBoss_Unused_SteamR2: INCBIN "data/sprmap/actor/mtteapotboss_unused_steamr2.bin"
+SprMap_Act_MtTeapotBoss_ChargeR0: INCBIN "data/sprmap/actor/mtteapotboss_charger0.bin"
+SprMap_Act_MtTeapotBoss_JumpR: INCBIN "data/sprmap/actor/mtteapotboss_jumpr.bin"
+SprMap_Act_MtTeapotBoss_ChargeR1: INCBIN "data/sprmap/actor/mtteapotboss_charger1.bin"
+SprMap_Act_MtTeapotBoss_ChargeR2: INCBIN "data/sprmap/actor/mtteapotboss_charger2.bin"
+SprMap_Act_MtTeapotBoss_HoldWalkR0: INCBIN "data/sprmap/actor/mtteapotboss_holdwalkr0.bin"
+SprMap_Act_MtTeapotBoss_HoldWalkR1: INCBIN "data/sprmap/actor/mtteapotboss_holdwalkr1.bin"
+SprMap_Act_MtTeapotBoss_HoldWalkR2: INCBIN "data/sprmap/actor/mtteapotboss_holdwalkr2.bin"
+SprMap_Act_MtTeapotBoss_HoldR: INCBIN "data/sprmap/actor/mtteapotboss_holdr.bin"
+SprMap_Act_MtTeapotBoss_DeadR0: INCBIN "data/sprmap/actor/mtteapotboss_deadr0.bin"
+SprMap_Act_MtTeapotBoss_StunR0: INCBIN "data/sprmap/actor/mtteapotboss_stunr0.bin"
+SprMap_Act_MtTeapotBoss_StunR1: INCBIN "data/sprmap/actor/mtteapotboss_stunr1.bin"
+SprMap_Act_MtTeapotBoss_DeadR1: INCBIN "data/sprmap/actor/mtteapotboss_deadr1.bin"
 GFX_Act_MtTeapotBoss: INCBIN "data/gfx/actor/mtteapotboss.bin"
 
 ; =============== ActInit_SherbetLandBoss ===============
@@ -1652,15 +1652,15 @@ ActInit_SherbetLandBoss:
 	ld   bc, SubCall_Act_SherbetLandBoss
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
+	; Set initial animation
 	push bc
-	ld   bc, OBJLstPtrTable_Act_SherbetLandBoss_WalkL
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_SherbetLandBoss_WalkL
+	call ActS_SetSprMapPtr
 	
-	; Set OBJLst shared table
+	; Set default animation table
 	pop  bc
-	ld   bc, OBJLstSharedPtrTable_Act_SherbetLandBoss
-	call ActS_SetOBJLstSharedTablePtr
+	ld   bc, SprMapSharedPtrTable_Act_SherbetLandBoss
+	call ActS_SetSprMapSharedTablePtr
 	
 	xor  a
 	ld   [sActSetTimer], a
@@ -1752,8 +1752,8 @@ Act_SherbetLandBoss_SetIntro:
 	
 	; Making the actor face left, since we're on the right side
 	push bc
-	ld   bc, OBJLstPtrTable_Act_SherbetLandBoss_JumpIntroL
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_SherbetLandBoss_JumpIntroL
+	call ActS_SetSprMapPtr
 	pop  bc
 	ld   a, DIR_L
 	ld   [sActSetDir], a
@@ -1767,8 +1767,8 @@ Act_SherbetLandBoss_SetIntro:
 	;--
 	; [TCRF] Unreachable code below
 	push bc
-	ld   bc, OBJLstPtrTable_Act_SherbetLandBoss_Unused_JumpIntroR
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_SherbetLandBoss_Unused_JumpIntroR
+	call ActS_SetSprMapPtr
 	pop  bc
 	ld   a, DIR_R
 	ld   [sActSetDir], a
@@ -1803,8 +1803,8 @@ Act_SherbetLandBoss_IntroJump:
 	; Set anim & damaging side depending on direction
 	; ...through we can't collide with the boss yet.
 	push bc
-	ld   bc, OBJLstPtrTable_Act_SherbetLandBoss_AttackL			; Face left
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_SherbetLandBoss_AttackL			; Face left
+	call ActS_SetSprMapPtr
 	pop  bc
 	
 	mActColiMask ACTCOLI_NORM, ACTCOLI_DAMAGE, ACTCOLI_NORM, ACTCOLI_NORM
@@ -1820,8 +1820,8 @@ Act_SherbetLandBoss_IntroJump:
 	
 	; Unreachable code below
 	push bc
-	ld   bc, OBJLstPtrTable_Act_SherbetLandBoss_AttackR			; Face left
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_SherbetLandBoss_AttackR			; Face left
+	call ActS_SetSprMapPtr
 	pop  bc
 	mActColiMask ACTCOLI_DAMAGE, ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM
 	ld   a, COLI
@@ -1832,7 +1832,7 @@ Act_SherbetLandBoss_IntroJump:
 ; =============== Act_SherbetLandBoss_IntroPause ===============
 ; Pauses for $78 frames.
 Act_SherbetLandBoss_IntroPause:
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	; Handle timer
 	ld   a, [sActSherbetLandBossModeTimer]
 	dec  a
@@ -1860,8 +1860,8 @@ Act_SherbetLandBoss_SwitchToPause:
 	
 	; right
 	push bc
-	ld   bc, OBJLstPtrTable_Act_SherbetLandBoss_WalkL
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_SherbetLandBoss_WalkL
+	call ActS_SetSprMapPtr
 	pop  bc
 	mActColiMask ACTCOLI_NORM, ACTCOLI_BUMP, ACTCOLI_NORM, ACTCOLI_NORM
 	ld   a, COLI
@@ -1873,8 +1873,8 @@ Act_SherbetLandBoss_SwitchToPause:
 	
 	; left
 	push bc
-	ld   bc, OBJLstPtrTable_Act_SherbetLandBoss_WalkR
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_SherbetLandBoss_WalkR
+	call ActS_SetSprMapPtr
 	pop  bc
 	mActColiMask ACTCOLI_BUMP, ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM
 	ld   a, COLI
@@ -1884,7 +1884,7 @@ Act_SherbetLandBoss_SwitchToPause:
 ; =============== Act_SherbetLandBoss_Pause ===============
 ; Pauses for $3C frames.
 Act_SherbetLandBoss_Pause:
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	; Handle the timer
 	ld   a, [sActSherbetLandBossModeTimer]
 	dec  a
@@ -1904,7 +1904,7 @@ Act_SherbetLandBoss_SwitchToTurn:
 ; =============== Act_SherbetLandBoss_SwitchToTurn ===============
 ; Makes the actor delay for $3C frames before turning around.
 Act_SherbetLandBoss_Turn:
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	; Handle the delay
 	ld   a, [sActSherbetLandBossModeTimer]
 	dec  a
@@ -1930,8 +1930,8 @@ Act_SherbetLandBoss_SwitchToMove:
 	;--
 	; left
 	push bc
-	ld   bc, OBJLstPtrTable_Act_SherbetLandBoss_WalkL
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_SherbetLandBoss_WalkL
+	call ActS_SetSprMapPtr
 	pop  bc
 	mActColiMask ACTCOLI_NORM, ACTCOLI_BUMP, ACTCOLI_NORM, ACTCOLI_NORM
 	ld   a, COLI
@@ -1943,8 +1943,8 @@ Act_SherbetLandBoss_SwitchToMove:
 	;--
 	; right
 	push bc
-	ld   bc, OBJLstPtrTable_Act_SherbetLandBoss_WalkR
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_SherbetLandBoss_WalkR
+	call ActS_SetSprMapPtr
 	pop  bc
 	mActColiMask ACTCOLI_BUMP, ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM
 	ld   a, COLI
@@ -1961,7 +1961,7 @@ Act_SherbetLandBoss_Move:
 	or   a
 	jp   z, .endMode
 	
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	; Handle horizontal movement
 	ld   a, [sActSetDir]
 	bit  DIRB_R, a
@@ -2027,8 +2027,8 @@ Act_SherbetLandBoss_Move:
 	
 	; left
 	push bc
-	ld   bc, OBJLstPtrTable_Act_SherbetLandBoss_AttackL
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_SherbetLandBoss_AttackL
+	call ActS_SetSprMapPtr
 	pop  bc
 	mActColiMask ACTCOLI_NORM, ACTCOLI_DAMAGE, ACTCOLI_NORM, ACTCOLI_NORM
 	ld   a, COLI
@@ -2040,8 +2040,8 @@ Act_SherbetLandBoss_Move:
 	;--
 	; right
 	push bc
-	ld   bc, OBJLstPtrTable_Act_SherbetLandBoss_AttackR
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_SherbetLandBoss_AttackR
+	call ActS_SetSprMapPtr
 	pop  bc
 	mActColiMask ACTCOLI_DAMAGE, ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM
 	ld   a, COLI
@@ -2051,7 +2051,7 @@ Act_SherbetLandBoss_Move:
 ; =============== Act_SherbetLandBoss_Attack ===============
 ; "Boxing" attack mode.
 Act_SherbetLandBoss_Attack:
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	; Handle timer
 	ld   a, [sActSherbetLandBossModeTimer]
 	dec  a
@@ -2110,7 +2110,7 @@ Act_SherbetLandBoss_OnStunAbove:
 	ld   [sActLocalRoutineId], a
 	ld   a, $1E
 	ld   [sActSherbetLandBossModeTimer], a
-	mActOBJLstPtrTableByDir OBJLstPtrTable_Act_SherbetLandBoss_HitL, OBJLstPtrTable_Act_SherbetLandBoss_HitR	; Set hurt anim
+	mActSprMapPtrTableByDir SprMapPtrTable_Act_SherbetLandBoss_HitL, SprMapPtrTable_Act_SherbetLandBoss_HitR	; Set hurt anim
 	ret
 	
 ; =============== Act_SherbetLandBoss_Hit ===============
@@ -2129,7 +2129,7 @@ Act_SherbetLandBoss_Hit:
 	ld   [sActLocalRoutineId], a
 	ld   a, $3C
 	ld   [sActSherbetLandBossModeTimer], a
-	mActOBJLstPtrTableByDir OBJLstPtrTable_Act_SherbetLandBoss_StandL, OBJLstPtrTable_Act_SherbetLandBoss_StandR
+	mActSprMapPtrTableByDir SprMapPtrTable_Act_SherbetLandBoss_StandL, SprMapPtrTable_Act_SherbetLandBoss_StandR
 	ret
 	
 ; =============== Act_SherbetLandBoss_HitPause ===============
@@ -2213,13 +2213,13 @@ Act_SherbetLandBoss_SetDead:
 	ld   [sSFX1Set], a
 	ld   a, BGM_NONE
 	ld   [sBGMSet], a
-	mActOBJLstPtrTableByDir OBJLstPtrTable_Act_SherbetLandBoss_DeadL, OBJLstPtrTable_Act_SherbetLandBoss_DeadR
+	mActSprMapPtrTableByDir SprMapPtrTable_Act_SherbetLandBoss_DeadL, SprMapPtrTable_Act_SherbetLandBoss_DeadR
 	ret
 	
 ; =============== Act_SherbetLandBoss_Dead ===============
 ; Boss defeated routine and life game, special to this boss.
 Act_SherbetLandBoss_Dead:
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	ld   a, [sActSherbetLandBossHeartGameStarted]
 	or   a						; Is the coin game started already?
@@ -2243,115 +2243,115 @@ Act_SherbetLandBoss_Dead:
 	call SubCall_ActS_HeartGame
 	ret
 	
-OBJLstSharedPtrTable_Act_SherbetLandBoss:
-	dw OBJLstPtrTable_Act_SherbetLandBoss_DeadL;X
-	dw OBJLstPtrTable_Act_SherbetLandBoss_DeadR;X
-	dw OBJLstPtrTable_Act_SherbetLandBoss_DeadL;X
-	dw OBJLstPtrTable_Act_SherbetLandBoss_DeadR;X
-	dw OBJLstPtrTable_Act_SherbetLandBoss_DeadL;X
-	dw OBJLstPtrTable_Act_SherbetLandBoss_DeadR;X
-	dw OBJLstPtrTable_Act_SherbetLandBoss_DeadL;X
-	dw OBJLstPtrTable_Act_SherbetLandBoss_DeadR;X
+SprMapSharedPtrTable_Act_SherbetLandBoss:
+	dw SprMapPtrTable_Act_SherbetLandBoss_DeadL;X
+	dw SprMapPtrTable_Act_SherbetLandBoss_DeadR;X
+	dw SprMapPtrTable_Act_SherbetLandBoss_DeadL;X
+	dw SprMapPtrTable_Act_SherbetLandBoss_DeadR;X
+	dw SprMapPtrTable_Act_SherbetLandBoss_DeadL;X
+	dw SprMapPtrTable_Act_SherbetLandBoss_DeadR;X
+	dw SprMapPtrTable_Act_SherbetLandBoss_DeadL;X
+	dw SprMapPtrTable_Act_SherbetLandBoss_DeadR;X
 
-OBJLstPtrTable_Act_SherbetLandBoss_WalkL:
-	dw OBJLst_Act_SherbetLandBoss_WalkL0
-	dw OBJLst_Act_SherbetLandBoss_WalkL1
-	dw OBJLst_Act_SherbetLandBoss_WalkL0
-	dw OBJLst_Act_SherbetLandBoss_WalkL2
+SprMapPtrTable_Act_SherbetLandBoss_WalkL:
+	dw SprMap_Act_SherbetLandBoss_WalkL0
+	dw SprMap_Act_SherbetLandBoss_WalkL1
+	dw SprMap_Act_SherbetLandBoss_WalkL0
+	dw SprMap_Act_SherbetLandBoss_WalkL2
 	dw $0000
-OBJLstPtrTable_Act_SherbetLandBoss_WalkR:
-	dw OBJLst_Act_SherbetLandBoss_WalkR0
-	dw OBJLst_Act_SherbetLandBoss_WalkR1
-	dw OBJLst_Act_SherbetLandBoss_WalkR0
-	dw OBJLst_Act_SherbetLandBoss_WalkR2
+SprMapPtrTable_Act_SherbetLandBoss_WalkR:
+	dw SprMap_Act_SherbetLandBoss_WalkR0
+	dw SprMap_Act_SherbetLandBoss_WalkR1
+	dw SprMap_Act_SherbetLandBoss_WalkR0
+	dw SprMap_Act_SherbetLandBoss_WalkR2
 	dw $0000
-OBJLstPtrTable_Act_SherbetLandBoss_DeadL:
-	dw OBJLst_Act_SherbetLandBoss_DeadL0
-	dw OBJLst_Act_SherbetLandBoss_DeadL1
+SprMapPtrTable_Act_SherbetLandBoss_DeadL:
+	dw SprMap_Act_SherbetLandBoss_DeadL0
+	dw SprMap_Act_SherbetLandBoss_DeadL1
 	dw $0000
-OBJLstPtrTable_Act_SherbetLandBoss_DeadR:
-	dw OBJLst_Act_SherbetLandBoss_DeadR0
-	dw OBJLst_Act_SherbetLandBoss_DeadR1
+SprMapPtrTable_Act_SherbetLandBoss_DeadR:
+	dw SprMap_Act_SherbetLandBoss_DeadR0
+	dw SprMap_Act_SherbetLandBoss_DeadR1
 	dw $0000
-OBJLstPtrTable_Act_SherbetLandBoss_JumpIntroL:
-	dw OBJLst_Act_SherbetLandBoss_JumpL
+SprMapPtrTable_Act_SherbetLandBoss_JumpIntroL:
+	dw SprMap_Act_SherbetLandBoss_JumpL
 	dw $0000;X
 ; [TCRF] The intro plays on one side only, so it goes unused.
 ;		 This *should* have been used for other jumps (JUMPUP), but the standing anim got used instead...
-OBJLstPtrTable_Act_SherbetLandBoss_Unused_JumpIntroR:
-	dw OBJLst_Act_SherbetLandBoss_Unused_JumpR;X
+SprMapPtrTable_Act_SherbetLandBoss_Unused_JumpIntroR:
+	dw SprMap_Act_SherbetLandBoss_Unused_JumpR;X
 	dw $0000;X
-OBJLstPtrTable_Act_SherbetLandBoss_AttackL:
-	dw OBJLst_Act_SherbetLandBoss_WalkL0
-	dw OBJLst_Act_SherbetLandBoss_AttackL0
-	dw OBJLst_Act_SherbetLandBoss_WalkL0
-	dw OBJLst_Act_SherbetLandBoss_AttackL1
+SprMapPtrTable_Act_SherbetLandBoss_AttackL:
+	dw SprMap_Act_SherbetLandBoss_WalkL0
+	dw SprMap_Act_SherbetLandBoss_AttackL0
+	dw SprMap_Act_SherbetLandBoss_WalkL0
+	dw SprMap_Act_SherbetLandBoss_AttackL1
 	dw $0000
-OBJLstPtrTable_Act_SherbetLandBoss_AttackR:
-	dw OBJLst_Act_SherbetLandBoss_WalkR0
-	dw OBJLst_Act_SherbetLandBoss_AttackR0
-	dw OBJLst_Act_SherbetLandBoss_WalkR0
-	dw OBJLst_Act_SherbetLandBoss_AttackR1
+SprMapPtrTable_Act_SherbetLandBoss_AttackR:
+	dw SprMap_Act_SherbetLandBoss_WalkR0
+	dw SprMap_Act_SherbetLandBoss_AttackR0
+	dw SprMap_Act_SherbetLandBoss_WalkR0
+	dw SprMap_Act_SherbetLandBoss_AttackR1
 	dw $0000;X
-OBJLstPtrTable_Act_SherbetLandBoss_HitL:
-	dw OBJLst_Act_SherbetLandBoss_HitL
+SprMapPtrTable_Act_SherbetLandBoss_HitL:
+	dw SprMap_Act_SherbetLandBoss_HitL
 	dw $0000;X
-OBJLstPtrTable_Act_SherbetLandBoss_HitR:
-	dw OBJLst_Act_SherbetLandBoss_HitR
+SprMapPtrTable_Act_SherbetLandBoss_HitR:
+	dw SprMap_Act_SherbetLandBoss_HitR
 	dw $0000;X
-OBJLstPtrTable_Act_SherbetLandBoss_StandL:
-	dw OBJLst_Act_SherbetLandBoss_StandL
+SprMapPtrTable_Act_SherbetLandBoss_StandL:
+	dw SprMap_Act_SherbetLandBoss_StandL
 	dw $0000;X
-OBJLstPtrTable_Act_SherbetLandBoss_StandR:
-	dw OBJLst_Act_SherbetLandBoss_StandR
+SprMapPtrTable_Act_SherbetLandBoss_StandR:
+	dw SprMap_Act_SherbetLandBoss_StandR
 	dw $0000;X
 
-OBJLst_Act_SherbetLandBoss_WalkL0: INCBIN "data/objlst/actor/sherbetlandboss_walkl0.bin"
-OBJLst_Act_SherbetLandBoss_WalkL1: INCBIN "data/objlst/actor/sherbetlandboss_walkl1.bin"
-OBJLst_Act_SherbetLandBoss_WalkL2: INCBIN "data/objlst/actor/sherbetlandboss_walkl2.bin"
-OBJLst_Act_SherbetLandBoss_JumpL: INCBIN "data/objlst/actor/sherbetlandboss_jumpl.bin"
-OBJLst_Act_SherbetLandBoss_AttackL0: INCBIN "data/objlst/actor/sherbetlandboss_attackl0.bin"
-OBJLst_Act_SherbetLandBoss_AttackL1: INCBIN "data/objlst/actor/sherbetlandboss_attackl1.bin"
-OBJLst_Act_SherbetLandBoss_HitL: INCBIN "data/objlst/actor/sherbetlandboss_hitl.bin"
-OBJLst_Act_SherbetLandBoss_DeadL0: INCBIN "data/objlst/actor/sherbetlandboss_deadl0.bin"
-OBJLst_Act_SherbetLandBoss_DeadL1: INCBIN "data/objlst/actor/sherbetlandboss_deadl1.bin"
-OBJLst_Act_SherbetLandBoss_StandL: INCBIN "data/objlst/actor/sherbetlandboss_standl.bin"
+SprMap_Act_SherbetLandBoss_WalkL0: INCBIN "data/sprmap/actor/sherbetlandboss_walkl0.bin"
+SprMap_Act_SherbetLandBoss_WalkL1: INCBIN "data/sprmap/actor/sherbetlandboss_walkl1.bin"
+SprMap_Act_SherbetLandBoss_WalkL2: INCBIN "data/sprmap/actor/sherbetlandboss_walkl2.bin"
+SprMap_Act_SherbetLandBoss_JumpL: INCBIN "data/sprmap/actor/sherbetlandboss_jumpl.bin"
+SprMap_Act_SherbetLandBoss_AttackL0: INCBIN "data/sprmap/actor/sherbetlandboss_attackl0.bin"
+SprMap_Act_SherbetLandBoss_AttackL1: INCBIN "data/sprmap/actor/sherbetlandboss_attackl1.bin"
+SprMap_Act_SherbetLandBoss_HitL: INCBIN "data/sprmap/actor/sherbetlandboss_hitl.bin"
+SprMap_Act_SherbetLandBoss_DeadL0: INCBIN "data/sprmap/actor/sherbetlandboss_deadl0.bin"
+SprMap_Act_SherbetLandBoss_DeadL1: INCBIN "data/sprmap/actor/sherbetlandboss_deadl1.bin"
+SprMap_Act_SherbetLandBoss_StandL: INCBIN "data/sprmap/actor/sherbetlandboss_standl.bin"
 ; [TCRF] Unreferenced sprite mappings pointing to unused GFX.
 ;        This is for a vertical puff smoke.
-OBJLst_Act_SherbetLandBoss_Unused_SmokeVL0: INCBIN "data/objlst/actor/sherbetlandboss_unused_smokevl0.bin"
-OBJLst_Act_SherbetLandBoss_Unused_SmokeVL1: INCBIN "data/objlst/actor/sherbetlandboss_unused_smokevl1.bin"
-OBJLst_Act_SherbetLandBoss_Unused_SmokeVL2: INCBIN "data/objlst/actor/sherbetlandboss_unused_smokevl2.bin"
-OBJLst_Act_SherbetLandBossHat_L: INCBIN "data/objlst/actor/sherbetlandbosshat_l.bin"
+SprMap_Act_SherbetLandBoss_Unused_SmokeVL0: INCBIN "data/sprmap/actor/sherbetlandboss_unused_smokevl0.bin"
+SprMap_Act_SherbetLandBoss_Unused_SmokeVL1: INCBIN "data/sprmap/actor/sherbetlandboss_unused_smokevl1.bin"
+SprMap_Act_SherbetLandBoss_Unused_SmokeVL2: INCBIN "data/sprmap/actor/sherbetlandboss_unused_smokevl2.bin"
+SprMap_Act_SherbetLandBossHat_L: INCBIN "data/sprmap/actor/sherbetlandbosshat_l.bin"
 ; [TCRF] Mappings for a flashing heart, meant to go with GFX_Act_SherbetLandBoss_Unused_Heart.
 ;        Since those graphics aren't loaded, it appears as a broken key.
-OBJLst_Act_SherbetLandBoss_Unused_HeartL0: INCBIN "data/objlst/actor/sherbetlandboss_unused_heartl0.bin"
-OBJLst_Act_SherbetLandBoss_Unused_HeartL1: INCBIN "data/objlst/actor/sherbetlandboss_unused_heartl1.bin"
-OBJLst_Act_SherbetLandBoss_WalkR0: INCBIN "data/objlst/actor/sherbetlandboss_walkr0.bin"
-OBJLst_Act_SherbetLandBoss_WalkR1: INCBIN "data/objlst/actor/sherbetlandboss_walkr1.bin"
-OBJLst_Act_SherbetLandBoss_WalkR2: INCBIN "data/objlst/actor/sherbetlandboss_walkr2.bin"
-OBJLst_Act_SherbetLandBoss_Unused_JumpR: INCBIN "data/objlst/actor/sherbetlandboss_unused_jumpr.bin"
-OBJLst_Act_SherbetLandBoss_AttackR0: INCBIN "data/objlst/actor/sherbetlandboss_attackr0.bin"
-OBJLst_Act_SherbetLandBoss_AttackR1: INCBIN "data/objlst/actor/sherbetlandboss_attackr1.bin"
-OBJLst_Act_SherbetLandBoss_HitR: INCBIN "data/objlst/actor/sherbetlandboss_hitr.bin"
-OBJLst_Act_SherbetLandBoss_DeadR0: INCBIN "data/objlst/actor/sherbetlandboss_deadr0.bin"
-OBJLst_Act_SherbetLandBoss_DeadR1: INCBIN "data/objlst/actor/sherbetlandboss_deadr1.bin"
-OBJLst_Act_SherbetLandBoss_StandR: INCBIN "data/objlst/actor/sherbetlandboss_standr.bin"
+SprMap_Act_SherbetLandBoss_Unused_HeartL0: INCBIN "data/sprmap/actor/sherbetlandboss_unused_heartl0.bin"
+SprMap_Act_SherbetLandBoss_Unused_HeartL1: INCBIN "data/sprmap/actor/sherbetlandboss_unused_heartl1.bin"
+SprMap_Act_SherbetLandBoss_WalkR0: INCBIN "data/sprmap/actor/sherbetlandboss_walkr0.bin"
+SprMap_Act_SherbetLandBoss_WalkR1: INCBIN "data/sprmap/actor/sherbetlandboss_walkr1.bin"
+SprMap_Act_SherbetLandBoss_WalkR2: INCBIN "data/sprmap/actor/sherbetlandboss_walkr2.bin"
+SprMap_Act_SherbetLandBoss_Unused_JumpR: INCBIN "data/sprmap/actor/sherbetlandboss_unused_jumpr.bin"
+SprMap_Act_SherbetLandBoss_AttackR0: INCBIN "data/sprmap/actor/sherbetlandboss_attackr0.bin"
+SprMap_Act_SherbetLandBoss_AttackR1: INCBIN "data/sprmap/actor/sherbetlandboss_attackr1.bin"
+SprMap_Act_SherbetLandBoss_HitR: INCBIN "data/sprmap/actor/sherbetlandboss_hitr.bin"
+SprMap_Act_SherbetLandBoss_DeadR0: INCBIN "data/sprmap/actor/sherbetlandboss_deadr0.bin"
+SprMap_Act_SherbetLandBoss_DeadR1: INCBIN "data/sprmap/actor/sherbetlandboss_deadr1.bin"
+SprMap_Act_SherbetLandBoss_StandR: INCBIN "data/sprmap/actor/sherbetlandboss_standr.bin"
 ; [TCRF] Horizontally flipped variations of the above, for whatever reason
-OBJLst_Act_SherbetLandBoss_Unused_SmokeVR0: INCBIN "data/objlst/actor/sherbetlandboss_unused_smokevr0.bin"
-OBJLst_Act_SherbetLandBoss_Unused_SmokeVR1: INCBIN "data/objlst/actor/sherbetlandboss_unused_smokevr1.bin"
-OBJLst_Act_SherbetLandBoss_Unused_SmokeVR2: INCBIN "data/objlst/actor/sherbetlandboss_unused_smokevr2.bin"
-OBJLst_Act_SherbetLandBossHat_R: INCBIN "data/objlst/actor/sherbetlandbosshat_r.bin"
-OBJLst_Act_SherbetLandBoss_Unused_HeartR0: INCBIN "data/objlst/actor/sherbetlandboss_unused_heartr0.bin"
-OBJLst_Act_SherbetLandBoss_Unused_HeartR1: INCBIN "data/objlst/actor/sherbetlandboss_unused_heartr1.bin"
+SprMap_Act_SherbetLandBoss_Unused_SmokeVR0: INCBIN "data/sprmap/actor/sherbetlandboss_unused_smokevr0.bin"
+SprMap_Act_SherbetLandBoss_Unused_SmokeVR1: INCBIN "data/sprmap/actor/sherbetlandboss_unused_smokevr1.bin"
+SprMap_Act_SherbetLandBoss_Unused_SmokeVR2: INCBIN "data/sprmap/actor/sherbetlandboss_unused_smokevr2.bin"
+SprMap_Act_SherbetLandBossHat_R: INCBIN "data/sprmap/actor/sherbetlandbosshat_r.bin"
+SprMap_Act_SherbetLandBoss_Unused_HeartR0: INCBIN "data/sprmap/actor/sherbetlandboss_unused_heartr0.bin"
+SprMap_Act_SherbetLandBoss_Unused_HeartR1: INCBIN "data/sprmap/actor/sherbetlandboss_unused_heartr1.bin"
 GFX_Act_SherbetLandBoss: INCBIN "data/gfx/actor/sherbetlandboss.bin"
 ; [TCRF] Unreferenced extra block of tiles, part of the same "archive" as GFX_Act_SherbetLandBoss.
 ;        ActGroupGFXDef_C19_Room00 does not copy over the last two tiles though.
 GFX_Act_SherbetLandBoss_Unused_Heart: INCBIN "data/gfx/actor/sherbetlandboss_unused_heart.bin"
-OBJLstPtrTable_Act_SherbetLandBossHat_L:
-	dw OBJLst_Act_SherbetLandBossHat_L
+SprMapPtrTable_Act_SherbetLandBossHat_L:
+	dw SprMap_Act_SherbetLandBossHat_L
 	dw $0000
-OBJLstPtrTable_Act_SherbetLandBossHat_R:
-	dw OBJLst_Act_SherbetLandBossHat_R
+SprMapPtrTable_Act_SherbetLandBossHat_R:
+	dw SprMap_Act_SherbetLandBossHat_R
 	dw $0000
 
 ; =============== Act_SherbetLandBoss_SpawnHat ===============
@@ -2382,7 +2382,7 @@ Act_SherbetLandBoss_SpawnHat:
 	jr   .checkSlot
 	
 .slotFound:
-	mActS_SetOBJBank OBJLstSharedPtrTable_Act_SherbetLandBossHat
+	mActS_SetOBJBank SprMapSharedPtrTable_Act_SherbetLandBossHat
 	
 	ld   a, $02				; Enabled
 	ldi  [hl], a
@@ -2417,14 +2417,14 @@ Act_SherbetLandBoss_SpawnHat:
 	ld   a, [sActSetRelX]	; Rel.X (Origin)
 	ldi  [hl], a
 	
-	ld   a, LOW(OBJLstPtrTable_Act_None)	; OBJLst Table
+	ld   a, LOW(SprMapPtrTable_Act_None)	; Animation
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstPtrTable_Act_None)
+	ld   a, HIGH(SprMapPtrTable_Act_None)
 	ldi  [hl], a
 	
 	ld   a, [sActSetDir]	; Dir
 	ldi  [hl], a
-	xor  a					; OBJLst ID
+	xor  a					; Sprite mapping ID
 	ldi  [hl], a
 	
 	ld   a, [sActSetId]		; Actor ID (same as parent)
@@ -2453,22 +2453,22 @@ Act_SherbetLandBoss_SpawnHat:
 	ldi  [hl], a
 	ld   a, HIGH(sActDummyBlock)
 	ldi  [hl], a
-	ld   a, LOW(OBJLstSharedPtrTable_Act_SherbetLandBossHat)
+	ld   a, LOW(SprMapSharedPtrTable_Act_SherbetLandBossHat)
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedPtrTable_Act_SherbetLandBossHat)
+	ld   a, HIGH(SprMapSharedPtrTable_Act_SherbetLandBossHat)
 	ld   [hl], a
 	ld   a, SLBOSSHAT_YES		; Set hat on
 	ld   [sActSherbetLandBossHatStatus], a
 	ret
-OBJLstSharedPtrTable_Act_SherbetLandBossHat:
-	dw OBJLstPtrTable_Act_SherbetLandBossHat_L;X
-	dw OBJLstPtrTable_Act_SherbetLandBossHat_R;X
-	dw OBJLstPtrTable_Act_SherbetLandBossHat_L;X
-	dw OBJLstPtrTable_Act_SherbetLandBossHat_R;X
-	dw OBJLstPtrTable_Act_SherbetLandBossHat_L
-	dw OBJLstPtrTable_Act_SherbetLandBossHat_R
-	dw OBJLstPtrTable_Act_SherbetLandBossHat_L;X
-	dw OBJLstPtrTable_Act_SherbetLandBossHat_R;X
+SprMapSharedPtrTable_Act_SherbetLandBossHat:
+	dw SprMapPtrTable_Act_SherbetLandBossHat_L;X
+	dw SprMapPtrTable_Act_SherbetLandBossHat_R;X
+	dw SprMapPtrTable_Act_SherbetLandBossHat_L;X
+	dw SprMapPtrTable_Act_SherbetLandBossHat_R;X
+	dw SprMapPtrTable_Act_SherbetLandBossHat_L
+	dw SprMapPtrTable_Act_SherbetLandBossHat_R
+	dw SprMapPtrTable_Act_SherbetLandBossHat_L;X
+	dw SprMapPtrTable_Act_SherbetLandBossHat_R;X
 ; =============== Act_SherbetLandBossHat ===============
 Act_SherbetLandBossHat:
 	ld   a, [sActSetTimer]	; Timer++
@@ -2505,14 +2505,14 @@ Act_SherbetLandBossHat:
 	jr   nz, .animR					; If so, jump
 .animL:
 	push bc
-	ld   bc, OBJLstPtrTable_Act_SherbetLandBossHat_L
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_SherbetLandBossHat_L
+	call ActS_SetSprMapPtr
 	pop  bc
 	ret
 .animR:
 	push bc
-	ld   bc, OBJLstPtrTable_Act_SherbetLandBossHat_R
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_SherbetLandBossHat_R
+	call ActS_SetSprMapPtr
 	pop  bc
 	ret
 .useYOffset:
@@ -2544,12 +2544,12 @@ ActInit_Mole:
 	ld   bc, SubCall_Act_Mole
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Mole_MoveL
+	; Set initial animation
+	mActSprMapPtrTable SprMapPtrTable_Act_Mole_MoveL
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_Mole
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_Mole
+	call ActS_SetSprMapSharedTablePtr
 	
 	; The mole itself is fully safe to touch
 	mActColiMask ACTCOLI_NORM,ACTCOLI_NORM,ACTCOLI_NORM,ACTCOLI_NORM
@@ -2702,7 +2702,7 @@ Act_Mole_Walk:
 	or   a
 	jp   nz, Act_Mole_WaitTurn
 	
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	; Move depending on the actor's direction
 	ld   a, [sActSetDir]
@@ -2793,10 +2793,10 @@ Act_Mole_WaitTurn:
 	bit  DIRB_R, a			; Facing right?
 	jr   nz, .dirR			; If so, jump
 .dirL:
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Mole_MoveL
+	mActSprMapPtrTable SprMapPtrTable_Act_Mole_MoveL
 	ret
 .dirR:
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Mole_MoveR
+	mActSprMapPtrTable SprMapPtrTable_Act_Mole_MoveR
 	ret
 	
 ; =============== Act_Mole_SetTurnDelay ===============
@@ -2828,10 +2828,10 @@ Act_Mole_MoveLeft:
 	ld   bc, -$01
 	call ActS_MoveRight
 	
-	ld   a, LOW(OBJLstPtrTable_Act_Mole_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Mole_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Mole_MoveL)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Mole_MoveL)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; Make the actor face left
 	ld   a, [sActSetDir]
@@ -2863,10 +2863,10 @@ Act_Mole_MoveRight:
 	ld   bc, +$01
 	call ActS_MoveRight
 	
-	ld   a, LOW(OBJLstPtrTable_Act_Mole_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Mole_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Mole_MoveR)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Mole_MoveR)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; Make the actor face right
 	ld   a, [sActSetDir]
@@ -2889,21 +2889,21 @@ Act_Mole_SwitchToThrow:
 	ld   a, [sActSetDir]
 	bit  DIRB_R, a			; Is the actor facing right?
 	jr   nz, .dirR			; If so, jump
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Mole_ThrowL
+	mActSprMapPtrTable SprMapPtrTable_Act_Mole_ThrowL
 	ret
 .dirR:
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Mole_ThrowR
+	mActSprMapPtrTable SprMapPtrTable_Act_Mole_ThrowR
 	ret
 	
 ; =============== Act_Mole_ThrowSpike ===============
 Act_Mole_ThrowSpike:
 	; Switch to the next mode once the animation ends
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	cp   a, $02						; Has the animation ended? (frame >= $02)
 	jr   nc, .endMode				; If so, jump
 	
 	; Animate every $08 frames
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	ret
 	
 .endMode:
@@ -2939,10 +2939,10 @@ Act_Mole_PostThrowWait:
 	bit  DIRB_R, a				; Facing right?
 	jr   nz, .dirR				; If so, jump
 .dirL:
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Mole_PostThrowL
+	mActSprMapPtrTable SprMapPtrTable_Act_Mole_PostThrowL
 	ret
 .dirR:
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Mole_PostThrowR
+	mActSprMapPtrTable SprMapPtrTable_Act_Mole_PostThrowR
 	ret
 	
 ; =============== Act_Mole_SetThrowDelay ===============
@@ -2973,12 +2973,12 @@ ActInit_Unused_MoleSpike:
 	ld   bc, SubCall_Act_MoleSpike
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
-	mActOBJLstPtrTable OBJLstPtrTable_Act_MoleSpike
+	; Set initial animation
+	mActSprMapPtrTable SprMapPtrTable_Act_MoleSpike
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_MoleSpike
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_MoleSpike
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Deal damage on all sides
 	mActColiMask ACTCOLI_DAMAGE, ACTCOLI_DAMAGE, ACTCOLI_DAMAGE, ACTCOLI_DAMAGE
@@ -3019,7 +3019,7 @@ Act_Mole_SpawnSpike:
 	jr   .checkSlot
 	
 .slotFound:
-	mActS_SetOBJBank OBJLstSharedPtrTable_Act_MoleSpike
+	mActS_SetOBJBank SprMapSharedPtrTable_Act_MoleSpike
 	
 	ld   a, $02				; Enabled
 	ldi  [hl], a
@@ -3050,14 +3050,14 @@ Act_Mole_SpawnSpike:
 	ldi  [hl], a				; Rel.Y (Origin)
 	ldi  [hl], a				; Rel.X (Origin)
 	
-	ld   a, LOW(OBJLstPtrTable_Act_None)	; OBJLst Table
+	ld   a, LOW(SprMapPtrTable_Act_None)	; Animation
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstPtrTable_Act_None)
+	ld   a, HIGH(SprMapPtrTable_Act_None)
 	ldi  [hl], a
 	
 	ld   a, [sActSetDir]		; Dir
 	ldi  [hl], a
-	xor  a						; OBJLst ID
+	xor  a						; Sprite mapping ID
 	ldi  [hl], a
 	
 	ld   a, [sActSetId]			; Actor ID
@@ -3098,9 +3098,9 @@ Act_Mole_SpawnSpike:
 	ld   a, HIGH(sActDummyBlock)
 	ldi  [hl], a
 	
-	ld   a, LOW(OBJLstSharedPtrTable_Act_MoleSpike)		; OBJLst shared table
+	ld   a, LOW(SprMapSharedPtrTable_Act_MoleSpike)		; Set default animation table
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedPtrTable_Act_MoleSpike)
+	ld   a, HIGH(SprMapSharedPtrTable_Act_MoleSpike)
 	ldi  [hl], a
 	
 	ld   a, MOS_MODE_HOLD		; Request arc hold mode
@@ -3114,7 +3114,7 @@ Act_MoleSpike:
 	inc  a
 	ld   [sActSetTimer], a
 	
-	mActOBJLstPtrTable OBJLstPtrTable_Act_MoleSpike
+	mActSprMapPtrTable SprMapPtrTable_Act_MoleSpike
 	
 	;-- 
 	; Get ptr to tracked slot, like mActSeekToParentSlot.
@@ -3330,80 +3330,80 @@ Act_MoleSpike_Hold_RPath:
 	db +$06,-$14
 	db +$10,-$0A
 	db +$14,-$08
-OBJLstSharedPtrTable_Act_Mole:
-	dw OBJLstPtrTable_Act_Mole_StunL;X
-	dw OBJLstPtrTable_Act_Mole_StunR;X
-	dw OBJLstPtrTable_Act_Mole_MoveL
-	dw OBJLstPtrTable_Act_Mole_MoveR
-	dw OBJLstPtrTable_Act_Mole_StunL
-	dw OBJLstPtrTable_Act_Mole_StunR
-	dw OBJLstPtrTable_Act_Mole_MoveL;X
-	dw OBJLstPtrTable_Act_Mole_MoveR;X
+SprMapSharedPtrTable_Act_Mole:
+	dw SprMapPtrTable_Act_Mole_StunL;X
+	dw SprMapPtrTable_Act_Mole_StunR;X
+	dw SprMapPtrTable_Act_Mole_MoveL
+	dw SprMapPtrTable_Act_Mole_MoveR
+	dw SprMapPtrTable_Act_Mole_StunL
+	dw SprMapPtrTable_Act_Mole_StunR
+	dw SprMapPtrTable_Act_Mole_MoveL;X
+	dw SprMapPtrTable_Act_Mole_MoveR;X
 
-OBJLstPtrTable_Act_Mole_MoveL:
-	dw OBJLst_Act_Mole_MoveL0
-	dw OBJLst_Act_Mole_MoveL1
-	dw OBJLst_Act_Mole_MoveL2
-	dw OBJLst_Act_Mole_MoveL3
+SprMapPtrTable_Act_Mole_MoveL:
+	dw SprMap_Act_Mole_MoveL0
+	dw SprMap_Act_Mole_MoveL1
+	dw SprMap_Act_Mole_MoveL2
+	dw SprMap_Act_Mole_MoveL3
 	dw $0000
-OBJLstPtrTable_Act_Mole_MoveR:
-	dw OBJLst_Act_Mole_MoveR0
-	dw OBJLst_Act_Mole_MoveR1
-	dw OBJLst_Act_Mole_MoveR2
-	dw OBJLst_Act_Mole_MoveR3
+SprMapPtrTable_Act_Mole_MoveR:
+	dw SprMap_Act_Mole_MoveR0
+	dw SprMap_Act_Mole_MoveR1
+	dw SprMap_Act_Mole_MoveR2
+	dw SprMap_Act_Mole_MoveR3
 	dw $0000
-OBJLstPtrTable_Act_Mole_StunL:
-	dw OBJLst_Act_Mole_StunL
+SprMapPtrTable_Act_Mole_StunL:
+	dw SprMap_Act_Mole_StunL
 	dw $0000
-OBJLstPtrTable_Act_Mole_StunR:
-	dw OBJLst_Act_Mole_StunR
+SprMapPtrTable_Act_Mole_StunR:
+	dw SprMap_Act_Mole_StunR
 	dw $0000
-OBJLstPtrTable_Act_Mole_ThrowL:
-	dw OBJLst_Act_Mole_MoveL0
-	dw OBJLst_Act_Mole_ThrowL
-	dw OBJLst_Act_Mole_ThrowL
-	dw OBJLst_Act_Mole_ThrowL;X	; Not needed
+SprMapPtrTable_Act_Mole_ThrowL:
+	dw SprMap_Act_Mole_MoveL0
+	dw SprMap_Act_Mole_ThrowL
+	dw SprMap_Act_Mole_ThrowL
+	dw SprMap_Act_Mole_ThrowL;X	; Not needed
 	dw $0000;X
-OBJLstPtrTable_Act_Mole_ThrowR:
-	dw OBJLst_Act_Mole_MoveR0
-	dw OBJLst_Act_Mole_ThrowR
-	dw OBJLst_Act_Mole_ThrowR
-	dw OBJLst_Act_Mole_ThrowR;X	; Not needed
+SprMapPtrTable_Act_Mole_ThrowR:
+	dw SprMap_Act_Mole_MoveR0
+	dw SprMap_Act_Mole_ThrowR
+	dw SprMap_Act_Mole_ThrowR
+	dw SprMap_Act_Mole_ThrowR;X	; Not needed
 	dw $0000;X
-OBJLstPtrTable_Act_Mole_PostThrowL:
-	dw OBJLst_Act_Mole_ThrowL
+SprMapPtrTable_Act_Mole_PostThrowL:
+	dw SprMap_Act_Mole_ThrowL
 	dw $0000;X
-OBJLstPtrTable_Act_Mole_PostThrowR:
-	dw OBJLst_Act_Mole_ThrowR
+SprMapPtrTable_Act_Mole_PostThrowR:
+	dw SprMap_Act_Mole_ThrowR
 	dw $0000;X
-OBJLstPtrTable_Act_MoleSpike:
-	dw OBJLst_Act_MoleSpike
+SprMapPtrTable_Act_MoleSpike:
+	dw SprMap_Act_MoleSpike
 	dw $0000;X
 
-OBJLstSharedPtrTable_Act_MoleSpike:
-	dw OBJLstPtrTable_Act_MoleSpike;X
-	dw OBJLstPtrTable_Act_MoleSpike;X
-	dw OBJLstPtrTable_Act_MoleSpike;X
-	dw OBJLstPtrTable_Act_MoleSpike;X
-	dw OBJLstPtrTable_Act_MoleSpike;X
-	dw OBJLstPtrTable_Act_MoleSpike;X
-	dw OBJLstPtrTable_Act_MoleSpike;X
-	dw OBJLstPtrTable_Act_MoleSpike;X
+SprMapSharedPtrTable_Act_MoleSpike:
+	dw SprMapPtrTable_Act_MoleSpike;X
+	dw SprMapPtrTable_Act_MoleSpike;X
+	dw SprMapPtrTable_Act_MoleSpike;X
+	dw SprMapPtrTable_Act_MoleSpike;X
+	dw SprMapPtrTable_Act_MoleSpike;X
+	dw SprMapPtrTable_Act_MoleSpike;X
+	dw SprMapPtrTable_Act_MoleSpike;X
+	dw SprMapPtrTable_Act_MoleSpike;X
 
-OBJLst_Act_Mole_MoveL0: INCBIN "data/objlst/actor/mole_movel0.bin"
-OBJLst_Act_Mole_MoveL1: INCBIN "data/objlst/actor/mole_movel1.bin"
-OBJLst_Act_Mole_MoveL2: INCBIN "data/objlst/actor/mole_movel2.bin"
-OBJLst_Act_Mole_MoveL3: INCBIN "data/objlst/actor/mole_movel3.bin"
-OBJLst_Act_Mole_StunL: INCBIN "data/objlst/actor/mole_stunl.bin"
-OBJLst_Act_Mole_ThrowL: INCBIN "data/objlst/actor/mole_throwl.bin"
-OBJLst_Act_Mole_MoveR0: INCBIN "data/objlst/actor/mole_mover0.bin"
-OBJLst_Act_Mole_MoveR1: INCBIN "data/objlst/actor/mole_mover1.bin"
-OBJLst_Act_Mole_MoveR2: INCBIN "data/objlst/actor/mole_mover2.bin"
-OBJLst_Act_Mole_MoveR3: INCBIN "data/objlst/actor/mole_mover3.bin"
-OBJLst_Act_Mole_StunR: INCBIN "data/objlst/actor/mole_stunr.bin"
-OBJLst_Act_Mole_ThrowR: INCBIN "data/objlst/actor/mole_throwr.bin"
+SprMap_Act_Mole_MoveL0: INCBIN "data/sprmap/actor/mole_movel0.bin"
+SprMap_Act_Mole_MoveL1: INCBIN "data/sprmap/actor/mole_movel1.bin"
+SprMap_Act_Mole_MoveL2: INCBIN "data/sprmap/actor/mole_movel2.bin"
+SprMap_Act_Mole_MoveL3: INCBIN "data/sprmap/actor/mole_movel3.bin"
+SprMap_Act_Mole_StunL: INCBIN "data/sprmap/actor/mole_stunl.bin"
+SprMap_Act_Mole_ThrowL: INCBIN "data/sprmap/actor/mole_throwl.bin"
+SprMap_Act_Mole_MoveR0: INCBIN "data/sprmap/actor/mole_mover0.bin"
+SprMap_Act_Mole_MoveR1: INCBIN "data/sprmap/actor/mole_mover1.bin"
+SprMap_Act_Mole_MoveR2: INCBIN "data/sprmap/actor/mole_mover2.bin"
+SprMap_Act_Mole_MoveR3: INCBIN "data/sprmap/actor/mole_mover3.bin"
+SprMap_Act_Mole_StunR: INCBIN "data/sprmap/actor/mole_stunr.bin"
+SprMap_Act_Mole_ThrowR: INCBIN "data/sprmap/actor/mole_throwr.bin"
 GFX_Act_Mole: INCBIN "data/gfx/actor/mole.bin"
-OBJLst_Act_MoleSpike: INCBIN "data/objlst/actor/molespike.bin"
+SprMap_Act_MoleSpike: INCBIN "data/sprmap/actor/molespike.bin"
 GFX_Act_MoleSpike: INCBIN "data/gfx/actor/molespike.bin"
 
 ; =============== ActInit_MoleCutscene ===============
@@ -3420,12 +3420,12 @@ ActInit_MoleCutscene:
 	ld   bc, SubCall_Act_MoleCutscene
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
-	mActOBJLstPtrTable OBJLstPtrTable_Act_MoleCutscene_Idle
+	; Set initial animation
+	mActSprMapPtrTable SprMapPtrTable_Act_MoleCutscene_Idle
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_Mole
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_Mole
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Clear timers
 	xor  a
@@ -3438,23 +3438,23 @@ ActInit_MoleCutscene:
 	ld   [sActSetTimer7], a
 	ld   [sActSetColiType], a		; Make intangible
 	ret
-; =============== OBJLstPtrTable_Act_MoleCutscene_* ===============
+; =============== SprMapPtrTable_Act_MoleCutscene_* ===============
 ; This actor uses the same graphics as Act_Mole, so the same mappings will also work fine.
-OBJLstPtrTable_Act_MoleCutscene_Idle:
-	dw OBJLst_Act_Mole_MoveR0
+SprMapPtrTable_Act_MoleCutscene_Idle:
+	dw SprMap_Act_Mole_MoveR0
 	dw $0000
-OBJLstPtrTable_Act_MoleCutscene_Turn:
-	dw OBJLst_Act_Mole_MoveR0
-	dw OBJLst_Act_Mole_MoveL0
+SprMapPtrTable_Act_MoleCutscene_Turn:
+	dw SprMap_Act_Mole_MoveR0
+	dw SprMap_Act_Mole_MoveL0
 	dw $0000
-OBJLstPtrTable_Act_MoleCutscene_Throw:
-	dw OBJLst_Act_Mole_ThrowR
+SprMapPtrTable_Act_MoleCutscene_Throw:
+	dw SprMap_Act_Mole_ThrowR
 	dw $0000;X
-OBJLstPtrTable_Act_MoleCutscene_Walk:
-	dw OBJLst_Act_Mole_MoveR0
-	dw OBJLst_Act_Mole_MoveR1
-	dw OBJLst_Act_Mole_MoveR2
-	dw OBJLst_Act_Mole_MoveR3
+SprMapPtrTable_Act_MoleCutscene_Walk:
+	dw SprMap_Act_Mole_MoveR0
+	dw SprMap_Act_Mole_MoveR1
+	dw SprMap_Act_Mole_MoveR2
+	dw SprMap_Act_Mole_MoveR3
 	dw $0000
 
 ; =============== Act_MoleCutscene ===============
@@ -3475,7 +3475,7 @@ Act_MoleCutscene:
 ; =============== Act_MoleCutscene_Idle ===============
 ; Mode $00: Idle mode.
 Act_MoleCutscene_Idle:
-	mActOBJLstPtrTable OBJLstPtrTable_Act_MoleCutscene_Idle
+	mActSprMapPtrTable SprMapPtrTable_Act_MoleCutscene_Idle
 	
 	;
 	; Start the cutscene when the player gets close enough.
@@ -3503,7 +3503,7 @@ Act_MoleCutscene_Idle:
 	ld   a, $FA					; Freeze the player
 	ld   [sPlFreezeTimer], a
 	
-	mActOBJLstPtrTable OBJLstPtrTable_Act_MoleCutscene_Idle
+	mActSprMapPtrTable SprMapPtrTable_Act_MoleCutscene_Idle
 	
 	ld   a, BGMACT_FADEOUT
 	ld   [sBGMActSet], a
@@ -3519,9 +3519,9 @@ Act_MoleCutscene_TurnMulti:
 	ld   a, [sTimer]
 	and  a, $0F
 	jr   nz, .incTimer
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .incTimer:
 	; Every other frame...
 	ld   a, [sActSetTimer]
@@ -3541,20 +3541,20 @@ Act_MoleCutscene_TurnMulti:
 	
 .turnAnim:
 	; Between frames $3C - $59, do the turn animation
-	ld   a, LOW(OBJLstPtrTable_Act_MoleCutscene_Turn)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_MoleCutscene_Turn)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_MoleCutscene_Turn)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_MoleCutscene_Turn)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	;--
 	; [TCRF] This... does nothing at all. Half-removed leftover?
 	;        The way it's laid out implies two things:
 	;        - This mode used to animate every 8 frames rather than $10
-	;        - sActSetOBJLstId may have been reset every 8 frames
+	;        - sActSetSprMapId may have been reset every 8 frames
 	ld   a, [sActMoleCutsceneModeTimer]
 	and  a, $07
 	ret  nz
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	cp   a, $01					; FrameId == $01?	
 	jr   z, .end				; If so, jump
 	ret
@@ -3574,7 +3574,7 @@ Act_MoleCutscene_TurnMulti:
 ; Mode $01: The mole "turns" multiple times.
 Act_MoleCutscene_TurnRight:
 	; Turning is done through an animation
-	mActOBJLstPtrTable OBJLstPtrTable_Act_MoleCutscene_Idle
+	mActSprMapPtrTable SprMapPtrTable_Act_MoleCutscene_Idle
 	
 	; Wait for $1E frames
 	ld   a, [sActMoleCutsceneModeTimer]
@@ -3592,7 +3592,7 @@ Act_MoleCutscene_TurnRight:
 ; =============== Act_MoleCutscene_SpawnCoin ===============
 ; Mode $03: Spawns the 10-coin.
 Act_MoleCutscene_SpawnCoin:
-	mActOBJLstPtrTable OBJLstPtrTable_Act_MoleCutscene_Idle
+	mActSprMapPtrTable SprMapPtrTable_Act_MoleCutscene_Idle
 	
 	; Wait for $0A frames before spawning the coin
 	ld   a, [sActMoleCutsceneModeTimer]
@@ -3607,7 +3607,7 @@ Act_MoleCutscene_SpawnCoin:
 	xor  a
 	ld   [sActMoleCutsceneModeTimer], a
 	
-	mActOBJLstPtrTable OBJLstPtrTable_Act_MoleCutscene_Idle
+	mActSprMapPtrTable SprMapPtrTable_Act_MoleCutscene_Idle
 	
 	;
 	; Spawn a 10-coin on the mole's hand.
@@ -3627,7 +3627,7 @@ Act_MoleCutscene_SpawnCoin:
 	jr   c, .checkSlot		; If not, check the next one
 	ret ; [POI] We never get here
 .slotFound:
-	mActS_SetOBJBank OBJLstPtrTable_Act_10Coin
+	mActS_SetOBJBank SprMapPtrTable_Act_10Coin
 	
 	ld   a, $02				; Enabled
 	ldi  [hl], a
@@ -3665,14 +3665,14 @@ Act_MoleCutscene_SpawnCoin:
 	ld   a, [sActSetRelX]	; Rel.X (Origin)
 	ldi  [hl], a
 	
-	ld   a, LOW(OBJLstPtrTable_Act_10Coin)	; OBJLst Table
+	ld   a, LOW(SprMapPtrTable_Act_10Coin)	; Animation
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstPtrTable_Act_10Coin)
+	ld   a, HIGH(SprMapPtrTable_Act_10Coin)
 	ldi  [hl], a
 	
 	ld   a, DIR_R			; The lock is on the right
 	ldi  [hl], a
-	xor  a					; OBJLst ID
+	xor  a					; Sprite mapping ID
 	ldi  [hl], a
 	ld   a, ACT_10COIN		; Actor ID (standard type)
 	ldi  [hl], a
@@ -3709,9 +3709,9 @@ Act_MoleCutscene_SpawnCoin:
 	ldi  [hl], a
 	
 	; [POI] Weird value, but not like it's used.
-	ld   a, LOW(OBJLstSharedPtrTable_Act_Mole)
+	ld   a, LOW(SprMapSharedPtrTable_Act_Mole)
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedPtrTable_Act_Mole)
+	ld   a, HIGH(SprMapSharedPtrTable_Act_Mole)
 	ldi  [hl], a
 	ret
 	
@@ -3729,7 +3729,7 @@ Act_MoleCutscene_ThrowAnim:
 	cp   a, $3C							; Timer != $3C?
 	ret  nz								; If so, return
 	
-	mActOBJLstPtrTable OBJLstPtrTable_Act_MoleCutscene_Throw
+	mActSprMapPtrTable SprMapPtrTable_Act_MoleCutscene_Throw
 	ld   a, SFX1_0C
 	ld   [sSFX1Set], a
 	ret
@@ -3742,7 +3742,7 @@ Act_MoleCutscene_ThrowAnim:
 ; =============== Act_MoleCutscene_WaitWalk ===============
 ; Mode $04: Wait for $3C frames before moving.
 Act_MoleCutscene_WaitWalk:
-	mActOBJLstPtrTable OBJLstPtrTable_Act_MoleCutscene_Idle
+	mActSprMapPtrTable SprMapPtrTable_Act_MoleCutscene_Idle
 	
 	; Wait for $3C frames
 	ld   a, [sActMoleCutsceneModeTimer]	; Timer++
@@ -3755,7 +3755,7 @@ Act_MoleCutscene_WaitWalk:
 	ld   a, MOLEC_RTN_WALK
 	ld   [sActLocalRoutineId], a
 	
-	mActOBJLstPtrTable OBJLstPtrTable_Act_MoleCutscene_Walk
+	mActSprMapPtrTable SprMapPtrTable_Act_MoleCutscene_Walk
 	
 	xor  a
 	ld   [sActMoleCutsceneModeTimer], a
@@ -3769,7 +3769,7 @@ Act_MoleCutscene_WaitWalk:
 ; Mode $05: Mole walks to the right, then despawns over the exit door.
 Act_MoleCutscene_Walk:
 	; Animate every 8 frames
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	; After $60 frames despawn the actor, which is when the actor is over the exit door.
 	; With the movement speed of 0.5px/frame, the door is expected to be 3 blocks to the right.
@@ -3808,12 +3808,12 @@ ActInit_Knight:
 	ld   bc, SubCall_Act_Knight
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Knight_WalkL
+	; Set initial animation
+	mActSprMapPtrTable SprMapPtrTable_Act_Knight_WalkL
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_Knight
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_Knight
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Damage from the top when idle
 	mActColiMask ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_DAMAGE, ACTCOLI_NORM
@@ -3909,7 +3909,7 @@ Act_Knight_PlayWalkSFX:
 ; =============== Act_Knight_Walk_Main ===============
 Act_Knight_Walk_Main:
 	; Animate every 8 frames
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	; Play walking SFX every $10 frames
 	ld   a, [sActSetTimer]
@@ -3945,10 +3945,10 @@ Act_Knight_MoveLeft:
 	or   a								; RoutineId == KNI_RTN_WALK?
 	ret  nz								; If not, return
 	; Bump the player when hitting the shield
-	ld   a, LOW(OBJLstPtrTable_Act_Knight_WalkL)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Knight_WalkL)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Knight_WalkL)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Knight_WalkL)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	mActColiMask ACTCOLI_NORM, ACTCOLI_BUMP, ACTCOLI_DAMAGE, ACTCOLI_NORM
 	ld   a, COLI
 	ld   [sActSetColiType], a
@@ -3969,10 +3969,10 @@ Act_Knight_MoveRight:
 	ld   a, [sActLocalRoutineId]
 	or   a								; RoutineId == KNI_RTN_WALK?
 	ret  nz								; If not, return
-	ld   a, LOW(OBJLstPtrTable_Act_Knight_WalkR)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Knight_WalkR)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Knight_WalkR)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Knight_WalkR)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	; Bump the player when hitting the shield
 	mActColiMask ACTCOLI_BUMP, ACTCOLI_NORM, ACTCOLI_DAMAGE, ACTCOLI_NORM
 	ld   a, COLI
@@ -4007,9 +4007,9 @@ Act_Knight_Charge:
 	ld   a, [sTimer]
 	and  a, $03
 	jr   nz, .moveH
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .moveH:
 	; Play walking SFX every 8 frames (double the speed)
 	ld   a, [sActSetTimer]
@@ -4036,10 +4036,10 @@ Act_Knight_ChargeLeft:
 	call ActS_MoveRight
 	
 	; Set charge anim, with the spike on the left
-	ld   a, LOW(OBJLstPtrTable_Act_Knight_ChargeL)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Knight_ChargeL)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Knight_ChargeL)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Knight_ChargeL)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	; Damage player on the left side
 	; Note that we can't actually hit him from behind -- he moves too fast.
 	mActColiMask ACTCOLI_NORM, ACTCOLI_DAMAGE, ACTCOLI_DAMAGE, ACTCOLI_NORM
@@ -4058,10 +4058,10 @@ Act_Knight_ChargeRight:
 	call ActS_MoveRight
 	
 	; Set charge anim, with the spike on the right
-	ld   a, LOW(OBJLstPtrTable_Act_Knight_ChargeR)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Knight_ChargeR)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Knight_ChargeR)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Knight_ChargeR)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	; Damage player on the right side
 	mActColiMask ACTCOLI_DAMAGE, ACTCOLI_NORM, ACTCOLI_DAMAGE, ACTCOLI_NORM
 	ld   a, COLI
@@ -4089,12 +4089,12 @@ Act_Knight_SwitchToHit:
 	ld   [sActSetColiType], a			; Make intangible during this
 	
 	; Set stun animation
-	ld   [sActSetOBJLstId], a			; Reset anim counter
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Knight_StunR	; Set the one when facing right first
+	ld   [sActSetSprMapId], a			; Reset anim counter
+	mActSprMapPtrTable SprMapPtrTable_Act_Knight_StunR	; Set the one when facing right first
 	ld   a, [sActSetDir]
 	bit  DIRB_R, a						; Facing right?
 	ret  nz								; If so, return
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Knight_StunL	; Set the one when facing left
+	mActSprMapPtrTable SprMapPtrTable_Act_Knight_StunL	; Set the one when facing left
 	ret
 	
 ; =============== Act_Knight_Hit ===============
@@ -4129,17 +4129,17 @@ Act_Knight_Hit:
 	cp   a, $1E
 	ret  nz
 	
-	ld   a, LOW(OBJLstPtrTable_Act_Knight_ChargeL)					; When facing left
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Knight_ChargeL)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Knight_ChargeL)					; When facing left
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Knight_ChargeL)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	ld   a, [sActSetDir]
 	bit  DIRB_L, a			; Facing left?
 	ret  nz					; If so, return
-	ld   a, LOW(OBJLstPtrTable_Act_Knight_ChargeR)					; When facing right
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Knight_ChargeR)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Knight_ChargeR)					; When facing right
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Knight_ChargeR)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	ret
 	
 ; =============== Act_Knight_SwitchToDead ===============
@@ -4158,17 +4158,17 @@ Act_Knight_SwitchToDead:
 	mActSetYSpeed -$03			; Trigger jump at 3px/frame
 	
 	; Set defeat anim
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Knight_DeadL	; When facing left
+	mActSprMapPtrTable SprMapPtrTable_Act_Knight_DeadL	; When facing left
 	ld   a, [sActSetDir]
 	bit  DIRB_L, a			; Facing left?
 	ret  nz					; If so, return
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Knight_DeadR	; When facing right
+	mActSprMapPtrTable SprMapPtrTable_Act_Knight_DeadR	; When facing right
 	ret
 	
 ; =============== Act_Knight_Mode3 ===============
 Act_Knight_Mode3:
 	; Animate every 8 frames
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	; Do the jump, increasing the speed every 8 frames (to off-screen below)
 	call ActS_FallDownEvery8
 	
@@ -4183,73 +4183,73 @@ Act_Knight_Mode3:
 	; ActS_StartJumpDead only despawns the actor while awarding a single heart.
 	jp   SubCall_ActS_StartJumpDead
 	
-OBJLstPtrTable_Act_Knight_WalkL:
-	dw OBJLst_Act_Knight_WalkL0
-	dw OBJLst_Act_Knight_WalkL1
-	dw OBJLst_Act_Knight_WalkL0
-	dw OBJLst_Act_Knight_WalkL2
+SprMapPtrTable_Act_Knight_WalkL:
+	dw SprMap_Act_Knight_WalkL0
+	dw SprMap_Act_Knight_WalkL1
+	dw SprMap_Act_Knight_WalkL0
+	dw SprMap_Act_Knight_WalkL2
 	dw $0000
-OBJLstPtrTable_Act_Knight_WalkR:
-	dw OBJLst_Act_Knight_WalkR0
-	dw OBJLst_Act_Knight_WalkR1
-	dw OBJLst_Act_Knight_WalkR0
-	dw OBJLst_Act_Knight_WalkR2
+SprMapPtrTable_Act_Knight_WalkR:
+	dw SprMap_Act_Knight_WalkR0
+	dw SprMap_Act_Knight_WalkR1
+	dw SprMap_Act_Knight_WalkR0
+	dw SprMap_Act_Knight_WalkR2
 	dw $0000
-OBJLstPtrTable_Act_Knight_ChargeL:
-	dw OBJLst_Act_Knight_ChargeL0
-	dw OBJLst_Act_Knight_ChargeL1
-	dw OBJLst_Act_Knight_ChargeL0
-	dw OBJLst_Act_Knight_ChargeL2
+SprMapPtrTable_Act_Knight_ChargeL:
+	dw SprMap_Act_Knight_ChargeL0
+	dw SprMap_Act_Knight_ChargeL1
+	dw SprMap_Act_Knight_ChargeL0
+	dw SprMap_Act_Knight_ChargeL2
 	dw $0000
-OBJLstPtrTable_Act_Knight_ChargeR:
-	dw OBJLst_Act_Knight_ChargeR0
-	dw OBJLst_Act_Knight_ChargeR1
-	dw OBJLst_Act_Knight_ChargeR0
-	dw OBJLst_Act_Knight_ChargeR2
+SprMapPtrTable_Act_Knight_ChargeR:
+	dw SprMap_Act_Knight_ChargeR0
+	dw SprMap_Act_Knight_ChargeR1
+	dw SprMap_Act_Knight_ChargeR0
+	dw SprMap_Act_Knight_ChargeR2
 	dw $0000
-OBJLstPtrTable_Act_Knight_StunL:
-	dw OBJLst_Act_Knight_StunL
+SprMapPtrTable_Act_Knight_StunL:
+	dw SprMap_Act_Knight_StunL
 	dw $0000;X
-OBJLstPtrTable_Act_Knight_StunR:
-	dw OBJLst_Act_Knight_StunR
+SprMapPtrTable_Act_Knight_StunR:
+	dw SprMap_Act_Knight_StunR
 	dw $0000;X
-OBJLstPtrTable_Act_Knight_DeadL:
-	dw OBJLst_Act_Knight_DeadL0
-	dw OBJLst_Act_Knight_DeadL1
+SprMapPtrTable_Act_Knight_DeadL:
+	dw SprMap_Act_Knight_DeadL0
+	dw SprMap_Act_Knight_DeadL1
 	dw $0000
-OBJLstPtrTable_Act_Knight_DeadR:
-	dw OBJLst_Act_Knight_DeadR0
-	dw OBJLst_Act_Knight_DeadR1
+SprMapPtrTable_Act_Knight_DeadR:
+	dw SprMap_Act_Knight_DeadR0
+	dw SprMap_Act_Knight_DeadR1
 	dw $0000
 
-OBJLstSharedPtrTable_Act_Knight:
-	dw OBJLstPtrTable_Act_Knight_StunL;X
-	dw OBJLstPtrTable_Act_Knight_StunR;X
-	dw OBJLstPtrTable_Act_Knight_StunL;X
-	dw OBJLstPtrTable_Act_Knight_StunR;X
-	dw OBJLstPtrTable_Act_Knight_StunL
-	dw OBJLstPtrTable_Act_Knight_StunR
-	dw OBJLstPtrTable_Act_Knight_StunL;X
-	dw OBJLstPtrTable_Act_Knight_StunR;X
+SprMapSharedPtrTable_Act_Knight:
+	dw SprMapPtrTable_Act_Knight_StunL;X
+	dw SprMapPtrTable_Act_Knight_StunR;X
+	dw SprMapPtrTable_Act_Knight_StunL;X
+	dw SprMapPtrTable_Act_Knight_StunR;X
+	dw SprMapPtrTable_Act_Knight_StunL
+	dw SprMapPtrTable_Act_Knight_StunR
+	dw SprMapPtrTable_Act_Knight_StunL;X
+	dw SprMapPtrTable_Act_Knight_StunR;X
 
-OBJLst_Act_Knight_ChargeL0: INCBIN "data/objlst/actor/knight_chargel0.bin"
-OBJLst_Act_Knight_ChargeL1: INCBIN "data/objlst/actor/knight_chargel1.bin"
-OBJLst_Act_Knight_ChargeL2: INCBIN "data/objlst/actor/knight_chargel2.bin"
-OBJLst_Act_Knight_WalkL0: INCBIN "data/objlst/actor/knight_walkl0.bin"
-OBJLst_Act_Knight_WalkL1: INCBIN "data/objlst/actor/knight_walkl1.bin"
-OBJLst_Act_Knight_WalkL2: INCBIN "data/objlst/actor/knight_walkl2.bin"
-OBJLst_Act_Knight_StunL: INCBIN "data/objlst/actor/knight_stunl.bin"
-OBJLst_Act_Knight_DeadL0: INCBIN "data/objlst/actor/knight_deadl0.bin"
-OBJLst_Act_Knight_DeadL1: INCBIN "data/objlst/actor/knight_deadl1.bin"
-OBJLst_Act_Knight_ChargeR0: INCBIN "data/objlst/actor/knight_charger0.bin"
-OBJLst_Act_Knight_ChargeR1: INCBIN "data/objlst/actor/knight_charger1.bin"
-OBJLst_Act_Knight_ChargeR2: INCBIN "data/objlst/actor/knight_charger2.bin"
-OBJLst_Act_Knight_WalkR0: INCBIN "data/objlst/actor/knight_walkr0.bin"
-OBJLst_Act_Knight_WalkR1: INCBIN "data/objlst/actor/knight_walkr1.bin"
-OBJLst_Act_Knight_WalkR2: INCBIN "data/objlst/actor/knight_walkr2.bin"
-OBJLst_Act_Knight_StunR: INCBIN "data/objlst/actor/knight_stunr.bin"
-OBJLst_Act_Knight_DeadR0: INCBIN "data/objlst/actor/knight_deadr0.bin"
-OBJLst_Act_Knight_DeadR1: INCBIN "data/objlst/actor/knight_deadr1.bin"
+SprMap_Act_Knight_ChargeL0: INCBIN "data/sprmap/actor/knight_chargel0.bin"
+SprMap_Act_Knight_ChargeL1: INCBIN "data/sprmap/actor/knight_chargel1.bin"
+SprMap_Act_Knight_ChargeL2: INCBIN "data/sprmap/actor/knight_chargel2.bin"
+SprMap_Act_Knight_WalkL0: INCBIN "data/sprmap/actor/knight_walkl0.bin"
+SprMap_Act_Knight_WalkL1: INCBIN "data/sprmap/actor/knight_walkl1.bin"
+SprMap_Act_Knight_WalkL2: INCBIN "data/sprmap/actor/knight_walkl2.bin"
+SprMap_Act_Knight_StunL: INCBIN "data/sprmap/actor/knight_stunl.bin"
+SprMap_Act_Knight_DeadL0: INCBIN "data/sprmap/actor/knight_deadl0.bin"
+SprMap_Act_Knight_DeadL1: INCBIN "data/sprmap/actor/knight_deadl1.bin"
+SprMap_Act_Knight_ChargeR0: INCBIN "data/sprmap/actor/knight_charger0.bin"
+SprMap_Act_Knight_ChargeR1: INCBIN "data/sprmap/actor/knight_charger1.bin"
+SprMap_Act_Knight_ChargeR2: INCBIN "data/sprmap/actor/knight_charger2.bin"
+SprMap_Act_Knight_WalkR0: INCBIN "data/sprmap/actor/knight_walkr0.bin"
+SprMap_Act_Knight_WalkR1: INCBIN "data/sprmap/actor/knight_walkr1.bin"
+SprMap_Act_Knight_WalkR2: INCBIN "data/sprmap/actor/knight_walkr2.bin"
+SprMap_Act_Knight_StunR: INCBIN "data/sprmap/actor/knight_stunr.bin"
+SprMap_Act_Knight_DeadR0: INCBIN "data/sprmap/actor/knight_deadr0.bin"
+SprMap_Act_Knight_DeadR1: INCBIN "data/sprmap/actor/knight_deadr1.bin"
 GFX_Act_Knight: INCBIN "data/gfx/actor/knight.bin"
 ; [TCRF] Unreferenced block of graphics, a copy of GFX_Act_MiniBossLock.
 ;        It's completely identical to GFX_Act_MiniBossLock, except it has an extra placeholder "X" tile.
@@ -4278,12 +4278,12 @@ ActInit_MiniBossLock:
 	ld   bc, SubCall_Act_MiniBossLock
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
-	mActOBJLstPtrTable OBJLstPtrTable_Act_MiniBossLock
+	; Set initial animation
+	mActSprMapPtrTable SprMapPtrTable_Act_MiniBossLock
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_Knight
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_Knight
+	call ActS_SetSprMapSharedTablePtr
 	
 	ld   a, ACTCOLI_LOCK			; Bump on all sides + platform
 	ld   [sActSetColiType], a
@@ -4298,9 +4298,9 @@ ActInit_MiniBossLock:
 	ld   a, LOCK_OPEN				; Set open
 	ld   [sActLocalRoutineId], a
 	ret
-; =============== OBJLstPtrTable_Act_MiniBossLock ===============
-OBJLstPtrTable_Act_MiniBossLock:
-	dw OBJLst_Act_MiniBossLock
+; =============== SprMapPtrTable_Act_MiniBossLock ===============
+SprMapPtrTable_Act_MiniBossLock:
+	dw SprMap_Act_MiniBossLock
 	dw $0000;X
 
 ; =============== Act_MiniBossLock ===============
@@ -4363,7 +4363,7 @@ Act_MiniBossLock_Open:
 	xor  a						; Mark as intangible
 	ld   [sActSetColiType], a
 	ret
-OBJLst_Act_MiniBossLock: INCBIN "data/objlst/actor/minibosslock.bin"
+SprMap_Act_MiniBossLock: INCBIN "data/sprmap/actor/minibosslock.bin"
 GFX_Act_MiniBossLock: INCBIN "data/gfx/actor/minibosslock.bin"
 ; =============== END OF BANK ===============
 	mIncJunk "L177CCE"

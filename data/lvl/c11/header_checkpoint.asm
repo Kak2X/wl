@@ -6,8 +6,8 @@
 	dw LevelBlock_Sand	; 16x16 Blocks 
 	db $01,$90	; Player Y
 	db $05,$58	; Player X
-	db OBJ_WARIO_STAND ; OBJLst Frame
-	db OBJLST_XFLIP	; OBJLst Flags (Face Right)
+	db SPR_WARIO_STAND ; Player sprite
+	db SPRMAP_XFLIP	; Player sprite flags (Face Right)
 	db $01,$60	; Scroll Y
 	db $04,$F8	; Scroll X
 	db DIR_NONE		; Screen Lock Flags

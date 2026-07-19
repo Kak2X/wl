@@ -18,8 +18,8 @@ ActInit_Lamp:
 	ld   bc, SubCall_Act_Lamp
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Lamp_IdleIntro
+	; Set initial animation
+	mActSprMapPtrTable SprMapPtrTable_Act_Lamp_IdleIntro
 	
 	; Init vars
 	xor  a
@@ -107,13 +107,13 @@ Act_Lamp_SwitchToNoThrow:
 ; Mode $00 - Idle on solid ground.
 Act_Lamp_IntroIdle:
 	; Just redraw itself
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Lamp_IdleIntro
+	mActSprMapPtrTable SprMapPtrTable_Act_Lamp_IdleIntro
 	ret
 	
 ; =============== Act_Lamp_Flash* ===============
 ; Mode $01. Sets up the animation which flashes the Lamp's palette as part of the final boss intro.
 Act_Lamp_InitFlash:
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Lamp_Flash
+	mActSprMapPtrTable SprMapPtrTable_Act_Lamp_Flash
 	ld   a, LAMP_RTN_FLASH
 	ld   [sActLampRoutineId], a
 	ret
@@ -122,14 +122,14 @@ Act_Lamp_InitFlash:
 ; Mode $02. Does the palette flash effect.
 ; This is meant to execute indefinitely until Act_SyrupCastleBoss changes our routine ID. 
 Act_Lamp_Flash:
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	; Not needed
 	xor  a								
 	ld   [sActSetYSpeed_Low], a
 	ld   [sActSetYSpeed_High], a
 	
 	; Play SFX every other frame
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	bit  0, a
 	ret  z
 	ld   a, SFX1_05
@@ -141,7 +141,7 @@ Act_Lamp_Flash:
 ; Switches to the "fall" mode when not thrown by the player.
 Act_Lamp_Unused_SwitchToFall: 	
 	; Not necessary
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Lamp_Spin
+	mActSprMapPtrTable SprMapPtrTable_Act_Lamp_Spin
 	ld   a, LAMP_RTN_FALL
 	ld   [sActLampRoutineId], a
 	ret  
@@ -155,13 +155,13 @@ Act_Lamp_Unused_SwitchToFall:
 ; (this mode can be avoided altogether by changing the X/Y movement in ActInit_Lamp to make it align properly)
 Act_Lamp_Fall:
 	; Set spinning anim
-	ld   a, LOW(OBJLstPtrTable_Act_Lamp_Spin)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Lamp_Spin)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Lamp_Spin)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Lamp_Spin)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; Animate sprite mapping
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	; Move down at 0.5px/frame until it lands on a solid block
 	ld   a, [sActSetTimer]			; Every other frame...
@@ -176,14 +176,14 @@ Act_Lamp_Fall:
 	; Otherwise, switch to the next routine
 	ld   a, LAMP_RTN_MAIN
 	ld   [sActLampRoutineId], a
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Lamp_Idle
+	mActSprMapPtrTable SprMapPtrTable_Act_Lamp_Idle
 	ret
 	
 IF FIX_BUGS
 ; =============== Act_Lamp_InitMain ===============
 ; Mode $08: Prepares the jump to the idle mode.
 Act_Lamp_InitMain:
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Lamp_Spin
+	mActSprMapPtrTable SprMapPtrTable_Act_Lamp_Spin
 	ld   a, LAMP_RTN_MAIN
 	ld   [sActLampRoutineId], a
 	ret
@@ -200,10 +200,10 @@ Act_Lamp_Main:
 	
 .setFrame:
 	; Set idle anim
-	ld   a, LOW(OBJLstPtrTable_Act_Lamp_Spin)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Lamp_Spin)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Lamp_Spin)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Lamp_Spin)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; Pickable on all sides
 	mActColiMask ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM
@@ -371,12 +371,12 @@ Act_Lamp_Thrown:
 	; Handle spinning animations
 	;
 	; Force spinning anim
-	ld   a, LOW(OBJLstPtrTable_Act_Lamp_Spin)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Lamp_Spin)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Lamp_Spin)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Lamp_Spin)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	; Animate spin every 8 frames
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 .moveH:
 	;
@@ -420,15 +420,15 @@ Act_Lamp_Thrown:
 	ld   [sActSetY_Low], a
 	
 	; We're in this animation already -- not necessary to this set again
-	ld   a, LOW(OBJLstPtrTable_Act_Lamp_Spin)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Lamp_Spin)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Lamp_Spin)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Lamp_Spin)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; Roll the dice for the small cloud to spawn.
 	call Rand
 	and  a, $03					; 1/4 chance it does
-	ld   [sActSetOBJLstId], a	; Set the appropriate rotation frame
+	ld   [sActSetSprMapId], a	; Set the appropriate rotation frame
 	or   a						; Is it frame $00 (the standing one)?
 	ret  nz						; If not, return
 	
@@ -522,35 +522,35 @@ Act_Lamp_Unused_ApplyScrollChanges:
 	ld   [sActSetX_High], a
 	
 	; Animate the actor
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	ret 
 	
 ; =============== Act_Lamp_HeldNoThrow ===============
 ; Mode $07: Forced hold mode for the ending.
 Act_Lamp_HeldNoThrow:
 	xor  a						; Force upright frame
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	call ActS_SyncHeldPos		; Keep in the held pos
 	xor  a						; Not heavy
 	ld   [sActHoldHeavy], a
 	ret
 	
-; =============== OBJLstPtrTable_Act_Lamp_Idle ===============
-OBJLstPtrTable_Act_Lamp_Idle:
-	dw OBJLst_Act_Lamp_U
+; =============== SprMapPtrTable_Act_Lamp_Idle ===============
+SprMapPtrTable_Act_Lamp_Idle:
+	dw SprMap_Act_Lamp_U
 	dw $0000;X
-OBJLstPtrTable_Act_Lamp_IdleIntro:
-	dw OBJLst_Act_Lamp_Idle
+SprMapPtrTable_Act_Lamp_IdleIntro:
+	dw SprMap_Act_Lamp_Idle
 	dw $0000;X
-OBJLstPtrTable_Act_Lamp_Flash:
-	dw OBJLst_Act_Lamp_Idle
-	dw OBJLst_Act_Lamp_Flash
+SprMapPtrTable_Act_Lamp_Flash:
+	dw SprMap_Act_Lamp_Idle
+	dw SprMap_Act_Lamp_Flash
 	dw $0000
-OBJLstPtrTable_Act_Lamp_Spin:
-	dw OBJLst_Act_Lamp_U
-	dw OBJLst_Act_Lamp_L
-	dw OBJLst_Act_Lamp_D
-	dw OBJLst_Act_Lamp_R
+SprMapPtrTable_Act_Lamp_Spin:
+	dw SprMap_Act_Lamp_U
+	dw SprMap_Act_Lamp_L
+	dw SprMap_Act_Lamp_D
+	dw SprMap_Act_Lamp_R
 	dw $0000
 	
 ; =============== ActInit_LampSmoke ===============
@@ -585,13 +585,13 @@ ActInit_LampSmoke:
 
 ; [TCRF] Unused anim for a larger 3x3 smoke cloud.
 ;        This only looks correct after the Genie graphics load in.
-OBJLstPtrTable_Act_LampSmoke_Unused_Large:
-	dw OBJLst_Act_LampSmoke_Unused_Large0;X
-	dw OBJLst_Act_LampSmoke_Unused_Large1;X
+SprMapPtrTable_Act_LampSmoke_Unused_Large:
+	dw SprMap_Act_LampSmoke_Unused_Large0;X
+	dw SprMap_Act_LampSmoke_Unused_Large1;X
 	dw $0000;X
-OBJLstPtrTable_Act_LampSmoke:
-	dw OBJLst_Act_LampSmoke0
-	dw OBJLst_Act_LampSmoke1
+SprMapPtrTable_Act_LampSmoke:
+	dw SprMap_Act_LampSmoke0
+	dw SprMap_Act_LampSmoke1
 	dw $0000
 
 
@@ -624,19 +624,19 @@ Act_LampSmoke_Move:
 	;--
 	; Make the smoke visible.
 	; Could have been placed in Act_LampSmoke_InitMove...
-	ld   a, LOW(OBJLstPtrTable_Act_LampSmoke)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_LampSmoke)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_LampSmoke)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_LampSmoke)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	;--
 	
 	; Animate every $10 frames
 	ld   a, [sTimer]
 	and  a, $0F
 	jr   nz, .incTimer
-	ld   a, [sActSetOBJLstId]	; AnimFrame++
+	ld   a, [sActSetSprMapId]	; AnimFrame++
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	
 .incTimer:
 	ld   a, [sActSetTimer]		; Timer++
@@ -743,7 +743,7 @@ Act_Lamp_SpawnCloudPlatform:
 	jr   .checkSlot
 	
 .slotFound:
-	mActS_SetOBJBank OBJLstPtrTable_Act_MiniGenie_Cloud
+	mActS_SetOBJBank SprMapPtrTable_Act_MiniGenie_Cloud
 	
 	ld   a, ATV_ONSCREEN		; Enabled
 	ldi  [hl], a
@@ -775,14 +775,14 @@ Act_Lamp_SpawnCloudPlatform:
 	ldi  [hl], a				; Rel.Y (Origin)
 	ldi  [hl], a				; Rel.X (Origin)
 	
-	ld   a, LOW(OBJLstPtrTable_Act_MiniGenie_Cloud)		; OBJLst Table
+	ld   a, LOW(SprMapPtrTable_Act_MiniGenie_Cloud)		; Animation
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstPtrTable_Act_MiniGenie_Cloud)
+	ld   a, HIGH(SprMapPtrTable_Act_MiniGenie_Cloud)
 	ldi  [hl], a
 	
 	ld   a, [sActSetDir]		; Dir
 	ldi  [hl], a
-	xor  a						; OBJLst ID
+	xor  a						; Sprite mapping ID
 	ldi  [hl], a
 	ld   a, $04					; Actor ID -- hardcoded
 	ldi  [hl], a				
@@ -810,9 +810,9 @@ Act_Lamp_SpawnCloudPlatform:
 	ld   a, HIGH(sActDummyBlock)
 	ldi  [hl], a
 	
-	ld   a, LOW(OBJLstSharedPtrTable_Act_MiniGenie)		; OBJLst shared table
+	ld   a, LOW(SprMapSharedPtrTable_Act_MiniGenie)		; Set default animation table
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedPtrTable_Act_MiniGenie)
+	ld   a, HIGH(SprMapSharedPtrTable_Act_MiniGenie)
 	ldi  [hl], a
 	ret
 	
@@ -834,12 +834,12 @@ ActInit_Unused_MiniGenie:
 	ld   bc, SubCall_Act_MiniGenie
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
-	mActOBJLstPtrTable OBJLstPtrTable_Act_MiniGenie_Cloud
+	; Set initial animation
+	mActSprMapPtrTable SprMapPtrTable_Act_MiniGenie_Cloud
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_MiniGenie
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_MiniGenie
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Set collision
 	ld   a, ACTCOLI_TOPSOLID
@@ -876,13 +876,13 @@ Act_MiniGenie:
 ; =============== Act_MiniGenie_RiseUp ===============
 ; Mode $00: Cloud rises up.
 Act_MiniGenie_RiseUp:
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	; Use cloud anim
-	ld   a, LOW(OBJLstPtrTable_Act_MiniGenie_Cloud)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_MiniGenie_Cloud)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_MiniGenie_Cloud)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_MiniGenie_Cloud)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; Rise up 0.25px/frame
 	ld   a, [sActSetTimer]
@@ -907,7 +907,7 @@ Act_MiniGenie_RiseUp:
 Act_MiniGenie_SwitchToBlink:
 	ld   a, CPTSMINI_RTN_BLINK		; Set new mode
 	ld   [sActLocalRoutineId], a
-	mActOBJLstPtrTable OBJLstPtrTable_Act_MiniGenie_CloudBlink ; Set blink anim
+	mActSprMapPtrTable SprMapPtrTable_Act_MiniGenie_CloudBlink ; Set blink anim
 	xor  a							; Init timer
 	ld   [sActMiniGenieBlinkTimer], a
 	ld   [sActSetColiType], a		; Make intangible
@@ -920,9 +920,9 @@ Act_MiniGenie_Blink:
 	ld   a, [sTimer]
 	and  a, $03
 	jr   nz, .wait
-	ld   a, [sActSetOBJLstId]	; AnimFrame++
+	ld   a, [sActSetSprMapId]	; AnimFrame++
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	
 .wait:
 	; Wait for $3C frames...
@@ -933,7 +933,7 @@ Act_MiniGenie_Blink:
 	ret  c									; If so, return
 	
 .nextMode:
-	mActOBJLstPtrTable OBJLstPtrTable_Act_MiniGenie_MoveV
+	mActSprMapPtrTable SprMapPtrTable_Act_MiniGenie_MoveV
 	ld   a, CPTSMINI_RTN_FALLDOWN			; Next mode
 	ld   [sActLocalRoutineId], a
 	mActSetYSpeed -$03
@@ -942,7 +942,7 @@ Act_MiniGenie_Blink:
 ; =============== Act_MiniGenie_Blink ===============
 ; Mode $02: The cloud becomes a falling mini-genie.
 Act_MiniGenie_FallDown:
-	mActOBJLstPtrTable OBJLstPtrTable_Act_MiniGenie_MoveV
+	mActSprMapPtrTable SprMapPtrTable_Act_MiniGenie_MoveV
 	
 	; Drop down until reaching Y $70
 	ld   a, [sActSetRelY]
@@ -958,7 +958,7 @@ Act_MiniGenie_FallDown:
 	ld   [sActSetYSpeed_Low], a
 	ld   [sActSetYSpeed_High], a
 	
-	mActOBJLstPtrTable OBJLstPtrTable_Act_MiniGenie_MoveH
+	mActSprMapPtrTable SprMapPtrTable_Act_MiniGenie_MoveH
 	
 	; The genie now becomes tangible
 	mActColiMask ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM
@@ -977,7 +977,7 @@ Act_MiniGenie_FallDown:
 ; =============== Act_MiniGenie_Genie ===============
 ; Mode $03: Main mode.
 Act_MiniGenie_Genie:
-	mActOBJLstPtrTable OBJLstPtrTable_Act_MiniGenie_MoveH
+	mActSprMapPtrTable SprMapPtrTable_Act_MiniGenie_MoveH
 	
 	ld   a, [sActSetRoutineId]
 	and  a, $0F
@@ -1036,40 +1036,40 @@ Act_MiniGenie_Turn:
 	ld   [sActSetDir], a
 	ret
 	
-; =============== OBJLstSharedPtrTable_Act_MiniGenie ===============
-OBJLstSharedPtrTable_Act_MiniGenie:
-	dw OBJLstPtrTable_Act_MiniGenie_Stun;X
-	dw OBJLstPtrTable_Act_MiniGenie_Stun;X
-	dw OBJLstPtrTable_Act_MiniGenie_Stun;X
-	dw OBJLstPtrTable_Act_MiniGenie_Stun;X
-	dw OBJLstPtrTable_Act_MiniGenie_Stun
-	dw OBJLstPtrTable_Act_MiniGenie_Stun
-	dw OBJLstPtrTable_Act_MiniGenie_Stun;X
-	dw OBJLstPtrTable_Act_MiniGenie_Stun;X
+; =============== SprMapSharedPtrTable_Act_MiniGenie ===============
+SprMapSharedPtrTable_Act_MiniGenie:
+	dw SprMapPtrTable_Act_MiniGenie_Stun;X
+	dw SprMapPtrTable_Act_MiniGenie_Stun;X
+	dw SprMapPtrTable_Act_MiniGenie_Stun;X
+	dw SprMapPtrTable_Act_MiniGenie_Stun;X
+	dw SprMapPtrTable_Act_MiniGenie_Stun
+	dw SprMapPtrTable_Act_MiniGenie_Stun
+	dw SprMapPtrTable_Act_MiniGenie_Stun;X
+	dw SprMapPtrTable_Act_MiniGenie_Stun;X
 
-OBJLstPtrTable_Act_MiniGenie_Cloud:
-	dw OBJLst_Act_MiniGenie_Cloud0
-	dw OBJLst_Act_MiniGenie_Cloud1
+SprMapPtrTable_Act_MiniGenie_Cloud:
+	dw SprMap_Act_MiniGenie_Cloud0
+	dw SprMap_Act_MiniGenie_Cloud1
 	dw $0000
-OBJLstPtrTable_Act_MiniGenie_CloudBlink:
-	dw OBJLst_Act_MiniGenie_Cloud0
-	dw OBJLst_Act_None
+SprMapPtrTable_Act_MiniGenie_CloudBlink:
+	dw SprMap_Act_MiniGenie_Cloud0
+	dw SprMap_Act_None
 	dw $0000
-OBJLstPtrTable_Act_MiniGenie_MoveV:
-	dw OBJLst_Act_MiniGenie_MoveV
+SprMapPtrTable_Act_MiniGenie_MoveV:
+	dw SprMap_Act_MiniGenie_MoveV
 	dw $0000;X
-OBJLstPtrTable_Act_MiniGenie_MoveH:
-	dw OBJLst_Act_MiniGenie_MoveH
+SprMapPtrTable_Act_MiniGenie_MoveH:
+	dw SprMap_Act_MiniGenie_MoveH
 	dw $0000;X
-OBJLstPtrTable_Act_MiniGenie_Stun:
-	dw OBJLst_Act_MiniGenie_Stun
+SprMapPtrTable_Act_MiniGenie_Stun:
+	dw SprMap_Act_MiniGenie_Stun
 	dw $0000
 ; [TCRF] Unused upside-down variant of the stun animation.
-OBJLstPtrTable_Act_MiniGenie_Unused_StunAlt:
-	dw OBJLst_Act_MiniGenie_Unused_StunAlt;X
+SprMapPtrTable_Act_MiniGenie_Unused_StunAlt:
+	dw SprMap_Act_MiniGenie_Unused_StunAlt;X
 	dw $0000;X
-OBJLstPtrTable_Act_MiniGenieProjectile:
-	dw OBJLst_Act_MiniGenieProjectile
+SprMapPtrTable_Act_MiniGenieProjectile:
+	dw SprMap_Act_MiniGenieProjectile
 	dw $0000;X
 
 
@@ -1123,14 +1123,14 @@ Act_MiniGenie_SpawnProjectile:
 	ldi  [hl], a			; Rel.Y (Origin)
 	ldi  [hl], a			; Rel.X (Origin)
 	
-	ld   a, LOW(OBJLstPtrTable_Act_MiniGenieProjectile)	; OBJLst Table
+	ld   a, LOW(SprMapPtrTable_Act_MiniGenieProjectile)	; Animation
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstPtrTable_Act_MiniGenieProjectile)
+	ld   a, HIGH(SprMapPtrTable_Act_MiniGenieProjectile)
 	ldi  [hl], a
 	
 	ld   a, [sActSetDir]	; Dir
 	ldi  [hl], a
-	xor  a					; OBJLst ID
+	xor  a					; Sprite mapping ID
 	ldi  [hl], a
 	ld   a, [sActSetId]		; Actor ID -- same as mini-genie
 	ldi  [hl], a
@@ -1158,9 +1158,9 @@ Act_MiniGenie_SpawnProjectile:
 	ld   a, HIGH(sActDummyBlock)
 	ldi  [hl], a
 	
-	ld   a, LOW(OBJLstSharedPtrTable_Act_MiniGenie)		; OBJLst shared table
+	ld   a, LOW(SprMapSharedPtrTable_Act_MiniGenie)		; Set default animation table
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedPtrTable_Act_MiniGenie)
+	ld   a, HIGH(SprMapSharedPtrTable_Act_MiniGenie)
 	ldi  [hl], a
 	
 	ld   a, SFX4_13
@@ -1169,7 +1169,7 @@ Act_MiniGenie_SpawnProjectile:
 ; =============== ActInit_SyrupCastleBoss ===============
 Act_MiniGenieProjectile:
 	; Set frame for projectile (not needed)
-	mActOBJLstPtrTable OBJLstPtrTable_Act_MiniGenieProjectile
+	mActSprMapPtrTable SprMapPtrTable_Act_MiniGenieProjectile
 	
 	; Move down 4px/frame until reaching solid ground
 	ld   bc, +$04
@@ -1208,12 +1208,12 @@ ActInit_SyrupCastleBoss:
 	ld   bc, SubCall_Act_SyrupCastleBoss
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
+	; Set initial animation
 	mActS_SetBlankFrame
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_SyrupCastleBoss
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_SyrupCastleBoss
+	call ActS_SetSprMapSharedTablePtr
 	
 	xor  a
 	ld   [sActLocalRoutineId], a
@@ -1253,12 +1253,12 @@ ActInit_SyrupCastleBoss_Ending:
 	ld   bc, SubCall_Act_SyrupCastleBoss
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
+	; Set initial animation
 	mActS_SetBlankFrame
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_SyrupCastleBoss
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_SyrupCastleBoss
+	call ActS_SetSprMapSharedTablePtr
 	
 	ld   a, CPTS_RTN_ENDING_10
 	ld   [sActLocalRoutineId], a
@@ -1412,9 +1412,9 @@ Act_SyrupCastleBoss_IncMode:
 ; =============== Act_SyrupCastleBoss_Intro_Lay ===============
 ; Intro (1), when initially spawned.
 Act_SyrupCastleBoss_Intro_Lay:
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	;--
-	; Set the OBJLst info for the first frame.
+	; Set the animation for the first frame.
 	; For the rest, keep waiting for $78 frames before switching.
 	; NOTE: Other modes also follow this template.
 	ld   a, [sActSyrupCastleBossModeIncTimer]
@@ -1422,12 +1422,12 @@ Act_SyrupCastleBoss_Intro_Lay:
 	jr   nc, .wait
 	;--
 	; Set bed lay anim
-	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_Lay)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_Lay)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_SyrupCastleBoss_Lay)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_SyrupCastleBoss_Lay)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	xor  a										; Clear anim counter
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .wait:
 	ld   d, $78
 	call Act_SyrupCastleBoss_WaitIncMode
@@ -1439,17 +1439,17 @@ Act_SyrupCastleBoss_Intro_Stand:
 	ld   a, $FF
 	ld   [sPlFreezeTimer], a
 	;--
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	ld   a, [sActSyrupCastleBossModeIncTimer]
 	cp   a, $02
 	jr   nc, .wait
 	;--
-	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_Stand)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_Stand)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_SyrupCastleBoss_Stand)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_SyrupCastleBoss_Stand)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	xor  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .wait:
 	ld   d, $1E
 	call Act_SyrupCastleBoss_WaitIncMode
@@ -1460,19 +1460,19 @@ Act_SyrupCastleBoss_Intro_Stand:
 Act_SyrupCastleBoss_Intro_MoveDown:
 	ld   a, $FF
 	ld   [sPlFreezeTimer], a
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	;--
 	ld   a, [sActSyrupCastleBossModeIncTimer]
 	cp   a, $02
 	jr   nc, .wait
 	;--
 	; [POI] Not necessary, the last mode set this already
-	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_Stand)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_Stand)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_SyrupCastleBoss_Stand)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_SyrupCastleBoss_Stand)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	xor  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .wait:
 	ld   d, $1E
 	call Act_SyrupCastleBoss_WaitIncMode
@@ -1487,21 +1487,21 @@ Act_SyrupCastleBoss_Intro_LampTouch:
 	ld   a, [sTimer]
 	and  a, $0F
 	jr   nz, .setAnim
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .setAnim:
 	;--
 	ld   a, [sActSyrupCastleBossModeIncTimer]
 	cp   a, $02
 	jr   nc, .waitMode
 	;--
-	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_StandRub)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_StandRub)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_SyrupCastleBoss_StandRub)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_SyrupCastleBoss_StandRub)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	xor  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .waitMode:
 	ld   d, $50
 	call Act_SyrupCastleBoss_WaitIncMode
@@ -1526,24 +1526,24 @@ Act_SyrupCastleBoss_Intro_LampTouch2:
 	ld   a, $FF
 	ld   [sPlFreezeTimer], a
 	
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	;--
 	ld   a, [sActSyrupCastleBossModeIncTimer]
 	cp   a, $02
 	jr   nc, .wait
 	;--
-	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_DuckRub)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_DuckRub)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_SyrupCastleBoss_DuckRub)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_SyrupCastleBoss_DuckRub)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	xor  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .wait:
 	ld   d, $50
 	call Act_SyrupCastleBoss_WaitIncMode
 	
 	; Play SFX whenever the lamp is touched (frame $01)
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	cp   a, $01
 	ret  nz
 	ld   a, SFX1_11
@@ -1553,18 +1553,18 @@ Act_SyrupCastleBoss_Intro_LampTouch2:
 ; =============== Act_SyrupCastleBoss_Intro_LampFlash ===============
 ; Intro (6) - Lamp flash
 Act_SyrupCastleBoss_Intro_LampFlash:
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	;--
 	ld   a, [sActSyrupCastleBossModeIncTimer]
 	cp   a, $02
 	jr   nc, .wait
 	;--
-	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_Stand)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_Stand)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_SyrupCastleBoss_Stand)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_SyrupCastleBoss_Stand)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	xor  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .wait:
 	ld   d, $3C
 	call Act_SyrupCastleBoss_WaitIncMode
@@ -1579,7 +1579,7 @@ Act_SyrupCastleBoss_Intro_LampFlash:
 ; =============== Act_SyrupCastleBoss_Intro_ShowSmoke ===============
 ; Intro (7) - Display smoke
 Act_SyrupCastleBoss_Intro_ShowSmoke:
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	ld   d, $78
 	call Act_SyrupCastleBoss_WaitIncMode
 	;--
@@ -1587,12 +1587,12 @@ Act_SyrupCastleBoss_Intro_ShowSmoke:
 	cp   a, $02
 	jr   nc, .chkSmoke
 	;--
-	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_StandOpen)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_StandOpen)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_SyrupCastleBoss_StandOpen)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_SyrupCastleBoss_StandOpen)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	xor  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .chkSmoke:
 	; If the smoke isn't coming out of the lamp yet, make it.
 	ld   a, [sActLampSmokeRoutineId]
@@ -1665,12 +1665,12 @@ Act_SyrupCastleBoss_Intro_JumpToGenie:
 .setJumpAnim:
 	;--
 	; Setup jump anim
-	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_JumpFrontL)					
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_JumpFrontL)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_SyrupCastleBoss_JumpFrontL)					
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_SyrupCastleBoss_JumpFrontL)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	xor  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .doJumpAnim:
 	ld   d, $34
 	call Act_SyrupCastleBoss_WaitIncMode
@@ -1692,14 +1692,14 @@ Act_SyrupCastleBoss_Intro_MoveGenieUp:
 	ld   a, [sActSyrupCastleBossModeIncTimer]
 	cp   a, $02
 	jr   nc, .move
-.setObjLst:
+.setSprMap:
 	; Set sprite for standing on the genie
-	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_Syrup_StandOpen_Copy)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_Syrup_StandOpen_Copy)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_SyrupCastleBoss_Syrup_StandOpen_Copy)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_SyrupCastleBoss_Syrup_StandOpen_Copy)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	xor  a							; Reset anim
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .move:
 	ld   d, $28
 	call Act_SyrupCastleBoss_WaitIncMode
@@ -1739,7 +1739,7 @@ Act_SyrupCastleBoss_Intro_MoveBossUp:
 ; Intro (13) - Sets Cpt Syrup's on-genie animation.
 Act_SyrupCastleBoss_Intro_LayOnGenie:
 	; Handle animations
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	ld   a, [sActSyrupCastleBossModeIncTimer]
 	cp   a, $02									; Are we on frame 2+?
@@ -1747,12 +1747,12 @@ Act_SyrupCastleBoss_Intro_LayOnGenie:
 .setAnim:
 	; The "on-genie" sprites are basically the upper half of the standing sprites.
 	; They have less data, so it's convenient to use them to save time.
-	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_OnGenieArmWave)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_OnGenieArmWave)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_SyrupCastleBoss_OnGenieArmWave)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_SyrupCastleBoss_OnGenieArmWave)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	xor  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .wait:
 	ld   d, $1E
 	call Act_SyrupCastleBoss_WaitIncMode
@@ -1762,7 +1762,7 @@ Act_SyrupCastleBoss_Intro_LayOnGenie:
 ; Ending (1) - Captain Syrup after defeating the final boss.
 ; Set after the room loads back.
 Act_SyrupCastleBoss_Ending_Angry:
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	; From the second frame...
 	ld   a, [sActSyrupCastleBossModeIncTimer]
@@ -1770,12 +1770,12 @@ Act_SyrupCastleBoss_Ending_Angry:
 	jr   nc, .wait
 .setAnim:
 	; Set initial anim
-	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_Dead)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_Dead)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_SyrupCastleBoss_Dead)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_SyrupCastleBoss_Dead)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	xor  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .wait:
 	;--
 	ld   d, $D2
@@ -1799,12 +1799,12 @@ Act_SyrupCastleBoss_Ending_Stand:
 	jr   nc, .wait
 .setAnim:
 	; Set the stand anim
-	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_Stand)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_Stand)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_SyrupCastleBoss_Stand)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_SyrupCastleBoss_Stand)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	xor  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .wait:
 	ld   d, $3C
 	call Act_SyrupCastleBoss_WaitIncMode
@@ -1821,18 +1821,18 @@ Act_SyrupCastleBoss_Ending_Stand:
 ; =============== Act_SyrupCastleBoss_Ending_Jump ===============
 ; Ending (3) - Cpt Syrup jumps to the right, off-screen.
 Act_SyrupCastleBoss_Ending_Jump:
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	ld   a, [sActSyrupCastleBossModeIncTimer]
 	cp   a, $02								; Frame >= $02? (not first run)
 	jr   nc, .move							; If so, skip
 .setAnim:
-	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_JumpSideR)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_JumpSideR)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_SyrupCastleBoss_JumpSideR)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_SyrupCastleBoss_JumpSideR)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	xor  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .move:
 	ld   d, $32
 	call Act_SyrupCastleBoss_WaitIncMode
@@ -1848,7 +1848,7 @@ Act_SyrupCastleBoss_Ending_Jump:
 	ld   [sHurryUpBGM], a ; ?
 	
 	; On frame $30, set the initial position of the bomb.
-	; The bomb is the same actor (except with a different OBJLst),
+	; The bomb is the same actor (except with a different sprite mapping),
 	; so it uses the same memory addresses for its X/Y info.
 	
 	; NOTE: This is triggered at frame $30, but this mode executes until frame $32.
@@ -1865,19 +1865,19 @@ Act_SyrupCastleBoss_Ending_Jump:
 ; =============== Act_SyrupCastleBoss_Ending_ThrowBomb ===============
 ; Ending (4) - Bomb jumps to the left, then slides.
 Act_SyrupCastleBoss_Ending_ThrowBomb:
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	; Skip .setanim from the second frame
 	ld   a, [sActSyrupCastleBossModeIncTimer]
 	cp   a, $02
 	jr   nc, .move
 .setAnim:
-	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_Bomb)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_Bomb)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_SyrupCastleBoss_Bomb)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_SyrupCastleBoss_Bomb)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	xor  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	
 .move:
 	ld   d, $4B
@@ -1905,9 +1905,9 @@ Act_SyrupCastleBoss_Ending_WaitBomb:
 	ld   a, [sTimer]
 	and  a, $03
 	jr   nz, .chk1stRun
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	
 .chk1stRun:
 	; Set anim only the first time
@@ -1917,12 +1917,12 @@ Act_SyrupCastleBoss_Ending_WaitBomb:
 	;--
 .setAnim:
 	; [POI] Not necessary
-	ld   a, LOW(OBJLstPtrTable_Act_SyrupCastleBoss_Bomb)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_SyrupCastleBoss_Bomb)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_SyrupCastleBoss_Bomb)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_SyrupCastleBoss_Bomb)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	xor  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	
 .wait:
 	ld   d, $50
@@ -2050,7 +2050,7 @@ Act_SyrupCastleBoss_Game_Main:
 	
 ; =============== Act_SyrupCastleBoss_Game_Main_Move ===============
 Act_SyrupCastleBoss_Game_Main_Move:
-	mActOBJLstPtrTable OBJLstPtrTable_Act_SyrupCastleBoss_OnGenieStand
+	mActSprMapPtrTable SprMapPtrTable_Act_SyrupCastleBoss_OnGenieStand
 
 .chkYMove:
 	;--
@@ -2134,7 +2134,7 @@ Act_SyrupCastleBoss_Game_Main_Move:
 	xor  a					
 	ld   [sActSyrupCastleBossFireTimer], a
 	
-	mActOBJLstPtrTable OBJLstPtrTable_Act_SyrupCastleBoss_OnGenieArmWave	; Set anim
+	mActSprMapPtrTable SprMapPtrTable_Act_SyrupCastleBoss_OnGenieArmWave	; Set anim
 	
 	call Act_SyrupCastleBoss_BGWrite_GenieHandOpen
 	ret
@@ -2142,7 +2142,7 @@ Act_SyrupCastleBoss_Game_Main_Move:
 ; =============== Act_SyrupCastleBoss_Game_Main_WaitFire ===============
 ; When the Genie stops moving before firing.
 Act_SyrupCastleBoss_Game_Main_WaitFire:
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	;--
 	; Wait for $20 frames
@@ -2158,7 +2158,7 @@ Act_SyrupCastleBoss_Game_Main_WaitFire:
 	ld   a, CPTS_SUBRTN_FIRE
 	ld   [sActSyrupCastleBossSubRoutineId], a
 	call Act_SyrupCastleBoss_BGWrite_GenieHandPoint
-	mActOBJLstPtrTable OBJLstPtrTable_Act_SyrupCastleBoss_OnGenieStand
+	mActSprMapPtrTable SprMapPtrTable_Act_SyrupCastleBoss_OnGenieStand
 	call Act_SyrupCastleBoss_BGWrite_GenieFootDownR
 	call Act_SyrupCastleBoss_BGWrite_GenieFootDownL
 	ret
@@ -2295,15 +2295,15 @@ Act_SyrupCastleBoss_SpawnFireball:
 	ldi  [hl], a			; Rel.Y (Origin)
 	ldi  [hl], a			; Rel.X (Origin)
 	
-	ld   a, LOW(OBJLstPtrTable_Act_None)	; OBJLst Table
+	ld   a, LOW(SprMapPtrTable_Act_None)	; Animation
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstPtrTable_Act_None)
+	ld   a, HIGH(SprMapPtrTable_Act_None)
 	ldi  [hl], a
 	
 	ld   a, [sActSetDir]	; Same jump direction as the boss (is pointing at)
 	ldi  [hl], a			
 	
-	xor  a					; OBJLst ID
+	xor  a					; Sprite mapping ID
 	ldi  [hl], a
 	
 	ld   a, [sActSetId]		; Run under the same Actor ID as the boss
@@ -2339,9 +2339,9 @@ Act_SyrupCastleBoss_SpawnFireball:
 	ld   a, HIGH(sActDummyBlock)
 	ldi  [hl], a
 	
-	ld   a, LOW(OBJLstSharedPtrTable_Act_None)	; OBJLst shared table
+	ld   a, LOW(SprMapSharedPtrTable_Act_None)	; Set default animation table
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedPtrTable_Act_None)
+	ld   a, HIGH(SprMapSharedPtrTable_Act_None)
 	ldi  [hl], a
 	
 	ld   a, SFX1_29
@@ -2360,7 +2360,7 @@ Act_SyrupCastleBossFireball:
 
 ; =============== Act_SyrupCastleBossFireball_OnAir ===============
 Act_SyrupCastleBossFireball_OnAir:
-	mActOBJLstPtrTable OBJLstPtrTable_Act_SyrupCastleBossFireball_Air
+	mActSprMapPtrTable SprMapPtrTable_Act_SyrupCastleBossFireball_Air
 	
 	; Handle horizontal movement
 	ld   a, [sActSetDir]
@@ -2392,7 +2392,7 @@ Act_SyrupCastleBossFireball_OnAir:
 	and  a, $F0
 	ld   [sActSetY_Low], a
 	
-	mActOBJLstPtrTable OBJLstPtrTable_Act_SyrupCastleBossFireball_Ground
+	mActSprMapPtrTable SprMapPtrTable_Act_SyrupCastleBossFireball_Ground
 	
 	; Make the fireball move towards the player
 	ld   a, DIR_R					; Set default direction
@@ -2476,7 +2476,7 @@ Act_SyrupCastleBoss_SwitchToDead:
 	ld   a, $01							
 	ld   [sActSyrupCastleBossDead], a
 	
-	mActOBJLstPtrTable OBJLstPtrTable_Act_SyrupCastleBoss_Duck
+	mActSprMapPtrTable SprMapPtrTable_Act_SyrupCastleBoss_Duck
 	ld   a, $C8
 	ld   [sActBossParallaxFlashTimer], a
 	ret
@@ -2717,136 +2717,136 @@ Act_SyrupCastleBoss_YPath:
 	db +$00,+$00,+$00,-$01,+$00,-$01,-$01,-$01
 	db -$01,-$01,-$01,-$01
 .end:
-; =============== OBJLstSharedPtrTable_Act_SyrupCastleBoss ===============
+; =============== SprMapSharedPtrTable_Act_SyrupCastleBoss ===============
 ; [TCRF] Not used -- and points to incorrect anims
-OBJLstSharedPtrTable_Act_SyrupCastleBoss:
-	dw OBJLstPtrTable_Act_SyrupCastleBoss_Unused_01;X
-	dw OBJLstPtrTable_Act_SyrupCastleBoss_Unused_01;X
-	dw OBJLstPtrTable_Act_SyrupCastleBoss_Unused_01;X
-	dw OBJLstPtrTable_Act_SyrupCastleBoss_Unused_01;X
-	dw OBJLstPtrTable_Act_SyrupCastleBoss_Unused_01;X
-	dw OBJLstPtrTable_Act_SyrupCastleBoss_Unused_01;X
-	dw OBJLstPtrTable_Act_SyrupCastleBoss_Unused_01;X
-	dw OBJLstPtrTable_Act_SyrupCastleBoss_Unused_01;X
+SprMapSharedPtrTable_Act_SyrupCastleBoss:
+	dw SprMapPtrTable_Act_SyrupCastleBoss_Unused_01;X
+	dw SprMapPtrTable_Act_SyrupCastleBoss_Unused_01;X
+	dw SprMapPtrTable_Act_SyrupCastleBoss_Unused_01;X
+	dw SprMapPtrTable_Act_SyrupCastleBoss_Unused_01;X
+	dw SprMapPtrTable_Act_SyrupCastleBoss_Unused_01;X
+	dw SprMapPtrTable_Act_SyrupCastleBoss_Unused_01;X
+	dw SprMapPtrTable_Act_SyrupCastleBoss_Unused_01;X
+	dw SprMapPtrTable_Act_SyrupCastleBoss_Unused_01;X
 	
 ; [TCRF] Unused 2x2 animating square with broken graphics, like the ones seen in Act_Cart.
-OBJLstPtrTable_Act_SyrupCastleBoss_Unused_00:
-	dw OBJLst_Act_SyrupCastleBoss_Unused_00;X
-	dw OBJLst_Act_SyrupCastleBoss_Unused_01;X
+SprMapPtrTable_Act_SyrupCastleBoss_Unused_00:
+	dw SprMap_Act_SyrupCastleBoss_Unused_00;X
+	dw SprMap_Act_SyrupCastleBoss_Unused_01;X
 	dw $0000;X
 ; [TCRF] Unused 3x2 animating square with broken graphics
-OBJLstPtrTable_Act_SyrupCastleBoss_Unused_01:
-	dw OBJLst_Act_SyrupCastleBoss_Unused_04;X
-	dw OBJLst_Act_SyrupCastleBoss_Unused_05;X
+SprMapPtrTable_Act_SyrupCastleBoss_Unused_01:
+	dw SprMap_Act_SyrupCastleBoss_Unused_04;X
+	dw SprMap_Act_SyrupCastleBoss_Unused_05;X
 	dw $0000;X
 	
-OBJLstPtrTable_Act_SyrupCastleBoss_Lay:
-	dw OBJLst_Act_SyrupCastleBoss_Lay
+SprMapPtrTable_Act_SyrupCastleBoss_Lay:
+	dw SprMap_Act_SyrupCastleBoss_Lay
 	dw $0000
-OBJLstPtrTable_Act_SyrupCastleBoss_Stand:
-	dw OBJLst_Act_SyrupCastleBoss_Stand
+SprMapPtrTable_Act_SyrupCastleBoss_Stand:
+	dw SprMap_Act_SyrupCastleBoss_Stand
 	dw $0000
-OBJLstPtrTable_Act_SyrupCastleBoss_StandOpen:
-	dw OBJLst_Act_SyrupCastleBoss_StandOpen
+SprMapPtrTable_Act_SyrupCastleBoss_StandOpen:
+	dw SprMap_Act_SyrupCastleBoss_StandOpen
 	dw $0000
-OBJLstPtrTable_Act_SyrupCastleBoss_StandRub:
-	dw OBJLst_Act_SyrupCastleBoss_StandRub0
-	dw OBJLst_Act_SyrupCastleBoss_StandRub1
+SprMapPtrTable_Act_SyrupCastleBoss_StandRub:
+	dw SprMap_Act_SyrupCastleBoss_StandRub0
+	dw SprMap_Act_SyrupCastleBoss_StandRub1
 	dw $0000
-OBJLstPtrTable_Act_SyrupCastleBoss_DuckRub:
-	dw OBJLst_Act_SyrupCastleBoss_DuckRub0
-	dw OBJLst_Act_SyrupCastleBoss_DuckRub1
+SprMapPtrTable_Act_SyrupCastleBoss_DuckRub:
+	dw SprMap_Act_SyrupCastleBoss_DuckRub0
+	dw SprMap_Act_SyrupCastleBoss_DuckRub1
 	dw $0000
-OBJLstPtrTable_Act_SyrupCastleBoss_Duck:
-	dw OBJLst_Act_SyrupCastleBoss_Dead0
+SprMapPtrTable_Act_SyrupCastleBoss_Duck:
+	dw SprMap_Act_SyrupCastleBoss_Dead0
 	dw $0000;X
-OBJLstPtrTable_Act_SyrupCastleBoss_Dead:
-	dw OBJLst_Act_SyrupCastleBoss_Dead0
-	dw OBJLst_Act_SyrupCastleBoss_Dead1
-	dw OBJLst_Act_SyrupCastleBoss_Dead2
+SprMapPtrTable_Act_SyrupCastleBoss_Dead:
+	dw SprMap_Act_SyrupCastleBoss_Dead0
+	dw SprMap_Act_SyrupCastleBoss_Dead1
+	dw SprMap_Act_SyrupCastleBoss_Dead2
 	dw $0000
-OBJLstPtrTable_Act_SyrupCastleBoss_JumpSideR:
-	dw OBJLst_Act_SyrupCastleBoss_JumpSideR
+SprMapPtrTable_Act_SyrupCastleBoss_JumpSideR:
+	dw SprMap_Act_SyrupCastleBoss_JumpSideR
 	dw $0000
-OBJLstPtrTable_Act_SyrupCastleBoss_Bomb:
-	dw OBJLst_Act_SyrupCastleBoss_Bomb0
-	dw OBJLst_Act_SyrupCastleBoss_Bomb1
+SprMapPtrTable_Act_SyrupCastleBoss_Bomb:
+	dw SprMap_Act_SyrupCastleBoss_Bomb0
+	dw SprMap_Act_SyrupCastleBoss_Bomb1
 	dw $0000
-OBJLstPtrTable_Act_SyrupCastleBoss_JumpFrontL:
-	dw OBJLst_Act_SyrupCastleBoss_JumpFrontL
+SprMapPtrTable_Act_SyrupCastleBoss_JumpFrontL:
+	dw SprMap_Act_SyrupCastleBoss_JumpFrontL
 	dw $0000;X
-OBJLstPtrTable_Act_SyrupCastleBoss_Syrup_StandOpen_Copy:
-	dw OBJLst_Act_SyrupCastleBoss_Syrup_StandOpen_Copy
+SprMapPtrTable_Act_SyrupCastleBoss_Syrup_StandOpen_Copy:
+	dw SprMap_Act_SyrupCastleBoss_Syrup_StandOpen_Copy
 	dw $0000;X
-OBJLstPtrTable_Act_SyrupCastleBoss_OnGenieArmWave:
-	dw OBJLst_Act_SyrupCastleBoss_OnGenie0
-	dw OBJLst_Act_SyrupCastleBoss_OnGenie1
+SprMapPtrTable_Act_SyrupCastleBoss_OnGenieArmWave:
+	dw SprMap_Act_SyrupCastleBoss_OnGenie0
+	dw SprMap_Act_SyrupCastleBoss_OnGenie1
 	dw $0000
-OBJLstPtrTable_Act_SyrupCastleBoss_OnGenieStand:
-	dw OBJLst_Act_SyrupCastleBoss_OnGenie0
+SprMapPtrTable_Act_SyrupCastleBoss_OnGenieStand:
+	dw SprMap_Act_SyrupCastleBoss_OnGenie0
 	dw $0000;X
-; [TCRF] Unused copy of OBJLstPtrTable_Act_SyrupCastleBoss_Duck with unused duplicate frames
-OBJLstPtrTable_Act_SyrupCastleBoss_Unused_Duck:
-	dw OBJLst_Act_SyrupCastleBoss_Unused_Dead0_Copy;X
+; [TCRF] Unused copy of SprMapPtrTable_Act_SyrupCastleBoss_Duck with unused duplicate frames
+SprMapPtrTable_Act_SyrupCastleBoss_Unused_Duck:
+	dw SprMap_Act_SyrupCastleBoss_Unused_Dead0_Copy;X
 	dw $0000;X
-; [TCRF] Unused copy of OBJLstPtrTable_Act_SyrupCastleBoss_Dead with unused duplicate frames
-OBJLstPtrTable_Act_SyrupCastleBoss_Unused_03:
-	dw OBJLst_Act_SyrupCastleBoss_Unused_Dead0_Copy;X
-	dw OBJLst_Act_SyrupCastleBoss_Unused_Dead1_Copy;X
-	dw OBJLst_Act_SyrupCastleBoss_Unused_Dead2_Copy;X
+; [TCRF] Unused copy of SprMapPtrTable_Act_SyrupCastleBoss_Dead with unused duplicate frames
+SprMapPtrTable_Act_SyrupCastleBoss_Unused_03:
+	dw SprMap_Act_SyrupCastleBoss_Unused_Dead0_Copy;X
+	dw SprMap_Act_SyrupCastleBoss_Unused_Dead1_Copy;X
+	dw SprMap_Act_SyrupCastleBoss_Unused_Dead2_Copy;X
 	dw $0000;X
-OBJLstPtrTable_Act_SyrupCastleBossFireball_Air:
-	dw OBJLst_Act_SyrupCastleBossFireball_Air
+SprMapPtrTable_Act_SyrupCastleBossFireball_Air:
+	dw SprMap_Act_SyrupCastleBossFireball_Air
 	dw $0000;X
-OBJLstPtrTable_Act_SyrupCastleBossFireball_Ground:
-	dw OBJLst_Act_SyrupCastleBossFireball_Ground
+SprMapPtrTable_Act_SyrupCastleBossFireball_Ground:
+	dw SprMap_Act_SyrupCastleBossFireball_Ground
 	dw $0000;X
 
-OBJLst_Act_SyrupCastleBoss_Syrup_StandOpen_Copy: INCBIN "data/objlst/actor/syrupcastleboss_syrup_standopen_copy.bin"
-OBJLst_Act_SyrupCastleBoss_JumpFrontL: INCBIN "data/objlst/actor/syrupcastleboss_jumpfrontl.bin"
-OBJLst_Act_SyrupCastleBoss_OnGenie0: INCBIN "data/objlst/actor/syrupcastleboss_ongenie0.bin"
-OBJLst_Act_SyrupCastleBoss_OnGenie1: INCBIN "data/objlst/actor/syrupcastleboss_ongenie1.bin"
-OBJLst_Act_SyrupCastleBoss_Unused_Dead0_Copy: INCBIN "data/objlst/actor/syrupcastleboss_unused_dead0_copy.bin"
-OBJLst_Act_SyrupCastleBoss_Unused_Dead1_Copy: INCBIN "data/objlst/actor/syrupcastleboss_unused_dead1_copy.bin"
-OBJLst_Act_SyrupCastleBoss_Unused_Dead2_Copy: INCBIN "data/objlst/actor/syrupcastleboss_unused_dead2_copy.bin"
-OBJLst_Act_Lamp_U: INCBIN "data/objlst/actor/lamp_u.bin"
-OBJLst_Act_Lamp_L: INCBIN "data/objlst/actor/lamp_l.bin"
-OBJLst_Act_Lamp_D: INCBIN "data/objlst/actor/lamp_d.bin"
-OBJLst_Act_Lamp_R: INCBIN "data/objlst/actor/lamp_r.bin"
-OBJLst_Act_SyrupCastleBoss_Unused_00: INCBIN "data/objlst/actor/syrupcastleboss_unused_00.bin"
-OBJLst_Act_SyrupCastleBoss_Unused_01: INCBIN "data/objlst/actor/syrupcastleboss_unused_01.bin"
-OBJLst_Act_SyrupCastleBoss_Unused_02: INCBIN "data/objlst/actor/syrupcastleboss_unused_02.bin"
-OBJLst_Act_SyrupCastleBoss_Unused_03: INCBIN "data/objlst/actor/syrupcastleboss_unused_03.bin"
-OBJLst_Act_SyrupCastleBoss_Unused_04: INCBIN "data/objlst/actor/syrupcastleboss_unused_04.bin"
-OBJLst_Act_SyrupCastleBoss_Unused_05: INCBIN "data/objlst/actor/syrupcastleboss_unused_05.bin"
-OBJLst_Act_MiniGenie_MoveV: INCBIN "data/objlst/actor/minigenie_movev.bin"
-OBJLst_Act_MiniGenie_MoveH: INCBIN "data/objlst/actor/minigenie_moveh.bin"
-OBJLst_Act_MiniGenie_Stun: INCBIN "data/objlst/actor/minigenie_stun.bin"
-OBJLst_Act_MiniGenie_Unused_StunAlt: INCBIN "data/objlst/actor/minigenie_unused_stunalt.bin"
-OBJLst_Act_SyrupCastleBossFireball_Air: INCBIN "data/objlst/actor/syrupcastlebossfireball_air.bin"
-OBJLst_Act_SyrupCastleBossFireball_Ground: INCBIN "data/objlst/actor/syrupcastlebossfireball_ground.bin"
-OBJLst_Act_LampSmoke_Unused_Large0: INCBIN "data/objlst/actor/lampsmoke_unused_large0.bin"
-OBJLst_Act_LampSmoke_Unused_Large1: INCBIN "data/objlst/actor/lampsmoke_unused_large1.bin"
-OBJLst_Act_MiniGenie_Cloud0: INCBIN "data/objlst/actor/minigenie_cloud0.bin"
-OBJLst_Act_MiniGenie_Cloud1: INCBIN "data/objlst/actor/minigenie_cloud1.bin"
-OBJLst_Act_MiniGenieProjectile: INCBIN "data/objlst/actor/minigenieprojectile.bin"
-OBJLst_Act_SyrupCastleBoss_Lay: INCBIN "data/objlst/actor/syrupcastleboss_lay.bin"
-OBJLst_Act_SyrupCastleBoss_Stand: INCBIN "data/objlst/actor/syrupcastleboss_stand.bin"
-OBJLst_Act_SyrupCastleBoss_StandRub0: INCBIN "data/objlst/actor/syrupcastleboss_standrub0.bin"
-OBJLst_Act_SyrupCastleBoss_StandRub1: INCBIN "data/objlst/actor/syrupcastleboss_standrub1.bin"
-OBJLst_Act_SyrupCastleBoss_DuckRub0: INCBIN "data/objlst/actor/syrupcastleboss_duckrub0.bin"
-OBJLst_Act_SyrupCastleBoss_DuckRub1: INCBIN "data/objlst/actor/syrupcastleboss_duckrub1.bin"
-OBJLst_Act_SyrupCastleBoss_Dead0: INCBIN "data/objlst/actor/syrupcastleboss_dead0.bin"
-OBJLst_Act_SyrupCastleBoss_Dead1: INCBIN "data/objlst/actor/syrupcastleboss_dead1.bin"
-OBJLst_Act_SyrupCastleBoss_Dead2: INCBIN "data/objlst/actor/syrupcastleboss_dead2.bin"
-OBJLst_Act_SyrupCastleBoss_JumpSideR: INCBIN "data/objlst/actor/syrupcastleboss_jumpsider.bin"
-OBJLst_Act_Lamp_Idle: INCBIN "data/objlst/actor/lamp_idle.bin"
-OBJLst_Act_Lamp_Flash: INCBIN "data/objlst/actor/lamp_flash.bin"
-OBJLst_Act_SyrupCastleBoss_Bomb0: INCBIN "data/objlst/actor/syrupcastleboss_bomb0.bin"
-OBJLst_Act_SyrupCastleBoss_Bomb1: INCBIN "data/objlst/actor/syrupcastleboss_bomb1.bin"
-OBJLst_Act_LampSmoke0: INCBIN "data/objlst/actor/lampsmoke0.bin"
-OBJLst_Act_LampSmoke1: INCBIN "data/objlst/actor/lampsmoke1.bin"
-OBJLst_Act_SyrupCastleBoss_StandOpen: INCBIN "data/objlst/actor/syrupcastleboss_standopen.bin"
+SprMap_Act_SyrupCastleBoss_Syrup_StandOpen_Copy: INCBIN "data/sprmap/actor/syrupcastleboss_syrup_standopen_copy.bin"
+SprMap_Act_SyrupCastleBoss_JumpFrontL: INCBIN "data/sprmap/actor/syrupcastleboss_jumpfrontl.bin"
+SprMap_Act_SyrupCastleBoss_OnGenie0: INCBIN "data/sprmap/actor/syrupcastleboss_ongenie0.bin"
+SprMap_Act_SyrupCastleBoss_OnGenie1: INCBIN "data/sprmap/actor/syrupcastleboss_ongenie1.bin"
+SprMap_Act_SyrupCastleBoss_Unused_Dead0_Copy: INCBIN "data/sprmap/actor/syrupcastleboss_unused_dead0_copy.bin"
+SprMap_Act_SyrupCastleBoss_Unused_Dead1_Copy: INCBIN "data/sprmap/actor/syrupcastleboss_unused_dead1_copy.bin"
+SprMap_Act_SyrupCastleBoss_Unused_Dead2_Copy: INCBIN "data/sprmap/actor/syrupcastleboss_unused_dead2_copy.bin"
+SprMap_Act_Lamp_U: INCBIN "data/sprmap/actor/lamp_u.bin"
+SprMap_Act_Lamp_L: INCBIN "data/sprmap/actor/lamp_l.bin"
+SprMap_Act_Lamp_D: INCBIN "data/sprmap/actor/lamp_d.bin"
+SprMap_Act_Lamp_R: INCBIN "data/sprmap/actor/lamp_r.bin"
+SprMap_Act_SyrupCastleBoss_Unused_00: INCBIN "data/sprmap/actor/syrupcastleboss_unused_00.bin"
+SprMap_Act_SyrupCastleBoss_Unused_01: INCBIN "data/sprmap/actor/syrupcastleboss_unused_01.bin"
+SprMap_Act_SyrupCastleBoss_Unused_02: INCBIN "data/sprmap/actor/syrupcastleboss_unused_02.bin"
+SprMap_Act_SyrupCastleBoss_Unused_03: INCBIN "data/sprmap/actor/syrupcastleboss_unused_03.bin"
+SprMap_Act_SyrupCastleBoss_Unused_04: INCBIN "data/sprmap/actor/syrupcastleboss_unused_04.bin"
+SprMap_Act_SyrupCastleBoss_Unused_05: INCBIN "data/sprmap/actor/syrupcastleboss_unused_05.bin"
+SprMap_Act_MiniGenie_MoveV: INCBIN "data/sprmap/actor/minigenie_movev.bin"
+SprMap_Act_MiniGenie_MoveH: INCBIN "data/sprmap/actor/minigenie_moveh.bin"
+SprMap_Act_MiniGenie_Stun: INCBIN "data/sprmap/actor/minigenie_stun.bin"
+SprMap_Act_MiniGenie_Unused_StunAlt: INCBIN "data/sprmap/actor/minigenie_unused_stunalt.bin"
+SprMap_Act_SyrupCastleBossFireball_Air: INCBIN "data/sprmap/actor/syrupcastlebossfireball_air.bin"
+SprMap_Act_SyrupCastleBossFireball_Ground: INCBIN "data/sprmap/actor/syrupcastlebossfireball_ground.bin"
+SprMap_Act_LampSmoke_Unused_Large0: INCBIN "data/sprmap/actor/lampsmoke_unused_large0.bin"
+SprMap_Act_LampSmoke_Unused_Large1: INCBIN "data/sprmap/actor/lampsmoke_unused_large1.bin"
+SprMap_Act_MiniGenie_Cloud0: INCBIN "data/sprmap/actor/minigenie_cloud0.bin"
+SprMap_Act_MiniGenie_Cloud1: INCBIN "data/sprmap/actor/minigenie_cloud1.bin"
+SprMap_Act_MiniGenieProjectile: INCBIN "data/sprmap/actor/minigenieprojectile.bin"
+SprMap_Act_SyrupCastleBoss_Lay: INCBIN "data/sprmap/actor/syrupcastleboss_lay.bin"
+SprMap_Act_SyrupCastleBoss_Stand: INCBIN "data/sprmap/actor/syrupcastleboss_stand.bin"
+SprMap_Act_SyrupCastleBoss_StandRub0: INCBIN "data/sprmap/actor/syrupcastleboss_standrub0.bin"
+SprMap_Act_SyrupCastleBoss_StandRub1: INCBIN "data/sprmap/actor/syrupcastleboss_standrub1.bin"
+SprMap_Act_SyrupCastleBoss_DuckRub0: INCBIN "data/sprmap/actor/syrupcastleboss_duckrub0.bin"
+SprMap_Act_SyrupCastleBoss_DuckRub1: INCBIN "data/sprmap/actor/syrupcastleboss_duckrub1.bin"
+SprMap_Act_SyrupCastleBoss_Dead0: INCBIN "data/sprmap/actor/syrupcastleboss_dead0.bin"
+SprMap_Act_SyrupCastleBoss_Dead1: INCBIN "data/sprmap/actor/syrupcastleboss_dead1.bin"
+SprMap_Act_SyrupCastleBoss_Dead2: INCBIN "data/sprmap/actor/syrupcastleboss_dead2.bin"
+SprMap_Act_SyrupCastleBoss_JumpSideR: INCBIN "data/sprmap/actor/syrupcastleboss_jumpsider.bin"
+SprMap_Act_Lamp_Idle: INCBIN "data/sprmap/actor/lamp_idle.bin"
+SprMap_Act_Lamp_Flash: INCBIN "data/sprmap/actor/lamp_flash.bin"
+SprMap_Act_SyrupCastleBoss_Bomb0: INCBIN "data/sprmap/actor/syrupcastleboss_bomb0.bin"
+SprMap_Act_SyrupCastleBoss_Bomb1: INCBIN "data/sprmap/actor/syrupcastleboss_bomb1.bin"
+SprMap_Act_LampSmoke0: INCBIN "data/sprmap/actor/lampsmoke0.bin"
+SprMap_Act_LampSmoke1: INCBIN "data/sprmap/actor/lampsmoke1.bin"
+SprMap_Act_SyrupCastleBoss_StandOpen: INCBIN "data/sprmap/actor/syrupcastleboss_standopen.bin"
 
 GFX_Act_SyrupCastleBossIntro: INCBIN "data/gfx/actor/syrupcastlebossintro.bin"
 GFX_Level_GenieBoss: INCBIN "data/gfx/level/level_genieboss.bin"
@@ -3433,15 +3433,15 @@ ActInit_Pelican:
 	ld   bc, SubCall_Act_Pelican
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
+	; Set initial animation
 	push bc
-	ld   bc, OBJLstPtrTable_Act_Pelican_MoveL
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_Pelican_MoveL
+	call ActS_SetSprMapPtr
 	pop  bc
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_Pelican
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_Pelican
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Don't throw a bomb immediately (or turn)
 	xor  a
@@ -3494,9 +3494,9 @@ Act_Pelican_Main:
 	ld   a, [sTimer]
 	and  a, $0F
 	jr   nz, .moveV
-	ld   a, [sActSetOBJLstId]	; AnimFrame++
+	ld   a, [sActSetSprMapId]	; AnimFrame++
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	
 .moveV:
 	; Bob on water
@@ -3584,20 +3584,20 @@ Act_Pelican_OpenMouth:
 	ld   [sSFX1Set], a
 	
 	; Set the open mouth anim
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Pelican_OpenR	; Set the one when facing right
+	mActSprMapPtrTable SprMapPtrTable_Act_Pelican_OpenR	; Set the one when facing right
 	ld   a, [sActSetDir]
 	bit  DIRB_R, a				; Facing right?
 	ret  nz						; If so, return
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Pelican_OpenL	; Set the one when facing left
+	mActSprMapPtrTable SprMapPtrTable_Act_Pelican_OpenL	; Set the one when facing left
 	ret
 ; =============== Act_Pelican_CloseMouth ===============
 Act_Pelican_CloseMouth:
 	; Set the closed mouth anim
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Pelican_MoveR	; Set the one when facing right
+	mActSprMapPtrTable SprMapPtrTable_Act_Pelican_MoveR	; Set the one when facing right
 	ld   a, [sActSetDir]
 	bit  DIRB_R, a				; Facing right?
 	ret  nz						; If so, return
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Pelican_MoveL	; Set the one when facing left
+	mActSprMapPtrTable SprMapPtrTable_Act_Pelican_MoveL	; Set the one when facing left
 	ret
 	
 ; =============== Act_Pelican_MoveLeft ===============
@@ -3612,10 +3612,10 @@ Act_Pelican_MoveLeft:
 	ld   bc, -$01
 	call ActS_MoveRight
 	; Use the swimming anim
-	ld   a, LOW(OBJLstPtrTable_Act_Pelican_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Pelican_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Pelican_MoveL)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Pelican_MoveL)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	ret
 	
 ; =============== Act_Pelican_MoveLeft ===============
@@ -3630,10 +3630,10 @@ Act_Pelican_MoveRight:
 	ld   bc, +$01
 	call ActS_MoveRight
 	; Use the swimming anim
-	ld   a, LOW(OBJLstPtrTable_Act_Pelican_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Pelican_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Pelican_MoveR)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Pelican_MoveR)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	ret
 	
 ; =============== Act_Pelican_MoveV ===============
@@ -3776,7 +3776,7 @@ Act_Pelican_SpawnBomb:
 	jr   .checkSlot
 	
 .slotFound:
-	mActS_SetOBJBank OBJLstSharedPtrTable_Act_Bomb
+	mActS_SetOBJBank SprMapSharedPtrTable_Act_Bomb
 	
 	ld   a, ATV_ONSCREEN		; Enabled
 	ldi  [hl], a
@@ -3822,14 +3822,14 @@ Act_Pelican_SpawnBomb:
 	ldi  [hl], a
 	ldi  [hl], a
 	
-	ld   a, LOW(OBJLstPtrTable_Act_None)	; OBJLst Table
+	ld   a, LOW(SprMapPtrTable_Act_None)	; Animation
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstPtrTable_Act_None)
+	ld   a, HIGH(SprMapPtrTable_Act_None)
 	ldi  [hl], a
 	
 	ld   a, [sActSetDir]		; Dir
 	ldi  [hl], a
-	xor  a						; OBJLst ID
+	xor  a						; Sprite mapping ID
 	ldi  [hl], a
 	
 	; Actor ID.
@@ -3868,51 +3868,51 @@ Act_Pelican_SpawnBomb:
 	ldi  [hl], a
 	ld   a, HIGH(sActDummyBlock)
 	ldi  [hl], a
-	ld   a, LOW(OBJLstSharedPtrTable_Act_Bomb)	; OBJLst shared table
+	ld   a, LOW(SprMapSharedPtrTable_Act_Bomb)	; Set default animation table
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedPtrTable_Act_Bomb)
+	ld   a, HIGH(SprMapSharedPtrTable_Act_Bomb)
 	ldi  [hl], a
 	ret
 	
-OBJLstSharedPtrTable_Act_Pelican:
-	dw OBJLstPtrTable_Act_Pelican_StunL;X
-	dw OBJLstPtrTable_Act_Pelican_StunR;X
-	dw OBJLstPtrTable_Act_Pelican_StunL;X
-	dw OBJLstPtrTable_Act_Pelican_StunR;X
-	dw OBJLstPtrTable_Act_Pelican_StunL
-	dw OBJLstPtrTable_Act_Pelican_StunR
-	dw OBJLstPtrTable_Act_Pelican_MoveL;X
-	dw OBJLstPtrTable_Act_Pelican_MoveR;X
+SprMapSharedPtrTable_Act_Pelican:
+	dw SprMapPtrTable_Act_Pelican_StunL;X
+	dw SprMapPtrTable_Act_Pelican_StunR;X
+	dw SprMapPtrTable_Act_Pelican_StunL;X
+	dw SprMapPtrTable_Act_Pelican_StunR;X
+	dw SprMapPtrTable_Act_Pelican_StunL
+	dw SprMapPtrTable_Act_Pelican_StunR
+	dw SprMapPtrTable_Act_Pelican_MoveL;X
+	dw SprMapPtrTable_Act_Pelican_MoveR;X
 
-OBJLstPtrTable_Act_Pelican_MoveL:
-	dw OBJLst_Act_Pelican_MoveL0
-	dw OBJLst_Act_Pelican_MoveL1
+SprMapPtrTable_Act_Pelican_MoveL:
+	dw SprMap_Act_Pelican_MoveL0
+	dw SprMap_Act_Pelican_MoveL1
 	dw $0000
-OBJLstPtrTable_Act_Pelican_MoveR:
-	dw OBJLst_Act_Pelican_MoveR0
-	dw OBJLst_Act_Pelican_MoveR1
+SprMapPtrTable_Act_Pelican_MoveR:
+	dw SprMap_Act_Pelican_MoveR0
+	dw SprMap_Act_Pelican_MoveR1
 	dw $0000
-OBJLstPtrTable_Act_Pelican_OpenL:
-	dw OBJLst_Act_Pelican_OpenL
+SprMapPtrTable_Act_Pelican_OpenL:
+	dw SprMap_Act_Pelican_OpenL
 	dw $0000
-OBJLstPtrTable_Act_Pelican_OpenR:
-	dw OBJLst_Act_Pelican_OpenR
+SprMapPtrTable_Act_Pelican_OpenR:
+	dw SprMap_Act_Pelican_OpenR
 	dw $0000
-OBJLstPtrTable_Act_Pelican_StunL:
-	dw OBJLst_Act_Pelican_StunL
+SprMapPtrTable_Act_Pelican_StunL:
+	dw SprMap_Act_Pelican_StunL
 	dw $0000
-OBJLstPtrTable_Act_Pelican_StunR:
-	dw OBJLst_Act_Pelican_StunR
+SprMapPtrTable_Act_Pelican_StunR:
+	dw SprMap_Act_Pelican_StunR
 	dw $0000;X
 
-OBJLst_Act_Pelican_MoveL0: INCBIN "data/objlst/actor/pelican_movel0.bin"
-OBJLst_Act_Pelican_MoveL1: INCBIN "data/objlst/actor/pelican_movel1.bin"
-OBJLst_Act_Pelican_OpenL: INCBIN "data/objlst/actor/pelican_openl.bin"
-OBJLst_Act_Pelican_StunL: INCBIN "data/objlst/actor/pelican_stunl.bin"
-OBJLst_Act_Pelican_MoveR0: INCBIN "data/objlst/actor/pelican_mover0.bin"
-OBJLst_Act_Pelican_MoveR1: INCBIN "data/objlst/actor/pelican_mover1.bin"
-OBJLst_Act_Pelican_OpenR: INCBIN "data/objlst/actor/pelican_openr.bin"
-OBJLst_Act_Pelican_StunR: INCBIN "data/objlst/actor/pelican_stunr.bin"
+SprMap_Act_Pelican_MoveL0: INCBIN "data/sprmap/actor/pelican_movel0.bin"
+SprMap_Act_Pelican_MoveL1: INCBIN "data/sprmap/actor/pelican_movel1.bin"
+SprMap_Act_Pelican_OpenL: INCBIN "data/sprmap/actor/pelican_openl.bin"
+SprMap_Act_Pelican_StunL: INCBIN "data/sprmap/actor/pelican_stunl.bin"
+SprMap_Act_Pelican_MoveR0: INCBIN "data/sprmap/actor/pelican_mover0.bin"
+SprMap_Act_Pelican_MoveR1: INCBIN "data/sprmap/actor/pelican_mover1.bin"
+SprMap_Act_Pelican_OpenR: INCBIN "data/sprmap/actor/pelican_openr.bin"
+SprMap_Act_Pelican_StunR: INCBIN "data/sprmap/actor/pelican_stunr.bin"
 GFX_Act_Pelican: INCBIN "data/gfx/actor/pelican.bin"
 
 ; =============== ActInit_StoveCanyonPlatform ===============
@@ -3934,12 +3934,12 @@ ActInit_StoveCanyonPlatform:
 	ld   bc, SubCall_Act_StoveCanyonPlatform
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
-	mActOBJLstPtrTable OBJLstPtrTable_Act_StoveCanyonPlatform
+	; Set initial animation
+	mActSprMapPtrTable SprMapPtrTable_Act_StoveCanyonPlatform
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_StoveCanyonPlatform
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_StoveCanyonPlatform
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Set collision type
 	ld   a, ACTCOLI_TOPSOLID
@@ -3954,8 +3954,8 @@ ActInit_StoveCanyonPlatform:
 	ld   [sActStoveCanyonMinY], a
 	ret
 	
-OBJLstPtrTable_Act_StoveCanyonPlatform:
-	dw OBJLst_Act_StoveCanyonPlatform
+SprMapPtrTable_Act_StoveCanyonPlatform:
+	dw SprMap_Act_StoveCanyonPlatform
 	dw $0000;X
 
 ; =============== Act_StoveCanyonPlatform ===============
@@ -4022,17 +4022,17 @@ Act_StoveCanyonPlatform:
 	xor  a
 	ld   [sActStoveCanyonPlatformMoveTimer], a
 	ret
-OBJLstSharedPtrTable_Act_StoveCanyonPlatform:
-	dw OBJLstPtrTable_Act_StoveCanyonPlatform;X
-	dw OBJLstPtrTable_Act_StoveCanyonPlatform;X
-	dw OBJLstPtrTable_Act_StoveCanyonPlatform;X
-	dw OBJLstPtrTable_Act_StoveCanyonPlatform;X
-	dw OBJLstPtrTable_Act_StoveCanyonPlatform;X
-	dw OBJLstPtrTable_Act_StoveCanyonPlatform;X
-	dw OBJLstPtrTable_Act_StoveCanyonPlatform;X
-	dw OBJLstPtrTable_Act_StoveCanyonPlatform;X
+SprMapSharedPtrTable_Act_StoveCanyonPlatform:
+	dw SprMapPtrTable_Act_StoveCanyonPlatform;X
+	dw SprMapPtrTable_Act_StoveCanyonPlatform;X
+	dw SprMapPtrTable_Act_StoveCanyonPlatform;X
+	dw SprMapPtrTable_Act_StoveCanyonPlatform;X
+	dw SprMapPtrTable_Act_StoveCanyonPlatform;X
+	dw SprMapPtrTable_Act_StoveCanyonPlatform;X
+	dw SprMapPtrTable_Act_StoveCanyonPlatform;X
+	dw SprMapPtrTable_Act_StoveCanyonPlatform;X
 
-OBJLst_Act_StoveCanyonPlatform: INCBIN "data/objlst/actor/stovecanyonplatform.bin"
+SprMap_Act_StoveCanyonPlatform: INCBIN "data/sprmap/actor/stovecanyonplatform.bin"
 GFX_Act_StoveCanyonPlatform: INCBIN "data/gfx/actor/stovecanyonplatform.bin"
 
 ; =============== ActInit_Togemaru ===============
@@ -4051,12 +4051,12 @@ ActInit_Togemaru:
 	ld   bc, SubCall_Act_Togemaru
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Togemaru_Bounce
+	; Set initial animation
+	mActSprMapPtrTable SprMapPtrTable_Act_Togemaru_Bounce
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_Togemaru
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_Togemaru
+	call ActS_SetSprMapSharedTablePtr
 	
 	
 	mActColiMask ACTCOLI_DAMAGE, ACTCOLI_DAMAGE, ACTCOLI_DAMAGE, ACTCOLI_NORM
@@ -4073,11 +4073,11 @@ ActInit_Togemaru:
 	ld   [sActSetYSpeed_Low], a
 	ret
 	
-; =============== OBJLstPtrTable_Act_Togemaru_Unused_Move_Copy ===============
-; [TCRF] Unused copy of OBJLstPtrTable_Act_Togemaru_Bounce, likely meant 
-;        to be used as the default sprite ("OBJLstPtrTable_ActInit").
-OBJLstPtrTable_Act_Togemaru_Unused_Move_Copy:
-	dw OBJLst_Act_Togemaru_Move1;X
+; =============== SprMapPtrTable_Act_Togemaru_Unused_Move_Copy ===============
+; [TCRF] Unused copy of SprMapPtrTable_Act_Togemaru_Bounce, likely meant 
+;        to be used as the default sprite ("SprMapPtrTable_ActInit").
+SprMapPtrTable_Act_Togemaru_Unused_Move_Copy:
+	dw SprMap_Act_Togemaru_Move1;X
 	dw $0000;X
 
 ; =============== Act_Togemaru ===============
@@ -4098,7 +4098,7 @@ Act_Togemaru:
 ; =============== Act_Togemaru_Main ===============
 Act_Togemaru_Main:
 	; Animate every 8 frames
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	ld   a, [sActSetTimer]	; Timer++
 	inc  a
@@ -4193,14 +4193,14 @@ Act_Togemaru_MoveV:
 	; As soon as the vertical speed is increased, switch back to the main movement frame.
 	; With this, the "bounce" frame will be visible for a few frames after landing on solid ground,
 	; ($10 at most), before returning back to this for the remainder of the jump.
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Togemaru_Move
+	mActSprMapPtrTable SprMapPtrTable_Act_Togemaru_Move
 	ret
 	
 .setBounce:
 	; Set up a new bounce at 2px/frame.
 	; Every 4th bounce is 3px/frame. 
 	
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Togemaru_Bounce	; Set bouncing frame
+	mActSprMapPtrTable SprMapPtrTable_Act_Togemaru_Bounce	; Set bouncing frame
 	mActSetYSpeed -$02					; Set normal ump speed
 	ld   a, [sActTogemaruBounceCount]	; BounceCount++
 	inc  a
@@ -4214,41 +4214,41 @@ Act_Togemaru_MoveV:
 	
 .resetSpeed:
 	; Also use the bounce frame here, when a solid wall's on top
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Togemaru_Bounce
+	mActSprMapPtrTable SprMapPtrTable_Act_Togemaru_Bounce
 	mActSetYSpeed +$00
 	ret
 	
-OBJLstPtrTable_Act_Togemaru_Bounce:
-	dw OBJLst_Act_Togemaru_Move1
+SprMapPtrTable_Act_Togemaru_Bounce:
+	dw SprMap_Act_Togemaru_Move1
 	dw $0000
-OBJLstPtrTable_Act_Togemaru_Move:
-	dw OBJLst_Act_Togemaru_Move0
+SprMapPtrTable_Act_Togemaru_Move:
+	dw SprMap_Act_Togemaru_Move0
 	dw $0000
-OBJLstPtrTable_Act_Togemaru_Stun:
-	dw OBJLst_Act_Togemaru_Stun0
-	dw OBJLst_Act_Togemaru_Stun1
+SprMapPtrTable_Act_Togemaru_Stun:
+	dw SprMap_Act_Togemaru_Stun0
+	dw SprMap_Act_Togemaru_Stun1
 	dw $0000
 ; [TCRF] Unused alternate stun animation.
 ;        It's only 1 frame long and the actor is upside down.
-OBJLstPtrTable_Act_Togemaru_Unused_StunAlt:
-	dw OBJLst_Act_Togemaru_Unused_StunAlt;X
+SprMapPtrTable_Act_Togemaru_Unused_StunAlt:
+	dw SprMap_Act_Togemaru_Unused_StunAlt;X
 	dw $0000;X
 
-OBJLstSharedPtrTable_Act_Togemaru:
-	dw OBJLstPtrTable_Act_Togemaru_Stun;X
-	dw OBJLstPtrTable_Act_Togemaru_Stun;X
-	dw OBJLstPtrTable_Act_Togemaru_Stun;X
-	dw OBJLstPtrTable_Act_Togemaru_Stun;X
-	dw OBJLstPtrTable_Act_Togemaru_Stun
-	dw OBJLstPtrTable_Act_Togemaru_Stun
-	dw OBJLstPtrTable_Act_Togemaru_Stun;X
-	dw OBJLstPtrTable_Act_Togemaru_Stun;X
+SprMapSharedPtrTable_Act_Togemaru:
+	dw SprMapPtrTable_Act_Togemaru_Stun;X
+	dw SprMapPtrTable_Act_Togemaru_Stun;X
+	dw SprMapPtrTable_Act_Togemaru_Stun;X
+	dw SprMapPtrTable_Act_Togemaru_Stun;X
+	dw SprMapPtrTable_Act_Togemaru_Stun
+	dw SprMapPtrTable_Act_Togemaru_Stun
+	dw SprMapPtrTable_Act_Togemaru_Stun;X
+	dw SprMapPtrTable_Act_Togemaru_Stun;X
 
-OBJLst_Act_Togemaru_Move0: INCBIN "data/objlst/actor/togemaru_move0.bin"
-OBJLst_Act_Togemaru_Move1: INCBIN "data/objlst/actor/togemaru_move1.bin"
-OBJLst_Act_Togemaru_Stun0: INCBIN "data/objlst/actor/togemaru_stun0.bin"
-OBJLst_Act_Togemaru_Unused_StunAlt: INCBIN "data/objlst/actor/togemaru_unused_stunalt.bin"
-OBJLst_Act_Togemaru_Stun1: INCBIN "data/objlst/actor/togemaru_stun1.bin"
+SprMap_Act_Togemaru_Move0: INCBIN "data/sprmap/actor/togemaru_move0.bin"
+SprMap_Act_Togemaru_Move1: INCBIN "data/sprmap/actor/togemaru_move1.bin"
+SprMap_Act_Togemaru_Stun0: INCBIN "data/sprmap/actor/togemaru_stun0.bin"
+SprMap_Act_Togemaru_Unused_StunAlt: INCBIN "data/sprmap/actor/togemaru_unused_stunalt.bin"
+SprMap_Act_Togemaru_Stun1: INCBIN "data/sprmap/actor/togemaru_stun1.bin"
 GFX_Act_Togemaru: INCBIN "data/gfx/actor/togemaru.bin"
 
 ; =============== ActInit_Croc ===============
@@ -4271,12 +4271,12 @@ ActInit_Croc:
 	ld   bc, SubCall_Act_Croc
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Croc_MoveL
+	; Set initial animation
+	mActSprMapPtrTable SprMapPtrTable_Act_Croc_MoveL
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_Croc
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_Croc
+	call ActS_SetSprMapSharedTablePtr
 	
 	xor  a
 	ld   [sActCrocJumpTimer], a
@@ -4315,9 +4315,9 @@ Act_Croc_Main:
 	ld   a, [sTimer]
 	and  a, $0F
 	jr   nz, .moveV
-	ld   a, [sActSetOBJLstId]	; AnimFrame++
+	ld   a, [sActSetSprMapId]	; AnimFrame++
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .moveV:
 	call Act_Croc_MoveV
 	ret
@@ -4444,11 +4444,11 @@ Act_Croc_OpenMouth:
 	ld   [sActSetColiType], a
 		
 	; Prepare the jump (up) anim
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Croc_MouthOpenR
+	mActSprMapPtrTable SprMapPtrTable_Act_Croc_MouthOpenR
 	ld   a, [sActSetDir]
 	bit  DIRB_R, a				; Facing right?
 	ret  nz						; If so, return
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Croc_MouthOpenL
+	mActSprMapPtrTable SprMapPtrTable_Act_Croc_MouthOpenL
 	ret
 	
 ; =============== Act_Croc_Jump ===============
@@ -4461,11 +4461,11 @@ Act_Croc_Jump:
 	mActSetYSpeed -$05
 	
 	; Set open mouth jump anim
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Croc_JumpUpR
+	mActSprMapPtrTable SprMapPtrTable_Act_Croc_JumpUpR
 	ld   a, [sActSetDir]
 	bit  DIRB_R, a				; Facing right?
 	ret  nz						; If so, return
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Croc_JumpUpL
+	mActSprMapPtrTable SprMapPtrTable_Act_Croc_JumpUpL
 	ret
 	
 ; =============== Act_Croc_JumpDown ===============
@@ -4475,11 +4475,11 @@ Act_Croc_JumpDown:
 	ld   [sActSetColiType], a
 	
 	; Set open mouth jump anim
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Croc_JumpDownR
+	mActSprMapPtrTable SprMapPtrTable_Act_Croc_JumpDownR
 	ld   a, [sActSetDir]
 	bit  DIRB_R, a				; Facing right?
 	ret  nz						; If so, return
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Croc_JumpDownL
+	mActSprMapPtrTable SprMapPtrTable_Act_Croc_JumpDownL
 	ret
 	
 ; =============== Act_Croc_MoveLeft ===============
@@ -4494,10 +4494,10 @@ Act_Croc_MoveLeft:
 	ld   bc, -$01
 	call ActS_MoveRight
 	; Set swim anim
-	ld   a, LOW(OBJLstPtrTable_Act_Croc_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Croc_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Croc_MoveL)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Croc_MoveL)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	ret
 	
 ; =============== Act_Croc_MoveRight ===============
@@ -4512,10 +4512,10 @@ Act_Croc_MoveRight:
 	ld   bc, +$01
 	call ActS_MoveRight
 	; Set swim anim
-	ld   a, LOW(OBJLstPtrTable_Act_Croc_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Croc_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Croc_MoveR)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Croc_MoveR)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	ret
 	
 ; =============== Act_Croc_MoveV ===============
@@ -4580,76 +4580,76 @@ Act_Croc_UnderwaterMoveV:
 Act_Croc_UnderwaterYPath: 
 	dw +$00,+$01,+$01,+$01,+$00,-$01,-$01,-$01
 .end:
-OBJLstSharedPtrTable_Act_Croc:
-	dw OBJLstPtrTable_Act_Croc_StunL;X
-	dw OBJLstPtrTable_Act_Croc_StunR;X
-	dw OBJLstPtrTable_Act_Croc_StunL;X
-	dw OBJLstPtrTable_Act_Croc_StunR;X
-	dw OBJLstPtrTable_Act_Croc_StunL
-	dw OBJLstPtrTable_Act_Croc_StunR
-	dw OBJLstPtrTable_Act_Croc_MoveL;X
-	dw OBJLstPtrTable_Act_Croc_MoveR;X
+SprMapSharedPtrTable_Act_Croc:
+	dw SprMapPtrTable_Act_Croc_StunL;X
+	dw SprMapPtrTable_Act_Croc_StunR;X
+	dw SprMapPtrTable_Act_Croc_StunL;X
+	dw SprMapPtrTable_Act_Croc_StunR;X
+	dw SprMapPtrTable_Act_Croc_StunL
+	dw SprMapPtrTable_Act_Croc_StunR
+	dw SprMapPtrTable_Act_Croc_MoveL;X
+	dw SprMapPtrTable_Act_Croc_MoveR;X
 
-OBJLstPtrTable_Act_Croc_MoveL:
-	dw OBJLst_Act_Croc_MoveL0
-	dw OBJLst_Act_Croc_MoveL1
-	dw OBJLst_Act_Croc_MoveL0
-	dw OBJLst_Act_Croc_MoveL2
+SprMapPtrTable_Act_Croc_MoveL:
+	dw SprMap_Act_Croc_MoveL0
+	dw SprMap_Act_Croc_MoveL1
+	dw SprMap_Act_Croc_MoveL0
+	dw SprMap_Act_Croc_MoveL2
 	dw $0000
-OBJLstPtrTable_Act_Croc_MoveR:
-	dw OBJLst_Act_Croc_MoveR0
-	dw OBJLst_Act_Croc_MoveR1
-	dw OBJLst_Act_Croc_MoveR0
-	dw OBJLst_Act_Croc_MoveR2
+SprMapPtrTable_Act_Croc_MoveR:
+	dw SprMap_Act_Croc_MoveR0
+	dw SprMap_Act_Croc_MoveR1
+	dw SprMap_Act_Croc_MoveR0
+	dw SprMap_Act_Croc_MoveR2
 	dw $0000
-OBJLstPtrTable_Act_Croc_MouthOpenL:
-	dw OBJLst_Act_Croc_MouthOpenL
+SprMapPtrTable_Act_Croc_MouthOpenL:
+	dw SprMap_Act_Croc_MouthOpenL
 	dw $0000
-OBJLstPtrTable_Act_Croc_MouthOpenR:
-	dw OBJLst_Act_Croc_MouthOpenR
+SprMapPtrTable_Act_Croc_MouthOpenR:
+	dw SprMap_Act_Croc_MouthOpenR
 	dw $0000
-OBJLstPtrTable_Act_Croc_JumpUpL:
-	dw OBJLst_Act_Croc_JumpUpL
+SprMapPtrTable_Act_Croc_JumpUpL:
+	dw SprMap_Act_Croc_JumpUpL
 	dw $0000
-OBJLstPtrTable_Act_Croc_JumpUpR:
-	dw OBJLst_Act_Croc_JumpUpR
+SprMapPtrTable_Act_Croc_JumpUpR:
+	dw SprMap_Act_Croc_JumpUpR
 	dw $0000
-OBJLstPtrTable_Act_Croc_JumpDownL:
-	dw OBJLst_Act_Croc_JumpDownL
+SprMapPtrTable_Act_Croc_JumpDownL:
+	dw SprMap_Act_Croc_JumpDownL
 	dw $0000
-OBJLstPtrTable_Act_Croc_JumpDownR:
-	dw OBJLst_Act_Croc_JumpDownR
+SprMapPtrTable_Act_Croc_JumpDownR:
+	dw SprMap_Act_Croc_JumpDownR
 	dw $0000
-; [TCRF] Unused animation. Variant of OBJLstPtrTable_Act_Croc_Stun* except not upside down.
-OBJLstPtrTable_Act_Croc_Unused_StunAltL:
-	dw OBJLst_Act_Croc_Unused_StunAltL;X
+; [TCRF] Unused animation. Variant of SprMapPtrTable_Act_Croc_Stun* except not upside down.
+SprMapPtrTable_Act_Croc_Unused_StunAltL:
+	dw SprMap_Act_Croc_Unused_StunAltL;X
 	dw $0000;X
-OBJLstPtrTable_Act_Croc_Unused_StunAltR:
-	dw OBJLst_Act_Croc_Unused_StunAltR;X
+SprMapPtrTable_Act_Croc_Unused_StunAltR:
+	dw SprMap_Act_Croc_Unused_StunAltR;X
 	dw $0000;X
-OBJLstPtrTable_Act_Croc_StunL:
-	dw OBJLst_Act_Croc_StunL
+SprMapPtrTable_Act_Croc_StunL:
+	dw SprMap_Act_Croc_StunL
 	dw $0000;X
-OBJLstPtrTable_Act_Croc_StunR:
-	dw OBJLst_Act_Croc_StunR
+SprMapPtrTable_Act_Croc_StunR:
+	dw SprMap_Act_Croc_StunR
 	dw $0000;X
 
-OBJLst_Act_Croc_MoveL0: INCBIN "data/objlst/actor/croc_movel0.bin"
-OBJLst_Act_Croc_MoveL1: INCBIN "data/objlst/actor/croc_movel1.bin"
-OBJLst_Act_Croc_MoveL2: INCBIN "data/objlst/actor/croc_movel2.bin"
-OBJLst_Act_Croc_MouthOpenL: INCBIN "data/objlst/actor/croc_mouthopenl.bin"
-OBJLst_Act_Croc_JumpUpL: INCBIN "data/objlst/actor/croc_jumpupl.bin"
-OBJLst_Act_Croc_Unused_StunAltL: INCBIN "data/objlst/actor/croc_unused_stunaltl.bin"
-OBJLst_Act_Croc_StunL: INCBIN "data/objlst/actor/croc_stunl.bin"
-OBJLst_Act_Croc_JumpDownL: INCBIN "data/objlst/actor/croc_jumpdownl.bin"
-OBJLst_Act_Croc_MoveR0: INCBIN "data/objlst/actor/croc_mover0.bin"
-OBJLst_Act_Croc_MoveR1: INCBIN "data/objlst/actor/croc_mover1.bin"
-OBJLst_Act_Croc_MoveR2: INCBIN "data/objlst/actor/croc_mover2.bin"
-OBJLst_Act_Croc_MouthOpenR: INCBIN "data/objlst/actor/croc_mouthopenr.bin"
-OBJLst_Act_Croc_JumpUpR: INCBIN "data/objlst/actor/croc_jumpupr.bin"
-OBJLst_Act_Croc_Unused_StunAltR: INCBIN "data/objlst/actor/croc_unused_stunaltr.bin"
-OBJLst_Act_Croc_StunR: INCBIN "data/objlst/actor/croc_stunr.bin"
-OBJLst_Act_Croc_JumpDownR: INCBIN "data/objlst/actor/croc_jumpdownr.bin"
+SprMap_Act_Croc_MoveL0: INCBIN "data/sprmap/actor/croc_movel0.bin"
+SprMap_Act_Croc_MoveL1: INCBIN "data/sprmap/actor/croc_movel1.bin"
+SprMap_Act_Croc_MoveL2: INCBIN "data/sprmap/actor/croc_movel2.bin"
+SprMap_Act_Croc_MouthOpenL: INCBIN "data/sprmap/actor/croc_mouthopenl.bin"
+SprMap_Act_Croc_JumpUpL: INCBIN "data/sprmap/actor/croc_jumpupl.bin"
+SprMap_Act_Croc_Unused_StunAltL: INCBIN "data/sprmap/actor/croc_unused_stunaltl.bin"
+SprMap_Act_Croc_StunL: INCBIN "data/sprmap/actor/croc_stunl.bin"
+SprMap_Act_Croc_JumpDownL: INCBIN "data/sprmap/actor/croc_jumpdownl.bin"
+SprMap_Act_Croc_MoveR0: INCBIN "data/sprmap/actor/croc_mover0.bin"
+SprMap_Act_Croc_MoveR1: INCBIN "data/sprmap/actor/croc_mover1.bin"
+SprMap_Act_Croc_MoveR2: INCBIN "data/sprmap/actor/croc_mover2.bin"
+SprMap_Act_Croc_MouthOpenR: INCBIN "data/sprmap/actor/croc_mouthopenr.bin"
+SprMap_Act_Croc_JumpUpR: INCBIN "data/sprmap/actor/croc_jumpupr.bin"
+SprMap_Act_Croc_Unused_StunAltR: INCBIN "data/sprmap/actor/croc_unused_stunaltr.bin"
+SprMap_Act_Croc_StunR: INCBIN "data/sprmap/actor/croc_stunr.bin"
+SprMap_Act_Croc_JumpDownR: INCBIN "data/sprmap/actor/croc_jumpdownr.bin"
 GFX_Act_Croc: INCBIN "data/gfx/actor/croc.bin"
 
 ; =============== ActInit_Spider ===============
@@ -4668,12 +4668,12 @@ ActInit_Spider:
 	ld   bc, SubCall_Act_Spider
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Spider_MoveD
+	; Set initial animation
+	mActSprMapPtrTable SprMapPtrTable_Act_Spider_MoveD
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_Spider
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_Spider
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Default to defeatable both up and down.
 	; The proper damaging side will be set later on.
@@ -4716,7 +4716,7 @@ Act_Spider_Main:
 	;--
 	
 	; Animate every 8 frames
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	; Move vertically as specified
 	ld   a, [sActSetDir]
@@ -4735,10 +4735,10 @@ Act_Spider_Main:
 ; Moves the actor up at 0.5px/frame.
 Act_Spider_MoveUp:
 	; Set animation
-	ld   a, LOW(OBJLstPtrTable_Act_Spider_MoveU)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Spider_MoveU)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Spider_MoveU)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Spider_MoveU)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; Every other frame...
 	ld   a, [sActSetTimer]
@@ -4763,10 +4763,10 @@ Act_Spider_MoveUp:
 ; Moves the actor down at 0.5px/frame.
 Act_Spider_MoveDown:
 	; Set animation
-	ld   a, LOW(OBJLstPtrTable_Act_Spider_MoveD)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Spider_MoveD)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Spider_MoveD)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Spider_MoveD)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	; Every other frame...
 	ld   a, [sActSetTimer]
 	and  a, $01
@@ -4804,38 +4804,38 @@ Act_Spider_SetTurnDelay:
 	ld   a, $1E				; Wait for $1E frames before moving again
 	ld   [sActSpiderTurnDelay], a
 	ret
-OBJLstPtrTable_Act_Spider_MoveD:
-	dw OBJLst_Act_Spider_MoveD0
-	dw OBJLst_Act_Spider_MoveD1
+SprMapPtrTable_Act_Spider_MoveD:
+	dw SprMap_Act_Spider_MoveD0
+	dw SprMap_Act_Spider_MoveD1
 	dw $0000
-OBJLstPtrTable_Act_Spider_MoveU:
-	dw OBJLst_Act_Spider_MoveU0
-	dw OBJLst_Act_Spider_MoveU1
+SprMapPtrTable_Act_Spider_MoveU:
+	dw SprMap_Act_Spider_MoveU0
+	dw SprMap_Act_Spider_MoveU1
 	dw $0000
-; [TCRF] Unused alternate variant of OBJLstPtrTable_Act_Spider_Stun, with the spider facing down.
-OBJLstPtrTable_Act_Spider_Unused_StunAlt:
-	dw OBJLst_Act_Spider_Unused_StunAlt;X
+; [TCRF] Unused alternate variant of SprMapPtrTable_Act_Spider_Stun, with the spider facing down.
+SprMapPtrTable_Act_Spider_Unused_StunAlt:
+	dw SprMap_Act_Spider_Unused_StunAlt;X
 	dw $0000;X
-OBJLstPtrTable_Act_Spider_Stun:
-	dw OBJLst_Act_Spider_Stun
+SprMapPtrTable_Act_Spider_Stun:
+	dw SprMap_Act_Spider_Stun
 	dw $0000
 
-OBJLstSharedPtrTable_Act_Spider:
-	dw OBJLstPtrTable_Act_Spider_Stun;X
-	dw OBJLstPtrTable_Act_Spider_Stun;X
-	dw OBJLstPtrTable_Act_Spider_Stun;X
-	dw OBJLstPtrTable_Act_Spider_Stun;X
-	dw OBJLstPtrTable_Act_Spider_Stun
-	dw OBJLstPtrTable_Act_Spider_Stun;X
-	dw OBJLstPtrTable_Act_Spider_Stun;X
-	dw OBJLstPtrTable_Act_Spider_Stun;X
+SprMapSharedPtrTable_Act_Spider:
+	dw SprMapPtrTable_Act_Spider_Stun;X
+	dw SprMapPtrTable_Act_Spider_Stun;X
+	dw SprMapPtrTable_Act_Spider_Stun;X
+	dw SprMapPtrTable_Act_Spider_Stun;X
+	dw SprMapPtrTable_Act_Spider_Stun
+	dw SprMapPtrTable_Act_Spider_Stun;X
+	dw SprMapPtrTable_Act_Spider_Stun;X
+	dw SprMapPtrTable_Act_Spider_Stun;X
 
-OBJLst_Act_Spider_MoveD0: INCBIN "data/objlst/actor/spider_moved0.bin"
-OBJLst_Act_Spider_MoveD1: INCBIN "data/objlst/actor/spider_moved1.bin"
-OBJLst_Act_Spider_Unused_StunAlt: INCBIN "data/objlst/actor/spider_unused_stunalt.bin"
-OBJLst_Act_Spider_MoveU0: INCBIN "data/objlst/actor/spider_moveu0.bin"
-OBJLst_Act_Spider_MoveU1: INCBIN "data/objlst/actor/spider_moveu1.bin"
-OBJLst_Act_Spider_Stun: INCBIN "data/objlst/actor/spider_stun.bin"
+SprMap_Act_Spider_MoveD0: INCBIN "data/sprmap/actor/spider_moved0.bin"
+SprMap_Act_Spider_MoveD1: INCBIN "data/sprmap/actor/spider_moved1.bin"
+SprMap_Act_Spider_Unused_StunAlt: INCBIN "data/sprmap/actor/spider_unused_stunalt.bin"
+SprMap_Act_Spider_MoveU0: INCBIN "data/sprmap/actor/spider_moveu0.bin"
+SprMap_Act_Spider_MoveU1: INCBIN "data/sprmap/actor/spider_moveu1.bin"
+SprMap_Act_Spider_Stun: INCBIN "data/sprmap/actor/spider_stun.bin"
 GFX_Act_Spider: INCBIN "data/gfx/actor/spider.bin"
 
 ; =============== ActInit_FireMissile ===============
@@ -4858,9 +4858,9 @@ ActInit_FireMissile:
 	ld   bc, SubCall_Act_FireMissile
 	call ActS_SetCodePtr
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_FireMissile
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_FireMissile
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Fireball should be intangible when it isn't shot yet
 	xor  a
@@ -4887,7 +4887,7 @@ ActInit_FireMissile:
 .setL:
 	; Start by setting the left-facing options
 	; (Could have been moved to .setLOff)
-	mActOBJLstPtrTable OBJLstPtrTable_Act_FireMissile_WarnL		
+	mActSprMapPtrTable SprMapPtrTable_Act_FireMissile_WarnL		
 	ld   a, DIR_L
 	ld   [sActSetDir], a
 	
@@ -4897,7 +4897,7 @@ ActInit_FireMissile:
 	jr   nz, .setLOff					; If so, we set the correct direction
 .setR:
 	; Otherwise face right
-	mActOBJLstPtrTable OBJLstPtrTable_Act_FireMissile_WarnR			
+	mActSprMapPtrTable SprMapPtrTable_Act_FireMissile_WarnR			
 	ld   a, DIR_R
 	ld   [sActSetDir], a
 	; Adjust 8px closer to the solid block
@@ -4910,37 +4910,37 @@ ActInit_FireMissile:
 	call ActS_MoveRight
 	ret
 	
-OBJLstPtrTable_Act_FireMissile_WarnL:
-	dw OBJLst_Act_FireMissile_WarnL0
-	dw OBJLst_Act_FireMissile_WarnL1
+SprMapPtrTable_Act_FireMissile_WarnL:
+	dw SprMap_Act_FireMissile_WarnL0
+	dw SprMap_Act_FireMissile_WarnL1
 	dw $0000
-OBJLstPtrTable_Act_FireMissile_WarnR:
-	dw OBJLst_Act_FireMissile_WarnR0
-	dw OBJLst_Act_FireMissile_WarnR1
+SprMapPtrTable_Act_FireMissile_WarnR:
+	dw SprMap_Act_FireMissile_WarnR0
+	dw SprMap_Act_FireMissile_WarnR1
 	dw $0000
-OBJLstPtrTable_Act_FireMissile_MoveL:
-	dw OBJLst_Act_FireMissile_MoveL0
-	dw OBJLst_Act_FireMissile_MoveL1
+SprMapPtrTable_Act_FireMissile_MoveL:
+	dw SprMap_Act_FireMissile_MoveL0
+	dw SprMap_Act_FireMissile_MoveL1
 	dw $0000
-OBJLstPtrTable_Act_FireMissile_MoveR:
-	dw OBJLst_Act_FireMissile_MoveR0
-	dw OBJLst_Act_FireMissile_MoveR1
+SprMapPtrTable_Act_FireMissile_MoveR:
+	dw SprMap_Act_FireMissile_MoveR0
+	dw SprMap_Act_FireMissile_MoveR1
 	dw $0000
-OBJLstPtrTable_Act_FireMissile_SolidHit0L:
-	dw OBJLst_Act_FireMissile_SolidHit0_L0
-	dw OBJLst_Act_FireMissile_SolidHit0_L1
+SprMapPtrTable_Act_FireMissile_SolidHit0L:
+	dw SprMap_Act_FireMissile_SolidHit0_L0
+	dw SprMap_Act_FireMissile_SolidHit0_L1
 	dw $0000;X
-OBJLstPtrTable_Act_FireMissile_SolidHit0R:
-	dw OBJLst_Act_FireMissile_SolidHit0_R0
-	dw OBJLst_Act_FireMissile_SolidHit0_R1
+SprMapPtrTable_Act_FireMissile_SolidHit0R:
+	dw SprMap_Act_FireMissile_SolidHit0_R0
+	dw SprMap_Act_FireMissile_SolidHit0_R1
 	dw $0000;X
-OBJLstPtrTable_Act_FireMissile_SolidHit1L:
-	dw OBJLst_Act_FireMissile_SolidHit1_L0
-	dw OBJLst_Act_FireMissile_SolidHit1_L1
+SprMapPtrTable_Act_FireMissile_SolidHit1L:
+	dw SprMap_Act_FireMissile_SolidHit1_L0
+	dw SprMap_Act_FireMissile_SolidHit1_L1
 	dw $0000
-OBJLstPtrTable_Act_FireMissile_SolidHit1R:
-	dw OBJLst_Act_FireMissile_SolidHit1_R0
-	dw OBJLst_Act_FireMissile_SolidHit1_R1
+SprMapPtrTable_Act_FireMissile_SolidHit1R:
+	dw SprMap_Act_FireMissile_SolidHit1_R0
+	dw SprMap_Act_FireMissile_SolidHit1_R1
 	dw $0000
 
 ; =============== ActInit_FireMissile ===============
@@ -4949,9 +4949,9 @@ Act_FireMissile:
 	ld   a, [sTimer]
 	and  a, $03
 	jr   nz, .chkRoutine
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .chkRoutine:
 
 	ld   a, [sActLocalRoutineId]
@@ -4971,11 +4971,11 @@ Act_FireMissile_SwitchToWarn:
 	xor  a
 	ld   [sActFireMissileModeTimer], a
 	
-	mActOBJLstPtrTable OBJLstPtrTable_Act_FireMissile_WarnR	; Set the one when facing right first
+	mActSprMapPtrTable SprMapPtrTable_Act_FireMissile_WarnR	; Set the one when facing right first
 	ld   a, [sActSetDir]
 	bit  DIRB_R, a					; Facing right?
 	ret  nz							; If so, return
-	mActOBJLstPtrTable OBJLstPtrTable_Act_FireMissile_WarnL	; Set the one when facing left
+	mActSprMapPtrTable SprMapPtrTable_Act_FireMissile_WarnL	; Set the one when facing left
 	ret
 	
 ; =============== Act_FireMissile_Warn ===============
@@ -5007,11 +5007,11 @@ Act_FireMissile_Warn:
 	ld   a, COLI
 	ld   [sActSetColiType], a
 	
-	mActOBJLstPtrTable OBJLstPtrTable_Act_FireMissile_MoveR	; Set the one when facing right first
+	mActSprMapPtrTable SprMapPtrTable_Act_FireMissile_MoveR	; Set the one when facing right first
 	ld   a, [sActSetDir]
 	bit  DIRB_R, a					; Facing right?
 	ret  nz							; If so, return
-	mActOBJLstPtrTable OBJLstPtrTable_Act_FireMissile_MoveL	; Set the one when facing left
+	mActSprMapPtrTable SprMapPtrTable_Act_FireMissile_MoveL	; Set the one when facing left
 	ret
 	
 ; =============== Act_FireMissile_Move ===============
@@ -5050,11 +5050,11 @@ Act_FireMissile_Move:
 	ld   [sActSetColiType], a		; Make intangible again
 	
 	; Set block hit anim 1
-	mActOBJLstPtrTable OBJLstPtrTable_Act_FireMissile_SolidHit0R	; Set the one when facing right first
+	mActSprMapPtrTable SprMapPtrTable_Act_FireMissile_SolidHit0R	; Set the one when facing right first
 	ld   a, [sActSetDir]
 	bit  DIRB_R, a					; Facing right?
 	ret  nz							; If so, return
-	mActOBJLstPtrTable OBJLstPtrTable_Act_FireMissile_SolidHit0L	; Set the one when facing left
+	mActSprMapPtrTable SprMapPtrTable_Act_FireMissile_SolidHit0L	; Set the one when facing left
 	ret
 	
 ; =============== Act_FireMissile_SolidHit0 ===============
@@ -5078,11 +5078,11 @@ Act_FireMissile_SolidHit0:
 	ld   [sActSetColiType], a			; (not needed, copy/paste wins again)
 	
 	; Set block hit anim 2
-	mActOBJLstPtrTable OBJLstPtrTable_Act_FireMissile_SolidHit1R	; Set the one when facing right first
+	mActSprMapPtrTable SprMapPtrTable_Act_FireMissile_SolidHit1R	; Set the one when facing right first
 	ld   a, [sActSetDir]
 	bit  DIRB_R, a					; Facing right?
 	ret  nz							; If so, return
-	mActOBJLstPtrTable OBJLstPtrTable_Act_FireMissile_SolidHit1L	; Set the one when facing left
+	mActSprMapPtrTable SprMapPtrTable_Act_FireMissile_SolidHit1L	; Set the one when facing left
 	ret
 ; =============== Act_FireMissile_SolidHit1 ===============
 ; Mode $03: Waits for a bit after hitting the block.
@@ -5162,32 +5162,32 @@ Act_FireMissile_Wait:
 	jp   nc, Act_FireMissile_SwitchToWarn
 	ret
 	
-OBJLstSharedPtrTable_Act_FireMissile:
-	dw OBJLstPtrTable_Act_FireMissile_MoveL;X
-	dw OBJLstPtrTable_Act_FireMissile_MoveR;X
-	dw OBJLstPtrTable_Act_FireMissile_MoveL;X
-	dw OBJLstPtrTable_Act_FireMissile_MoveR;X
-	dw OBJLstPtrTable_Act_FireMissile_MoveL;X
-	dw OBJLstPtrTable_Act_FireMissile_MoveR;X
-	dw OBJLstPtrTable_Act_FireMissile_MoveL;X
-	dw OBJLstPtrTable_Act_FireMissile_MoveR;X
+SprMapSharedPtrTable_Act_FireMissile:
+	dw SprMapPtrTable_Act_FireMissile_MoveL;X
+	dw SprMapPtrTable_Act_FireMissile_MoveR;X
+	dw SprMapPtrTable_Act_FireMissile_MoveL;X
+	dw SprMapPtrTable_Act_FireMissile_MoveR;X
+	dw SprMapPtrTable_Act_FireMissile_MoveL;X
+	dw SprMapPtrTable_Act_FireMissile_MoveR;X
+	dw SprMapPtrTable_Act_FireMissile_MoveL;X
+	dw SprMapPtrTable_Act_FireMissile_MoveR;X
 
-OBJLst_Act_FireMissile_WarnL0: INCBIN "data/objlst/actor/firemissile_warnl0.bin"
-OBJLst_Act_FireMissile_WarnL1: INCBIN "data/objlst/actor/firemissile_warnl1.bin"
-OBJLst_Act_FireMissile_MoveL0: INCBIN "data/objlst/actor/firemissile_movel0.bin"
-OBJLst_Act_FireMissile_MoveL1: INCBIN "data/objlst/actor/firemissile_movel1.bin"
-OBJLst_Act_FireMissile_SolidHit0_L0: INCBIN "data/objlst/actor/firemissile_solidhit0_l0.bin"
-OBJLst_Act_FireMissile_SolidHit0_L1: INCBIN "data/objlst/actor/firemissile_solidhit0_l1.bin"
-OBJLst_Act_FireMissile_SolidHit1_L0: INCBIN "data/objlst/actor/firemissile_solidhit1_l0.bin"
-OBJLst_Act_FireMissile_SolidHit1_L1: INCBIN "data/objlst/actor/firemissile_solidhit1_l1.bin"
-OBJLst_Act_FireMissile_WarnR0: INCBIN "data/objlst/actor/firemissile_warnr0.bin"
-OBJLst_Act_FireMissile_WarnR1: INCBIN "data/objlst/actor/firemissile_warnr1.bin"
-OBJLst_Act_FireMissile_MoveR0: INCBIN "data/objlst/actor/firemissile_mover0.bin"
-OBJLst_Act_FireMissile_MoveR1: INCBIN "data/objlst/actor/firemissile_mover1.bin"
-OBJLst_Act_FireMissile_SolidHit0_R0: INCBIN "data/objlst/actor/firemissile_solidhit0_r0.bin"
-OBJLst_Act_FireMissile_SolidHit0_R1: INCBIN "data/objlst/actor/firemissile_solidhit0_r1.bin"
-OBJLst_Act_FireMissile_SolidHit1_R0: INCBIN "data/objlst/actor/firemissile_solidhit1_r0.bin"
-OBJLst_Act_FireMissile_SolidHit1_R1: INCBIN "data/objlst/actor/firemissile_solidhit1_r1.bin"
+SprMap_Act_FireMissile_WarnL0: INCBIN "data/sprmap/actor/firemissile_warnl0.bin"
+SprMap_Act_FireMissile_WarnL1: INCBIN "data/sprmap/actor/firemissile_warnl1.bin"
+SprMap_Act_FireMissile_MoveL0: INCBIN "data/sprmap/actor/firemissile_movel0.bin"
+SprMap_Act_FireMissile_MoveL1: INCBIN "data/sprmap/actor/firemissile_movel1.bin"
+SprMap_Act_FireMissile_SolidHit0_L0: INCBIN "data/sprmap/actor/firemissile_solidhit0_l0.bin"
+SprMap_Act_FireMissile_SolidHit0_L1: INCBIN "data/sprmap/actor/firemissile_solidhit0_l1.bin"
+SprMap_Act_FireMissile_SolidHit1_L0: INCBIN "data/sprmap/actor/firemissile_solidhit1_l0.bin"
+SprMap_Act_FireMissile_SolidHit1_L1: INCBIN "data/sprmap/actor/firemissile_solidhit1_l1.bin"
+SprMap_Act_FireMissile_WarnR0: INCBIN "data/sprmap/actor/firemissile_warnr0.bin"
+SprMap_Act_FireMissile_WarnR1: INCBIN "data/sprmap/actor/firemissile_warnr1.bin"
+SprMap_Act_FireMissile_MoveR0: INCBIN "data/sprmap/actor/firemissile_mover0.bin"
+SprMap_Act_FireMissile_MoveR1: INCBIN "data/sprmap/actor/firemissile_mover1.bin"
+SprMap_Act_FireMissile_SolidHit0_R0: INCBIN "data/sprmap/actor/firemissile_solidhit0_r0.bin"
+SprMap_Act_FireMissile_SolidHit0_R1: INCBIN "data/sprmap/actor/firemissile_solidhit0_r1.bin"
+SprMap_Act_FireMissile_SolidHit1_R0: INCBIN "data/sprmap/actor/firemissile_solidhit1_r0.bin"
+SprMap_Act_FireMissile_SolidHit1_R1: INCBIN "data/sprmap/actor/firemissile_solidhit1_r1.bin"
 GFX_Act_FireMissile: INCBIN "data/gfx/actor/firemissile.bin"
 
 ; =============== END OF BANK ===============

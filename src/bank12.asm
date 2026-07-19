@@ -1,67 +1,67 @@
 ;
 ; BANK $12 - Intro / Title screen; Actor code
 ;
-OBJLst_Intro_Wario_BoatRow0L: INCBIN "data/objlst/intro/wario_boatrow0_L.bin"
-OBJLst_Intro_Wario_BoatRow1L: INCBIN "data/objlst/intro/wario_boatrow1_L.bin"
-OBJLst_Intro_Wario_BoatRow2L: INCBIN "data/objlst/intro/wario_boatrow2_L.bin"
-OBJLst_Intro_Wario_BoatDash:  INCBIN "data/objlst/intro/wario_boatdash.bin"
-OBJLst_Intro_Wario_BoatStand: INCBIN "data/objlst/intro/wario_boatstand.bin"
-OBJLst_Intro_Wario_Jump:      INCBIN "data/objlst/intro/wario_jump.bin"
-OBJLst_Intro_Wario_Stand:     INCBIN "data/objlst/intro/wario_stand.bin"
-OBJLst_Intro_Wario_Front:     INCBIN "data/objlst/intro/wario_front.bin"
-OBJLst_Intro_Wario_ThumbsUp:  INCBIN "data/objlst/intro/wario_thumbsup.bin"
-OBJLst_Intro_Wario_ThumbsUp2: INCBIN "data/objlst/intro/wario_thumbsup2.bin"
-OBJLst_Intro_Wario_BoatRow0R: INCBIN "data/objlst/intro/wario_boatrow0_R.bin"
-OBJLst_Intro_Wario_BoatRow1R: INCBIN "data/objlst/intro/wario_boatrow1_R.bin"
-OBJLst_Intro_Wario_BoatRow2R: INCBIN "data/objlst/intro/wario_boatrow2_R.bin"
-OBJLst_Intro_ShipDuckPanicR:  INCBIN "data/objlst/intro/ship_duckpanic_R.bin"
-OBJLst_Intro_ShipFlagR0:      INCBIN "data/objlst/intro/ship_flag0_R.bin"
-OBJLst_Intro_ShipDuckRBase:   INCBIN "data/objlst/intro/ship_duckbase_R.bin"
-OBJLst_Intro_ShipFlagR1:      INCBIN "data/objlst/intro/ship_flag1_R.bin"
-OBJLst_Intro_ShipDuckPanicL:  INCBIN "data/objlst/intro/ship_duckpanic_L.bin"
-OBJLst_Intro_ShipDuckBackL:   INCBIN "data/objlst/intro/ship_duckback_L.bin"
-OBJLst_Intro_ShipNoDuckR:     INCBIN "data/objlst/intro/ship_ducknone_R.bin"
-OBJLst_Intro_ShipDuckR:       INCBIN "data/objlst/intro/ship_duck_R.bin"
-OBJLst_Intro_ShipDuckBackR:   INCBIN "data/objlst/intro/ship_duckback_R.bin"
-OBJLst_Intro_ShipDuckLook:    INCBIN "data/objlst/intro/ship_ducklook.bin"
-OBJLst_Intro_ShipDuckNotice:  INCBIN "data/objlst/intro/ship_ducknotice.bin"
-OBJLst_Intro_ShipBodyR:       INCBIN "data/objlst/intro/ship_body_R.bin"
-OBJLst_Intro_ShipBodyL:       INCBIN "data/objlst/intro/ship_body_L.bin"
-OBJLst_Intro_ShipHit:         INCBIN "data/objlst/intro/ship_hit.bin"
-OBJLst_Intro_ShipReverse:     INCBIN "data/objlst/intro/ship_reverse.bin"
-OBJLst_Intro_ShipDuckWater:   INCBIN "data/objlst/intro/ship_duckwater.bin"
-OBJLst_Intro_ShipWater:       INCBIN "data/objlst/intro/ship_water.bin"
-OBJLst_Intro_WaterSplash:     INCBIN "data/objlst/intro/watersplash.bin"
+SprMap_Intro_Wario_BoatRow0L: INCBIN "data/sprmap/intro/wario_boatrow0_L.bin"
+SprMap_Intro_Wario_BoatRow1L: INCBIN "data/sprmap/intro/wario_boatrow1_L.bin"
+SprMap_Intro_Wario_BoatRow2L: INCBIN "data/sprmap/intro/wario_boatrow2_L.bin"
+SprMap_Intro_Wario_BoatDash:  INCBIN "data/sprmap/intro/wario_boatdash.bin"
+SprMap_Intro_Wario_BoatStand: INCBIN "data/sprmap/intro/wario_boatstand.bin"
+SprMap_Intro_Wario_Jump:      INCBIN "data/sprmap/intro/wario_jump.bin"
+SprMap_Intro_Wario_Stand:     INCBIN "data/sprmap/intro/wario_stand.bin"
+SprMap_Intro_Wario_Front:     INCBIN "data/sprmap/intro/wario_front.bin"
+SprMap_Intro_Wario_ThumbsUp:  INCBIN "data/sprmap/intro/wario_thumbsup.bin"
+SprMap_Intro_Wario_ThumbsUp2: INCBIN "data/sprmap/intro/wario_thumbsup2.bin"
+SprMap_Intro_Wario_BoatRow0R: INCBIN "data/sprmap/intro/wario_boatrow0_R.bin"
+SprMap_Intro_Wario_BoatRow1R: INCBIN "data/sprmap/intro/wario_boatrow1_R.bin"
+SprMap_Intro_Wario_BoatRow2R: INCBIN "data/sprmap/intro/wario_boatrow2_R.bin"
+SprMap_Intro_ShipDuckPanicR:  INCBIN "data/sprmap/intro/ship_duckpanic_R.bin"
+SprMap_Intro_ShipFlagR0:      INCBIN "data/sprmap/intro/ship_flag0_R.bin"
+SprMap_Intro_ShipDuckRBase:   INCBIN "data/sprmap/intro/ship_duckbase_R.bin"
+SprMap_Intro_ShipFlagR1:      INCBIN "data/sprmap/intro/ship_flag1_R.bin"
+SprMap_Intro_ShipDuckPanicL:  INCBIN "data/sprmap/intro/ship_duckpanic_L.bin"
+SprMap_Intro_ShipDuckBackL:   INCBIN "data/sprmap/intro/ship_duckback_L.bin"
+SprMap_Intro_ShipNoDuckR:     INCBIN "data/sprmap/intro/ship_ducknone_R.bin"
+SprMap_Intro_ShipDuckR:       INCBIN "data/sprmap/intro/ship_duck_R.bin"
+SprMap_Intro_ShipDuckBackR:   INCBIN "data/sprmap/intro/ship_duckback_R.bin"
+SprMap_Intro_ShipDuckLook:    INCBIN "data/sprmap/intro/ship_ducklook.bin"
+SprMap_Intro_ShipDuckNotice:  INCBIN "data/sprmap/intro/ship_ducknotice.bin"
+SprMap_Intro_ShipBodyR:       INCBIN "data/sprmap/intro/ship_body_R.bin"
+SprMap_Intro_ShipBodyL:       INCBIN "data/sprmap/intro/ship_body_L.bin"
+SprMap_Intro_ShipHit:         INCBIN "data/sprmap/intro/ship_hit.bin"
+SprMap_Intro_ShipReverse:     INCBIN "data/sprmap/intro/ship_reverse.bin"
+SprMap_Intro_ShipDuckWater:   INCBIN "data/sprmap/intro/ship_duckwater.bin"
+SprMap_Intro_ShipWater:       INCBIN "data/sprmap/intro/ship_water.bin"
+SprMap_Intro_WaterSplash:     INCBIN "data/sprmap/intro/watersplash.bin"
 
 ; =============== Intro_WriteOBJ ===============
-; Writes all OBJLst for the intro to OAM.
+; Writes all sprite mappings for the intro to OAM.
 Intro_WriteOBJ:
 	; Reset free OBJ count
 	xor  a
 	ld   [wStaticOBJCount], a
 	ld   b, a
 	; Write the OBJ data
-	call Intro_WriteWarioOBJLst
-	call Intro_WriteShipOBJLst
-	call Intro_WriteWaterSplashOBJLst
+	call Intro_WriteWarioSprMap
+	call Intro_WriteShipSprMap
+	call Intro_WriteWaterSplashSprMap
 	; Clean free OAM slots
 	jp   Static_FinalizeWorkOAM
 	
-; =============== Intro_WriteWarioOBJLst ===============
+; =============== Intro_WriteWarioSprMap ===============
 ; Writes Wario's sprite mappings to OAM.
-Intro_WriteWarioOBJLst:
+Intro_WriteWarioSprMap:
 	; Set X / Y parameters
 	ld   a, [wStaticPlX]
 	ld   [sOAMWriteX], a
 	ld   a, [wStaticPlY]
 	ld   [sOAMWriteY], a
 	
-	; The subroutine to write OBJLst used in the title screen does not support special flags!
+	; The subroutine to write sprite mappings used in the title screen does not support special flags!
 	; So we pick different sprite mappings sets for the different orientations.
 	ld   a, [wStaticPlFlags]	; Is the horizontal flip bit set?
-	bit  STATIC_OBJLSTB_XFLIP, a
+	bit  STATIC_SPRMAPB_XFLIP, a
 	jr   nz, .rightPos			; If so, use alternate mappings
-	ld   a, [wStaticPlLstId]
+	ld   a, [wStaticPlSprId]
 	rst  $28
 	dw Title_Ret
 	dw Intro_WarioFrame_BoatRow0L
@@ -77,7 +77,7 @@ Intro_WriteWarioOBJLst:
 
 .rightPos:
 	; Alternate mappings with Wario facing right
-	ld   a, [wStaticPlLstId]
+	ld   a, [wStaticPlSprId]
 	rst  $28
 	dw Title_Ret
 	dw Intro_WarioFrame_BoatRow0R
@@ -85,54 +85,54 @@ Intro_WriteWarioOBJLst:
 	dw Intro_WarioFrame_BoatRow2R
 	
 Intro_WarioFrame_BoatRow0L:
-	ld   de, OBJLst_Intro_Wario_BoatRow0L
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Intro_Wario_BoatRow0L
+	jp   Static_WriteSprMap
 Intro_WarioFrame_BoatRow1L:
-	ld   de, OBJLst_Intro_Wario_BoatRow1L
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Intro_Wario_BoatRow1L
+	jp   Static_WriteSprMap
 Intro_WarioFrame_BoatRow2L:
-	ld   de, OBJLst_Intro_Wario_BoatRow2L
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Intro_Wario_BoatRow2L
+	jp   Static_WriteSprMap
 Intro_WarioFrame_BoatDash:
-	ld   de, OBJLst_Intro_Wario_BoatDash
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Intro_Wario_BoatDash
+	jp   Static_WriteSprMap
 Intro_WarioFrame_BoatStand:
-	ld   de, OBJLst_Intro_Wario_BoatStand
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Intro_Wario_BoatStand
+	jp   Static_WriteSprMap
 Intro_WarioFrame_Jump:
-	ld   de, OBJLst_Intro_Wario_Jump
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Intro_Wario_Jump
+	jp   Static_WriteSprMap
 Intro_WarioFrame_Stand:
-	ld   de, OBJLst_Intro_Wario_Stand
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Intro_Wario_Stand
+	jp   Static_WriteSprMap
 Intro_WarioFrame_Front:
-	ld   de, OBJLst_Intro_Wario_Front
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Intro_Wario_Front
+	jp   Static_WriteSprMap
 Intro_WarioFrame_ThumbsUp:
-	ld   de, OBJLst_Intro_Wario_ThumbsUp
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Intro_Wario_ThumbsUp
+	jp   Static_WriteSprMap
 Intro_WarioFrame_ThumbsUp2:
-	ld   de, OBJLst_Intro_Wario_ThumbsUp2
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Intro_Wario_ThumbsUp2
+	jp   Static_WriteSprMap
 Intro_WarioFrame_BoatRow0R:
-	ld   de, OBJLst_Intro_Wario_BoatRow0R
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Intro_Wario_BoatRow0R
+	jp   Static_WriteSprMap
 Intro_WarioFrame_BoatRow1R:
-	ld   de, OBJLst_Intro_Wario_BoatRow1R
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Intro_Wario_BoatRow1R
+	jp   Static_WriteSprMap
 Intro_WarioFrame_BoatRow2R:
-	ld   de, OBJLst_Intro_Wario_BoatRow2R
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Intro_Wario_BoatRow2R
+	jp   Static_WriteSprMap
 	
-; =============== Intro_WriteShipOBJLst ===============
+; =============== Intro_WriteShipSprMap ===============
 ; Writes the ship's sprite mappings to OAM.
-Intro_WriteShipOBJLst:
+Intro_WriteShipSprMap:
 	ld   a, [wIntroShipX]
 	ld   [sOAMWriteX], a
 	ld   a, [wIntroShipY]
 	ld   [sOAMWriteY], a
-	; Pick the offet for the OBJLst
-	ld   a, [wIntroShipLstId]
+	; Pick the offet for the sprite mapping
+	ld   a, [wIntroShipSprId]
 	rst  $28
 	dw Title_Ret
 	dw Intro_ShipFrame_Idle0
@@ -151,74 +151,74 @@ Intro_WriteShipOBJLst:
 	dw Intro_ShipFrame_DuckWater
 
 Intro_ShipFrame_Idle0:
-	ld   de, OBJLst_Intro_ShipFlagR0
-	call Static_WriteOBJLst
-	ld   de, OBJLst_Intro_ShipNoDuckR
+	ld   de, SprMap_Intro_ShipFlagR0
+	call Static_WriteSprMap
+	ld   de, SprMap_Intro_ShipNoDuckR
 	jp   Intro_ShipFrame_BodyR
 Intro_ShipFrame_Idle1:
-	ld   de, OBJLst_Intro_ShipFlagR1
-	call Static_WriteOBJLst
-	ld   de, OBJLst_Intro_ShipNoDuckR
+	ld   de, SprMap_Intro_ShipFlagR1
+	call Static_WriteSprMap
+	ld   de, SprMap_Intro_ShipNoDuckR
 	jp   Intro_ShipFrame_BodyR
 Intro_ShipFrame_DuckR:
-	ld   de, OBJLst_Intro_ShipDuckRBase ; Left side of the duck, shared across frames
-	call Static_WriteOBJLst
-	ld   de, OBJLst_Intro_ShipDuckR
+	ld   de, SprMap_Intro_ShipDuckRBase ; Left side of the duck, shared across frames
+	call Static_WriteSprMap
+	ld   de, SprMap_Intro_ShipDuckR
 	jp   Intro_ShipFrame_BodyR
 Intro_ShipFrame_DuckBackR0:
-	ld   de, OBJLst_Intro_ShipFlagR1
-	call Static_WriteOBJLst
-	ld   de, OBJLst_Intro_ShipDuckBackR
+	ld   de, SprMap_Intro_ShipFlagR1
+	call Static_WriteSprMap
+	ld   de, SprMap_Intro_ShipDuckBackR
 	jp   Intro_ShipFrame_BodyR
 Intro_ShipFrame_DuckLook:
-	ld   de, OBJLst_Intro_ShipDuckRBase
-	call Static_WriteOBJLst
-	ld   de, OBJLst_Intro_ShipDuckLook
+	ld   de, SprMap_Intro_ShipDuckRBase
+	call Static_WriteSprMap
+	ld   de, SprMap_Intro_ShipDuckLook
 	jp   Intro_ShipFrame_BodyR
 Intro_ShipFrame_DuckNotice:
-	ld   de, OBJLst_Intro_ShipDuckRBase
-	call Static_WriteOBJLst
-	ld   de, OBJLst_Intro_ShipDuckNotice
+	ld   de, SprMap_Intro_ShipDuckRBase
+	call Static_WriteSprMap
+	ld   de, SprMap_Intro_ShipDuckNotice
 	jp   Intro_ShipFrame_BodyR
 Intro_ShipFrame_DuckPanicR:
-	ld   de, OBJLst_Intro_ShipDuckPanicR
+	ld   de, SprMap_Intro_ShipDuckPanicR
 	jp   Intro_ShipFrame_BodyR
 Intro_ShipFrame_DuckBackR1:
-	ld   de, OBJLst_Intro_ShipFlagR0
-	call Static_WriteOBJLst
-	ld   de, OBJLst_Intro_ShipDuckBackR
+	ld   de, SprMap_Intro_ShipFlagR0
+	call Static_WriteSprMap
+	ld   de, SprMap_Intro_ShipDuckBackR
 	jp   Intro_ShipFrame_BodyR
 Intro_ShipFrame_DuckPanicL:
-	ld   de, OBJLst_Intro_ShipDuckPanicL
+	ld   de, SprMap_Intro_ShipDuckPanicL
 	jp   Intro_ShipFrame_BodyL
 Intro_ShipFrame_DuckBackL:
-	ld   de, OBJLst_Intro_ShipDuckBackL
+	ld   de, SprMap_Intro_ShipDuckBackL
 	jp   Intro_ShipFrame_BodyL
 Intro_ShipFrame_DuckHit:
-	ld   de, OBJLst_Intro_ShipHit
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Intro_ShipHit
+	jp   Static_WriteSprMap
 Intro_ShipFrame_DuckReverse:
-	ld   de, OBJLst_Intro_ShipReverse
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Intro_ShipReverse
+	jp   Static_WriteSprMap
 Intro_ShipFrame_Water:
-	ld   de, OBJLst_Intro_ShipWater
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Intro_ShipWater
+	jp   Static_WriteSprMap
 Intro_ShipFrame_DuckWater:
-	ld   de, OBJLst_Intro_ShipDuckWater
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Intro_ShipDuckWater
+	jp   Static_WriteSprMap
 ; Common ship body, shared across frames
 Intro_ShipFrame_BodyR:
-	call Static_WriteOBJLst
-	ld   de, OBJLst_Intro_ShipBodyR
-	jp   Static_WriteOBJLst
+	call Static_WriteSprMap
+	ld   de, SprMap_Intro_ShipBodyR
+	jp   Static_WriteSprMap
 Intro_ShipFrame_BodyL:
-	call Static_WriteOBJLst
-	ld   de, OBJLst_Intro_ShipBodyL
-	jp   Static_WriteOBJLst
+	call Static_WriteSprMap
+	ld   de, SprMap_Intro_ShipBodyL
+	jp   Static_WriteSprMap
 	
-; =============== Intro_WriteWaterSplashOBJLst ===============
+; =============== Intro_WriteWaterSplashSprMap ===============
 ; Writes the water sprout's sprite mappings to OAM.
-Intro_WriteWaterSplashOBJLst:
+Intro_WriteWaterSplashSprMap:
 	ld   a, [wIntroShipX]
 	ld   [sOAMWriteX], a
 	ld   a, [wIntroWaterSplashY]
@@ -226,8 +226,8 @@ Intro_WriteWaterSplashOBJLst:
 	ld   a, [wIntroWaterSplash]	; Is the water splash enabled?
 	cp   a, $00
 	ret  z						; If not, don't draw it
-	ld   de, OBJLst_Intro_WaterSplash
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Intro_WaterSplash
+	jp   Static_WriteSprMap
 	
 ; =============== Title_CheckMode ===============
 ; Main handler for title screen / intro cutscene.
@@ -272,8 +272,8 @@ Title_InitVars:
 	ld   [wStaticPlAnimTimer], a
 	ld   [wIntroActTimer], a
 	ld   [wTitleActTimer], a
-	ld   [wStaticPlLstId], a
-	ld   [wIntroShipLstId], a
+	ld   [wStaticPlSprId], a
+	ld   [wIntroShipSprId], a
 	ld   [wIntroWaterSplash], a
 	ld   [wStaticPlFlags], a
 	ld   a, $B8
@@ -407,13 +407,13 @@ Intro_CutsceneAct00:
 	jr   .moveShip				; Otherwise, don't update the frame
 .frame2:
 	ld   a, INTRO_SOF_MAIN1
-	ld   [wIntroShipLstId], a
+	ld   [wIntroShipSprId], a
 	jr   .moveShip
 .frame1:
 	xor  a
 	ld   [wIntroActTimer], a
 	ld   a, INTRO_SOF_MAIN0
-	ld   [wIntroShipLstId], a
+	ld   [wIntroShipSprId], a
 	
 .moveShip:
 	;--
@@ -465,13 +465,13 @@ Intro_CutsceneAct01:
 	ld   [sSFX1Set], a
 .showDuck:
 	ld   a, INTRO_SOF_DUCKR1
-	ld   [wIntroShipLstId], a
+	ld   [wIntroShipSprId], a
 	ret
 .turnDuckBack:
 	ld   a, SFX1_19
 	ld   [sSFX1Set], a
 	ld   a, INTRO_SOF_DUCKRBACK1
-	ld   [wIntroShipLstId], a
+	ld   [wIntroShipSprId], a
 	ret
 .turnDuckFront:
 	ld   a, SFX1_18
@@ -481,7 +481,7 @@ Intro_CutsceneAct01:
 	xor  a
 	ld   [wIntroActTimer], a
 	ld   a, INTRO_SOF_DUCKLOOK ; Set the look anim
-	ld   [wIntroShipLstId], a
+	ld   [wIntroShipSprId], a
 	ld   a, $02
 	ld   [wIntroAct], a
 	ret
@@ -518,7 +518,7 @@ Intro_CutsceneAct02:
 	ld   a, SFX1_1A
 	ld   [sSFX1Set], a
 	ld   a, INTRO_SOF_DUCKNOTICE
-	ld   [wIntroShipLstId], a
+	ld   [wIntroShipSprId], a
 	ret
 ;--
 .moveShipUp:
@@ -553,7 +553,7 @@ Intro_CutsceneAct02:
 	ld   [wIntroActTimer], a
 	ld   [wIntroWaterSplash], a
 	ld   a, INTRO_SOF_DUCKPANICL
-	ld   [wIntroShipLstId], a
+	ld   [wIntroShipSprId], a
 	ld   a, $03
 	ld   [wIntroAct], a
 	ret
@@ -569,7 +569,7 @@ Intro_CutsceneAct03:
 	ret  nz
 	
 	ld   a, INTRO_WOF_BOATROW0		; Show Wario
-	ld   [wStaticPlLstId], a
+	ld   [wStaticPlSprId], a
 	ld   a, $80					; Facing left
 	ld   [wStaticPlFlags], a
 	ld   a, $04
@@ -588,10 +588,10 @@ Intro_CutsceneAct04:
 	
 	xor  a
 	ld   [wStaticPlAnimTimer], a
-	ld   [wStaticPlLstId], a		; Hide Wario to not show the movement done by Intro_MoveWarioRight
+	ld   [wStaticPlSprId], a		; Hide Wario to not show the movement done by Intro_MoveWarioRight
 	ld   [wStaticPlFlags], a		; since we start 8 px to the right of Act5's target pos
 	ld   a, INTRO_SOF_DUCKPANICR
-	ld   [wIntroShipLstId], a
+	ld   [wIntroShipSprId], a
 	ld   a, $05
 	ld   [wIntroAct], a
 	ret
@@ -626,7 +626,7 @@ Intro_CutsceneAct05:
 .lookBack:
 	; Stop the ship with the look back frame for $3C frames
 	ld   a, INTRO_SOF_DUCKRBACK2
-	ld   [wIntroShipLstId], a
+	ld   [wIntroShipSprId], a
 	ld   a, [wIntroActTimer]
 	inc  a
 	ld   [wIntroActTimer], a
@@ -639,11 +639,11 @@ Intro_CutsceneAct05:
 	xor  a
 	ld   [wIntroActTimer], a
 	ld   a, INTRO_WOF_BOATROW0		; Show Wario
-	ld   [wStaticPlLstId], a	
+	ld   [wStaticPlSprId], a	
 	ld   a, $C8					; Set back the correct pos (since we've moved while hidden)
 	ld   [wStaticPlX], a
 	ld   a, INTRO_SOF_DUCKPANICR
-	ld   [wIntroShipLstId], a
+	ld   [wIntroShipSprId], a
 	jr   .moveShipRight			; Move the ship to proceed
 .chkNextAct:
 	; Wait for Wario to go off-screen right
@@ -653,9 +653,9 @@ Intro_CutsceneAct05:
 	; Set next act
 	xor  a
 	ld   [wStaticPlAnimTimer], a
-	ld   [wStaticPlLstId], a
+	ld   [wStaticPlSprId], a
 	ld   a, INTRO_SOF_DUCKPANICL
-	ld   [wIntroShipLstId], a
+	ld   [wIntroShipSprId], a
 	ld   a, $06
 	ld   [wIntroAct], a
 	ret
@@ -686,7 +686,7 @@ Intro_CutsceneAct06_ChkNextAct:
 	; Stop ship movement
 	; Wait $32 frames with the look back frame
 	ld   a, INTRO_SOF_DUCKLBACK
-	ld   [wIntroShipLstId], a
+	ld   [wIntroShipSprId], a
 	ld   a, [wIntroActTimer]
 	inc  a
 	ld   [wIntroActTimer], a
@@ -698,7 +698,7 @@ Intro_CutsceneAct06_ChkNextAct:
 	xor  a
 	ld   [wIntroActTimer], a
 	ld   a, INTRO_WOF_BOATROW0
-	ld   [wStaticPlLstId], a
+	ld   [wStaticPlSprId], a
 	ld   a, $07
 	ld   [wIntroAct], a
 	ret
@@ -726,7 +726,7 @@ Intro_CutsceneAct07:
 	jp   Intro_AnimWarioRow	
 .useDash:
 	ld   a, INTRO_WOF_BOATDASH
-	ld   [wStaticPlLstId], a
+	ld   [wStaticPlSprId], a
 	ret
 .nextAct:
 	ld   a, SFX1_1E
@@ -735,7 +735,7 @@ Intro_CutsceneAct07:
 	ld   [wStaticPlAnimTimer], a
 	ld   [wIntroActTimer], a
 	ld   a, INTRO_SOF_DUCKHIT
-	ld   [wIntroShipLstId], a
+	ld   [wIntroShipSprId], a
 	ld   a, $08
 	ld   [wIntroAct], a
 	ret
@@ -762,7 +762,7 @@ Intro_CutsceneAct08:
 	ret
 .nextAct:
 	ld   a, INTRO_SOF_DUCKREVERSE
-	ld   [wIntroShipLstId], a
+	ld   [wIntroShipSprId], a
 	ld   a, $09
 	ld   [wIntroAct], a
 	ret
@@ -810,7 +810,7 @@ Intro_CutsceneAct0A:
 	ld   [sSFX4Set], a
 	
 	ld   a, INTRO_SOF_WATER			; Use reverse cut off frame
-	ld   [wIntroShipLstId], a
+	ld   [wIntroShipSprId], a
 	ld   a, $01						; Enable water splash
 	ld   [wIntroWaterSplash], a
 	ld   a, $68
@@ -904,7 +904,7 @@ Intro_CutsceneAct0E:
 	xor  a
 	ld   [wIntroActTimer1], a
 	ld   a, INTRO_WOF_BOATSTAND
-	ld   [wStaticPlLstId], a
+	ld   [wStaticPlSprId], a
 	ld   a, $0F
 	ld   [wIntroAct], a
 	ret
@@ -933,13 +933,13 @@ Intro_CutsceneAct0F:
 	ld   a, BGM_TITLE
 	ld   [sBGMSet], a
 	ld   a, INTRO_SOF_DUCKWATER
-	ld   [wIntroShipLstId], a
+	ld   [wIntroShipSprId], a
 	ret
 .nextAct:
 	xor  a
 	ld   [wIntroActTimer1], a
 	ld   a, INTRO_WOF_JUMP
-	ld   [wStaticPlLstId], a
+	ld   [wStaticPlSprId], a
 	ld   a, $10
 	ld   [wIntroAct], a
 	ret
@@ -976,7 +976,7 @@ Intro_CutsceneAct10:
 	xor  a
 	ld   [wStaticPlAnimTimer], a
 	ld   a, INTRO_WOF_STAND
-	ld   [wStaticPlLstId], a
+	ld   [wStaticPlSprId], a
 	ld   a, $03							; Deterines how many times to do a full cycle of the thumbs up anim
 	ld   [wIntroWarioAnimCycleLeft], a	
 	ld   a, $11
@@ -1014,15 +1014,15 @@ Intro_CutsceneAct11:
 	ld   [wStaticPlAnimTimer], a
 .frontFrame:
 	ld   a, INTRO_WOF_FRONT
-	ld   [wStaticPlLstId], a
+	ld   [wStaticPlSprId], a
 	ret
 .thumbsUpFrame:
 	ld   a, INTRO_WOF_THUMBSUP
-	ld   [wStaticPlLstId], a
+	ld   [wStaticPlSprId], a
 	ret
 .thumbsUpFrame2:
 	ld   a, INTRO_WOF_THUMBSUP2
-	ld   [wStaticPlLstId], a
+	ld   [wStaticPlSprId], a
 	ld   a, [wIntroWarioAnimCycleLeft]	; CyclesLeft--;
 	dec  a								
 	ld   [wIntroWarioAnimCycleLeft], a	; Are there any anim cycles left? 
@@ -1093,7 +1093,7 @@ Title_SwitchToDemo:
 ; Performs Wario's rowing anim in the intro.
 Intro_AnimWarioRow:
 	; Ignore if Wario isn't visible
-	ld   a, [wStaticPlLstId]
+	ld   a, [wStaticPlSprId]
 	cp   a, INTRO_WOF_NONE
 	ret  z
 	
@@ -1110,19 +1110,19 @@ Intro_AnimWarioRow:
 	ret
 .frame3:
 	ld   a, INTRO_WOF_BOATROW2
-	ld   [wStaticPlLstId], a
+	ld   [wStaticPlSprId], a
 	ret
 .frame2:
 	ld   a, SFX1_1C
 	ld   [sSFX1Set], a
 	ld   a, INTRO_WOF_BOATROW1
-	ld   [wStaticPlLstId], a
+	ld   [wStaticPlSprId], a
 	ret
 .frame1:
 	xor  a
 	ld   [wStaticPlAnimTimer], a
 	ld   a, INTRO_WOF_BOATROW0
-	ld   [wStaticPlLstId], a
+	ld   [wStaticPlSprId], a
 	ret
 	
 ; =============== Intro_MoveWarioRight ===============
@@ -1216,7 +1216,7 @@ Title_AnimWaterGFX:
 ; Oscillates Wario's Y coord for the waterline effect when not jumping.
 Intro_OscillateWarioY:
 	; Don't perform the effect for the jumping frame
-	ld   a, [wStaticPlLstId]
+	ld   a, [wStaticPlSprId]
 	cp   a, INTRO_WOF_JUMP
 	ret  z
 	;--
@@ -1231,7 +1231,7 @@ Intro_OscillateWarioY:
 	; - If Frame < INTRO_WOF_STAND, Wario's on his boat.
 	; - Otherwise, he's on the top of the ship.
 	; The boat oscillates less than the ship, which is why there's a difference.
-	ld   a, [wStaticPlLstId]
+	ld   a, [wStaticPlSprId]
 	cp   a, $07					; Is it >= INTRO_WOF_STAND?
 	jr   nc, .highPosShip		; If so, jump
 .highPosBoat:
@@ -1245,7 +1245,7 @@ Intro_OscillateWarioY:
 	
 .lowPos:
 	; Same here
-	ld   a, [wStaticPlLstId]
+	ld   a, [wStaticPlSprId]
 	cp   a, $07
 	jr   nc, .lowPosShip
 .lowPosBoat:
@@ -1261,7 +1261,7 @@ Intro_OscillateWarioY:
 ; Oscillates the ship's Y coord for the waterline effect when not in the air.
 ; See also: Intro_OscillateWarioY
 Intro_OscillateShipY:
-	ld   a, [wIntroShipLstId]
+	ld   a, [wIntroShipSprId]
 	; If the ship is not on water, don't do the effect
 	cp   a, INTRO_SOF_DUCKNOTICE
 	ret  z
@@ -1279,7 +1279,7 @@ Intro_OscillateShipY:
 	ret
 .highPos:
 	; The Y positions are different depending on the frame used
-	ld   a, [wIntroShipLstId]
+	ld   a, [wIntroShipSprId]
 	cp   a, INTRO_SOF_WATER		; Is the ship upside down?
 	jr   nc, .highPosShipR		; If so, use the alternate Y pos
 .highPosShip:
@@ -1291,7 +1291,7 @@ Intro_OscillateShipY:
 	ld   [wIntroShipY], a
 	ret
 .lowPos:
-	ld   a, [wIntroShipLstId]
+	ld   a, [wIntroShipSprId]
 	cp   a, INTRO_SOF_WATER
 	jr   nc, .lowPosShipR
 .lowPosShip:
@@ -1303,23 +1303,23 @@ Intro_OscillateShipY:
 	ld   [wIntroShipY], a
 	ret
 	
-; =============== Static_WriteWarioOBJLst ===============
+; =============== Static_WriteWarioSprMap ===============
 ; Writes Wario's sprite mappings to OAM for the static screens.
-Static_WriteWarioOBJLst:
+Static_WriteWarioSprMap:
 	ld   a, [wStaticPlX]	; Set X pos
 	ld   [sOAMWriteX], a
 	ld   a, [wStaticPlY]	; Set Y pos
 	ld   [sOAMWriteY], a
 	
-	; The subroutine to write OBJLst used does not support special flags!
+	; The subroutine to write sprite mappings used does not support special flags!
 	; So we pick different sprite mappings sets for the different orientations.
 	;
 	; Note that the frames used for facing left are much less than those for facing right.
 	ld   a, [wStaticPlFlags]
-	bit  STATIC_OBJLSTB_XFLIP, a	; Facing left?
+	bit  STATIC_SPRMAPB_XFLIP, a	; Facing left?
 	jr   z, .framesR				; If not, jump
 .framesL:
-	ld   a, [wStaticPlLstId]
+	ld   a, [wStaticPlSprId]
 	rst  $28
 	dw Static_WarioFrame_None;X
 	dw Static_WarioFrame_WalkL0
@@ -1334,7 +1334,7 @@ Static_WriteWarioOBJLst:
 	dw Static_WarioFrame_IdleDiagL
 	dw Ending_WarioFrame_JumpDiagL ; For ending
 .framesR:
-	ld   a, [wStaticPlLstId]
+	ld   a, [wStaticPlSprId]
 	rst  $28
 	dw Static_WarioFrame_None
 	dw Static_WarioFrame_WalkR0
@@ -1391,252 +1391,252 @@ Static_WriteWarioOBJLst:
 ; This is done by starting at the middle of a sprite mapping, which
 ; requires the shared OBJ to come after the unique OBJ.
 ;
-; For example, OBJLst_Static_Wario_WalkR3 is the full frame, part of Wario's walking animation.
-; OBJLst_Static_Wario_WalkR3_Body is a label that points right in the middle of OBJLst_Static_Wario_WalkR3,
+; For example, SprMap_Static_Wario_WalkR3 is the full frame, part of Wario's walking animation.
+; SprMap_Static_Wario_WalkR3_Body is a label that points right in the middle of SprMap_Static_Wario_WalkR3,
 ; to exclude a few OBJ from the right side of the sprite (near the hand on the right).
-; This OBJLst_Static_Wario_WalkR3_Body is reused for Ending_WarioFrame_WalkHoldR3
-; to draw the main body, while OBJLst_Ending_Wario_WalkHoldR1_Hand hand draws the unique OBJ.
+; This SprMap_Static_Wario_WalkR3_Body is reused for Ending_WarioFrame_WalkHoldR3
+; to draw the main body, while SprMap_Ending_Wario_WalkHoldR1_Hand hand draws the unique OBJ.
 ;
-; Because of data files being split, it means the shared part of OBJLst_Static_Wario_WalkR3 is split in a different file,
-; though it's easy to detect a partial frame (it lacks an end separator required by Static_WriteOBJLst)
+; Because of data files being split, it means the shared part of SprMap_Static_Wario_WalkR3 is split in a different file,
+; though it's easy to detect a partial frame (it lacks an end separator required by Static_WriteSprMap)
 ;
 
 Static_WarioFrame_None:
 	ret
 Static_WarioFrame_WalkL0:
-	ld   de, OBJLst_Static_Wario_WalkL0
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Static_Wario_WalkL0
+	jp   Static_WriteSprMap
 Static_WarioFrame_WalkL1:
-	ld   de, OBJLst_Static_Wario_WalkL1
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Static_Wario_WalkL1
+	jp   Static_WriteSprMap
 Static_WarioFrame_WalkL2:
-	ld   de, OBJLst_Static_Wario_WalkL2
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Static_Wario_WalkL2
+	jp   Static_WriteSprMap
 Static_WarioFrame_WalkL3:
-	ld   de, OBJLst_Static_Wario_WalkL3
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Static_Wario_WalkL3
+	jp   Static_WriteSprMap
 ; [TCRF] Does not get used.
 Static_WarioFrame_Unused_IdleL: 
-	ld   de, OBJLst_Static_Wario_Unused_IdleL
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Static_Wario_Unused_IdleL
+	jp   Static_WriteSprMap
 Static_WarioFrame_Front:
-	ld   de, OBJLst_Static_Wario_Front
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Static_Wario_Front
+	jp   Static_WriteSprMap
 Static_WarioFrame_FrontWon0:
-	ld   de, OBJLst_Static_Wario_FrontWon0
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Static_Wario_FrontWon0
+	jp   Static_WriteSprMap
 Static_WarioFrame_FrontWon1:
-	ld   de, OBJLst_Static_Wario_FrontWon1_Eyes
-	call Static_WriteOBJLst
-	ld   de, OBJLst_Static_Wario_FrontWon0_Body
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Static_Wario_FrontWon1_Eyes
+	call Static_WriteSprMap
+	ld   de, SprMap_Static_Wario_FrontWon0_Body
+	jp   Static_WriteSprMap
 Static_WarioFrame_FrontLost:
-	ld   de, OBJLst_Static_Wario_FrontLost
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Static_Wario_FrontLost
+	jp   Static_WriteSprMap
 Static_WarioFrame_IdleDiagL:
-	ld   de, OBJLst_Static_Wario_IdleDiagL
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Static_Wario_IdleDiagL
+	jp   Static_WriteSprMap
 Ending_WarioFrame_JumpDiagL:
-	ld   de, OBJLst_Ending_Wario_JumpDiagL
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_Wario_JumpDiagL
+	jp   Static_WriteSprMap
 Static_WarioFrame_WalkR0:
-	ld   de, OBJLst_Static_Wario_WalkR0
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Static_Wario_WalkR0
+	jp   Static_WriteSprMap
 Static_WarioFrame_WalkR1:
-	ld   de, OBJLst_Static_Wario_WalkR1
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Static_Wario_WalkR1
+	jp   Static_WriteSprMap
 Static_WarioFrame_WalkR2:
-	ld   de, OBJLst_Static_Wario_WalkR2
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Static_Wario_WalkR2
+	jp   Static_WriteSprMap
 Static_WarioFrame_WalkR3:
-	ld   de, OBJLst_Static_Wario_WalkR3
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Static_Wario_WalkR3
+	jp   Static_WriteSprMap
 Static_WarioFrame_IdleR:
-	ld   de, OBJLst_Static_Wario_IdleR
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Static_Wario_IdleR
+	jp   Static_WriteSprMap
 Static_WarioFrame_IdleDiagR:
-	ld   de, OBJLst_Static_Wario_IdleDiagR
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Static_Wario_IdleDiagR
+	jp   Static_WriteSprMap
 Ending_WarioFrame_JumpDiagR:
-	ld   de, OBJLst_Ending_Wario_JumpDiagR
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_Wario_JumpDiagR
+	jp   Static_WriteSprMap
 HeartBonus_WarioFrame_Back:
-	ld   de, OBJLst_HeartBonus_Wario_Back
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Wario_Back
+	jp   Static_WriteSprMap
 HeartBonus_WarioFrame_BackGrabBomb:
-	ld   de, OBJLst_HeartBonus_Wario_BackGrabBomb
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Wario_BackGrabBomb
+	jp   Static_WriteSprMap
 HeartBonus_WarioFrame_BackHoldBomb0:
-	ld   de, OBJLst_HeartBonus_Wario_BackHoldBomb0
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Wario_BackHoldBomb0
+	jp   Static_WriteSprMap
 HeartBonus_WarioFrame_BackHoldBomb1:
-	ld   de, OBJLst_HeartBonus_Wario_BackHoldBomb1
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Wario_BackHoldBomb1
+	jp   Static_WriteSprMap
 HeartBonus_WarioFrame_BackThrowBomb:
-	ld   de, OBJLst_HeartBonus_Wario_BackThrowBomb
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Wario_BackThrowBomb
+	jp   Static_WriteSprMap
 HeartBonus_WarioFrame_BackGrabBombExpl0:
-	ld   de, OBJLst_HeartBonus_Wario_BackGrabBombExpl0
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Wario_BackGrabBombExpl0
+	jp   Static_WriteSprMap
 HeartBonus_WarioFrame_BackGrabBombExpl1:
-	ld   de, OBJLst_HeartBonus_Wario_BackGrabBombExpl1
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Wario_BackGrabBombExpl1
+	jp   Static_WriteSprMap
 HeartBonus_WarioFrame_BackGrabBombExpl2:
-	ld   de, OBJLst_HeartBonus_Wario_BackBombExpl2_Smoke
-	call Static_WriteOBJLst
-	ld   de, OBJLst_HeartBonus_Wario_BackGrabBombExpl2_Body
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Wario_BackBombExpl2_Smoke
+	call Static_WriteSprMap
+	ld   de, SprMap_HeartBonus_Wario_BackGrabBombExpl2_Body
+	jp   Static_WriteSprMap
 HeartBonus_WarioFrame_BackHoldBombExpl0:
-	ld   de, OBJLst_HeartBonus_Wario_BackHoldBombExpl0
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Wario_BackHoldBombExpl0
+	jp   Static_WriteSprMap
 HeartBonus_WarioFrame_BackHoldBombExpl1:
-	ld   de, OBJLst_HeartBonus_Wario_BackHoldBombExpl1
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Wario_BackHoldBombExpl1
+	jp   Static_WriteSprMap
 HeartBonus_WarioFrame_BackHoldBombExpl2:
-	ld   de, OBJLst_HeartBonus_Wario_BackBombExpl2_Smoke
-	call Static_WriteOBJLst
-	ld   de, OBJLst_HeartBonus_Wario_BackHoldBombExpl2_Body
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Wario_BackBombExpl2_Smoke
+	call Static_WriteSprMap
+	ld   de, SprMap_HeartBonus_Wario_BackHoldBombExpl2_Body
+	jp   Static_WriteSprMap
 HeartBonus_WarioFrame_BackBombExpl3:
-	ld   de, OBJLst_HeartBonus_Wario_BackBombExpl3
-	call Static_WriteOBJLst
-	ld   de, OBJLst_HeartBonus_Wario_BackBombExpl2_Smoke
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Wario_BackBombExpl3
+	call Static_WriteSprMap
+	ld   de, SprMap_HeartBonus_Wario_BackBombExpl2_Smoke
+	jp   Static_WriteSprMap
 HeartBonus_WarioFrame_BackBombExpl4:
-	ld   de, OBJLst_HeartBonus_Wario_BackBombExpl4
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_HeartBonus_Wario_BackBombExpl4
+	jp   Static_WriteSprMap
 CoinBonus_WarioFrame_IdleDiagHeadBack:
-	ld   de, OBJLst_CoinBonus_Wario_IdleDiagHeadBack
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_CoinBonus_Wario_IdleDiagHeadBack
+	jp   Static_WriteSprMap
 CoinBonus_WarioFrame_Pull0:
-	ld   de, OBJLst_CoinBonus_Wario_Pull0_Hand
-	call Static_WriteOBJLst
-	ld   de, OBJLst_CoinBonus_Wario_Pull0_Body
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_CoinBonus_Wario_Pull0_Hand
+	call Static_WriteSprMap
+	ld   de, SprMap_CoinBonus_Wario_Pull0_Body
+	jp   Static_WriteSprMap
 CoinBonus_WarioFrame_Pull1:
-	ld   de, OBJLst_CoinBonus_Wario_Pull1
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_CoinBonus_Wario_Pull1
+	jp   Static_WriteSprMap
 CoinBonus_WarioFrame_Crushed:
-	ld   de, OBJLst_CoinBonus_Wario_Crushed
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_CoinBonus_Wario_Crushed
+	jp   Static_WriteSprMap
 Ending_WarioFrame_WalkHoldR0:
-	ld   de, OBJLst_Ending_Wario_WalkHoldR0_Hand
-	call Static_WriteOBJLst
-	ld   de, OBJLst_Static_Wario_WalkR0_Body
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_Wario_WalkHoldR0_Hand
+	call Static_WriteSprMap
+	ld   de, SprMap_Static_Wario_WalkR0_Body
+	jp   Static_WriteSprMap
 Ending_WarioFrame_WalkHoldR1:
-	ld   de, OBJLst_Ending_Wario_WalkHoldR1_Hand
-	call Static_WriteOBJLst
-	ld   de, OBJLst_Ending_Wario_WalkR1_Body
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_Wario_WalkHoldR1_Hand
+	call Static_WriteSprMap
+	ld   de, SprMap_Ending_Wario_WalkR1_Body
+	jp   Static_WriteSprMap
 Ending_WarioFrame_WalkHoldR2:
-	ld   de, OBJLst_Ending_Wario_WalkHoldR1_Hand
-	call Static_WriteOBJLst
-	ld   de, OBJLst_Ending_Wario_WalkR2_Body
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_Wario_WalkHoldR1_Hand
+	call Static_WriteSprMap
+	ld   de, SprMap_Ending_Wario_WalkR2_Body
+	jp   Static_WriteSprMap
 Ending_WarioFrame_WalkHoldR3:
-	ld   de, OBJLst_Ending_Wario_WalkHoldR1_Hand
-	call Static_WriteOBJLst
-	ld   de, OBJLst_Ending_Wario_WalkR3_Body
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_Wario_WalkHoldR1_Hand
+	call Static_WriteSprMap
+	ld   de, SprMap_Ending_Wario_WalkR3_Body
+	jp   Static_WriteSprMap
 Ending_WarioFrame_IdleHoldR:
-	ld   de, OBJLst_Ending_Wario_IdleHoldR_Hand
-	call Static_WriteOBJLst
-	ld   de, OBJLst_Ending_Wario_IdleHoldR_Body
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_Wario_IdleHoldR_Hand
+	call Static_WriteSprMap
+	ld   de, SprMap_Ending_Wario_IdleHoldR_Body
+	jp   Static_WriteSprMap
 Ending_WarioFrame_IdleThrowR:
-	ld   de, OBJLst_Ending_Wario_IdleThrowR_Hand
-	call Static_WriteOBJLst
-	ld   de, OBJLst_Ending_Wario_IdleHoldR_Body
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_Wario_IdleThrowR_Hand
+	call Static_WriteSprMap
+	ld   de, SprMap_Ending_Wario_IdleHoldR_Body
+	jp   Static_WriteSprMap
 Ending_WarioFrame_DuckRub0:
-	ld   de, OBJLst_Ending_Wario_DuckRub0
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_Wario_DuckRub0
+	jp   Static_WriteSprMap
 Ending_WarioFrame_DuckRub1:
-	ld   de, OBJLst_Ending_Wario_DuckRub1_Hand
-	call Static_WriteOBJLst
-	ld   de, OBJLst_Ending_Wario_DuckRub1_Body
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_Wario_DuckRub1_Hand
+	call Static_WriteSprMap
+	ld   de, SprMap_Ending_Wario_DuckRub1_Body
+	jp   Static_WriteSprMap
 Ending_WarioFrame_DuckRub2:
-	ld   de, OBJLst_Ending_Wario_DuckRub2
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_Wario_DuckRub2
+	jp   Static_WriteSprMap
 Ending_WarioFrame_DuckDiagR:
-	ld   de, OBJLst_Ending_Wario_DuckDiagR
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_Wario_DuckDiagR
+	jp   Static_WriteSprMap
 Ending_WarioFrame_BumpR0:
-	ld   de, OBJLst_Ending_Wario_HardBumpR0
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_Wario_HardBumpR0
+	jp   Static_WriteSprMap
 Ending_WarioFrame_BumpR1:
-	ld   de, OBJLst_Ending_Wario_HardBumpR1_Hat
-	call Static_WriteOBJLst
-	ld   de, OBJLst_Ending_Wario_HardBumpR1_Body
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_Wario_HardBumpR1_Hat
+	call Static_WriteSprMap
+	ld   de, SprMap_Ending_Wario_HardBumpR1_Body
+	jp   Static_WriteSprMap
 Ending_WarioFrame_WishClose:
-	ld   de, OBJLst_Ending_Wario_WishClose
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_Wario_WishClose
+	jp   Static_WriteSprMap
 Ending_WarioFrame_WishOpen:
-	ld   de, OBJLst_Ending_Wario_WishOpen_Eyes
-	call Static_WriteOBJLst
-	ld   de, OBJLst_Ending_Wario_WishOpen_Body
-	jp   Static_WriteOBJLst
-OBJLst_Static_Wario_WalkL0: INCBIN "data/objlst/static/wario_walkl0.bin"
-OBJLst_Static_Wario_WalkL1: INCBIN "data/objlst/static/wario_walkl1.bin"
-OBJLst_Static_Wario_WalkL2: INCBIN "data/objlst/static/wario_walkl2.bin"
-OBJLst_Static_Wario_WalkL3: INCBIN "data/objlst/static/wario_walkl3.bin"
-OBJLst_Static_Wario_Unused_IdleL: INCBIN "data/objlst/static/wario_unused_idlel.bin"
-OBJLst_Static_Wario_Front: INCBIN "data/objlst/static/wario_front.bin"
-OBJLst_Static_Wario_FrontWon0: INCBIN "data/objlst/static/wario_frontwon0.bin"
-OBJLst_Static_Wario_FrontWon0_Body: INCBIN "data/objlst/static/wario_frontwon0_body.bin"
-OBJLst_Static_Wario_FrontWon1_Eyes: INCBIN "data/objlst/static/wario_frontwon1_eyes.bin"
-OBJLst_Static_Wario_FrontLost: INCBIN "data/objlst/static/wario_frontlost.bin"
-OBJLst_Static_Wario_IdleDiagL: INCBIN "data/objlst/static/wario_idlediagl.bin"
-OBJLst_Ending_Wario_JumpDiagL: INCBIN "data/objlst/ending/wario_jumpdiagl.bin"
-OBJLst_Static_Wario_WalkR0: INCBIN "data/objlst/static/wario_walkr0.bin"
-OBJLst_Static_Wario_WalkR0_Body: INCBIN "data/objlst/static/wario_walkr0_body.bin"
-OBJLst_Static_Wario_WalkR1: INCBIN "data/objlst/static/wario_walkr1.bin"
-OBJLst_Ending_Wario_WalkR1_Body: INCBIN "data/objlst/ending/wario_walkr1_body.bin"
-OBJLst_Static_Wario_WalkR2: INCBIN "data/objlst/static/wario_walkr2.bin"
-OBJLst_Ending_Wario_WalkR2_Body: INCBIN "data/objlst/ending/wario_walkr2_body.bin"
-OBJLst_Static_Wario_WalkR3: INCBIN "data/objlst/static/wario_walkr3.bin"
-OBJLst_Ending_Wario_WalkR3_Body: INCBIN "data/objlst/ending/wario_walkr3_body.bin"
-OBJLst_Static_Wario_IdleR: INCBIN "data/objlst/static/wario_idler.bin"
-OBJLst_Ending_Wario_IdleHoldR_Body: INCBIN "data/objlst/ending/wario_idleholdr_body.bin"
-OBJLst_Static_Wario_IdleDiagR: INCBIN "data/objlst/static/wario_idlediagr.bin"
-OBJLst_CoinBonus_Wario_Pull0_Body: INCBIN "data/objlst/coinbonus/wario_pull0_body.bin"
-OBJLst_Ending_Wario_JumpDiagR: INCBIN "data/objlst/ending/wario_jumpdiagr.bin"
-OBJLst_HeartBonus_Wario_Back: INCBIN "data/objlst/heartbonus/wario_back.bin"
-OBJLst_HeartBonus_Wario_BackGrabBomb: INCBIN "data/objlst/heartbonus/wario_backgrabbomb.bin"
-OBJLst_HeartBonus_Wario_BackGrabBombExpl0: INCBIN "data/objlst/heartbonus/wario_backgrabbombexpl0.bin"
-OBJLst_HeartBonus_Wario_BackGrabBombExpl1: INCBIN "data/objlst/heartbonus/wario_backgrabbombexpl1.bin"
-OBJLst_HeartBonus_Wario_BackGrabBombExpl2_Body: INCBIN "data/objlst/heartbonus/wario_backgrabbombexpl2_body.bin"
-OBJLst_HeartBonus_Wario_BackHoldBomb0: INCBIN "data/objlst/heartbonus/wario_backholdbomb0.bin"
-OBJLst_HeartBonus_Wario_BackHoldBombExpl0: INCBIN "data/objlst/heartbonus/wario_backholdbombexpl0.bin"
-OBJLst_HeartBonus_Wario_BackHoldBombExpl1: INCBIN "data/objlst/heartbonus/wario_backholdbombexpl1.bin"
-OBJLst_HeartBonus_Wario_BackHoldBombExpl2_Body: INCBIN "data/objlst/heartbonus/wario_backholdbombexpl2_body.bin"
-OBJLst_HeartBonus_Wario_BackHoldBomb1: INCBIN "data/objlst/heartbonus/wario_backholdbomb1.bin"
-OBJLst_HeartBonus_Wario_BackThrowBomb: INCBIN "data/objlst/heartbonus/wario_backthrowbomb.bin"
-OBJLst_HeartBonus_Wario_BackBombExpl2_Smoke: INCBIN "data/objlst/heartbonus/wario_backbombexpl2_smoke.bin"
-OBJLst_HeartBonus_Wario_BackBombExpl4: INCBIN "data/objlst/heartbonus/wario_backbombexpl4.bin"
-OBJLst_HeartBonus_Wario_BackBombExpl3: INCBIN "data/objlst/heartbonus/wario_backbombexpl3.bin"
-OBJLst_CoinBonus_Wario_IdleDiagHeadBack: INCBIN "data/objlst/coinbonus/wario_idlediagheadback.bin"
-OBJLst_CoinBonus_Wario_Pull0_Hand: INCBIN "data/objlst/coinbonus/wario_pull0_hand.bin"
-OBJLst_CoinBonus_Wario_Pull1: INCBIN "data/objlst/coinbonus/wario_pull1.bin"
-OBJLst_CoinBonus_Wario_Crushed: INCBIN "data/objlst/coinbonus/wario_crushed.bin"
-OBJLst_Ending_Wario_WalkHoldR0_Hand: INCBIN "data/objlst/ending/wario_walkholdr0_hand.bin"
-OBJLst_Ending_Wario_IdleHoldR_Hand: INCBIN "data/objlst/ending/wario_idleholdr_hand.bin"
-OBJLst_Ending_Wario_WalkHoldR1_Hand: INCBIN "data/objlst/ending/wario_walkholdr1_hand.bin"
-OBJLst_Ending_Wario_IdleThrowR_Hand: INCBIN "data/objlst/ending/wario_idlethrowr_hand.bin"
-OBJLst_Ending_Wario_DuckRub0: INCBIN "data/objlst/ending/wario_duckrub0.bin"
-OBJLst_Ending_Wario_DuckRub1_Body: INCBIN "data/objlst/ending/wario_duckrub1_body.bin"
-OBJLst_Ending_Wario_DuckRub2: INCBIN "data/objlst/ending/wario_duckrub2.bin"
-OBJLst_Ending_Wario_DuckRub1_Hand: INCBIN "data/objlst/ending/wario_duckrub1_hand.bin"
-OBJLst_Ending_Wario_DuckDiagR: INCBIN "data/objlst/ending/wario_duckdiagr.bin"
-OBJLst_Ending_Wario_HardBumpR0: INCBIN "data/objlst/ending/wario_hardbumpr0.bin"
-OBJLst_Ending_Wario_HardBumpR1_Body: INCBIN "data/objlst/ending/wario_hardbumpr1_body.bin"
-OBJLst_Ending_Wario_HardBumpR1_Hat: INCBIN "data/objlst/ending/wario_hardbumpr1_hat.bin"
-OBJLst_Ending_Wario_WishClose: INCBIN "data/objlst/ending/wario_wishclose.bin"
-OBJLst_Ending_Wario_WishOpen_Body: INCBIN "data/objlst/ending/wario_wishopen_body.bin"
-OBJLst_Ending_Wario_WishOpen_Eyes: INCBIN "data/objlst/ending/wario_wishopen_eyes.bin"
+	ld   de, SprMap_Ending_Wario_WishOpen_Eyes
+	call Static_WriteSprMap
+	ld   de, SprMap_Ending_Wario_WishOpen_Body
+	jp   Static_WriteSprMap
+SprMap_Static_Wario_WalkL0: INCBIN "data/sprmap/static/wario_walkl0.bin"
+SprMap_Static_Wario_WalkL1: INCBIN "data/sprmap/static/wario_walkl1.bin"
+SprMap_Static_Wario_WalkL2: INCBIN "data/sprmap/static/wario_walkl2.bin"
+SprMap_Static_Wario_WalkL3: INCBIN "data/sprmap/static/wario_walkl3.bin"
+SprMap_Static_Wario_Unused_IdleL: INCBIN "data/sprmap/static/wario_unused_idlel.bin"
+SprMap_Static_Wario_Front: INCBIN "data/sprmap/static/wario_front.bin"
+SprMap_Static_Wario_FrontWon0: INCBIN "data/sprmap/static/wario_frontwon0.bin"
+SprMap_Static_Wario_FrontWon0_Body: INCBIN "data/sprmap/static/wario_frontwon0_body.bin"
+SprMap_Static_Wario_FrontWon1_Eyes: INCBIN "data/sprmap/static/wario_frontwon1_eyes.bin"
+SprMap_Static_Wario_FrontLost: INCBIN "data/sprmap/static/wario_frontlost.bin"
+SprMap_Static_Wario_IdleDiagL: INCBIN "data/sprmap/static/wario_idlediagl.bin"
+SprMap_Ending_Wario_JumpDiagL: INCBIN "data/sprmap/ending/wario_jumpdiagl.bin"
+SprMap_Static_Wario_WalkR0: INCBIN "data/sprmap/static/wario_walkr0.bin"
+SprMap_Static_Wario_WalkR0_Body: INCBIN "data/sprmap/static/wario_walkr0_body.bin"
+SprMap_Static_Wario_WalkR1: INCBIN "data/sprmap/static/wario_walkr1.bin"
+SprMap_Ending_Wario_WalkR1_Body: INCBIN "data/sprmap/ending/wario_walkr1_body.bin"
+SprMap_Static_Wario_WalkR2: INCBIN "data/sprmap/static/wario_walkr2.bin"
+SprMap_Ending_Wario_WalkR2_Body: INCBIN "data/sprmap/ending/wario_walkr2_body.bin"
+SprMap_Static_Wario_WalkR3: INCBIN "data/sprmap/static/wario_walkr3.bin"
+SprMap_Ending_Wario_WalkR3_Body: INCBIN "data/sprmap/ending/wario_walkr3_body.bin"
+SprMap_Static_Wario_IdleR: INCBIN "data/sprmap/static/wario_idler.bin"
+SprMap_Ending_Wario_IdleHoldR_Body: INCBIN "data/sprmap/ending/wario_idleholdr_body.bin"
+SprMap_Static_Wario_IdleDiagR: INCBIN "data/sprmap/static/wario_idlediagr.bin"
+SprMap_CoinBonus_Wario_Pull0_Body: INCBIN "data/sprmap/coinbonus/wario_pull0_body.bin"
+SprMap_Ending_Wario_JumpDiagR: INCBIN "data/sprmap/ending/wario_jumpdiagr.bin"
+SprMap_HeartBonus_Wario_Back: INCBIN "data/sprmap/heartbonus/wario_back.bin"
+SprMap_HeartBonus_Wario_BackGrabBomb: INCBIN "data/sprmap/heartbonus/wario_backgrabbomb.bin"
+SprMap_HeartBonus_Wario_BackGrabBombExpl0: INCBIN "data/sprmap/heartbonus/wario_backgrabbombexpl0.bin"
+SprMap_HeartBonus_Wario_BackGrabBombExpl1: INCBIN "data/sprmap/heartbonus/wario_backgrabbombexpl1.bin"
+SprMap_HeartBonus_Wario_BackGrabBombExpl2_Body: INCBIN "data/sprmap/heartbonus/wario_backgrabbombexpl2_body.bin"
+SprMap_HeartBonus_Wario_BackHoldBomb0: INCBIN "data/sprmap/heartbonus/wario_backholdbomb0.bin"
+SprMap_HeartBonus_Wario_BackHoldBombExpl0: INCBIN "data/sprmap/heartbonus/wario_backholdbombexpl0.bin"
+SprMap_HeartBonus_Wario_BackHoldBombExpl1: INCBIN "data/sprmap/heartbonus/wario_backholdbombexpl1.bin"
+SprMap_HeartBonus_Wario_BackHoldBombExpl2_Body: INCBIN "data/sprmap/heartbonus/wario_backholdbombexpl2_body.bin"
+SprMap_HeartBonus_Wario_BackHoldBomb1: INCBIN "data/sprmap/heartbonus/wario_backholdbomb1.bin"
+SprMap_HeartBonus_Wario_BackThrowBomb: INCBIN "data/sprmap/heartbonus/wario_backthrowbomb.bin"
+SprMap_HeartBonus_Wario_BackBombExpl2_Smoke: INCBIN "data/sprmap/heartbonus/wario_backbombexpl2_smoke.bin"
+SprMap_HeartBonus_Wario_BackBombExpl4: INCBIN "data/sprmap/heartbonus/wario_backbombexpl4.bin"
+SprMap_HeartBonus_Wario_BackBombExpl3: INCBIN "data/sprmap/heartbonus/wario_backbombexpl3.bin"
+SprMap_CoinBonus_Wario_IdleDiagHeadBack: INCBIN "data/sprmap/coinbonus/wario_idlediagheadback.bin"
+SprMap_CoinBonus_Wario_Pull0_Hand: INCBIN "data/sprmap/coinbonus/wario_pull0_hand.bin"
+SprMap_CoinBonus_Wario_Pull1: INCBIN "data/sprmap/coinbonus/wario_pull1.bin"
+SprMap_CoinBonus_Wario_Crushed: INCBIN "data/sprmap/coinbonus/wario_crushed.bin"
+SprMap_Ending_Wario_WalkHoldR0_Hand: INCBIN "data/sprmap/ending/wario_walkholdr0_hand.bin"
+SprMap_Ending_Wario_IdleHoldR_Hand: INCBIN "data/sprmap/ending/wario_idleholdr_hand.bin"
+SprMap_Ending_Wario_WalkHoldR1_Hand: INCBIN "data/sprmap/ending/wario_walkholdr1_hand.bin"
+SprMap_Ending_Wario_IdleThrowR_Hand: INCBIN "data/sprmap/ending/wario_idlethrowr_hand.bin"
+SprMap_Ending_Wario_DuckRub0: INCBIN "data/sprmap/ending/wario_duckrub0.bin"
+SprMap_Ending_Wario_DuckRub1_Body: INCBIN "data/sprmap/ending/wario_duckrub1_body.bin"
+SprMap_Ending_Wario_DuckRub2: INCBIN "data/sprmap/ending/wario_duckrub2.bin"
+SprMap_Ending_Wario_DuckRub1_Hand: INCBIN "data/sprmap/ending/wario_duckrub1_hand.bin"
+SprMap_Ending_Wario_DuckDiagR: INCBIN "data/sprmap/ending/wario_duckdiagr.bin"
+SprMap_Ending_Wario_HardBumpR0: INCBIN "data/sprmap/ending/wario_hardbumpr0.bin"
+SprMap_Ending_Wario_HardBumpR1_Body: INCBIN "data/sprmap/ending/wario_hardbumpr1_body.bin"
+SprMap_Ending_Wario_HardBumpR1_Hat: INCBIN "data/sprmap/ending/wario_hardbumpr1_hat.bin"
+SprMap_Ending_Wario_WishClose: INCBIN "data/sprmap/ending/wario_wishclose.bin"
+SprMap_Ending_Wario_WishOpen_Body: INCBIN "data/sprmap/ending/wario_wishopen_body.bin"
+SprMap_Ending_Wario_WishOpen_Eyes: INCBIN "data/sprmap/ending/wario_wishopen_eyes.bin"
 ;-----------
 GFXRLE_Title: INCBIN "data/gfx/title.rlc"
 	mIncJunk "L12675B"
@@ -1666,9 +1666,9 @@ ActInit_Bat:
 	ld   bc, SubCall_Act_Bat
 	call ActS_SetCodePtr
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_Bat
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_Bat
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Set initial collision box (damaging side doesn't matter here)
 	mActColiMask ACTCOLI_NORM, ACTCOLI_DAMAGE, ACTCOLI_NORM, ACTCOLI_NORM
@@ -1686,15 +1686,15 @@ ActInit_Bat:
 	
 	; Depending on the direction the actor's facing, pick a different animation
 	push bc
-	ld   bc, OBJLstPtrTable_Act_Bat_MoveL	; Set initial OBJLst (left facing)
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_Bat_MoveL	; Set initial animation (left facing)
+	call ActS_SetSprMapPtr
 	pop  bc
 	ld   a, [sActSetDir]
 	bit  DIRB_L, a			; Facing left?
 	ret  nz					; If so, return
 	push bc
-	ld   bc, OBJLstPtrTable_Act_Bat_MoveR	; Set initial OBJLst (right facing)
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_Bat_MoveR	; Set initial animation (right facing)
+	call ActS_SetSprMapPtr
 	pop  bc
 	ret
 	
@@ -1732,11 +1732,11 @@ Act_Bat_Unused_SwitchToIdle:
 	ld   [sActBatRoutineId], a
 	ld   [sActSetTimer2], a		; Not even used in this actor
 	
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Bat_MoveL		; Set the one when facing left first
+	mActSprMapPtrTable SprMapPtrTable_Act_Bat_MoveL		; Set the one when facing left first
 	ld   a, [sActSetDir]
 	bit  DIRB_L, a				; Facing left?
 	ret  nz						; If so, return
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Bat_MoveR		; Set the one when facing right
+	mActSprMapPtrTable SprMapPtrTable_Act_Bat_MoveR		; Set the one when facing right
 	ret
 ; =============== Act_Bat_Idle ===============
 Act_Bat_Idle:
@@ -1754,7 +1754,7 @@ Act_Bat_Idle:
 	cp   a, $48					; Diff >= $48?
 	jr   c, .startAttack		; If so, start attacking.
 	; Otherwise, animate as normal
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	ret
 	
 .startAttack:
@@ -1768,15 +1768,15 @@ Act_Bat_Idle:
 	ld   [sActSetTimer], a
 	
 	; Set attack anim depending on the direction faced
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Bat_MoveL		; Set the one when facing left first
+	mActSprMapPtrTable SprMapPtrTable_Act_Bat_MoveL		; Set the one when facing left first
 	ld   a, [sActSetDir]
 	bit  DIRB_L, a				; Facing left?
 	ret  nz						; If so, return
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Bat_MoveR		; Set the one when facing right
+	mActSprMapPtrTable SprMapPtrTable_Act_Bat_MoveR		; Set the one when facing right
 	ret
 ; =============== Act_Bat_Attack ===============
 Act_Bat_Attack:
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	; Handle vertical & horizontal movement
 	ld   a, [sActSetDir]
@@ -1816,58 +1816,58 @@ Act_Bat_MoveVert:
 ; =============== Act_Bat_MoveRight ===============
 ; Moves the actor right 1px.
 Act_Bat_MoveRight:
-	ld   a, LOW(OBJLstPtrTable_Act_Bat_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Bat_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Bat_MoveR)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Bat_MoveR)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	ld   bc, +$01
 	call ActS_MoveRight
 	ret
 ; =============== Act_Bat_MoveLeft ===============
 ; Moves the actor left 1px.
 Act_Bat_MoveLeft:;C
-	ld   a, LOW(OBJLstPtrTable_Act_Bat_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Bat_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Bat_MoveL)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Bat_MoveL)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	ld   bc, -$01
 	call ActS_MoveRight
 	ret
 	
-OBJLstPtrTable_Act_Bat_MoveL:
-	dw OBJLst_Act_Bat_MoveL0
-	dw OBJLst_Act_Bat_MoveL1
+SprMapPtrTable_Act_Bat_MoveL:
+	dw SprMap_Act_Bat_MoveL0
+	dw SprMap_Act_Bat_MoveL1
 	dw $0000
-OBJLstPtrTable_Act_Bat_MoveR:
-	dw OBJLst_Act_Bat_MoveR0
-	dw OBJLst_Act_Bat_MoveR1
+SprMapPtrTable_Act_Bat_MoveR:
+	dw SprMap_Act_Bat_MoveR0
+	dw SprMap_Act_Bat_MoveR1
 	dw $0000
 ; [TCRF] Two frames of animation, but same mapping frame
-OBJLstPtrTable_Act_Bat_StunL:
-	dw OBJLst_Act_Bat_StunL
-	dw OBJLst_Act_Bat_StunL
+SprMapPtrTable_Act_Bat_StunL:
+	dw SprMap_Act_Bat_StunL
+	dw SprMap_Act_Bat_StunL
 	dw $0000
-OBJLstPtrTable_Act_Bat_StunR:
-	dw OBJLst_Act_Bat_StunR
-	dw OBJLst_Act_Bat_StunR
+SprMapPtrTable_Act_Bat_StunR:
+	dw SprMap_Act_Bat_StunR
+	dw SprMap_Act_Bat_StunR
 	dw $0000
 
-OBJLstSharedPtrTable_Act_Bat:
-	dw OBJLstPtrTable_Act_Bat_StunL;X
-	dw OBJLstPtrTable_Act_Bat_StunR;X
-	dw OBJLstPtrTable_Act_Bat_StunL;X
-	dw OBJLstPtrTable_Act_Bat_StunR;X
-	dw OBJLstPtrTable_Act_Bat_StunL
-	dw OBJLstPtrTable_Act_Bat_StunR
-	dw OBJLstPtrTable_Act_Bat_StunL;X
-	dw OBJLstPtrTable_Act_Bat_StunR;X
+SprMapSharedPtrTable_Act_Bat:
+	dw SprMapPtrTable_Act_Bat_StunL;X
+	dw SprMapPtrTable_Act_Bat_StunR;X
+	dw SprMapPtrTable_Act_Bat_StunL;X
+	dw SprMapPtrTable_Act_Bat_StunR;X
+	dw SprMapPtrTable_Act_Bat_StunL
+	dw SprMapPtrTable_Act_Bat_StunR
+	dw SprMapPtrTable_Act_Bat_StunL;X
+	dw SprMapPtrTable_Act_Bat_StunR;X
 	
-OBJLst_Act_Bat_MoveL0: INCBIN "data/objlst/actor/bat_movel0.bin"
-OBJLst_Act_Bat_MoveL1: INCBIN "data/objlst/actor/bat_movel1.bin"
-OBJLst_Act_Bat_StunL: INCBIN "data/objlst/actor/bat_stunl.bin"
-OBJLst_Act_Bat_MoveR0: INCBIN "data/objlst/actor/bat_mover0.bin"
-OBJLst_Act_Bat_MoveR1: INCBIN "data/objlst/actor/bat_mover1.bin"
-OBJLst_Act_Bat_StunR: INCBIN "data/objlst/actor/bat_stunr.bin"
+SprMap_Act_Bat_MoveL0: INCBIN "data/sprmap/actor/bat_movel0.bin"
+SprMap_Act_Bat_MoveL1: INCBIN "data/sprmap/actor/bat_movel1.bin"
+SprMap_Act_Bat_StunL: INCBIN "data/sprmap/actor/bat_stunl.bin"
+SprMap_Act_Bat_MoveR0: INCBIN "data/sprmap/actor/bat_mover0.bin"
+SprMap_Act_Bat_MoveR1: INCBIN "data/sprmap/actor/bat_mover1.bin"
+SprMap_Act_Bat_StunR: INCBIN "data/sprmap/actor/bat_stunr.bin"
 GFX_Act_Bat: INCBIN "data/gfx/actor/bat.bin"
 
 ; =============== ActInit_BigFruit ===============
@@ -1889,15 +1889,15 @@ ActInit_BigFruit:
 	ld   bc, SubCall_Act_BigFruit
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
+	; Set initial animation
 	push bc
-	ld   bc, OBJLstPtrTable_ActInit_BigFruit
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_ActInit_BigFruit
+	call ActS_SetSprMapPtr
 	pop  bc
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_BigFruit
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_BigFruit
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Set collision type
 	ld   a, ACTCOLI_BIGBLOCK
@@ -1911,19 +1911,19 @@ ActInit_BigFruit:
 	ld   [sActBigFruitDropTimer], a
 	ld   [sActBigFruitLandTimer], a
 	
-	; Depending on the direction, set a different OBJLstPtrTable.
+	; Depending on the direction, set a different SprMapPtrTable.
 	ld   a, [sActSetDir]
 	bit  DIRB_R, a
-	call nz, ActInit_BigFruit_SetOBJLstPtrTableR
+	call nz, ActInit_BigFruit_SetSprMapPtrTableR
 	ld   a, [sActSetDir]
 	bit  DIRB_L, a
-	call nz, ActInit_BigFruit_SetOBJLstPtrTableL
+	call nz, ActInit_BigFruit_SetSprMapPtrTableL
 	xor  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	ret
-; =============== OBJLstPtrTable_ActInit_BigFruit ===============
-OBJLstPtrTable_ActInit_BigFruit:
-	dw OBJLst_Act_BigFruit0
+; =============== SprMapPtrTable_ActInit_BigFruit ===============
+SprMapPtrTable_ActInit_BigFruit:
+	dw SprMap_Act_BigFruit0
 	dw $0000
 ; =============== Act_BigFruit ===============
 Act_BigFruit:
@@ -1953,10 +1953,10 @@ Act_BigFruit_Unused_StartNoMove:
 	ld   bc, SubCall_Act_BigFruit_Unused_NoMove
 	call ActS_SetCodePtr
 	
-	; Reset OBJLst to non-rolling one
+	; Reset animation to non-rolling one
 	push bc
-	ld   bc, OBJLstPtrTable_ActInit_BigFruit
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_ActInit_BigFruit
+	call ActS_SetSprMapPtr
 	pop  bc
 	
 	; Basically like the normal one, except this doesn't hard bump on the sides
@@ -1984,8 +1984,8 @@ Act_BigFruit_Unused_NoMove_Main:
 	; [POI] Poor way of resetting the anim frame.
 	;		To avoid having the fruit rotate in place.
 	push bc
-	ld   bc, OBJLstPtrTable_ActInit_BigFruit
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_ActInit_BigFruit
+	call ActS_SetSprMapPtr
 	pop  bc
 	
 	ld   a, [sActSetTimer]		; Timer++
@@ -2047,7 +2047,7 @@ Act_BigFruit_Main:
 	or   a								; Has the actor landed once yet?
 	ret  z								; If not, return
 	
-	call ActS_IncOBJLstIdEvery8			; Animate the fruit when rolling on the ground
+	call ActS_IncSprMapIdEvery8			; Animate the fruit when rolling on the ground
 	
 	ld   a, [sActSetYSpeed_Low]
 	or   a								; Is the actor in the air?
@@ -2075,13 +2075,13 @@ Act_BigFruit_MoveLeft:
 	ld   bc, -$01
 	call ActS_MoveRight
 	
-; =============== ActInit_BigFruit_SetOBJLstPtrTableL ===============
-; Sets the initial OBJLstPtrTable when the actor is facing left.
-ActInit_BigFruit_SetOBJLstPtrTableL:
-	ld   a, LOW(OBJLstPtrTable_Act_BigFruitL)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_BigFruitL)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+; =============== ActInit_BigFruit_SetSprMapPtrTableL ===============
+; Sets the initial SprMapPtrTable when the actor is facing left.
+ActInit_BigFruit_SetSprMapPtrTableL:
+	ld   a, LOW(SprMapPtrTable_Act_BigFruitL)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_BigFruitL)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	ret
 	
 ; =============== Act_BigFruit_MoveRight ===============
@@ -2095,13 +2095,13 @@ Act_BigFruit_MoveRight:
 	ld   bc, +$01
 	call ActS_MoveRight
 	
-; =============== ActInit_BigFruit_SetOBJLstPtrTableR ===============
-; Sets the initial OBJLstPtrTable when the actor is facing right.
-ActInit_BigFruit_SetOBJLstPtrTableR:
-	ld   a, LOW(OBJLstPtrTable_Act_BigFruitR)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_BigFruitR)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+; =============== ActInit_BigFruit_SetSprMapPtrTableR ===============
+; Sets the initial SprMapPtrTable when the actor is facing right.
+ActInit_BigFruit_SetSprMapPtrTableR:
+	ld   a, LOW(SprMapPtrTable_Act_BigFruitR)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_BigFruitR)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	ret
 	
 ; =============== Act_BigFruit_Unused_EndPath ===============
@@ -2219,34 +2219,34 @@ ENDC
 	ld   [sActSetYSpeed_Low], a
 	ret
 	
-OBJLstPtrTable_Act_BigFruitL:
-	dw OBJLst_Act_BigFruit0
-	dw OBJLst_Act_BigFruit1
-	dw OBJLst_Act_BigFruit2
-	dw OBJLst_Act_BigFruit3
+SprMapPtrTable_Act_BigFruitL:
+	dw SprMap_Act_BigFruit0
+	dw SprMap_Act_BigFruit1
+	dw SprMap_Act_BigFruit2
+	dw SprMap_Act_BigFruit3
 	dw $0000
 	
-OBJLstPtrTable_Act_BigFruitR:
-	dw OBJLst_Act_BigFruit3
-	dw OBJLst_Act_BigFruit2
-	dw OBJLst_Act_BigFruit1
-	dw OBJLst_Act_BigFruit0
+SprMapPtrTable_Act_BigFruitR:
+	dw SprMap_Act_BigFruit3
+	dw SprMap_Act_BigFruit2
+	dw SprMap_Act_BigFruit1
+	dw SprMap_Act_BigFruit0
 	dw $0000
 
-OBJLstSharedPtrTable_Act_BigFruit:
-	dw OBJLstPtrTable_ActInit_BigFruit;X
-	dw OBJLstPtrTable_ActInit_BigFruit;X
-	dw OBJLstPtrTable_ActInit_BigFruit;X
-	dw OBJLstPtrTable_ActInit_BigFruit;X
-	dw OBJLstPtrTable_ActInit_BigFruit
-	dw OBJLstPtrTable_ActInit_BigFruit
-	dw OBJLstPtrTable_ActInit_BigFruit;X
-	dw OBJLstPtrTable_ActInit_BigFruit;X
+SprMapSharedPtrTable_Act_BigFruit:
+	dw SprMapPtrTable_ActInit_BigFruit;X
+	dw SprMapPtrTable_ActInit_BigFruit;X
+	dw SprMapPtrTable_ActInit_BigFruit;X
+	dw SprMapPtrTable_ActInit_BigFruit;X
+	dw SprMapPtrTable_ActInit_BigFruit
+	dw SprMapPtrTable_ActInit_BigFruit
+	dw SprMapPtrTable_ActInit_BigFruit;X
+	dw SprMapPtrTable_ActInit_BigFruit;X
 
-OBJLst_Act_BigFruit0: INCBIN "data/objlst/actor/bigfruit0.bin"
-OBJLst_Act_BigFruit1: INCBIN "data/objlst/actor/bigfruit1.bin"
-OBJLst_Act_BigFruit2: INCBIN "data/objlst/actor/bigfruit2.bin"
-OBJLst_Act_BigFruit3: INCBIN "data/objlst/actor/bigfruit3.bin"
+SprMap_Act_BigFruit0: INCBIN "data/sprmap/actor/bigfruit0.bin"
+SprMap_Act_BigFruit1: INCBIN "data/sprmap/actor/bigfruit1.bin"
+SprMap_Act_BigFruit2: INCBIN "data/sprmap/actor/bigfruit2.bin"
+SprMap_Act_BigFruit3: INCBIN "data/sprmap/actor/bigfruit3.bin"
 GFX_Act_BigFruit: INCBIN "data/gfx/actor/bigfruit.bin"
 
 ; =============== END OF BANK ===============

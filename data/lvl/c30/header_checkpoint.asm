@@ -6,8 +6,8 @@
 	dw LevelBlock_Ship	; 16x16 Blocks 
 	db $01,$60	; Player Y
 	db $05,$78	; Player X
-	db OBJ_WARIO_STAND ; OBJLst Frame
-	db $00		; OBJLst Flags (Face Left)
+	db SPR_WARIO_STAND ; Player sprite
+	db $00		; Player sprite flags (Face Left)
 	db $00,$E0	; Scroll Y
 	db $05,$18	; Scroll X
 	db DIR_NONE		; Screen Lock Flags

@@ -9,7 +9,7 @@ DEF vGFXHatSecondary           EQU $83B0
 
 ; Shared sprites
 DEF vGFXLevelSharedOBJ         EQU $8000
-DEF vGFXLevelSharedOBJ_Size    EQU $0B00
+DEF vGFXLevelSharedSPR_Size    EQU $0B00
 
 ; Status bar (+ misc OBJ which got thrown here for lack of space)
 DEF vGFXStatusBar              EQU $8B00
@@ -235,9 +235,9 @@ sActSetColiBoxL:                            db     ; EQU $A108 ; Collision box -
 sActSetColiBoxR:                            db     ; EQU $A109 ; Collision box - right extend. Generally positive.
 sActSetRelY:                                db     ; EQU $A10A ; Collision box Y origin. Box position is shifted down by this amount. Also used for 1 byte coord mode.
 sActSetRelX:                                db     ; EQU $A10B ; Collision box X origin. Box position is shifted right by this amount. Also used for 1 byte coord mode.
-sActSetOBJLstPtrTablePtr:                   ds $02 ; EQU $A10C ; Ptr to the currently drawn OBJLstPtrTable.
-sActSetDir:                                 db     ; EQU $A10E ; Movement direction (*not* OBJ flags)
-sActSetOBJLstId:                            db     ; EQU $A10F
+sActSetSprMapPtrTablePtr:                   ds $02 ; EQU $A10C ; Ptr to the currently drawn SprMapPtrTable.
+sActSetDir:                                 db     ; EQU $A10E ; Movement direction (*not* Sprite flags)
+sActSetSprMapId:                            db     ; EQU $A10F
 sActSetId:                                  db     ; EQU $A110
 sActSetRoutineId:                           db     ; EQU $A111 ; or sActSetPlIntMode -- Player interaction mode basically -- and in the upper nybble the "interaction direction" is stored (ACTINT_*)). When something is thrown at, the upper nybble contains the slot number of the actor which was thrown.
 sActSetCodePtr:                             ds $02 ; EQU $A112
@@ -250,7 +250,7 @@ sActSetTimer6:                              db     ; EQU $A119 ; Custom.
 sActSetTimer7:                              db     ; EQU $A11A ; Custom.
 sActSetOpts:                                db     ; EQU $A11B ; Misc flags (ACTFLAGB_*)
 sActSetLevelLayoutPtr:                      ds $02 ; EQU $A11C ; For permanent despawns mostly
-sActSetOBJLstSharedTablePtr:                ds $02 ; EQU $A11E ; Ptr to the "shared table", so common subroutines (like the stunned actor) know which OBJLstPtrTable to apply. Each entry to this should be a valid OBJLstPtrTable.
+sActSetSprMapSharedTablePtr:                ds $02 ; EQU $A11E ; Ptr to the "shared table", so common subroutines (like the stunned actor) know which SprMapPtrTable to apply. Each entry to this should be a valid SprMapPtrTable.
 DEF sActSet                                          EQU sActSetStatus ; Currently processed actor area
 DEF sActSet_End                                      EQU sActSetStatus + $20
 
@@ -496,8 +496,8 @@ sActTileBaseIndexTbl:                       ds ACT_DEFAULT_BASE ; EQU $A331
 ds $15
 sActHeld:                                   db     ; EQU $A34D ; If an actor is held
 sActHeldId:                                 db     ; EQU $A34E
-sActHeldOBJLstTablePtr_Low:                 db     ; EQU $A34F
-sActHeldOBJLstTablePtr_High:                db     ; EQU $A350
+sActHeldSprMapTablePtr_Low:                 db     ; EQU $A34F
+sActHeldSprMapTablePtr_High:                db     ; EQU $A350
 sActHeldColiType:                           db     ; EQU $A351
 sActHeldTreasure:                           db     ; EQU $A352 ; Marks if we're holding a treasure
 sActColiSaveTbl:                            ds ACTSLOT_COUNT*2 ; EQU $A353 ; Table for storing temporary collision types. Mysteriously uses two bytes for each entry, but only the first is used.
@@ -523,7 +523,7 @@ ds $01
 sLvlSpecClear:                              db     ; EQU $A375 ; Level exit (special)
 sLvlExitDoor:                               db     ; EQU $A376
 sLvlTreasureDoor:                           db     ; EQU $A377
-sActOBJLstBank:                             ds ACTSLOT_COUNT ; EQU $A378 ; Bank numbers for the sprite mapping, for each actor slot.
+sActSprMapBank:                             ds ACTSLOT_COUNT ; EQU $A378 ; Bank numbers for the sprite mapping, for each actor slot.
 ds $03
 sActTreasureId:                             db     ; EQU $A382 ; ID of the treasure the room has
 sActHeldColiRoutineId:                      db     ; EQU $A383 ; Routine ID set when the held actor collides with another actor
@@ -569,8 +569,8 @@ sActStoveCanyonBossYSync_High:              db     ; EQU $A3A6
 ;--
 sLvlClearOnDeath:                           db     ; EQU $A3A7 ; If set, dying sets sLvlSpecClear instead of starting the death sequence
 sCoinGameColiType:                          db     ; EQU $A3A8
-sCoinGameOBJLstPtrTablePtr_Low:             db     ; EQU $A3A9
-sCoinGameOBJLstPtrTablePtr_High:            db     ; EQU $A3AA
+sCoinGameSprMapPtrTablePtr_Low:             db     ; EQU $A3A9
+sCoinGameSprMapPtrTablePtr_High:            db     ; EQU $A3AA
 sActStoveCanyonBossTongueRoutineId:         db     ; EQU $A3AB
 sActStoveCanyonBossTongueBlockHit:          db     ; EQU $A3AC ; If set, the tongue tried to hit a block this pass
 sActLYLimit:                                db     ; EQU $A3AD ; Actor code will be executed only if LY is less than this
@@ -881,11 +881,11 @@ ds $01
 sMapOAMWriteY:                              db     ; EQU $A7D4 ; Origin Y position of sprite list
 sMapOAMWriteX:                              db     ; EQU $A7D5 ; Origin X position of sprite list
 sMapOAMWriteFlags:                          db     ; EQU $A7D6 ; Sprite list flags
-sMapOAMWriteLstId:                          db     ; EQU $A7D7 ; Index to a table of sprite lists
+sMapOAMWriteSprId:                          db     ; EQU $A7D7 ; Index to a table of sprite lists
 sMapWarioYRes:                              db     ; EQU $A7D8
 sMapWarioX:                                 db     ; EQU $A7D9
 sMapWarioFlags:                             db     ; EQU $A7DA
-sMapWarioLstId:                             db     ; EQU $A7DB
+sMapWarioSprId:                             db     ; EQU $A7DB
 sMapWarioYOscillateMask:                    db     ; EQU $A7DC
 sMapWarioAnimTimer:                         db     ; EQU $A7DD
 sMapWarioY:                                 db     ; EQU $A7DE
@@ -974,7 +974,7 @@ sWorkOAMPos:                                db     ; EQU $A90C ; OAM Copy index/
 ; OAMWrite parameters
 sOAMWriteY:                                 db     ; EQU $A90D
 sOAMWriteX:                                 db     ; EQU $A90E
-sOAMWriteLstId:                             db     ; EQU $A90F
+sOAMWriteSprId:                             db     ; EQU $A90F
 sOAMWriteFlags:                             db     ; EQU $A910
 
 ; Wario m
@@ -982,7 +982,7 @@ sPlY_High:                                  db     ; EQU $A911
 sPlY_Low:                                   db     ; EQU $A912
 sPlX_High:                                  db     ; EQU $A913
 sPlX_Low:                                   db     ; EQU $A914
-sPlLstId:                                   db     ; EQU $A915
+sPlSprId:                                   db     ; EQU $A915
 sPlFlags:                                   db     ; EQU $A916
 
 UNION
@@ -1271,7 +1271,7 @@ sExActOBJY_High:                            db     ; EQU $AAE1 ; 2 byte coord mo
 sExActOBJY_Low:                             db     ; EQU $AAE2
 sExActOBJX_High:                            db     ; EQU $AAE3
 sExActOBJX_Low:                             db     ; EQU $AAE4
-sExActOBJLstId:                             db     ; EQU $AAE5
+sExActSprMapId:                             db     ; EQU $AAE5
 sExActOBJFlags:                             db     ; EQU $AAE6
 sExActLevelLayoutPtr_High:                  db     ; EQU $AAE7
 sExActLevelLayoutPtr_Low:                   db     ; EQU $AAE8
@@ -1279,7 +1279,7 @@ sExActRoutineId:                            db     ; EQU $AAE9
 sExActTimer:                                db     ; EQU $AAEA ; Timer before ending an action
 sExActOBJFixY:                              db     ; EQU $AAEB ; 1 byte coord mode
 sExActOBJFixX:                              db     ; EQU $AAEC
-sExActAnimTimer:                            db     ; EQU $AAED ; Timer used for indexing OBJLstAnimOff tables
+sExActAnimTimer:                            db     ; EQU $AAED ; Timer used for indexing SprMapAnimOff tables
 NEXTU
 sExActSet:                                  ds $10 ; EQU $AAE0
 sExActSet2:                                 ds $10 ; EQU $AAF0 ; Secodary set; can't be used directly
@@ -1359,7 +1359,7 @@ sMapMtTeapotSproutAnimTimer:                db     ; EQU $B12B
 sMapMtTeapotSproutY:                        db     ; EQU $B12C
 sMapMtTeapotSproutX:                        db     ; EQU $B12D
 sMapMtTeapotSproutFlags:                    db     ; EQU $B12E
-sMapMtTeapotSproutLstId:                    db     ; EQU $B12F
+sMapMtTeapotSproutSprId:                    db     ; EQU $B12F
 ELSE
 ds $05
 ENDC
@@ -1370,25 +1370,25 @@ sMapMtTeapotLidScrollYLast:                 db     ; EQU $B131
 sMapMtTeapotLidScrollXLast:                 db     ; EQU $B132
 sMapMtTeapotLidX:                           db     ; EQU $B133
 sMapMtTeapotLidFlags:                       db     ; EQU $B134
-sMapMtTeapotLidLstId:                       db     ; EQU $B135
+sMapMtTeapotLidSprId:                       db     ; EQU $B135
 ; Teapot steam sprout
 sMap_Unused_MtTeapotSproutY:                db     ; EQU $B136
 sMap_Unused_MtTeapotSproutX:                db     ; EQU $B137
 sMap_Unused_MtTeapotSproutFlags:            db     ; EQU $B138
-sMap_Unused_MtTeapotSproutLstId:            db     ; EQU $B139
+sMap_Unused_MtTeapotSproutSprId:            db     ; EQU $B139
 ; World clear flags and anim timers
 sMapRiceBeachFlagY:                         db     ; EQU $B13A
 sMapRiceBeachFlagScrollYLast:               db     ; EQU $B13B
 sMapRiceBeachFlagScrollXLast:               db     ; EQU $B13C
 sMapRiceBeachFlagX:                         db     ; EQU $B13D
 sMapOverworldFlagFlags:                     db     ; EQU $B13E
-sMapRiceBeachFlagLstId:                     db     ; EQU $B13F
-sMapMtTeapotFlagLstId:                      db     ; EQU $B140
-sMapStoveCanyonFlagLstId:                   db     ; EQU $B141
-sMapSSTeacupFlagLstId:                      db     ; EQU $B142
-sMapParsleyWoodsFlagLstId:                  db     ; EQU $B143
-sMapSherbetLandFlagLstId:                   db     ; EQU $B144
-sMap_Unused_SyrupCastleFlagLstId:           db     ; EQU $B145
+sMapRiceBeachFlagSprId:                     db     ; EQU $B13F
+sMapMtTeapotFlagSprId:                      db     ; EQU $B140
+sMapStoveCanyonFlagSprId:                   db     ; EQU $B141
+sMapSSTeacupFlagSprId:                      db     ; EQU $B142
+sMapParsleyWoodsFlagSprId:                  db     ; EQU $B143
+sMapSherbetLandFlagSprId:                   db     ; EQU $B144
+sMap_Unused_SyrupCastleFlagSprId:           db     ; EQU $B145
 UNION
 sMapRiceBeachFlagTimer:                     db     ; EQU $B146
 sMapMtTeapotFlagTimer:                      db     ; EQU $B147
@@ -1426,15 +1426,15 @@ sMap_Unused_SyrupCastleFlagY:               db     ; EQU $B161
 sMap_Unused_SyrupCastleFlagScrollYLast:     db     ; EQU $B162
 sMap_Unused_SyrupCastleFlagScrollXLast:     db     ; EQU $B163
 sMap_Unused_SyrupCastleFlagX:               db     ; EQU $B164
-sMapFlagLstIdPtr_High:                      db     ; EQU $B165
-sMapFlagLstIdPtr_Low:                       db     ; EQU $B166
+sMapFlagSprIdPtr_High:                      db     ; EQU $B165
+sMapFlagSprIdPtr_Low:                       db     ; EQU $B166
 UNION
 sMapFadeTimer:                              db     ; EQU $B167
 sMapMtTeapotLidYTimer:                      db     ; EQU $B168
 NEXTU
 sMapCutsceneEndTimer:                       db     ; EQU $B167
 NEXTU
-sMapLakeDrainLstIdTarget:                   db     ; EQU $B167
+sMapLakeDrainSprIdTarget:                   db     ; EQU $B167
 sMapC32CutsceneTimer:                       db     ; EQU $B168
 ENDU
 sMapPathsPtr_High:                          db     ; EQU $B169
@@ -1465,13 +1465,13 @@ sMap_Unused_LakeSproutYCopy:                db     ; EQU $B181
 sMap_Unused_LakeSproutXCopy:                db     ; EQU $B182
 sMapLakeSproutY:                            db     ; EQU $B183
 sMapLakeSproutX:                            db     ; EQU $B184
-sMapLakeSproutLstId:                        db     ; EQU $B185
+sMapLakeSproutSprId:                        db     ; EQU $B185
 sMapLakeSproutFlags:                        db     ; EQU $B186
 sMap_Unused_LakeDrainYCopy:                 db     ; EQU $B187
 sMap_Unused_LakeDrainXCopy:                 db     ; EQU $B188
 sMapLakeDrainY:                             db     ; EQU $B189
 sMapLakeDrainX:                             db     ; EQU $B18A
-sMapLakeDrainLstId:                         db     ; EQU $B18B
+sMapLakeDrainSprId:                         db     ; EQU $B18B
 sMapLakeDrainFlags:                         db     ; EQU $B18C
 ds $04
 sMap_Unused_VMove:                          db     ; EQU $B191
@@ -1492,10 +1492,10 @@ sMapExOBJ2Y:                                db     ; EQU $B1A0
 sMapExOBJ2X:                                db     ; EQU $B1A1
 sMapExOBJ3Y:                                db     ; EQU $B1A2
 sMapExOBJ3X:                                db     ; EQU $B1A3
-sMapExOBJ0LstId:                            db     ; EQU $B1A4
-sMapExOBJ1LstId:                            db     ; EQU $B1A5
-sMapExOBJ2LstId:                            db     ; EQU $B1A6
-sMapExOBJ3LstId:                            db     ; EQU $B1A7
+sMapExOBJ0SprId:                            db     ; EQU $B1A4
+sMapExOBJ1SprId:                            db     ; EQU $B1A5
+sMapExOBJ2SprId:                            db     ; EQU $B1A6
+sMapExOBJ3SprId:                            db     ; EQU $B1A7
 sMapExOBJ0Flags:                            db     ; EQU $B1A8
 sMapExOBJ1Flags:                            db     ; EQU $B1A9
 sMapExOBJ2Flags:                            db     ; EQU $B1AA
@@ -1506,25 +1506,25 @@ sMapCurArrow:                               db     ; EQU $B1AD
 UNION
 sMapExplOBJ0Y:                              db     ; EQU $B1AE
 sMapExplOBJ0X:                              db     ; EQU $B1AF
-sMapExplOBJ0LstId:                          db     ; EQU $B1B0
+sMapExplOBJ0SprId:                          db     ; EQU $B1B0
 sMapExplOBJ0Flags:                          db     ; EQU $B1B1
 NEXTU
 sMapEndingHeliY:                            db     ; EQU $B1AE
 sMapEndingHeliX:                            db     ; EQU $B1AF
-sMapEndingHeliLstId:                        db     ; EQU $B1B0
+sMapEndingHeliSprId:                        db     ; EQU $B1B0
 sMapEndingHeliFlags:                        db     ; EQU $B1B1
 ENDU
 sMapExplOBJ1Y:                              db     ; EQU $B1B2
 sMapExplOBJ1X:                              db     ; EQU $B1B3
-sMapExplOBJ1LstId:                          db     ; EQU $B1B4
+sMapExplOBJ1SprId:                          db     ; EQU $B1B4
 sMapExplOBJ1Flags:                          db     ; EQU $B1B5
 sMapExplOBJ2Y:                              db     ; EQU $B1B6
 sMapExplOBJ2X:                              db     ; EQU $B1B7
-sMapExplOBJ2LstId:                          db     ; EQU $B1B8
+sMapExplOBJ2SprId:                          db     ; EQU $B1B8
 sMapExplOBJ2Flags:                          db     ; EQU $B1B9
 sMapExplOBJ3Y:                              db     ; EQU $B1BA
 sMapExplOBJ3X:                              db     ; EQU $B1BB
-sMapExplOBJ3LstId:                          db     ; EQU $B1BC
+sMapExplOBJ3SprId:                          db     ; EQU $B1BC
 sMapExplOBJ3Flags:                          db     ; EQU $B1BD
 sMapSyrupCastleCutsceneTimer:               db     ; EQU $B1BE
 sMapSyrupCastleWaveTablePtr_High:           db     ; EQU $B1BF
@@ -1532,20 +1532,20 @@ sMapSyrupCastleWaveTablePtr_Low:            db     ; EQU $B1C0
 sMapAutoEnterOnPathEnd:                     db     ; EQU $B1C1
 sMapEndingStatueHighY:                      db     ; EQU $B1C2
 sMapEndingStatueHighX:                      db     ; EQU $B1C3
-sMapEndingStatueHighLstId:                  db     ; EQU $B1C4
+sMapEndingStatueHighSprId:                  db     ; EQU $B1C4
 sMapEndingStatueHighFlags:                  db     ; EQU $B1C5
 sMapEndingStatueLowY:                       db     ; EQU $B1C6
 sMapEndingStatueLowX:                       db     ; EQU $B1C7
-sMapEndingStatueLowLstId:                   db     ; EQU $B1C8
+sMapEndingStatueLowSprId:                   db     ; EQU $B1C8
 sMapEndingStatueLowFlags:                   db     ; EQU $B1C9
 sMapEndingSparkleY:                         db     ; EQU $B1CA
 sMapEndingSparkleX:                         db     ; EQU $B1CB
-sMapEndingSparkleLstId:                     db     ; EQU $B1CC
+sMapEndingSparkleSprId:                     db     ; EQU $B1CC
 sMapEndingSparkleFlags:                     db     ; EQU $B1CD
 sMapFreeView:                               db     ; EQU $B1CE
 sMapEndingLampY:                            db     ; EQU $B1CF
 sMapEndingLampX:                            db     ; EQU $B1D0
-sMapEndingLampLstId:                        db     ; EQU $B1D1
+sMapEndingLampSprId:                        db     ; EQU $B1D1
 sMapEndingLampFlags:                        db     ; EQU $B1D2
 sMapSyrupCastleCutsceneAct:                 db     ; EQU $B1D3
 ds $01
@@ -1577,9 +1577,9 @@ DEF wCoinBonusMode                                   EQU wStaticMode
 DEF wEndingMode                                      EQU wStaticMode
 
 wStaticAnimMode:                            db     ; EQU $C0A1 ; Tile animation mode for static screens
-wStaticOBJCount:                            db     ; EQU $C0A2 ; Number of OBJ written to OAM (for static screens that call Static_WriteOBJLst)
+wStaticOBJCount:                            db     ; EQU $C0A2 ; Number of OBJ written to OAM (for static screens that call Static_WriteSprMap)
 
-wStaticPlLstId:                             db     ; EQU $C0A3
+wStaticPlSprId:                             db     ; EQU $C0A3
 wStaticPlX:                                 db     ; EQU $C0A4
 wStaticPlY:                                 db     ; EQU $C0A5
 wStaticPlFlags:                             db     ; EQU $C0A6
@@ -1616,7 +1616,7 @@ DEF wCoinBonusModeTimer                              EQU wStaticDelayTimer ; Aft
 DEF wHeartBonusModeTimer                             EQU wStaticDelayTimer ; Multiple purposes -- generally waits to switch to the next mode/submode
 DEF wEndPlMoveLDelay                                 EQU wStaticDelayTimer ; Before walking left to the treasure room
 
-wIntroShipLstId:                            db     ; EQU $C0AE
+wIntroShipSprId:                            db     ; EQU $C0AE
 wIntroShipX:                                db     ; EQU $C0AF
 wIntroShipY:                                db     ; EQU $C0B0
 wIntroActTimer:                             db     ; EQU $C0B1 ; General act timer / ship anim timer?
@@ -1627,13 +1627,13 @@ wIntroWaterSplashY:                         db     ; EQU $C0B3
 ; Sprite options for the actor held by the player
 ; In the first part (Ending0) it's a lamp.
 ; In the second part (Ending1) it's the moneybags.
-wEndHeldLstId:                              db     ; EQU $C0B4
+wEndHeldSprId:                              db     ; EQU $C0B4
 wEndHeldX:                                  db     ; EQU $C0B5
 wEndHeldY:                                  db     ; EQU $C0B6
 wEndLampThrowTimer:                         db     ; EQU $C0B7
 
 UNION
-wEndCloudLstId:                             db     ; EQU $C0B8
+wEndCloudSprId:                             db     ; EQU $C0B8
 ; wEndCloud0X also used for the "thinking" cloud
 wEndCloud0X:                                db     ; EQU $C0B9   ; Coords for first cloud
 wEndCloud0Y:                                db     ; EQU $C0BA
@@ -1642,14 +1642,14 @@ wEndCloud1X:                                db     ; EQU $C0BC   ; Coords for se
 wEndCloud1Y:                                db     ; EQU $C0BD
 wEndCloudAnimTimer:                         db     ; EQU $C0BE
 NEXTU
-wEndWLogoLstId:                             db     ; EQU $C0B8 ; Same sprite mapping table as wEndCloudLstId technically
+wEndWLogoSprId:                             db     ; EQU $C0B8 ; Same sprite mapping table as wEndCloudSprId technically
 wEndWLogoX:                                 db     ; EQU $C0B9
 wEndWLogoY:                                 db     ; EQU $C0BA
 ds $03
 wEndWLogoTimer:                             db     ; EQU $C0BE ; For the "W" mark before the credits start
 ENDU
 
-wEndGenieFaceLstId:                         db     ; EQU $C0BF
+wEndGenieFaceSprId:                         db     ; EQU $C0BF
 UNION
 wEndBGFlashTimer:                           db     ; EQU $C0C0
 NEXTU
@@ -1658,7 +1658,7 @@ NEXTU
 wEndGenieTimer:                             db     ; EQU $C0C0
 ENDU
 wEndBGWaveOffset:                           db     ; EQU $C0C1 ; Offset to wave effect tables, increased at the end of the frame to make the waves look like they're moving up
-wEndBalloonLstId:                           db     ; EQU $C0C2 ; Marks who's speaking, placed on the edge of the balloon tilemap
+wEndBalloonSprId:                           db     ; EQU $C0C2 ; Marks who's speaking, placed on the edge of the balloon tilemap
 wEndBalloonFrameSet:                        db     ; EQU $C0C3
 wEndGenieHandLFrameSet:                     db     ; EQU $C0C4 ; Requested frame for genie's hands
 wEndGenieHandRFrameSet:                     db     ; EQU $C0C5
@@ -1671,15 +1671,15 @@ wHeartBonusShowCursor:                      db     ; EQU $C0C8 ; If set, it show
 wHeartBonusDifficultySel:                   db     ; EQU $C0C9 ; Doubles as menu cursor (with $03 being the exit)
 wHeartBonusShowResultFlash:                 db     ; EQU $C0CA ; If set, enables the black line flashing on the prize won in the result screen
 
-wHeartBonusHudBombLstId:                    db     ; EQU $C0CB ; Temporary value for the frame id of the currently drawn Bomb in the HUD.
-wHeartBonusHudBomb0LstId:                   db     ; EQU $C0CC ; 1st bomb
-wHeartBonusHudBomb1LstId:                   db     ; EQU $C0CD ; 2nd bomb
-wHeartBonusHudBomb2LstId:                   db     ; EQU $C0CE ; ...
-wHeartBonusHudBomb3LstId:                   db     ; EQU $C0CF ; ...
-wHeartBonusHudBomb4LstId:                   db     ; EQU $C0D0 ; ...
+wHeartBonusHudBombSprId:                    db     ; EQU $C0CB ; Temporary value for the frame id of the currently drawn Bomb in the HUD.
+wHeartBonusHudBomb0SprId:                   db     ; EQU $C0CC ; 1st bomb
+wHeartBonusHudBomb1SprId:                   db     ; EQU $C0CD ; 2nd bomb
+wHeartBonusHudBomb2SprId:                   db     ; EQU $C0CE ; ...
+wHeartBonusHudBomb3SprId:                   db     ; EQU $C0CF ; ...
+wHeartBonusHudBomb4SprId:                   db     ; EQU $C0D0 ; ...
 ds $01
 wHeartBonusHitCount:                        db     ; EQU $C0D2 ; Number of hit enemies
-wHeartBonusBombLstId:                       db     ; EQU $C0D3 ; OBJLst frame id - bomb
+wHeartBonusBombSprId:                       db     ; EQU $C0D3 ; Sprite mapping frame id - bomb
 wHeartBonusBombX:                           db     ; EQU $C0D4 ; X pos of explosion
 wHeartBonusBombY:                           db     ; EQU $C0D5 ; Y pos of explosion
 UNION
@@ -1689,20 +1689,20 @@ wHeartBonusExplTimer:                       db     ; EQU $C0D6
 ENDU
 
 wHeartBonusRoundNum:                        db     ; EQU $C0D7 ; Round number
-wHeartBonusTextLstId:                       db     ; EQU $C0D8 ; Text type
-wHeartBonusBombLightLstId:                  db     ; EQU $C0D9 ; for the fire on the bomb fuse, aligned so it reaches the bomb when the timer ticks 0
+wHeartBonusTextSprId:                       db     ; EQU $C0D8 ; Text type
+wHeartBonusBombLightSprId:                  db     ; EQU $C0D9 ; for the fire on the bomb fuse, aligned so it reaches the bomb when the timer ticks 0
 wHeartBonusBombLightX:                      db     ; EQU $C0DA ;
 wHeartBonusBombLightY:                      db     ; EQU $C0DB ;
 wHeartBonusBombLightTimer:                  db     ; EQU $C0DC ; Anim timer
 wHeartBonusShowTime:                        db     ; EQU $C0DD ; Shows the time limit in the hud
 wHeartBonusTimeDecTimer:                    db     ; EQU $C0DE ; Time limit -- "subseconds". Once it reaches $46, wHeartBonusTime decreases by 1.
 UNION
-wHeartBonusTime:                            db     ; EQU $C0DF ; Time limit -- doubles as OBJLst id of digit
+wHeartBonusTime:                            db     ; EQU $C0DF ; Time limit -- doubles as sprite mapping id of digit
 NEXTU
-wHeartBonusDigitLstId:                      db     ; EQU $C0DF ; ...and it's used for other types of digits as well (just not during main game)
+wHeartBonusDigitSprId:                      db     ; EQU $C0DF ; ...and it's used for other types of digits as well (just not during main game)
 ENDU
 
-wHeartBonusEnemyLstId:                      db     ; EQU $C0E0 ; Enemy to hit with the bomb
+wHeartBonusEnemySprId:                      db     ; EQU $C0E0 ; Enemy to hit with the bomb
 wHeartBonusEnemyX:                          db     ; EQU $C0E1
 wHeartBonusEnemyY:                          db     ; EQU $C0E2
 wHeartBonusEnemyFlags:                      db     ; EQU $C0E3 ; Determines X flip
@@ -1734,7 +1734,7 @@ NEXTU
 ds $01
 wCoinBonusPlayerPos:                        db     ; EQU $C0C9 ; Player position in coin bonus game
 ds $09
-wCoinBonusItemLstId:                        db     ; EQU $C0D3 ; OBJLst frame id
+wCoinBonusItemSprId:                        db     ; EQU $C0D3 ; Sprite mapping frame id
 wCoinBonusItemX:                            db     ; EQU $C0D4 ; X pos of spawned item
 wCoinBonusItemY:                            db     ; EQU $C0D5 ; Y pos of spawned item
 

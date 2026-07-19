@@ -2,13 +2,13 @@
 ; BANK $09 - Map Graphics & Tilemaps
 ;
 
-; =============== LoadGFX_SubmapOBJ ===============
+; =============== LoadGFX_SubmapObj ===============
 ; Copies the shared submap OBJ graphics to VRAM.
 ; The upper portion of the compressed submap GFX is left empty to make space for these tiles.
-LoadGFX_SubmapOBJ:
-	ld   hl, GFX_SubmapOBJ	; HL = Ptr to uncompressed GFX
+LoadGFX_SubmapObj:
+	ld   hl, GFX_SubmapObj	; HL = Ptr to uncompressed GFX
 	ld   de, Tiles_Begin	; DE = Destination (start of tile data in VRAM)
-	ld   bc, (GFX_SubmapOBJ_End - GFX_SubmapOBJ) ; BC = Bytes to copy
+	ld   bc, (GFX_SubmapObj.end - GFX_SubmapObj) ; BC = Bytes to copy
 .loop:
 	ldi  a, [hl]			; Perform the copy
 	ld   [de], a
@@ -21,15 +21,15 @@ LoadGFX_SubmapOBJ:
 LoadGFX_SyrupCastle:
 	ld   hl, GFXRLE_SyrupCastle
 	call DecompressGFX
-	jr   LoadGFX_SubmapOBJ
+	jr   LoadGFX_SubmapObj
 LoadGFX_MtTeapot_RiceBeach:
 	ld   hl, GFXRLE_MtTeapot_RiceBeach
 	call DecompressGFX
-	jr   LoadGFX_SubmapOBJ
+	jr   LoadGFX_SubmapObj
 LoadGFX_StoveCanyon_SSTeacup:
 	ld   hl, GFXRLE_StoveCanyon_SSTeacup
 	call DecompressGFX
-	jr   LoadGFX_SubmapOBJ
+	jr   LoadGFX_SubmapObj
 LoadBG_RiceBeach:
 	ld   hl, BGRLE_RiceBeach
 	ld   bc, BGMap_Begin
@@ -82,8 +82,8 @@ BGRLE_SSTeacup: INCBIN "data/bg/maps/ssteacup.rls"
 BGRLE_SyrupCastle: INCBIN "data/bg/maps/syrupcastle.rls"
 BGRLE_RiceBeachFlooded: INCBIN "data/bg/maps/ricebeach_flood.rls"
 BGRLE_SyrupCastleEnding: INCBIN "data/bg/maps/syrupcastle_ending.rls"
-GFX_SubmapOBJ: INCBIN "data/gfx/maps/submap_obj.bin"
-GFX_SubmapOBJ_End:
+GFX_SubmapObj: INCBIN "data/gfx/maps/submap_obj.bin"
+.end:
 
 ; =============== END OF BANK ===============
 	mIncJunk "L097F32"

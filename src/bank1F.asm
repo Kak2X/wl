@@ -1,41 +1,41 @@
 ;
 ; BANK $1F - Ending and Credits Cutscenes
 ;
-OBJLst_Ending_Lamp: INCBIN "data/objlst/ending/lamp.bin"
-OBJLst_Ending_LampInv: INCBIN "data/objlst/ending/lampinv.bin"
-OBJLst_Ending_CloudA0: INCBIN "data/objlst/ending/clouda0.bin"
-OBJLst_Ending_CloudA1: INCBIN "data/objlst/ending/clouda1.bin"
-OBJLst_Ending_CloudB0: INCBIN "data/objlst/ending/cloudb0.bin"
-OBJLst_Ending_CloudB1: INCBIN "data/objlst/ending/cloudb1.bin"
-OBJLst_Ending_CloudC0: INCBIN "data/objlst/ending/cloudc0.bin"
-OBJLst_Ending_CloudC1: INCBIN "data/objlst/ending/cloudc1.bin"
-OBJLst_Ending_MoneyBag1_Top: INCBIN "data/objlst/ending/moneybag1_top.bin"
-OBJLst_Ending_MoneyBag2_Top: INCBIN "data/objlst/ending/moneybag2_top.bin"
-OBJLst_Ending_MoneyBag3_Top: INCBIN "data/objlst/ending/moneybag3_top.bin"
-OBJLst_Ending_MoneyBag4_Top: INCBIN "data/objlst/ending/moneybag4_top.bin"
-OBJLst_Ending_MoneyBag5_Top: INCBIN "data/objlst/ending/moneybag5_top.bin"
-OBJLst_Ending_MoneyBag6: INCBIN "data/objlst/ending/moneybag6.bin"
-OBJLst_Ending_MoneyBag5_Body: INCBIN "data/objlst/ending/moneybag5_body.bin"
-OBJLst_Ending_MoneyBag4_Body: INCBIN "data/objlst/ending/moneybag4_body.bin"
-OBJLst_Ending_MoneyBag3_Body: INCBIN "data/objlst/ending/moneybag3_body.bin"
-OBJLst_Ending_MoneyBag2_Body: INCBIN "data/objlst/ending/moneybag2_body.bin"
-OBJLst_Ending_MoneyBag1_Body: INCBIN "data/objlst/ending/moneybag1_body.bin"
-OBJLst_Ending_WLogo: INCBIN "data/objlst/ending/wlogo.bin"
-OBJLst_Ending_WLogoInv: INCBIN "data/objlst/ending/wlogoinv.bin"
-OBJLst_Ending_GenieFace_Look: INCBIN "data/objlst/ending/genieface_look.bin"
-OBJLst_Ending_GenieFace_LookMouth: INCBIN "data/objlst/ending/genieface_lookmouth.bin"
-OBJLst_Ending_GenieFace_Blink: INCBIN "data/objlst/ending/genieface_blink.bin"
-OBJLst_Ending_GenieFace_Unused_BlinkMouth: INCBIN "data/objlst/ending/genieface_unused_blinkmouth.bin"
-OBJLst_Ending_Balloon_PlThink: INCBIN "data/objlst/ending/balloon_plthink.bin"
-OBJLst_Ending_Balloon_PlSpeak: INCBIN "data/objlst/ending/balloon_plspeak.bin"
-OBJLst_Ending_Balloon_GenieSpeak: INCBIN "data/objlst/ending/balloon_geniespeak.bin"
+SprMap_Ending_Lamp: INCBIN "data/sprmap/ending/lamp.bin"
+SprMap_Ending_LampInv: INCBIN "data/sprmap/ending/lampinv.bin"
+SprMap_Ending_CloudA0: INCBIN "data/sprmap/ending/clouda0.bin"
+SprMap_Ending_CloudA1: INCBIN "data/sprmap/ending/clouda1.bin"
+SprMap_Ending_CloudB0: INCBIN "data/sprmap/ending/cloudb0.bin"
+SprMap_Ending_CloudB1: INCBIN "data/sprmap/ending/cloudb1.bin"
+SprMap_Ending_CloudC0: INCBIN "data/sprmap/ending/cloudc0.bin"
+SprMap_Ending_CloudC1: INCBIN "data/sprmap/ending/cloudc1.bin"
+SprMap_Ending_MoneyBag1_Top: INCBIN "data/sprmap/ending/moneybag1_top.bin"
+SprMap_Ending_MoneyBag2_Top: INCBIN "data/sprmap/ending/moneybag2_top.bin"
+SprMap_Ending_MoneyBag3_Top: INCBIN "data/sprmap/ending/moneybag3_top.bin"
+SprMap_Ending_MoneyBag4_Top: INCBIN "data/sprmap/ending/moneybag4_top.bin"
+SprMap_Ending_MoneyBag5_Top: INCBIN "data/sprmap/ending/moneybag5_top.bin"
+SprMap_Ending_MoneyBag6: INCBIN "data/sprmap/ending/moneybag6.bin"
+SprMap_Ending_MoneyBag5_Body: INCBIN "data/sprmap/ending/moneybag5_body.bin"
+SprMap_Ending_MoneyBag4_Body: INCBIN "data/sprmap/ending/moneybag4_body.bin"
+SprMap_Ending_MoneyBag3_Body: INCBIN "data/sprmap/ending/moneybag3_body.bin"
+SprMap_Ending_MoneyBag2_Body: INCBIN "data/sprmap/ending/moneybag2_body.bin"
+SprMap_Ending_MoneyBag1_Body: INCBIN "data/sprmap/ending/moneybag1_body.bin"
+SprMap_Ending_WLogo: INCBIN "data/sprmap/ending/wlogo.bin"
+SprMap_Ending_WLogoInv: INCBIN "data/sprmap/ending/wlogoinv.bin"
+SprMap_Ending_GenieFace_Look: INCBIN "data/sprmap/ending/genieface_look.bin"
+SprMap_Ending_GenieFace_LookMouth: INCBIN "data/sprmap/ending/genieface_lookmouth.bin"
+SprMap_Ending_GenieFace_Blink: INCBIN "data/sprmap/ending/genieface_blink.bin"
+SprMap_Ending_GenieFace_Unused_BlinkMouth: INCBIN "data/sprmap/ending/genieface_unused_blinkmouth.bin"
+SprMap_Ending_Balloon_PlThink: INCBIN "data/sprmap/ending/balloon_plthink.bin"
+SprMap_Ending_Balloon_PlSpeak: INCBIN "data/sprmap/ending/balloon_plspeak.bin"
+SprMap_Ending_Balloon_GenieSpeak: INCBIN "data/sprmap/ending/balloon_geniespeak.bin"
 
 ; =============== Ending_WriteOBJ ===============
 Ending_WriteOBJ:
 	xor  a						; Reset written OBJ count (4 bytes)
 	ld   [wStaticOBJCount], a
 	ld   b, a
-	call HomeCall_Static_WriteWarioOBJLst
+	call HomeCall_Static_WriteWarioSprMap
 	call Ending_WriteHeldOBJ
 	call Ending_WriteCloud0OBJ
 	call Ending_WriteCloud1OBJ
@@ -50,7 +50,7 @@ Ending_WriteHeldOBJ:
 	ld   [sOAMWriteX], a
 	ld   a, [wEndHeldY]
 	ld   [sOAMWriteY], a
-	ld   a, [wEndHeldLstId]
+	ld   a, [wEndHeldSprId]
 	rst  $28
 	dw End_NoFrame
 	dw .lamp
@@ -62,40 +62,40 @@ Ending_WriteHeldOBJ:
 	dw .moneybag5
 	dw .moneybag6
 .lamp:
-	ld   de, OBJLst_Ending_Lamp
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_Lamp
+	jp   Static_WriteSprMap
 .lampInv:
-	ld   de, OBJLst_Ending_LampInv
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_LampInv
+	jp   Static_WriteSprMap
 .moneybag1:
-	; Sprite mappings split in two to reuse data from OBJLst_Ending_MoneyBag6
-	ld   de, OBJLst_Ending_MoneyBag1_Top
-	call Static_WriteOBJLst
-	ld   de, OBJLst_Ending_MoneyBag1_Body
-	jp   Static_WriteOBJLst
+	; Sprite mappings split in two to reuse data from SprMap_Ending_MoneyBag6
+	ld   de, SprMap_Ending_MoneyBag1_Top
+	call Static_WriteSprMap
+	ld   de, SprMap_Ending_MoneyBag1_Body
+	jp   Static_WriteSprMap
 .moneybag2:
-	ld   de, OBJLst_Ending_MoneyBag2_Top
-	call Static_WriteOBJLst
-	ld   de, OBJLst_Ending_MoneyBag2_Body
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_MoneyBag2_Top
+	call Static_WriteSprMap
+	ld   de, SprMap_Ending_MoneyBag2_Body
+	jp   Static_WriteSprMap
 .moneybag3:
-	ld   de, OBJLst_Ending_MoneyBag3_Top
-	call Static_WriteOBJLst
-	ld   de, OBJLst_Ending_MoneyBag3_Body
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_MoneyBag3_Top
+	call Static_WriteSprMap
+	ld   de, SprMap_Ending_MoneyBag3_Body
+	jp   Static_WriteSprMap
 .moneybag4:
-	ld   de, OBJLst_Ending_MoneyBag4_Top
-	call Static_WriteOBJLst
-	ld   de, OBJLst_Ending_MoneyBag4_Body
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_MoneyBag4_Top
+	call Static_WriteSprMap
+	ld   de, SprMap_Ending_MoneyBag4_Body
+	jp   Static_WriteSprMap
 .moneybag5:
-	ld   de, OBJLst_Ending_MoneyBag5_Top
-	call Static_WriteOBJLst
-	ld   de, OBJLst_Ending_MoneyBag5_Body
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_MoneyBag5_Top
+	call Static_WriteSprMap
+	ld   de, SprMap_Ending_MoneyBag5_Body
+	jp   Static_WriteSprMap
 .moneybag6:
-	ld   de, OBJLst_Ending_MoneyBag6
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_MoneyBag6
+	jp   Static_WriteSprMap
 	
 ; =============== Ending_WriteCloud0OBJ ===============
 ; Writes the sprite mappings for the first cloud coming out of the lamp.
@@ -120,7 +120,7 @@ Ending_WriteCloud1OBJ:
 	
 ; =============== Ending_WriteCloudOBJ ===============
 Ending_WriteCloudOBJ:
-	ld   a, [wEndCloudLstId]
+	ld   a, [wEndCloudSprId]
 	rst  $28
 	dw End_NoFrame
 	dw .cloudA0
@@ -132,29 +132,29 @@ Ending_WriteCloudOBJ:
 	dw .wLogo
 	dw .wLogoInv
 .cloudA0:
-	ld   de, OBJLst_Ending_CloudA0
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_CloudA0
+	jp   Static_WriteSprMap
 .cloudA1:
-	ld   de, OBJLst_Ending_CloudA1
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_CloudA1
+	jp   Static_WriteSprMap
 .cloudB0:
-	ld   de, OBJLst_Ending_CloudB0
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_CloudB0
+	jp   Static_WriteSprMap
 .cloudB1:
-	ld   de, OBJLst_Ending_CloudB1
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_CloudB1
+	jp   Static_WriteSprMap
 .cloudC0:
-	ld   de, OBJLst_Ending_CloudC0
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_CloudC0
+	jp   Static_WriteSprMap
 .cloudC1:
-	ld   de, OBJLst_Ending_CloudC1
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_CloudC1
+	jp   Static_WriteSprMap
 .wLogo:
-	ld   de, OBJLst_Ending_WLogo
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_WLogo
+	jp   Static_WriteSprMap
 .wLogoInv:
-	ld   de, OBJLst_Ending_WLogoInv
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_WLogoInv
+	jp   Static_WriteSprMap
 	
 ; =============== Ending_WriteGenieFaceOBJ ===============
 ; Writes the sprite mappings for the Genie's face.
@@ -164,7 +164,7 @@ Ending_WriteGenieFaceOBJ:
 	ld   [sOAMWriteX], a
 	ld   a, $1C
 	ld   [sOAMWriteY], a
-	ld   a, [wEndGenieFaceLstId]
+	ld   a, [wEndGenieFaceSprId]
 	rst  $28
 	dw End_NoFrame
 	dw .look				; Eyes open, mouth closed
@@ -172,25 +172,25 @@ Ending_WriteGenieFaceOBJ:
 	dw .blink				; Eyes closed, mouth closed
 	dw .unused_blinkMouth	; Eyes closed, mouth open
 .look:
-	ld   de, OBJLst_Ending_GenieFace_Look
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_GenieFace_Look
+	jp   Static_WriteSprMap
 .lookMouth:
-	ld   de, OBJLst_Ending_GenieFace_LookMouth
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_GenieFace_LookMouth
+	jp   Static_WriteSprMap
 .blink:
-	ld   de, OBJLst_Ending_GenieFace_Blink
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_GenieFace_Blink
+	jp   Static_WriteSprMap
 ; [TCRF] This combination isn't used.
 .unused_blinkMouth: 
-	ld   de, OBJLst_Ending_GenieFace_Unused_BlinkMouth
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_GenieFace_Unused_BlinkMouth
+	jp   Static_WriteSprMap
 	
 ; =============== Ending_WriteBalloonOBJ ===============
 ; Writes the sprite mappings for the arrow of the think / speak baloon.
 ; Used to mark who is thinking or speaking.
 Ending_WriteBalloonOBJ:
 	; Different sets of coordinates for each
-	ld   a, [wEndBalloonLstId]
+	ld   a, [wEndBalloonSprId]
 	rst  $28
 	dw End_NoFrame
 	dw .plThink
@@ -201,22 +201,22 @@ Ending_WriteBalloonOBJ:
 	ld   [sOAMWriteX], a
 	ld   a, $4B
 	ld   [sOAMWriteY], a
-	ld   de, OBJLst_Ending_Balloon_PlThink
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_Balloon_PlThink
+	jp   Static_WriteSprMap
 .plSpeak:
 	ld   a, $24				; Arrow pointing to player
 	ld   [sOAMWriteX], a
 	ld   a, $4B
 	ld   [sOAMWriteY], a
-	ld   de, OBJLst_Ending_Balloon_PlSpeak
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_Balloon_PlSpeak
+	jp   Static_WriteSprMap
 .genieSpeak:
 	ld   a, $34				; Arrow pointing to genie
 	ld   [sOAMWriteX], a
 	ld   a, $3B
 	ld   [sOAMWriteY], a
-	ld   de, OBJLst_Ending_Balloon_GenieSpeak
-	jp   Static_WriteOBJLst
+	ld   de, SprMap_Ending_Balloon_GenieSpeak
+	jp   Static_WriteSprMap
 	
 ; =============== End_ScreenEvent_Do ===============
 ; Handles tile animation for the ending and credits sequence.
@@ -442,7 +442,7 @@ Credits_AnimCastleFlags:
 ; =============== Ending_Do ===============
 ; See also: CoinBonus_Do
 Ending_Do:
-	ld   a, $A0						; Static_WriteOBJLst uses another variable for this purpose
+	ld   a, $A0						; Static_WriteSprMap uses another variable for this purpose
 	ld   [sWorkOAMPos], a
 	xor  a							; Reset anim requests at the start
 	ld   [wEndGenieHandLFrameSet], a
@@ -485,8 +485,8 @@ Ending_InitPreTr:
 	ld   [wEndHeldX], a
 	ld   a, $54
 	ld   [wEndHeldY], a
-	ld   a, END_OBJ_HELD_LAMP
-	ld   [wEndHeldLstId], a
+	ld   a, END_SPR_HELD_LAMP
+	ld   [wEndHeldSprId], a
 	ld   [wEndingMode], a		; END_RTN_PRETR -- next mode
 	ret
 ; =============== Ending_InitVars ===============
@@ -499,12 +499,12 @@ Ending_InitVars:
 	ld   [wEndGenieTimer], a
 	ld   [wEndCloudAnimTimer], a
 	ld   [wEndLampThrowTimer], a
-	ld   [wStaticPlLstId], a
-	ld   [wEndGenieFaceLstId], a
-	ld   [wEndHeldLstId], a
-	ld   [wEndCloudLstId], a
+	ld   [wStaticPlSprId], a
+	ld   [wEndGenieFaceSprId], a
+	ld   [wEndHeldSprId], a
+	ld   [wEndCloudSprId], a
 	ld   [wEndCloud1Show], a
-	ld   [wEndBalloonLstId], a
+	ld   [wEndBalloonSprId], a
 	ld   [wEndFlagAnimType], a
 	ld   [wStaticPlFlags], a
 	; Reset vert and horz scroll
@@ -569,8 +569,8 @@ Ending_PreTr_WalkRight:
 	; Otherwise, stop walking and reach to the next mode.
 	xor  a
 	ld   [wStaticPlAnimTimer], a
-	ld   a, OBJ_ENDING_WARIO_IDLEHOLD	; Set idle frame
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_ENDING_WARIO_IDLEHOLD	; Set idle frame
+	ld   [wStaticPlSprId], a
 	ld   a, END1_RTN_THROWLAMP			; Next mode
 	ld   [wEndAct], a
 	ret
@@ -586,7 +586,7 @@ Ending_Pl_WalkHoldAnim:
 	inc  a
 	ld   [wStaticPlAnimTimer], a
 	; Only move the the held object 1px below the usual position
-	; when setting frame OBJ_ENDING_WARIO_WALKHOLD0.
+	; when setting frame SPR_ENDING_WARIO_WALKHOLD0.
 	; Everything else forces the standard position.
 	cp   a, $01
 	jr   z, .setFrame0_heldMoveDown
@@ -608,22 +608,22 @@ Ending_Pl_WalkHoldAnim:
 	ld   a, SFX4_08
 	ld   [sSFX4Set], a
 .setFrame0_heldMoveDown:
-	ld   a, OBJ_ENDING_WARIO_WALKHOLD0
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_ENDING_WARIO_WALKHOLD0
+	ld   [wStaticPlSprId], a
 	ld   a, $53+$01
 	ld   [wEndHeldY], a
 	ret
 .setFrame1:
-	ld   a, OBJ_ENDING_WARIO_WALKHOLD1
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_ENDING_WARIO_WALKHOLD1
+	ld   [wStaticPlSprId], a
 	jr   .heldMoveDown
 .setFrame3:
-	ld   a, OBJ_ENDING_WARIO_WALKHOLD3
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_ENDING_WARIO_WALKHOLD3
+	ld   [wStaticPlSprId], a
 	jr   .heldMoveDown
 .setFrame2:
-	ld   a, OBJ_ENDING_WARIO_WALKHOLD2
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_ENDING_WARIO_WALKHOLD2
+	ld   [wStaticPlSprId], a
 .heldMoveDown:
 	ld   a, $53
 	ld   [wEndHeldY], a
@@ -649,8 +649,8 @@ Ending_PreTr_ThrowLamp:
 	; This value of $0D is picked to stop moving when reaching the ground
 	; in the ending cutscene.
 	;
-	ld   a, OBJ_ENDING_WARIO_IDLETHROW	; Set throw frame while this happens
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_ENDING_WARIO_IDLETHROW	; Set throw frame while this happens
+	ld   [wStaticPlSprId], a
 	ld   a, [wEndLampThrowTimer]
 	cp   a, $0D							; Thrown for $0D frames?
 	jr   z, .nextMode					; If so, jump
@@ -686,12 +686,12 @@ Ending_PreTr_RubLamp:
 	inc  a
 	ld   [wStaticPlAnimTimer], a
 	
-	; Alternate between OBJ_ENDING_WARIO_DUCKRUB0 and OBJ_ENDING_WARIO_DUCKRUB1 up to 4 times,
+	; Alternate between SPR_ENDING_WARIO_DUCKRUB0 and SPR_ENDING_WARIO_DUCKRUB1 up to 4 times,
 	; until wEndLoopsLeft elapses.
 	;
 	; In this animation, both frames will alternate every 8 frames, since:
-	;  -> $2E-$26 = $08 (OBJ_ENDING_WARIO_DUCKRUB0)
-	;  -> $26-$1E = $08 (OBJ_ENDING_WARIO_DUCKRUB1)
+	;  -> $2E-$26 = $08 (SPR_ENDING_WARIO_DUCKRUB0)
+	;  -> $26-$1E = $08 (SPR_ENDING_WARIO_DUCKRUB1)
 	;
 	; As a result of this, we also wait $26 frames before switching from the "throw" animation set previously.
 	cp   a, $26
@@ -700,18 +700,18 @@ Ending_PreTr_RubLamp:
 	jr   z, .setFrame1
 	ret
 .setFrame0:
-	ld   a, OBJ_ENDING_WARIO_DUCKRUB0
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_ENDING_WARIO_DUCKRUB0
+	ld   [wStaticPlSprId], a
 	ret
 .setFrame1:
 	ld   a, SFX1_11					; Play initial lamp rub SFX
 	ld   [sSFX1Set], a
 	
-	; Switch to OBJ_ENDING_WARIO_DUCKRUB1 for 8 frames
+	; Switch to SPR_ENDING_WARIO_DUCKRUB1 for 8 frames
 	ld   a, $26-$08					
 	ld   [wStaticPlAnimTimer], a
-	ld   a, OBJ_ENDING_WARIO_DUCKRUB1
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_ENDING_WARIO_DUCKRUB1
+	ld   [wStaticPlSprId], a
 	
 	; If the loop counter elapsed, switch to the next mode
 	ld   a, [wEndLoopsLeft]
@@ -721,8 +721,8 @@ Ending_PreTr_RubLamp:
 .nextMode:
 	xor  a
 	ld   [wStaticPlAnimTimer], a
-	ld   a, OBJ_ENDING_WARIO_DUCKRUB2	; Set third frame while it flashes
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_ENDING_WARIO_DUCKRUB2	; Set third frame while it flashes
+	ld   [wStaticPlSprId], a
 	ld   a, $04						; Same loop counter
 	ld   [wEndLoopsLeft], a
 	ld   a, END1_RTN_LAMPFLASH		; Next mode
@@ -744,14 +744,14 @@ Ending_PreTr_LampFlash:
 .setFlash:
 	ld   a, SFX1_05					; Play flash SFX
 	ld   [sSFX1Set], a
-	ld   a, END_OBJ_HELD_LAMPINV	; Black lamp
-	ld   [wEndHeldLstId], a
+	ld   a, END_SPR_HELD_LAMPINV	; Black lamp
+	ld   [wEndHeldSprId], a
 	ret
 .setNorm_chkEnd:
 	xor  a							; Reset anim timer
 	ld   [wStaticPlAnimTimer], a
-	ld   a, END_OBJ_HELD_LAMP		; Normal lamp
-	ld   [wEndHeldLstId], a
+	ld   a, END_SPR_HELD_LAMP		; Normal lamp
+	ld   [wEndHeldSprId], a
 	
 	; If the anim loop counter elapsed, switch to the next mode
 	ld   a, [wEndLoopsLeft]
@@ -760,7 +760,7 @@ Ending_PreTr_LampFlash:
 	ret  nz
 	
 	; Loop initial cloud anim 6 times, enough to for the other cloud
-	; to show up in the first anim loop (END_OBJ_CLOUDA0 / END_OBJ_CLOUDA1).
+	; to show up in the first anim loop (END_SPR_CLOUDA0 / END_SPR_CLOUDA1).
 	ld   a, $06						
 	ld   [wEndLoopsLeft], a
 	ld   a, END1_RTN_CLOUDS
@@ -795,7 +795,7 @@ Ending_PreTr_DoClouds:
 	
 	ld   a, SFX1_01					
 	ld   [sSFX1Set], a				; Play cloud "spawn" anim
-	ld   [wEndCloudLstId], a		; END_OBJ_CLOUD0
+	ld   [wEndCloudSprId], a		; END_SPR_CLOUD0
 	ld   a, $60						; Initial X pos
 	ld   [wEndCloud0X], a
 	ld   [wEndCloud1X], a
@@ -869,21 +869,21 @@ Ending_PreTr_DoClouds:
 	inc  a
 	ld   [wEndCloudAnimTimer], a
 	
-	; Set 1: END_OBJ_CLOUDA0 / END_OBJ_CLOUDA1
+	; Set 1: END_SPR_CLOUDA0 / END_SPR_CLOUDA1
 	;        Looped 6 times, alternate every 10 frames.
 	cp   a, $0A
 	jr   z, .frameA1
 	cp   a, $0A+$0A
 	jr   z, .frameA0
 		
-	; Set 2: END_OBJ_CLOUDB0 / END_OBJ_CLOUDB1
+	; Set 2: END_SPR_CLOUDB0 / END_SPR_CLOUDB1
 	;        Looped 4 times, alternate every 10 frames.
 	cp   a, $28
 	jr   z, .frameB1
 	cp   a, $28+$0A
 	jr   z, .frameB0
 	
-	; Set 2: END_OBJ_CLOUDC0 / END_OBJ_CLOUDC1
+	; Set 2: END_SPR_CLOUDC0 / END_SPR_CLOUDC1
 	;        Looped 6 times, alternate every 10 frames.
 	cp   a, $46
 	jr   z, .frameC1
@@ -893,16 +893,16 @@ Ending_PreTr_DoClouds:
 	
 ; =============== Set A ===============
 .frameA1:
-	ld   a, END_OBJ_CLOUDA1				; Set second frame
-	ld   [wEndCloudLstId], a
+	ld   a, END_SPR_CLOUDA1				; Set second frame
+	ld   [wEndCloudSprId], a
 	ret
 .frameA0:
 	xor  a
 	ld   [wEndCloudAnimTimer], a
-	ld   a, OBJ_ENDING_WARIO_DUCKDIAG	; Set duck look-up player frame too
-	ld   [wStaticPlLstId], a
-	ld   a, END_OBJ_CLOUDA0				; Set first frame
-	ld   [wEndCloudLstId], a
+	ld   a, SPR_ENDING_WARIO_DUCKDIAG	; Set duck look-up player frame too
+	ld   [wStaticPlSprId], a
+	ld   a, END_SPR_CLOUDA0				; Set first frame
+	ld   [wEndCloudSprId], a
 	
 	; Handle animation loops left
 	ld   a, [wEndLoopsLeft]
@@ -915,14 +915,14 @@ Ending_PreTr_DoClouds:
 	
 ; =============== Set B ===============
 .frameB1:
-	ld   a, END_OBJ_CLOUDB1
-	ld   [wEndCloudLstId], a
+	ld   a, END_SPR_CLOUDB1
+	ld   [wEndCloudSprId], a
 	ret
 .frameB0:
 	ld   a, $28-$0A						; Show for $0A frames
 	ld   [wEndCloudAnimTimer], a
-	ld   a, END_OBJ_CLOUDB0
-	ld   [wEndCloudLstId], a
+	ld   a, END_SPR_CLOUDB0
+	ld   [wEndCloudSprId], a
 	ld   a, [wEndLoopsLeft]
 	dec  a
 	ld   [wEndLoopsLeft], a
@@ -933,16 +933,16 @@ Ending_PreTr_DoClouds:
 	
 ; =============== Set C ===============
 .frameC1:
-	ld   a, OBJ_STATIC_WARIO_IDLEDIAG	; Loop up normally
-	ld   [wStaticPlLstId], a
-	ld   a, END_OBJ_CLOUDC1
-	ld   [wEndCloudLstId], a
+	ld   a, SPR_STATIC_WARIO_IDLEDIAG	; Loop up normally
+	ld   [wStaticPlSprId], a
+	ld   a, END_SPR_CLOUDC1
+	ld   [wEndCloudSprId], a
 	ret
 .frameC0:
 	ld   a, $46-$0A
 	ld   [wEndCloudAnimTimer], a
-	ld   a, END_OBJ_CLOUDC0
-	ld   [wEndCloudLstId], a
+	ld   a, END_SPR_CLOUDC0
+	ld   [wEndCloudSprId], a
 	ld   a, [wEndLoopsLeft]
 	dec  a
 	ld   [wEndLoopsLeft], a
@@ -953,7 +953,7 @@ Ending_PreTr_DoClouds:
 	xor  a
 	ld   [wStaticPlAnimTimer], a
 	ld   [wEndCloudAnimTimer], a
-	ld   [wEndCloudLstId], a		; Hide all clouds
+	ld   [wEndCloudSprId], a		; Hide all clouds
 	ld   [wEndCloud1Show], a		; ""
 	ld   a, $0A						; Flash $0A times 
 	ld   [wEndLoopsLeft], a
@@ -1000,8 +1000,8 @@ Ending_PreTr_FlashBG_UseNormPal:
 	
 .showGenie:
 	xor  a
-	ld   [wEndHeldLstId], a		; Hide lamp sprite since it's part of the BG tilemap
-	ld   [wEndCloudLstId], a	; Not necessary
+	ld   [wEndHeldSprId], a		; Hide lamp sprite since it's part of the BG tilemap
+	ld   [wEndCloudSprId], a	; Not necessary
 	ld   a, $1E					; Timer++
 	ld   [wEndBGFlashTimer], a
 	ld   a,  LCDC_PRIORITY|LCDC_OBJENABLE|LCDC_WTILEMAP|LCDC_ENABLE	; Hide WINDOW, which will make the BG (and the genie) visible
@@ -1188,19 +1188,19 @@ Ending_PreTr_PlBump:
 .useFrame0:
 	ld   a, SFX1_1A
 	ld   [sSFX1Set], a
-	ld   a, OBJ_ENDING_WARIO_BUMP0
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_ENDING_WARIO_BUMP0
+	ld   [wStaticPlSprId], a
 	ret
 .useFrame1:
-	ld   a, OBJ_ENDING_WARIO_BUMP1
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_ENDING_WARIO_BUMP1
+	ld   [wStaticPlSprId], a
 	ret
 .nextMode:
 	xor  a
 	ld   [wStaticPlAnimTimer], a
 	ld   a, $0A
 	ld   [wEndLoopsLeft], a			; Next OBJ anim sequence loops 10 times
-	ld   [wStaticPlLstId], a		; OBJ_STATIC_WARIO_IDLEDIAG
+	ld   [wStaticPlSprId], a		; SPR_STATIC_WARIO_IDLEDIAG
 	ld   a, END1_RTN_GENIETALK		; Next mode
 	ld   [wEndAct], a
 	ret
@@ -1273,18 +1273,18 @@ Ending_PreTr_GenieTalk:
 .openMouth:
 	ld   a, SFX1_32
 	ld   [sSFX1Set], a
-	ld   a, END_OBJ_GENIEFACE_LOOKMOUTH
-	ld   [wEndGenieFaceLstId], a
+	ld   a, END_SPR_GENIEFACE_LOOKMOUTH
+	ld   [wEndGenieFaceSprId], a
 	ret
 .closeMouth:
-	ld   a, END_OBJ_GENIEFACE_LOOK
-	ld   [wEndGenieFaceLstId], a
+	ld   a, END_SPR_GENIEFACE_LOOK
+	ld   [wEndGenieFaceSprId], a
 	ret
 .closeMouth_chkLoop:
 	ld   a, $3C							; Loop back to .openMouth
 	ld   [wEndGenieTimer], a
-	ld   a, END_OBJ_GENIEFACE_LOOKMOUTH
-	ld   [wEndGenieFaceLstId], a
+	ld   a, END_SPR_GENIEFACE_LOOKMOUTH
+	ld   [wEndGenieFaceSprId], a
 	
 	; Depending on how many loops are left, choose a different hand frame.
 	; This acts as a timing sequence.
@@ -1307,7 +1307,7 @@ Ending_PreTr_GenieTalk:
 	ld   a, $64
 	ld   [wEndGenieTimer], a
 	ld   a, $01
-	ld   [wEndGenieFaceLstId], a
+	ld   [wEndGenieFaceSprId], a
 	ld   [wEndGenieHandLFrameSet], a
 	ret
 .setHandPalmFrame:
@@ -1355,16 +1355,16 @@ Ending_PreTr_ThinkWish:
 	jr   z, .setJump_nextMode
 	ret
 .plWish:
-	ld   a, OBJ_ENDING_WARIO_WISHCLOSE
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_ENDING_WARIO_WISHCLOSE
+	ld   [wStaticPlSprId], a
 	ld   a, $01
-	ld   [wEndBalloonLstId], a		; Draw arrow for END_OBJ_BALLOONTHINK
+	ld   [wEndBalloonSprId], a		; Draw arrow for END_SPR_BALLOONTHINK
 	ld   [wEndBalloonFrameSet], a	; Request BG write for balloon border
 	ld   [sSFX1Set], a 				; Play think SFX1_01
 	ret
 .animThinkCloud0:
-	ld   a, END_OBJ_CLOUDC0
-	ld   [wEndCloudLstId], a
+	ld   a, END_SPR_CLOUDC0
+	ld   [wEndCloudSprId], a
 	; Position cloud inside the balloon
 	ld   a, $1C						
 	ld   [wEndCloud0X], a
@@ -1372,16 +1372,16 @@ Ending_PreTr_ThinkWish:
 	ld   [wEndCloud0Y], a
 	ret
 .animThinkCloud1:
-	ld   a, END_OBJ_CLOUDC1
-	ld   [wEndCloudLstId], a
+	ld   a, END_SPR_CLOUDC1
+	ld   [wEndCloudSprId], a
 	ret
 .animThinkCloud0_chkLoop:
 	ld   a, SFX1_19
 	ld   [sSFX1Set], a
 	ld   a, $50						; Loop back to .animThinkCloud0...
 	ld   [wStaticPlAnimTimer], a
-	ld   a, END_OBJ_CLOUDC0
-	ld   [wEndCloudLstId], a
+	ld   a, END_SPR_CLOUDC0
+	ld   [wEndCloudSprId], a
 	
 	; If we don't have any loops left though
 	ld   a, [wEndLoopsLeft]
@@ -1393,9 +1393,9 @@ Ending_PreTr_ThinkWish:
 	ld   a, $78
 	ld   [wStaticPlAnimTimer], a
 	xor  a								; Hide cloud
-	ld   [wEndCloudLstId], a
-	ld   a, OBJ_ENDING_WARIO_WISHOPEN	; Open player eyes
-	ld   [wStaticPlLstId], a
+	ld   [wEndCloudSprId], a
+	ld   a, SPR_ENDING_WARIO_WISHOPEN	; Open player eyes
+	ld   [wStaticPlSprId], a
 	ret
 .thinkCastle:;R
 	ld   a, SFX1_08
@@ -1410,12 +1410,12 @@ Ending_PreTr_ThinkWish:
 	xor  a
 	ld   [wStaticPlAnimTimer], a		; Reset
 	ld   [wEndGenieTimer], a		; ""
-	ld   a, OBJ_ENDING_WARIO_JUMPDIAG	; Jump frame
-	ld   [wStaticPlLstId], a
-	ld   a, END_OBJ_GENIEFACE_LOOK		; Reset genie face
-	ld   [wEndGenieFaceLstId], a
-	ld   a, END_OBJ_BALLOONSPEAK		; Change think balloon to speak balloon
-	ld   [wEndBalloonLstId], a
+	ld   a, SPR_ENDING_WARIO_JUMPDIAG	; Jump frame
+	ld   [wStaticPlSprId], a
+	ld   a, END_SPR_GENIEFACE_LOOK		; Reset genie face
+	ld   [wEndGenieFaceSprId], a
+	ld   a, END_SPR_BALLOONSPEAK		; Change think balloon to speak balloon
+	ld   [wEndBalloonSprId], a
 	ld   [wEndLoopsLeft], a				; Make player jump twice
 	ld   a, END1_RTN_PLJUMP				; Next mode
 	ld   [wEndAct], a
@@ -1433,14 +1433,14 @@ Ending_DoGenieBlinkAnim:
 	jr   z, .openEyes_reset
 	ret
 .closeEyes:
-	ld   a, END_OBJ_GENIEFACE_BLINK
-	ld   [wEndGenieFaceLstId], a
+	ld   a, END_SPR_GENIEFACE_BLINK
+	ld   [wEndGenieFaceSprId], a
 	ret
 .openEyes_reset:
 	xor  a							; Reset AnimTimer to $00
 	ld   [wEndGenieTimer], a
-	ld   a, END_OBJ_GENIEFACE_LOOK
-	ld   [wEndGenieFaceLstId], a
+	ld   a, END_SPR_GENIEFACE_LOOK
+	ld   [wEndGenieFaceSprId], a
 	ret
 	
 ; =============== Ending_DoPlJump ===============
@@ -1480,8 +1480,8 @@ Ending_DoPlJump:
 	jr   z, .newJump
 	;--
 	
-	ld   a, OBJ_STATIC_WARIO_IDLEDIAG	; Set idle anim in case we're done jumping
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_IDLEDIAG	; Set idle anim in case we're done jumping
+	ld   [wStaticPlSprId], a
 	
 	; If there are no more jumps left, switch to the next mode
 	ld   a, [wEndLoopsLeft]				; JumpsLeft--
@@ -1495,8 +1495,8 @@ Ending_DoPlJump:
 	ld   [sSFX4Set], a
 	xor  a								; Reset path table index
 	ld   [wStaticPlAnimTimer], a
-	ld   a, OBJ_ENDING_WARIO_JUMPDIAG	; Set back jump frame
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_ENDING_WARIO_JUMPDIAG	; Set back jump frame
+	ld   [wStaticPlSprId], a
 	ret
 	
 .nextMode:
@@ -1538,15 +1538,15 @@ Ending_PreTr_GenieMoney:
 	ret
 .init:
 	xor  a							; Hide balloon pointer
-	ld   [wEndBalloonLstId], a
+	ld   [wEndBalloonSprId], a
 	ld   a, $03						; Req. delete word balloon from tilemap
 	ld   [wEndBalloonFrameSet], a
 	ld   a, $09						; Initialize loop count
 	ld   [wEndLoopsLeft], a
 	ret
 .openMouth:
-	ld   a, END_OBJ_GENIEFACE_LOOKMOUTH
-	ld   [wEndGenieFaceLstId], a
+	ld   a, END_SPR_GENIEFACE_LOOKMOUTH
+	ld   [wEndGenieFaceSprId], a
 	
 	;--
 	; If this is the last loop, play a SFX
@@ -1562,8 +1562,8 @@ Ending_PreTr_GenieMoney:
 	ld   a, $32						
 	ld   [wEndGenieTimer], a
 	
-	ld   a, END_OBJ_GENIEFACE_LOOK	; Set mouth closed
-	ld   [wEndGenieFaceLstId], a
+	ld   a, END_SPR_GENIEFACE_LOOK	; Set mouth closed
+	ld   [wEndGenieFaceSprId], a
 	
 	; Handle the secondary timing sequence with the genie's hands/word balloon
 	ld   a, [wEndLoopsLeft]			; LoopsLeft--
@@ -1590,9 +1590,9 @@ Ending_PreTr_GenieMoney:
 	ld   [wEndGenieHandLFrameSet], a
 	ret
 .speakMoneybag:
-	ld   a, END_OBJ_HELD_MONEYBAG1
-	ld   [wEndHeldLstId], a				; Draw moneybag sprite
-	ld   [wEndBalloonLstId], a			; END_OBJ_BALLOONGENIE
+	ld   a, END_SPR_HELD_MONEYBAG1
+	ld   [wEndHeldSprId], a				; Draw moneybag sprite
+	ld   [wEndBalloonSprId], a			; END_SPR_BALLOONGENIE
 	ld   a, $01							; Request tilemap update
 	ld   [wEndBalloonFrameSet], a
 	; Place moneybag inside word balloon
@@ -1624,14 +1624,14 @@ Ending_AnimPlNod:
 .setIdleFrame:
 	ld   a, SFX1_19
 	ld   [sSFX1Set], a
-	ld   a, OBJ_STATIC_WARIO_IDLE
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_IDLE
+	ld   [wStaticPlSprId], a
 	ret
 .setDiagFrame_chkLoop:
 	xor  a								; Reset timer for loop initially
 	ld   [wStaticPlAnimTimer], a
-	ld   a, OBJ_STATIC_WARIO_IDLEDIAG
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_IDLEDIAG
+	ld   [wStaticPlSprId], a
 	
 	; If there are no loops left, restore the timer value
 	ld   a, [wEndLoopsLeft]				; LoopCount--
@@ -1673,8 +1673,8 @@ Ending_PreTr_WalkLeft:
 	ret  nz							; If not, return
 .clrBalloon:
 	xor  a
-	ld   [wEndHeldLstId], a				; Remove speak balloon content
-	ld   [wEndBalloonLstId], a			; Remove speak balloon arrow
+	ld   [wEndHeldSprId], a				; Remove speak balloon content
+	ld   [wEndBalloonSprId], a			; Remove speak balloon arrow
 	ld   a, $01							; Close genie hand
 	ld   [wEndGenieHandLFrameSet], a
 	ld   a, $03							; Remove speak balloon BG tilemap
@@ -1683,7 +1683,7 @@ Ending_PreTr_WalkLeft:
 .initWalk:
 	ld   a, BGMACT_FADEOUT			; Fade out current song
 	ld   [sBGMActSet], a
-	ld   a, STATIC_OBJLST_XFLIP		; Face left
+	ld   a, STATIC_SPRMAP_XFLIP		; Face left
 	ld   [wStaticPlFlags], a
 	ret
 	
@@ -1728,15 +1728,15 @@ Ending_InitPostTr:
 	; which are already ordered, so...
 	ld   a, [sTrRoomMoneybagCount]		; SpriteId = MoneyBagCount + $02
 	add  $02
-	ld   [wEndHeldLstId], a
+	ld   [wEndHeldSprId], a
 	; Set initial position of the moneybags (off-screen left near player)
 	ld   a, $E5
 	ld   [wEndHeldX], a
 	ld   a, $54
 	ld   [wEndHeldY], a
 	
-	ld   a, END_OBJ_GENIEFACE_LOOK	; Look at player
-	ld   [wEndGenieFaceLstId], a
+	ld   a, END_SPR_GENIEFACE_LOOK	; Look at player
+	ld   [wEndGenieFaceSprId], a
 	ld   a, BGM_COURSE3				; Play C03 BGM
 	ld   [sBGMSet], a
 	ld   a, END_RTN_POSTTR			; Next mode
@@ -1775,8 +1775,8 @@ Ending_PostTr_WalkInR:
 .nextMode:
 	xor  a
 	ld   [wStaticPlAnimTimer], a
-	ld   a, OBJ_ENDING_WARIO_IDLEHOLD	; Stop moving
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_ENDING_WARIO_IDLEHOLD	; Stop moving
+	ld   [wStaticPlSprId], a
 	ld   a, $53					; Fix Y position of held moneybags
 	ld   [wEndHeldY], a
 	ld   a, $04					; Loop genie talk anim 5 times
@@ -1806,12 +1806,12 @@ Ending_PostTr_WantMoney:
 	;--
 	ret
 .closeMouth:
-	ld   a, END_OBJ_GENIEFACE_LOOK
-	ld   [wEndGenieFaceLstId], a
+	ld   a, END_SPR_GENIEFACE_LOOK
+	ld   [wEndGenieFaceSprId], a
 	ret
 .openMouth:
-	ld   a, END_OBJ_GENIEFACE_LOOKMOUTH
-	ld   [wEndGenieFaceLstId], a
+	ld   a, END_SPR_GENIEFACE_LOOKMOUTH
+	ld   [wEndGenieFaceSprId], a
 	; Play a SFX the first time we get here
 	ld   a, [wEndLoopsLeft]
 	cp   a, $04
@@ -1823,8 +1823,8 @@ Ending_PostTr_WantMoney:
 .closeMouth_checkEnd:
 	ld   a, $4B-$0F ;$3C			; Reset timer				
 	ld   [wEndGenieTimer], a
-	ld   a, END_OBJ_GENIEFACE_LOOK
-	ld   [wEndGenieFaceLstId], a
+	ld   a, END_SPR_GENIEFACE_LOOK
+	ld   [wEndGenieFaceSprId], a
 	
 	; If there are no loops left, switch to the next mode
 	ld   a, [wEndLoopsLeft]
@@ -1862,8 +1862,8 @@ Ending_PostTr_ThrowMoneybags:
 	ld   [sSFX1Set], a
 	ld   a, $29					; Skips ahead by one
 	ld   [wEndThrowDelay], a
-	ld   a, OBJ_ENDING_WARIO_IDLETHROW	; Set throw anim
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_ENDING_WARIO_IDLETHROW	; Set throw anim
+	ld   [wStaticPlSprId], a
 	ret
 .moveMoneybags:
 	
@@ -1902,8 +1902,8 @@ Ending_PostTr_ThrowMoneybags:
 	xor  a							; Reset vars
 	ld   [wStaticPlAnimTimer], a
 	ld   [wEndThrowDelay], a
-	ld   a, OBJ_STATIC_WARIO_IDLEDIAG	; Set normal idle look-up frame
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_IDLEDIAG	; Set normal idle look-up frame
+	ld   [wStaticPlSprId], a
 	ld   a, $03						; Loop genie hand anim 3 times next
 	ld   [wEndLoopsLeft], a
 	ld   [wEndAct], a				; Next mode -- END2_RTN_FLYMONEYBAGS
@@ -1944,7 +1944,7 @@ Ending_PostTr_FlyMoneybags:
 	ld   a, SFX1_18	
 	ld   [sSFX1Set], a
 	xor  a							; Look down (hide sprite, using what's baked in the tilemap)
-	ld   [wEndGenieFaceLstId], a
+	ld   [wEndGenieFaceSprId], a
 	ld   a, END_GENIE_PALM			; Set open both hands
 	jr   .setHands
 .closeHands:
@@ -2007,7 +2007,7 @@ Ending_MoveMoneybagsUp:
 	cp   a, $CF				; YPos != $CF?
 	ret  nz					; If so, return
 	xor  a					; Otherwise, blank their sprite
-	ld   [wEndHeldLstId], a
+	ld   [wEndHeldSprId], a
 	ret
 .playSFX:
 	ld   a, SFX1_1E
@@ -2079,8 +2079,8 @@ Ending_PostTr_PointSpeak:
 	ld   [wEndGenieHandRFrameSet], a
 	ret
 .lookLeft:
-	ld   a, END_OBJ_GENIEFACE_LOOK
-	ld   [wEndGenieFaceLstId], a
+	ld   a, END_SPR_GENIEFACE_LOOK
+	ld   [wEndGenieFaceSprId], a
 	ret
 .pointRight_initLoop:
 	ld   a, END_GENIE_POINT
@@ -2089,8 +2089,8 @@ Ending_PostTr_PointSpeak:
 	ld   [wEndLoopsLeft], a
 	ret
 .openMouth:
-	ld   a, END_OBJ_GENIEFACE_LOOKMOUTH	; Open mouth
-	ld   [wEndGenieFaceLstId], a
+	ld   a, END_SPR_GENIEFACE_LOOKMOUTH	; Open mouth
+	ld   [wEndGenieFaceSprId], a
 	;--
 	; The first time we get here, play a SFX
 	ld   a, [wEndLoopsLeft]
@@ -2103,8 +2103,8 @@ Ending_PostTr_PointSpeak:
 .closeMouth_chkEnd:
 	ld   a, $73-$0F ;$64				; Reset timer $0F before .openMouth
 	ld   [wEndGenieTimer], a
-	ld   a, END_OBJ_GENIEFACE_LOOK		; Close mouth
-	ld   [wEndGenieFaceLstId], a
+	ld   a, END_SPR_GENIEFACE_LOOK		; Close mouth
+	ld   [wEndGenieFaceSprId], a
 	
 	; If we're done looping, switch to the next mode
 	ld   a, [wEndLoopsLeft]
@@ -2167,7 +2167,7 @@ Ending_PostTr_MoveOutR:
 .lookDown_closeHands:
 	xor  a
 	ld   [wEndGenieTimer], a			; Reset genie timer
-	ld   [wEndGenieFaceLstId], a
+	ld   [wEndGenieFaceSprId], a
 	ld   a, END_GENIE_CLOSED			; Left hand was already closed		
 	ld   [wEndGenieHandRFrameSet], a
 	ret
@@ -2193,13 +2193,13 @@ Ending_PostTr_MoveOutR:
 	jr   z, .lookDown_reset
 	ret
 .blink:
-	ld   a, END_OBJ_GENIEFACE_BLINK		; 
-	ld   [wEndGenieFaceLstId], a
+	ld   a, END_SPR_GENIEFACE_BLINK		; 
+	ld   [wEndGenieFaceSprId], a
 	ret
 .lookDown_reset:
 	xor  a								
 	ld   [wEndGenieTimer], a			; Reset timer
-	ld   [wEndGenieFaceLstId], a		; None
+	ld   [wEndGenieFaceSprId], a		; None
 	ret
 	
 ; =============== Ending_InitPreCred ===============
@@ -2319,8 +2319,8 @@ LoadBG_Ending_Castle:
 ; Sets up the animatable sprites/tile modes for the credits scene.
 Credits_InitAnim_SmallFlag:
 	; Set round "W" mark
-	ld   a, END_OBJ_WLOGO					
-	ld   [wEndWLogoLstId], a
+	ld   a, END_SPR_WLOGO					
+	ld   [wEndWLogoSprId], a
 	ld   a, $4C					; Horz. centered
 	ld   [wEndWLogoX], a
 	ld   a, $E0					; Off-screen above (will move down)
@@ -2362,8 +2362,8 @@ Ending_WaitIdleDiag:
 	;
 	; Then wait $50 frames looking up
 	;
-	ld   a, OBJ_STATIC_WARIO_IDLEDIAG
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_IDLEDIAG
+	ld   [wStaticPlSprId], a
 	ld   a, [wEndPlMoveLDelay]
 	inc  a
 	ld   [wEndPlMoveLDelay], a
@@ -2438,8 +2438,8 @@ Ending_PreCred_MoveWLogo:
 	ld   [wEndWLogoY], a
 	ret
 .useInvPal:
-	ld   a, END_OBJ_WLOGOINV	; Inverted "W" mark
-	ld   [wEndCloudLstId], a
+	ld   a, END_SPR_WLOGOINV	; Inverted "W" mark
+	ld   [wEndCloudSprId], a
 	ret
 .useMainPal_playSFX:
 	ld   a, SFX1_1F				; SFX for "okay enough" castle
@@ -2450,8 +2450,8 @@ Ending_PreCred_MoveWLogo:
 Ending_SetWMarkNormPal_ResetTimer:
 	xor  a						; Reset timer
 	ld   [wEndWLogoTimer], a
-	ld   a, END_OBJ_WLOGO		; Normal "W" mark
-	ld   [wEndCloudLstId], a
+	ld   a, END_SPR_WLOGO		; Normal "W" mark
+	ld   [wEndCloudSprId], a
 	ret
 	
 ; =============== Ending_WLogoLand_GoodCastle ===============
@@ -2478,8 +2478,8 @@ Ending_WLogoLand_GoodCastle:
 	ld   [sBGMSet], a
 	xor  a
 	ld   [wEndPlMoveLDelay], a
-	ld   a, OBJ_ENDING_WARIO_JUMPDIAG	; Prepare jump frame.
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_ENDING_WARIO_JUMPDIAG	; Prepare jump frame.
+	ld   [wStaticPlSprId], a
 	
 	;
 	; Switch to the next mode.
@@ -2549,9 +2549,9 @@ Ending_PreCred_JumpR:
 	cp   a, $00
 	ret  nz
 .nextModeOpt:
-	ld   a, OBJ_ENDING_WARIO_JUMPDIAG	; Set jump frame
-	ld   [wStaticPlLstId], a
-	ld   a, STATIC_OBJLST_XFLIP			; Face left
+	ld   a, SPR_ENDING_WARIO_JUMPDIAG	; Set jump frame
+	ld   [wStaticPlSprId], a
+	ld   a, STATIC_SPRMAP_XFLIP			; Face left
 	ld   [wStaticPlFlags], a
 	ld   a, $02							; Jump twice left
 	ld   [wEndLoopsLeft], a
@@ -2588,12 +2588,12 @@ Ending_DoPlThumbsUp:
 	jr   z, Ending_DoPlThumbsUp_SetCreditsMode	; Ending mode only
 	ret
 .setFrameWon0:
-	ld   a, OBJ_STATIC_WARIO_WON0	; Thumbs up 1/2
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_WON0	; Thumbs up 1/2
+	ld   [wStaticPlSprId], a
 	ret
 .setFrameWon1:
-	ld   a, OBJ_STATIC_WARIO_WON1	; Thumbs up 2/2
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_WON1	; Thumbs up 2/2
+	ld   [wStaticPlSprId], a
 	ret
 ; =============== Ending_DoPlSad ===============
 ; Wario does sad animation after the W Mark falls off.
@@ -2613,15 +2613,15 @@ Ending_DoPlSad:
 	ret
 ; =============== Ending_DoPlThumbsUp_SetFrontFrame ===============
 Ending_DoPlThumbsUp_SetFrontFrame:
-	ld   a, OBJ_STATIC_WARIO_FRONT
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_FRONT
+	ld   [wStaticPlSprId], a
 	ret
 ; =============== Ending_DoPlThumbsUp_SetLostFrame ===============
 Ending_DoPlThumbsUp_SetLostFrame:
 	ld   a, SFX1_1D					; Set sad SFX (like in the bonus games)
 	ld   [sSFX1Set], a
-	ld   a, OBJ_STATIC_WARIO_LOST
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_LOST
+	ld   [wStaticPlSprId], a
 	ret
 	
 ; =============== Ending_DoPlThumbsUp_Turn ===============
@@ -2645,14 +2645,14 @@ Ending_DoPlThumbsUp_Turn:
 	; Invert the player's position.
 	; Could have been xor'd $80 but oh well.
 	ld   a, [wStaticPlFlags]
-	bit  STATIC_OBJLSTB_XFLIP, a	; Player facing left?
+	bit  STATIC_SPRMAPB_XFLIP, a	; Player facing left?
 	jr   z, .turnLeft				; If not, jump
 .turnRight:
 	xor  a							; Otherwise, face right
 	ld   [wStaticPlFlags], a
 	ret
 .turnLeft:
-	ld   a, STATIC_OBJLST_XFLIP		; Face left
+	ld   a, STATIC_SPRMAP_XFLIP		; Face left
 	ld   [wStaticPlFlags], a
 	ret
 	
@@ -2710,12 +2710,12 @@ Ending_PreCred_Fail:
 	; This is done so as the "W Mark" moves down, Wario will keep looking at it.
 	cp   a, $71						; WMarkY != $71?
 	ret  nz							; If so, jump
-	ld   a, OBJ_STATIC_WARIO_IDLE
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_IDLE
+	ld   [wStaticPlSprId], a
 	ret
 .doPlSad:
 	xor  a
-	ld   [wEndWLogoLstId], a		; Delete WMark sprite
+	ld   [wEndWLogoSprId], a		; Delete WMark sprite
 	jp   Ending_DoPlSad
 	
 ; =============== Ending_PreCred_JumpV ===============
@@ -2728,8 +2728,8 @@ Ending_PreCred_JumpV:
 	cp   a, $00
 	ret  nz
 .nextMode:
-	ld   a, OBJ_STATIC_WARIO_IDLEDIAG	; Set player frame
-	ld   [wStaticPlLstId], a			
+	ld   a, SPR_STATIC_WARIO_IDLEDIAG	; Set player frame
+	ld   [wStaticPlSprId], a			
 	ld   a, END3_RTN_THUMBSUP			; New submode
 	ld   [wEndAct], a
 	ret
@@ -2748,7 +2748,7 @@ Ending_DoPlCreditsWalk:
 	; HORIZONTAL MOVEMENT
 	;
 	ld   a, [wStaticPlFlags]
-	bit  STATIC_OBJLSTB_XFLIP, a	; Facing left?
+	bit  STATIC_SPRMAPB_XFLIP, a	; Facing left?
 	jr   nz, .moveL					; If so, move left
 .moveR:								; Otherwise, move right
 	ld   a, [wStaticPlX]			; PlX++
@@ -2793,20 +2793,20 @@ Ending_DoPlCreditsWalk:
 	xor  a
 	ld   [wStaticPlAnimTimer], a
 .setFrame0:
-	ld   a, OBJ_STATIC_WARIO_WALK0
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_WALK0
+	ld   [wStaticPlSprId], a
 	ret
 .setFrame1:
-	ld   a, OBJ_STATIC_WARIO_WALK1
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_WALK1
+	ld   [wStaticPlSprId], a
 	ret
 .setFrame3:
-	ld   a, OBJ_STATIC_WARIO_WALK3
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_WALK3
+	ld   [wStaticPlSprId], a
 	ret
 .setFrame2:
-	ld   a, OBJ_STATIC_WARIO_WALK2
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_WALK2
+	ld   [wStaticPlSprId], a
 	ret
 	
 ; =============== Ending_InitPreCred_Planet ===============
@@ -2937,12 +2937,12 @@ Ending_PreCredPlanet_ScrollUp:
 	ld   [wStaticPlAnimTimer], a
 	ret
 .setIdleFrame:
-	ld   a, OBJ_STATIC_WARIO_IDLE
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_IDLE
+	ld   [wStaticPlSprId], a
 	ret
 .setLookUpFrame:
-	ld   a, OBJ_STATIC_WARIO_IDLEDIAG
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_IDLEDIAG
+	ld   [wStaticPlSprId], a
 	ret
 .nextMode:
 	; Setup the jump on the planet
@@ -2955,8 +2955,8 @@ Ending_PreCredPlanet_ScrollUp:
 	ld   [wEndPlMoveLDelay], a
 	ldh  [rWX], a						; It's hidden anyway
 	ldh  [rWY], a						; It's hidden anyway
-	ld   a, OBJ_ENDING_WARIO_JUMPDIAG	; Set jump frame
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_ENDING_WARIO_JUMPDIAG	; Set jump frame
+	ld   [wStaticPlSprId], a
 	ld   a, END4_RTN_PLJUMPUP			; Next mode
 	ld   [wEndAct], a
 	ret
@@ -3001,8 +3001,8 @@ Ending_PreCredPlanet_PlJumpUp:
 	ld   [wStaticPlAnimTimer], a
 	cp   a, $46							; Timer == $46?
 	jr   z, .nextMode					; If so, jump
-	ld   a, OBJ_COINBONUS_WARIO_PULL0
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_COINBONUS_WARIO_PULL0
+	ld   [wStaticPlSprId], a
 	ret
 .nextMode:
 	xor  a
@@ -3055,29 +3055,29 @@ Ending_PreCredPlanet_PlThumbsUp:
 	ld   a, $AB						; Otherwise, unlock timer
 	ld   [wStaticPlAnimTimer], a
 .setPlFront:
-	ld   a, OBJ_STATIC_WARIO_FRONT
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_FRONT
+	ld   [wStaticPlSprId], a
 	ret
 .setPlWon0:
-	ld   a, OBJ_STATIC_WARIO_WON0
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_WON0
+	ld   [wStaticPlSprId], a
 	ret
 .setPlWon1:
-	ld   a, OBJ_STATIC_WARIO_WON1
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_WON1
+	ld   [wStaticPlSprId], a
 	ret
 .setPlLookUpLeft:
-	ld   a, OBJ_STATIC_WARIO_IDLEDIAG
-	ld   [wStaticPlLstId], a
-	ld   a, STATIC_OBJLST_XFLIP
+	ld   a, SPR_STATIC_WARIO_IDLEDIAG
+	ld   [wStaticPlSprId], a
+	ld   a, STATIC_SPRMAP_XFLIP
 	ld   [wStaticPlFlags], a
 	ret
 .nextMode:
 	; Prepare jump down
 	ld   a, (Ending_PlanetPlJumpYPathTbl.end-Ending_PlanetPlJumpYPathTbl-1)
 	ld   [wStaticPlAnimTimer], a
-	ld   a, OBJ_ENDING_WARIO_JUMPDIAG
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_ENDING_WARIO_JUMPDIAG
+	ld   [wStaticPlSprId], a
 	ld   a, END4_RTN_PLJUMPDOWN	; Next mode
 	ld   [wEndAct], a
 	ret
@@ -3120,8 +3120,8 @@ Ending_PreCredPlanet_PlJumpDown:
 .nextMode:
 	ld   a, BGM_CREDITS					; Play credits BGM
 	ld   [sBGMSet], a
-	ld   a, OBJ_STATIC_WARIO_IDLEDIAG	; Set idle frame
-	ld   [wStaticPlLstId], a
+	ld   a, SPR_STATIC_WARIO_IDLEDIAG	; Set idle frame
+	ld   [wStaticPlSprId], a
 	ld   a, END4_RTN_WAITTOCREDITS		; Next mode
 	ld   [wEndAct], a
 	ret

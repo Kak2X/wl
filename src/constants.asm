@@ -326,274 +326,274 @@ DEF LVL_OVERWORLD_BRIDGE                     EQU $37
 DEF LVL_LASTVALID                            EQU $2A
                                              
 ; ============================================================
-; Sprite flags for OBJ List (main)           
-DEF OBJLSTB_OBP1                             EQU 4
-DEF OBJLST_OBP1                              EQU $10
-DEF OBJLSTB_XFLIP                            EQU 5 ; If set, player is facing right
-DEF OBJLST_XFLIP                             EQU $20
-DEF OBJLSTB_BGPRIORITY                       EQU 7 
-DEF OBJLST_BGPRIORITY                        EQU $80
+; Sprite flags for sprite mappings (main)           
+DEF SPRMAPB_OBP1                             EQU 4
+DEF SPRMAP_OBP1                              EQU $10
+DEF SPRMAPB_XFLIP                            EQU 5 ; If set, player is facing right
+DEF SPRMAP_XFLIP                             EQU $20
+DEF SPRMAPB_BGPRIORITY                       EQU 7 
+DEF SPRMAP_BGPRIORITY                        EQU $80
                                              
-; Sprite flags for STATIC OBJ List, which for some reason (likely different module programmed by someone different) uses a different format
+; Sprite flags for STATIC sprite mappings, which for some reason (likely different module programmed by someone different) uses a different format
 ; Used with wStaticPlFlags and others.       
-DEF STATIC_OBJLSTB_XFLIP                     EQU 7 ; If set, player is facing LEFT (coin bonus)
-DEF STATIC_OBJLST_XFLIP                      EQU $80 ; If set, player is facing LEFT (coin bonus)
+DEF STATIC_SPRMAPB_XFLIP                     EQU 7 ; If set, player is facing LEFT (coin bonus)
+DEF STATIC_SPRMAP_XFLIP                      EQU $80 ; If set, player is facing LEFT (coin bonus)
                                              
 ; ============================================================
-; OBJ List (Main block)                      
-DEF OBJ_WARIO_NONE                           EQU $00
-DEF OBJ_WARIO_WALK0                          EQU $01
-DEF OBJ_WARIO_WALK1                          EQU $02
-DEF OBJ_WARIO_WALK2                          EQU $03
-DEF OBJ_WARIO_WALK3                          EQU $04
-DEF OBJ_HITBLOCK                             EQU $05
-DEF OBJ_WARIO_THROW                          EQU $06
-DEF OBJ_WARIO_JUMPTHROW                      EQU $07
-DEF OBJ_WARIO_STAND                          EQU $08
-DEF OBJ_WARIO_IDLE0                          EQU $09
-DEF OBJ_WARIO_IDLE1                          EQU $0A
-DEF OBJ_HAT                                  EQU $0B
-DEF OBJ_UNUSED_WARIO_GROUNDPOUND             EQU $0C
-DEF OBJ_JETHATFLAME0                         EQU $0D
-DEF OBJ_JETHATFLAME1                         EQU $0E
-DEF OBJ_JETHATFLAME2                         EQU $0F
-DEF OBJ_WARIO_DUCK                           EQU $10
-DEF OBJ_WARIO_DUCKWALK                       EQU $11
-DEF OBJ_WARIO_CLIMB0                         EQU $12
-DEF OBJ_WARIO_CLIMB1                         EQU $13
-DEF OBJ_WARIO_BUMP                           EQU $14
-DEF OBJ_DRAGONHATFLAME_A0                    EQU $15
-DEF OBJ_DRAGONHATFLAME_A1                    EQU $16
-DEF OBJ_DRAGONHATFLAME_A2                    EQU $17
-DEF OBJ_WARIO_SWIM0                          EQU $18
-DEF OBJ_WARIO_SWIM1                          EQU $19
-DEF OBJ_WARIO_DEAD                           EQU $1A
-DEF OBJ_DRAGONHATFLAME_B0                    EQU $1B
-DEF OBJ_DRAGONHATFLAME_B1                    EQU $1C
-DEF OBJ_DRAGONHATFLAME_B2                    EQU $1D
-DEF OBJ_WARIO_SWIM2                          EQU $1E
-DEF OBJ_WARIO_BUMPAIR                        EQU $1F
-DEF OBJ_WARIO_JUMP                           EQU $20
-DEF OBJ_WARIO_GROUNDPOUND                    EQU $21
-DEF OBJ_WARIO_DASHJUMP                       EQU $22
-DEF OBJ_WARIO_DASHENEMY                      EQU $23
-DEF OBJ_WARIO_DASH0                          EQU $24
-DEF OBJ_WARIO_DASH1                          EQU $25
-DEF OBJ_WARIO_DASH2                          EQU $26
-DEF OBJ_WARIO_DASH3                          EQU $27
-DEF OBJ_WARIO_DASH4                          EQU $28
-DEF OBJ_WARIO_DASH5                          EQU $29
-DEF OBJ_WARIO_DASH6                          EQU $2A
-DEF OBJ_DRAGONHATFLAME_C0                    EQU $2B
-DEF OBJ_DRAGONHATFLAME_C1                    EQU $2C
-DEF OBJ_DRAGONHATFLAME_C2                    EQU $2D
-DEF OBJ_DRAGONHATFLAME_D0                    EQU $2E
-DEF OBJ_DRAGONHATFLAME_D1                    EQU $2F
-DEF OBJ_DRAGONHATFLAME_D2                    EQU $30
-DEF OBJ_SMALLWARIO_WALK0                     EQU $31
-DEF OBJ_SMALLWARIO_WALK1                     EQU $32
-DEF OBJ_SMALLWARIO_WALK2                     EQU $33
-DEF OBJ_WARIO_THUMBSUP0                      EQU $34
-DEF OBJ_WARIO_THUMBSUP1                      EQU $35
-DEF OBJ_BLANK_36                             EQU $36
-DEF OBJ_TRROOM_ARROW                         EQU $37
-DEF OBJ_SMALLWARIO_STAND                     EQU $38
-DEF OBJ_SMALLWARIO_IDLE                      EQU $39
-DEF OBJ_DRAGONHATFLAME_E0                    EQU $3A
-DEF OBJ_DRAGONHATFLAME_E1                    EQU $3B
-DEF OBJ_DRAGONHATFLAME_E2                    EQU $3C
-DEF OBJ_DRAGONHATFLAME_F0                    EQU $3D
-DEF OBJ_DRAGONHATFLAME_F1                    EQU $3E
-DEF OBJ_DRAGONHATFLAME_F2                    EQU $3F
-DEF OBJ_UNUSED_MAIN_40                       EQU $40
-DEF OBJ_WARIO_GRAB                           EQU $41
-DEF OBJ_SMALLWARIO_CLIMB0                    EQU $42
-DEF OBJ_SMALLWARIO_CLIMB1                    EQU $43
-DEF OBJ_WARIO_DUCKHOLD                       EQU $44
-DEF OBJ_WARIO_DUCKWALKHOLD                   EQU $45
-DEF OBJ_WARIO_DUCKTHROW                      EQU $46
-DEF OBJ_SMALLWARIO_HOLD                      EQU $47
-DEF OBJ_SMALLWARIO_SWIM0                     EQU $48
-DEF OBJ_SMALLWARIO_SWIM1                     EQU $49
-DEF OBJ_SMALLWARIO_HOLDWALK0                 EQU $4A
-DEF OBJ_SMALLWARIO_HOLDWALK1                 EQU $4B
-DEF OBJ_SMALLWARIO_HOLDWALK2                 EQU $4C
-DEF OBJ_SMALLWARIO_HOLDJUMP                  EQU $4D
-DEF OBJ_SMALLWARIO_SWIM2                     EQU $4E
-DEF OBJ_WARIO_DASHFLY                        EQU $4F
-DEF OBJ_SMALLWARIO_JUMP                      EQU $50
-DEF OBJ_WARIO_HOLDWALK0                      EQU $51
-DEF OBJ_WARIO_HOLDWALK1                      EQU $52
-DEF OBJ_WARIO_HOLDWALK2                      EQU $53
-DEF OBJ_WARIO_HOLDWALK3                      EQU $54
-DEF OBJ_WATERSPLASH0                         EQU $55
-DEF OBJ_WATERSPLASH1                         EQU $56
-DEF OBJ_WATERSPLASH2                         EQU $57
-DEF OBJ_WARIO_HOLD                           EQU $58
-DEF OBJ_BLOCKSMASH0                          EQU $59
-DEF OBJ_BLOCKSMASH1                          EQU $5A
-DEF OBJ_BLOCKSMASH2                          EQU $5B
-DEF OBJ_BLOCKSMASH3                          EQU $5C
-DEF OBJ_BLOCKSMASH4                          EQU $5D
-DEF OBJ_BLOCKSMASH5                          EQU $5E
-DEF OBJ_BLOCKSMASH6                          EQU $5F
-DEF OBJ_BLOCKSMASH7                          EQU $60
-DEF OBJ_BLOCKSMASH8                          EQU $61
-DEF OBJ_UNUSED_BLOCKSMASH9                   EQU $62
-DEF OBJ_SAVESEL_HAT                          EQU $63
-DEF OBJ_SMALLWARIO_LEVELCLEAR                EQU $64
-DEF OBJ_SAVESEL_BOMBWARIO0                   EQU $65
-DEF OBJ_SAVESEL_BOMBWARIO1                   EQU $66
-DEF OBJ_SAVESEL_BOMBWARIO2                   EQU $67
-DEF OBJ_SAVESEL_WARIO_DASH0                  EQU $68
-DEF OBJ_SAVESEL_WARIO_DASH1                  EQU $69
-DEF OBJ_SAVESEL_WARIO_DASH2                  EQU $6A
-DEF OBJ_SAVESEL_WARIO_DASH3                  EQU $6B
-DEF OBJ_SAVESEL_WARIO_DASH4                  EQU $6C
-DEF OBJ_SAVESEL_WARIO_DASH5                  EQU $6D
-DEF OBJ_SAVESEL_WARIO_DASH6                  EQU $6E
-DEF OBJ_SAVESEL_WARIO_BUMP                   EQU $6F
-DEF OBJ_WARIO_HOLDJUMP                       EQU $70
-DEF OBJ_WARIO_HOLDGROUNDPOUND                EQU $71
-DEF OBJ_SAVESEL_OLDHAT0                      EQU $72
-DEF OBJ_SAVESEL_OLDHAT1                      EQU $73
-DEF OBJ_SAVESEL_OLDHAT2                      EQU $74
-DEF OBJ_SAVESEL_WARIO_JUMPNOHAT              EQU $75
-DEF OBJ_UNUSED_SAVESEL_WARIO_STANDNOHAT      EQU $76
-DEF OBJ_DRAGONHATWATER_A0                    EQU $77
-DEF OBJ_DRAGONHATWATER_A1                    EQU $78
-DEF OBJ_DRAGONHATWATER_A2                    EQU $79
-DEF OBJ_DRAGONHATWATER_B0                    EQU $7A
-DEF OBJ_DRAGONHATWATER_B1                    EQU $7B
-DEF OBJ_DRAGONHATWATER_B2                    EQU $7C
-DEF OBJ_DRAGONHATWATER_C0                    EQU $7D
-DEF OBJ_DRAGONHATWATER_C1                    EQU $7E
-DEF OBJ_DRAGONHATWATER_C2                    EQU $7F
-DEF OBJ_DRAGONHATWATER_D0                    EQU $80
-DEF OBJ_DRAGONHATWATER_D1                    EQU $81
-DEF OBJ_DRAGONHATWATER_D2                    EQU $82
-DEF OBJ_DRAGONHATWATER_E0                    EQU $83
-DEF OBJ_DRAGONHATWATER_E1                    EQU $84
-DEF OBJ_DRAGONHATWATER_E2                    EQU $85
-DEF OBJ_DRAGONHATWATER_F0                    EQU $86
-DEF OBJ_DRAGONHATWATER_F1                    EQU $87
-DEF OBJ_DRAGONHATWATER_F2                    EQU $88
-DEF OBJ_TRROOM_WARIO_SHRUG                   EQU $89
-DEF OBJ_TRROOM_WARIO_GLOAT                   EQU $8A
-DEF OBJ_TRROOM_WARIO_IDLE0                   EQU $8B
-DEF OBJ_TRROOM_WARIO_IDLE1                   EQU $8C
-DEF OBJ_SAVESEL_CROSS                        EQU $8D
-DEF OBJ_TRROOM_TREASURE_C0                   EQU $8E
-DEF OBJ_TRROOM_TREASURE_C1                   EQU $8F
-DEF OBJ_TRROOM_TREASURE_I0                   EQU $90
-DEF OBJ_TRROOM_TREASURE_I1                   EQU $91
-DEF OBJ_TRROOM_TREASURE_F0                   EQU $92
-DEF OBJ_TRROOM_TREASURE_F1                   EQU $93
-DEF OBJ_TRROOM_TREASURE_O0                   EQU $94
-DEF OBJ_TRROOM_TREASURE_O1                   EQU $95
-DEF OBJ_TRROOM_TREASURE_A0                   EQU $96
-DEF OBJ_TRROOM_TREASURE_A1                   EQU $97
-DEF OBJ_TRROOM_TREASURE_N0                   EQU $98
-DEF OBJ_TRROOM_TREASURE_N1                   EQU $99
-DEF OBJ_TRROOM_TREASURE_H0                   EQU $9A
-DEF OBJ_TRROOM_TREASURE_H1                   EQU $9B
-DEF OBJ_TRROOM_TREASURE_M0                   EQU $9C
-DEF OBJ_TRROOM_TREASURE_M1                   EQU $9D
-DEF OBJ_TRROOM_TREASURE_L0                   EQU $9E
-DEF OBJ_TRROOM_TREASURE_L1                   EQU $9F
-DEF OBJ_TRROOM_TREASURE_K0                   EQU $A0
-DEF OBJ_TRROOM_TREASURE_K1                   EQU $A1
-DEF OBJ_TRROOM_TREASURE_B0                   EQU $A2
-DEF OBJ_TRROOM_TREASURE_B1                   EQU $A3
-DEF OBJ_TRROOM_TREASURE_D0                   EQU $A4
-DEF OBJ_TRROOM_TREASURE_D1                   EQU $A5
-DEF OBJ_TRROOM_TREASURE_G0                   EQU $A6
-DEF OBJ_TRROOM_TREASURE_G1                   EQU $A7
-DEF OBJ_TRROOM_TREASURE_J0                   EQU $A8
-DEF OBJ_TRROOM_TREASURE_J1                   EQU $A9
-DEF OBJ_TRROOM_TREASURE_E0                   EQU $AA
-DEF OBJ_TRROOM_TREASURE_E1                   EQU $AB
-DEF OBJ_TRROOM_STAR00                        EQU $AC
-DEF OBJ_TRROOM_STAR01                        EQU $AD
-DEF OBJ_TRROOM_STAR02                        EQU $AE
-DEF OBJ_TRROOM_STAR03                        EQU $AF
-DEF OBJ_TRROOM_STAR10                        EQU $B0
-DEF OBJ_TRROOM_STAR11                        EQU $B1
-DEF OBJ_TRROOM_STAR12                        EQU $B2
-DEF OBJ_TRROOM_STAR13                        EQU $B3
-DEF OBJ_TRROOM_STAR20                        EQU $B4
-DEF OBJ_TRROOM_STAR21                        EQU $B5
-DEF OBJ_TRROOM_STAR22                        EQU $B6
-DEF OBJ_TRROOM_STAR23                        EQU $B7
-DEF OBJ_TRROOM_STAR30                        EQU $B8
-DEF OBJ_TRROOM_STAR31                        EQU $B9
-DEF OBJ_TRROOM_STAR32                        EQU $BA
-DEF OBJ_TRROOM_STAR33                        EQU $BB
-DEF OBJ_COIN0                                EQU $BC
-DEF OBJ_COIN1                                EQU $BD
-DEF OBJ_COIN2                                EQU $BE
-DEF OBJ_COIN3                                EQU $BF
-DEF OBJ_1UP                                  EQU $C0
-DEF OBJ_SAVESEL_SMOKE0                       EQU $C1
-DEF OBJ_SAVESEL_SMOKE1                       EQU $C2
-DEF OBJ_SAVESEL_SMOKE2                       EQU $C3
-DEF OBJ_3UP                                  EQU $C4
-DEF OBJ_TRROOM_MONEYBAGS1                    EQU $C5
-DEF OBJ_TRROOM_MONEYBAGS2                    EQU $C6
-DEF OBJ_TRROOM_MONEYBAGS3                    EQU $C7
-DEF OBJ_TRROOM_MONEYBAGS4                    EQU $C8
-DEF OBJ_TRROOM_MONEYBAGS5                    EQU $C9
-DEF OBJ_TRROOM_MONEYBAGS6                    EQU $CA
-DEF OBJ_TRROOM_MONEYBAG_FALL                 EQU $CB
-DEF OBJ_SAVESEL_WARIO_STANDNOHAT             EQU $CC
-DEF OBJ_SAVESEL_WARIO_LOOKBACK               EQU $CD
-DEF OBJ_SAVESEL_WARIO_LOOKUP                 EQU $CE
+; Sprite mappings (Main block)                      
+DEF SPR_WARIO_NONE                           EQU $00
+DEF SPR_WARIO_WALK0                          EQU $01
+DEF SPR_WARIO_WALK1                          EQU $02
+DEF SPR_WARIO_WALK2                          EQU $03
+DEF SPR_WARIO_WALK3                          EQU $04
+DEF SPR_HITBLOCK                             EQU $05
+DEF SPR_WARIO_THROW                          EQU $06
+DEF SPR_WARIO_JUMPTHROW                      EQU $07
+DEF SPR_WARIO_STAND                          EQU $08
+DEF SPR_WARIO_IDLE0                          EQU $09
+DEF SPR_WARIO_IDLE1                          EQU $0A
+DEF SPR_HAT                                  EQU $0B
+DEF SPR_UNUSED_WARIO_GROUNDPOUND             EQU $0C
+DEF SPR_JETHATFLAME0                         EQU $0D
+DEF SPR_JETHATFLAME1                         EQU $0E
+DEF SPR_JETHATFLAME2                         EQU $0F
+DEF SPR_WARIO_DUCK                           EQU $10
+DEF SPR_WARIO_DUCKWALK                       EQU $11
+DEF SPR_WARIO_CLIMB0                         EQU $12
+DEF SPR_WARIO_CLIMB1                         EQU $13
+DEF SPR_WARIO_BUMP                           EQU $14
+DEF SPR_DRAGONHATFLAME_A0                    EQU $15
+DEF SPR_DRAGONHATFLAME_A1                    EQU $16
+DEF SPR_DRAGONHATFLAME_A2                    EQU $17
+DEF SPR_WARIO_SWIM0                          EQU $18
+DEF SPR_WARIO_SWIM1                          EQU $19
+DEF SPR_WARIO_DEAD                           EQU $1A
+DEF SPR_DRAGONHATFLAME_B0                    EQU $1B
+DEF SPR_DRAGONHATFLAME_B1                    EQU $1C
+DEF SPR_DRAGONHATFLAME_B2                    EQU $1D
+DEF SPR_WARIO_SWIM2                          EQU $1E
+DEF SPR_WARIO_BUMPAIR                        EQU $1F
+DEF SPR_WARIO_JUMP                           EQU $20
+DEF SPR_WARIO_GROUNDPOUND                    EQU $21
+DEF SPR_WARIO_DASHJUMP                       EQU $22
+DEF SPR_WARIO_DASHENEMY                      EQU $23
+DEF SPR_WARIO_DASH0                          EQU $24
+DEF SPR_WARIO_DASH1                          EQU $25
+DEF SPR_WARIO_DASH2                          EQU $26
+DEF SPR_WARIO_DASH3                          EQU $27
+DEF SPR_WARIO_DASH4                          EQU $28
+DEF SPR_WARIO_DASH5                          EQU $29
+DEF SPR_WARIO_DASH6                          EQU $2A
+DEF SPR_DRAGONHATFLAME_C0                    EQU $2B
+DEF SPR_DRAGONHATFLAME_C1                    EQU $2C
+DEF SPR_DRAGONHATFLAME_C2                    EQU $2D
+DEF SPR_DRAGONHATFLAME_D0                    EQU $2E
+DEF SPR_DRAGONHATFLAME_D1                    EQU $2F
+DEF SPR_DRAGONHATFLAME_D2                    EQU $30
+DEF SPR_SMALLWARIO_WALK0                     EQU $31
+DEF SPR_SMALLWARIO_WALK1                     EQU $32
+DEF SPR_SMALLWARIO_WALK2                     EQU $33
+DEF SPR_WARIO_THUMBSUP0                      EQU $34
+DEF SPR_WARIO_THUMBSUP1                      EQU $35
+DEF SPR_BLANK_36                             EQU $36
+DEF SPR_TRROOM_ARROW                         EQU $37
+DEF SPR_SMALLWARIO_STAND                     EQU $38
+DEF SPR_SMALLWARIO_IDLE                      EQU $39
+DEF SPR_DRAGONHATFLAME_E0                    EQU $3A
+DEF SPR_DRAGONHATFLAME_E1                    EQU $3B
+DEF SPR_DRAGONHATFLAME_E2                    EQU $3C
+DEF SPR_DRAGONHATFLAME_F0                    EQU $3D
+DEF SPR_DRAGONHATFLAME_F1                    EQU $3E
+DEF SPR_DRAGONHATFLAME_F2                    EQU $3F
+DEF SPR_UNUSED_MAIN_40                       EQU $40
+DEF SPR_WARIO_GRAB                           EQU $41
+DEF SPR_SMALLWARIO_CLIMB0                    EQU $42
+DEF SPR_SMALLWARIO_CLIMB1                    EQU $43
+DEF SPR_WARIO_DUCKHOLD                       EQU $44
+DEF SPR_WARIO_DUCKWALKHOLD                   EQU $45
+DEF SPR_WARIO_DUCKTHROW                      EQU $46
+DEF SPR_SMALLWARIO_HOLD                      EQU $47
+DEF SPR_SMALLWARIO_SWIM0                     EQU $48
+DEF SPR_SMALLWARIO_SWIM1                     EQU $49
+DEF SPR_SMALLWARIO_HOLDWALK0                 EQU $4A
+DEF SPR_SMALLWARIO_HOLDWALK1                 EQU $4B
+DEF SPR_SMALLWARIO_HOLDWALK2                 EQU $4C
+DEF SPR_SMALLWARIO_HOLDJUMP                  EQU $4D
+DEF SPR_SMALLWARIO_SWIM2                     EQU $4E
+DEF SPR_WARIO_DASHFLY                        EQU $4F
+DEF SPR_SMALLWARIO_JUMP                      EQU $50
+DEF SPR_WARIO_HOLDWALK0                      EQU $51
+DEF SPR_WARIO_HOLDWALK1                      EQU $52
+DEF SPR_WARIO_HOLDWALK2                      EQU $53
+DEF SPR_WARIO_HOLDWALK3                      EQU $54
+DEF SPR_WATERSPLASH0                         EQU $55
+DEF SPR_WATERSPLASH1                         EQU $56
+DEF SPR_WATERSPLASH2                         EQU $57
+DEF SPR_WARIO_HOLD                           EQU $58
+DEF SPR_BLOCKSMASH0                          EQU $59
+DEF SPR_BLOCKSMASH1                          EQU $5A
+DEF SPR_BLOCKSMASH2                          EQU $5B
+DEF SPR_BLOCKSMASH3                          EQU $5C
+DEF SPR_BLOCKSMASH4                          EQU $5D
+DEF SPR_BLOCKSMASH5                          EQU $5E
+DEF SPR_BLOCKSMASH6                          EQU $5F
+DEF SPR_BLOCKSMASH7                          EQU $60
+DEF SPR_BLOCKSMASH8                          EQU $61
+DEF SPR_UNUSED_BLOCKSMASH9                   EQU $62
+DEF SPR_SAVESEL_HAT                          EQU $63
+DEF SPR_SMALLWARIO_LEVELCLEAR                EQU $64
+DEF SPR_SAVESEL_BOMBWARIO0                   EQU $65
+DEF SPR_SAVESEL_BOMBWARIO1                   EQU $66
+DEF SPR_SAVESEL_BOMBWARIO2                   EQU $67
+DEF SPR_SAVESEL_WARIO_DASH0                  EQU $68
+DEF SPR_SAVESEL_WARIO_DASH1                  EQU $69
+DEF SPR_SAVESEL_WARIO_DASH2                  EQU $6A
+DEF SPR_SAVESEL_WARIO_DASH3                  EQU $6B
+DEF SPR_SAVESEL_WARIO_DASH4                  EQU $6C
+DEF SPR_SAVESEL_WARIO_DASH5                  EQU $6D
+DEF SPR_SAVESEL_WARIO_DASH6                  EQU $6E
+DEF SPR_SAVESEL_WARIO_BUMP                   EQU $6F
+DEF SPR_WARIO_HOLDJUMP                       EQU $70
+DEF SPR_WARIO_HOLDGROUNDPOUND                EQU $71
+DEF SPR_SAVESEL_OLDHAT0                      EQU $72
+DEF SPR_SAVESEL_OLDHAT1                      EQU $73
+DEF SPR_SAVESEL_OLDHAT2                      EQU $74
+DEF SPR_SAVESEL_WARIO_JUMPNOHAT              EQU $75
+DEF SPR_UNUSED_SAVESEL_WARIO_STANDNOHAT      EQU $76
+DEF SPR_DRAGONHATWATER_A0                    EQU $77
+DEF SPR_DRAGONHATWATER_A1                    EQU $78
+DEF SPR_DRAGONHATWATER_A2                    EQU $79
+DEF SPR_DRAGONHATWATER_B0                    EQU $7A
+DEF SPR_DRAGONHATWATER_B1                    EQU $7B
+DEF SPR_DRAGONHATWATER_B2                    EQU $7C
+DEF SPR_DRAGONHATWATER_C0                    EQU $7D
+DEF SPR_DRAGONHATWATER_C1                    EQU $7E
+DEF SPR_DRAGONHATWATER_C2                    EQU $7F
+DEF SPR_DRAGONHATWATER_D0                    EQU $80
+DEF SPR_DRAGONHATWATER_D1                    EQU $81
+DEF SPR_DRAGONHATWATER_D2                    EQU $82
+DEF SPR_DRAGONHATWATER_E0                    EQU $83
+DEF SPR_DRAGONHATWATER_E1                    EQU $84
+DEF SPR_DRAGONHATWATER_E2                    EQU $85
+DEF SPR_DRAGONHATWATER_F0                    EQU $86
+DEF SPR_DRAGONHATWATER_F1                    EQU $87
+DEF SPR_DRAGONHATWATER_F2                    EQU $88
+DEF SPR_TRROOM_WARIO_SHRUG                   EQU $89
+DEF SPR_TRROOM_WARIO_GLOAT                   EQU $8A
+DEF SPR_TRROOM_WARIO_IDLE0                   EQU $8B
+DEF SPR_TRROOM_WARIO_IDLE1                   EQU $8C
+DEF SPR_SAVESEL_CROSS                        EQU $8D
+DEF SPR_TRROOM_TREASURE_C0                   EQU $8E
+DEF SPR_TRROOM_TREASURE_C1                   EQU $8F
+DEF SPR_TRROOM_TREASURE_I0                   EQU $90
+DEF SPR_TRROOM_TREASURE_I1                   EQU $91
+DEF SPR_TRROOM_TREASURE_F0                   EQU $92
+DEF SPR_TRROOM_TREASURE_F1                   EQU $93
+DEF SPR_TRROOM_TREASURE_O0                   EQU $94
+DEF SPR_TRROOM_TREASURE_O1                   EQU $95
+DEF SPR_TRROOM_TREASURE_A0                   EQU $96
+DEF SPR_TRROOM_TREASURE_A1                   EQU $97
+DEF SPR_TRROOM_TREASURE_N0                   EQU $98
+DEF SPR_TRROOM_TREASURE_N1                   EQU $99
+DEF SPR_TRROOM_TREASURE_H0                   EQU $9A
+DEF SPR_TRROOM_TREASURE_H1                   EQU $9B
+DEF SPR_TRROOM_TREASURE_M0                   EQU $9C
+DEF SPR_TRROOM_TREASURE_M1                   EQU $9D
+DEF SPR_TRROOM_TREASURE_L0                   EQU $9E
+DEF SPR_TRROOM_TREASURE_L1                   EQU $9F
+DEF SPR_TRROOM_TREASURE_K0                   EQU $A0
+DEF SPR_TRROOM_TREASURE_K1                   EQU $A1
+DEF SPR_TRROOM_TREASURE_B0                   EQU $A2
+DEF SPR_TRROOM_TREASURE_B1                   EQU $A3
+DEF SPR_TRROOM_TREASURE_D0                   EQU $A4
+DEF SPR_TRROOM_TREASURE_D1                   EQU $A5
+DEF SPR_TRROOM_TREASURE_G0                   EQU $A6
+DEF SPR_TRROOM_TREASURE_G1                   EQU $A7
+DEF SPR_TRROOM_TREASURE_J0                   EQU $A8
+DEF SPR_TRROOM_TREASURE_J1                   EQU $A9
+DEF SPR_TRROOM_TREASURE_E0                   EQU $AA
+DEF SPR_TRROOM_TREASURE_E1                   EQU $AB
+DEF SPR_TRROOM_STAR00                        EQU $AC
+DEF SPR_TRROOM_STAR01                        EQU $AD
+DEF SPR_TRROOM_STAR02                        EQU $AE
+DEF SPR_TRROOM_STAR03                        EQU $AF
+DEF SPR_TRROOM_STAR10                        EQU $B0
+DEF SPR_TRROOM_STAR11                        EQU $B1
+DEF SPR_TRROOM_STAR12                        EQU $B2
+DEF SPR_TRROOM_STAR13                        EQU $B3
+DEF SPR_TRROOM_STAR20                        EQU $B4
+DEF SPR_TRROOM_STAR21                        EQU $B5
+DEF SPR_TRROOM_STAR22                        EQU $B6
+DEF SPR_TRROOM_STAR23                        EQU $B7
+DEF SPR_TRROOM_STAR30                        EQU $B8
+DEF SPR_TRROOM_STAR31                        EQU $B9
+DEF SPR_TRROOM_STAR32                        EQU $BA
+DEF SPR_TRROOM_STAR33                        EQU $BB
+DEF SPR_COIN0                                EQU $BC
+DEF SPR_COIN1                                EQU $BD
+DEF SPR_COIN2                                EQU $BE
+DEF SPR_COIN3                                EQU $BF
+DEF SPR_1UP                                  EQU $C0
+DEF SPR_SAVESEL_SMOKE0                       EQU $C1
+DEF SPR_SAVESEL_SMOKE1                       EQU $C2
+DEF SPR_SAVESEL_SMOKE2                       EQU $C3
+DEF SPR_3UP                                  EQU $C4
+DEF SPR_TRROOM_MONEYBAGS1                    EQU $C5
+DEF SPR_TRROOM_MONEYBAGS2                    EQU $C6
+DEF SPR_TRROOM_MONEYBAGS3                    EQU $C7
+DEF SPR_TRROOM_MONEYBAGS4                    EQU $C8
+DEF SPR_TRROOM_MONEYBAGS5                    EQU $C9
+DEF SPR_TRROOM_MONEYBAGS6                    EQU $CA
+DEF SPR_TRROOM_MONEYBAG_FALL                 EQU $CB
+DEF SPR_SAVESEL_WARIO_STANDNOHAT             EQU $CC
+DEF SPR_SAVESEL_WARIO_LOOKBACK               EQU $CD
+DEF SPR_SAVESEL_WARIO_LOOKUP                 EQU $CE
                                              
 ; For static modes outside of the title screen (Bonus games and ending)
-DEF OBJ_STATIC_WARIO_NONE                    EQU $00
-DEF OBJ_STATIC_WARIO_WALK0                   EQU $01 ; Must be shared with OBJ_WARIO_WALK*
-DEF OBJ_STATIC_WARIO_WALK1                   EQU $02 ; Must be shared ""
-DEF OBJ_STATIC_WARIO_WALK2                   EQU $03 ; Must be shared ""
-DEF OBJ_STATIC_WARIO_WALK3                   EQU $04 ; Must be shared ""
-DEF OBJ_STATIC_WARIO_IDLE                    EQU $05
-DEF OBJ_STATIC_WARIO_FRONT                   EQU $06 
-DEF OBJ_STATIC_WARIO_WON0                    EQU $07 
-DEF OBJ_STATIC_WARIO_WON1                    EQU $08 
-DEF OBJ_STATIC_WARIO_LOST                    EQU $09 
-DEF OBJ_STATIC_WARIO_IDLEDIAG                EQU $0A
-DEF OBJ_ENDING_WARIO_JUMPDIAG                EQU $0B
-; The rest of STATIC_OBJ_WARIO only works without XFLIP
-DEF OBJ_HEARTBONUS_WARIO_BACK                EQU $0C
-DEF OBJ_HEARTBONUS_WARIO_BACKGRABBOMB        EQU $0D
-DEF OBJ_HEARTBONUS_WARIO_BACKHOLDBOMB0       EQU $0E
-DEF OBJ_HEARTBONUS_WARIO_BACKHOLDBOMB1       EQU $0F
-DEF OBJ_HEARTBONUS_WARIO_BACKTHROWBOMB       EQU $10
-DEF OBJ_HEARTBONUS_WARIO_BACKGRABBOMBEXPL0   EQU $11
-DEF OBJ_HEARTBONUS_WARIO_BACKGRABBOMBEXPL1   EQU $12
-DEF OBJ_HEARTBONUS_WARIO_BACKGRABBOMBEXPL2   EQU $13
-DEF OBJ_HEARTBONUS_WARIO_BACKHOLDBOMBEXPL0   EQU $14
-DEF OBJ_HEARTBONUS_WARIO_BACKHOLDBOMBEXPL1   EQU $15
-DEF OBJ_HEARTBONUS_WARIO_BACKHOLDBOMBEXPL2   EQU $16
-DEF OBJ_HEARTBONUS_WARIO_BACKBOMBEXPL3       EQU $17
-DEF OBJ_HEARTBONUS_WARIO_BACKBOMBEXPL4       EQU $18
-DEF OBJ_COINBONUS_WARIO_IDLEDIAGBACK         EQU $19
-DEF OBJ_COINBONUS_WARIO_PULL0                EQU $1A
-DEF OBJ_COINBONUS_WARIO_PULL1                EQU $1B
-DEF OBJ_COINBONUS_WARIO_CRUSHED              EQU $1C
-DEF OBJ_ENDING_WARIO_WALKHOLD0               EQU $1D
-DEF OBJ_ENDING_WARIO_WALKHOLD1               EQU $1E
-DEF OBJ_ENDING_WARIO_WALKHOLD2               EQU $1F
-DEF OBJ_ENDING_WARIO_WALKHOLD3               EQU $20
-DEF OBJ_ENDING_WARIO_IDLEHOLD                EQU $21
-DEF OBJ_ENDING_WARIO_IDLETHROW               EQU $22
-DEF OBJ_ENDING_WARIO_DUCKRUB0                EQU $23
-DEF OBJ_ENDING_WARIO_DUCKRUB1                EQU $24
-DEF OBJ_ENDING_WARIO_DUCKRUB2                EQU $25
-DEF OBJ_ENDING_WARIO_DUCKDIAG                EQU $26
-DEF OBJ_ENDING_WARIO_BUMP0                   EQU $27
-DEF OBJ_ENDING_WARIO_BUMP1                   EQU $28
-DEF OBJ_ENDING_WARIO_WISHCLOSE               EQU $29
-DEF OBJ_ENDING_WARIO_WISHOPEN                EQU $2A
+DEF SPR_STATIC_WARIO_NONE                    EQU $00
+DEF SPR_STATIC_WARIO_WALK0                   EQU $01 ; Must be shared with SPR_WARIO_WALK*
+DEF SPR_STATIC_WARIO_WALK1                   EQU $02 ; Must be shared ""
+DEF SPR_STATIC_WARIO_WALK2                   EQU $03 ; Must be shared ""
+DEF SPR_STATIC_WARIO_WALK3                   EQU $04 ; Must be shared ""
+DEF SPR_STATIC_WARIO_IDLE                    EQU $05
+DEF SPR_STATIC_WARIO_FRONT                   EQU $06 
+DEF SPR_STATIC_WARIO_WON0                    EQU $07 
+DEF SPR_STATIC_WARIO_WON1                    EQU $08 
+DEF SPR_STATIC_WARIO_LOST                    EQU $09 
+DEF SPR_STATIC_WARIO_IDLEDIAG                EQU $0A
+DEF SPR_ENDING_WARIO_JUMPDIAG                EQU $0B
+; The rest of STATIC_SPR_WARIO only works without XFLIP
+DEF SPR_HEARTBONUS_WARIO_BACK                EQU $0C
+DEF SPR_HEARTBONUS_WARIO_BACKGRABBOMB        EQU $0D
+DEF SPR_HEARTBONUS_WARIO_BACKHOLDBOMB0       EQU $0E
+DEF SPR_HEARTBONUS_WARIO_BACKHOLDBOMB1       EQU $0F
+DEF SPR_HEARTBONUS_WARIO_BACKTHROWBOMB       EQU $10
+DEF SPR_HEARTBONUS_WARIO_BACKGRABBOMBEXPL0   EQU $11
+DEF SPR_HEARTBONUS_WARIO_BACKGRABBOMBEXPL1   EQU $12
+DEF SPR_HEARTBONUS_WARIO_BACKGRABBOMBEXPL2   EQU $13
+DEF SPR_HEARTBONUS_WARIO_BACKHOLDBOMBEXPL0   EQU $14
+DEF SPR_HEARTBONUS_WARIO_BACKHOLDBOMBEXPL1   EQU $15
+DEF SPR_HEARTBONUS_WARIO_BACKHOLDBOMBEXPL2   EQU $16
+DEF SPR_HEARTBONUS_WARIO_BACKBOMBEXPL3       EQU $17
+DEF SPR_HEARTBONUS_WARIO_BACKBOMBEXPL4       EQU $18
+DEF SPR_COINBONUS_WARIO_IDLEDIAGBACK         EQU $19
+DEF SPR_COINBONUS_WARIO_PULL0                EQU $1A
+DEF SPR_COINBONUS_WARIO_PULL1                EQU $1B
+DEF SPR_COINBONUS_WARIO_CRUSHED              EQU $1C
+DEF SPR_ENDING_WARIO_WALKHOLD0               EQU $1D
+DEF SPR_ENDING_WARIO_WALKHOLD1               EQU $1E
+DEF SPR_ENDING_WARIO_WALKHOLD2               EQU $1F
+DEF SPR_ENDING_WARIO_WALKHOLD3               EQU $20
+DEF SPR_ENDING_WARIO_IDLEHOLD                EQU $21
+DEF SPR_ENDING_WARIO_IDLETHROW               EQU $22
+DEF SPR_ENDING_WARIO_DUCKRUB0                EQU $23
+DEF SPR_ENDING_WARIO_DUCKRUB1                EQU $24
+DEF SPR_ENDING_WARIO_DUCKRUB2                EQU $25
+DEF SPR_ENDING_WARIO_DUCKDIAG                EQU $26
+DEF SPR_ENDING_WARIO_BUMP0                   EQU $27
+DEF SPR_ENDING_WARIO_BUMP1                   EQU $28
+DEF SPR_ENDING_WARIO_WISHCLOSE               EQU $29
+DEF SPR_ENDING_WARIO_WISHOPEN                EQU $2A
                                              
                                              
 ; ============================================================
@@ -685,7 +685,7 @@ DEF ACTRTN_07                                EQU $07 ; Hard bumped (including af
 DEF ACTRTN_SPEC_08                           EQU $08 ; Marked as hit after being thrown something
 DEF ACTRTN_SPEC_09                           EQU $09 ; Grabbed (Treasure-only)
                                              
-; Standard OBJLst parent table offsets       
+; Standard SprMap parent table offsets       
 ; In pairs since different data is used for actors facing left/right.
 DEF ACTOLP_UNUSED_BUMPL                      EQU $00*2 ; $00 ; [TCRF] Was used in earlier builds when bumping against actors.
 DEF ACTOLP_UNUSED_BUMPR                      EQU $01*2 ; $02 ; 
@@ -1800,9 +1800,9 @@ DEF COINBONUS_PLXPOS_MID                     EQU $4C
 DEF COINBONUS_PLXPOS_RIGHT                   EQU $67
                                              
 ; Item *OBJ frames*                          
-DEF COINBONUS_OBJ_ITEM_NONE                  EQU $00
-DEF COINBONUS_OBJ_ITEM_10TON                 EQU COINBONUS_ITEM_10TON+1
-DEF COINBONUS_OBJ_ITEM_MONEYBAG              EQU COINBONUS_ITEM_MONEYBAG+1
+DEF COINBONUS_SPR_ITEM_NONE                  EQU $00
+DEF COINBONUS_SPR_ITEM_10TON                 EQU COINBONUS_ITEM_10TON+1
+DEF COINBONUS_SPR_ITEM_MONEYBAG              EQU COINBONUS_ITEM_MONEYBAG+1
                                              
                                              
 ; Specifies what tile definitions to use in the coin bonus game
@@ -1827,26 +1827,26 @@ DEF HEARTBONUS_PLMODE_LOCK                   EQU $01
 DEF HEARTBONUS_PLMODE_THROW                  EQU $02
                                              
                                              
-DEF HEARTBONUS_OBJ_ENEMYWALK0                EQU $01
-DEF HEARTBONUS_OBJ_ENEMYWALK1                EQU $02
-DEF HEARTBONUS_OBJ_ENEMYWALK2                EQU $03
-DEF HEARTBONUS_OBJ_ENEMYSTUN                 EQU $04
+DEF HEARTBONUS_SPR_ENEMYWALK0                EQU $01
+DEF HEARTBONUS_SPR_ENEMYWALK1                EQU $02
+DEF HEARTBONUS_SPR_ENEMYWALK2                EQU $03
+DEF HEARTBONUS_SPR_ENEMYSTUN                 EQU $04
                                              
-DEF HEARTBONUS_OBJ_BOMB0                     EQU $01
-DEF HEARTBONUS_OBJ_BOMB1                     EQU $02
-DEF HEARTBONUS_OBJ_UNUSED_BOMBEXPL0          EQU $03
-DEF HEARTBONUS_OBJ_BOMBEXPL1                 EQU $04
-DEF HEARTBONUS_OBJ_BOMBEXPL2                 EQU $05
-DEF HEARTBONUS_OBJ_BOMBEXPL3                 EQU $06
+DEF HEARTBONUS_SPR_BOMB0                     EQU $01
+DEF HEARTBONUS_SPR_BOMB1                     EQU $02
+DEF HEARTBONUS_SPR_UNUSED_BOMBEXPL0          EQU $03
+DEF HEARTBONUS_SPR_BOMBEXPL1                 EQU $04
+DEF HEARTBONUS_SPR_BOMBEXPL2                 EQU $05
+DEF HEARTBONUS_SPR_BOMBEXPL3                 EQU $06
                                              
                                              
                                              
-DEF HEARTBONUS_OBJ_BOMBLIGHT0                EQU $01
-DEF HEARTBONUS_OBJ_BOMBLIGHT1                EQU $02
+DEF HEARTBONUS_SPR_BOMBLIGHT0                EQU $01
+DEF HEARTBONUS_SPR_BOMBLIGHT1                EQU $02
                                              
-DEF HEARTBONUS_OBJ_BOMBICON_BOMB             EQU $01
-DEF HEARTBONUS_OBJ_BOMBICON_HIT              EQU $02
-DEF HEARTBONUS_OBJ_BOMBICON_MISS             EQU $03
+DEF HEARTBONUS_SPR_BOMBICON_BOMB             EQU $01
+DEF HEARTBONUS_SPR_BOMBICON_HIT              EQU $02
+DEF HEARTBONUS_SPR_BOMBICON_MISS             EQU $03
                                              
                                              
 DEF HEARTBONUS_BOMBPATH_BAD0                 EQU $00
@@ -1882,14 +1882,14 @@ DEF TRROOM_BLOCKID_TREASURE_E                EQU $1C
 DEF TRROOM_BLOCKID_TREASURE_EMPTY            EQU $1D
 ; ============================================================
                                              
-DEF END_OBJ_HELD_LAMP                        EQU $01
-DEF END_OBJ_HELD_LAMPINV                     EQU $02
-DEF END_OBJ_HELD_MONEYBAG1                   EQU $03
-DEF END_OBJ_HELD_MONEYBAG2                   EQU $04
-DEF END_OBJ_HELD_MONEYBAG3                   EQU $05
-DEF END_OBJ_HELD_MONEYBAG4                   EQU $06
-DEF END_OBJ_HELD_MONEYBAG5                   EQU $07
-DEF END_OBJ_HELD_MONEYBAG6                   EQU $08
+DEF END_SPR_HELD_LAMP                        EQU $01
+DEF END_SPR_HELD_LAMPINV                     EQU $02
+DEF END_SPR_HELD_MONEYBAG1                   EQU $03
+DEF END_SPR_HELD_MONEYBAG2                   EQU $04
+DEF END_SPR_HELD_MONEYBAG3                   EQU $05
+DEF END_SPR_HELD_MONEYBAG4                   EQU $06
+DEF END_SPR_HELD_MONEYBAG5                   EQU $07
+DEF END_SPR_HELD_MONEYBAG6                   EQU $08
                                              
 DEF END_CASTLE_BIRDHOUSE                     EQU $01
 DEF END_CASTLE_TREEHOUSE                     EQU $02
@@ -1899,24 +1899,24 @@ DEF END_CASTLE_BIG                           EQU $05
 DEF END_CASTLE_PLANET                        EQU $06
                                              
                                              
-DEF END_OBJ_CLOUDA0                          EQU $01
-DEF END_OBJ_CLOUDA1                          EQU $02
-DEF END_OBJ_CLOUDB0                          EQU $03
-DEF END_OBJ_CLOUDB1                          EQU $04
-DEF END_OBJ_CLOUDC0                          EQU $05
-DEF END_OBJ_CLOUDC1                          EQU $06
-DEF END_OBJ_WLOGO                            EQU $07
-DEF END_OBJ_WLOGOINV                         EQU $08
+DEF END_SPR_CLOUDA0                          EQU $01
+DEF END_SPR_CLOUDA1                          EQU $02
+DEF END_SPR_CLOUDB0                          EQU $03
+DEF END_SPR_CLOUDB1                          EQU $04
+DEF END_SPR_CLOUDC0                          EQU $05
+DEF END_SPR_CLOUDC1                          EQU $06
+DEF END_SPR_WLOGO                            EQU $07
+DEF END_SPR_WLOGOINV                         EQU $08
                                              
-DEF END_OBJ_BALLOONTHINK                     EQU $01
-DEF END_OBJ_BALLOONSPEAK                     EQU $02
-DEF END_OBJ_BALLOONGENIE                     EQU $03
+DEF END_SPR_BALLOONTHINK                     EQU $01
+DEF END_SPR_BALLOONSPEAK                     EQU $02
+DEF END_SPR_BALLOONGENIE                     EQU $03
                                              
                                              
-DEF END_OBJ_GENIEFACE_LOOK                   EQU $01      ; Eyes open, mouth closed
-DEF END_OBJ_GENIEFACE_LOOKMOUTH              EQU $02 ; Eyes open, mouth open
-DEF END_OBJ_GENIEFACE_BLINK                  EQU $03     ; Eyes closed, mouth closed
-DEF END_OBJ_GENIEFACE_UNUSED_BLINKMOUTH      EQU $04; Eyes closed, mouth open
+DEF END_SPR_GENIEFACE_LOOK                   EQU $01      ; Eyes open, mouth closed
+DEF END_SPR_GENIEFACE_LOOKMOUTH              EQU $02 ; Eyes open, mouth open
+DEF END_SPR_GENIEFACE_BLINK                  EQU $03     ; Eyes closed, mouth closed
+DEF END_SPR_GENIEFACE_UNUSED_BLINKMOUTH      EQU $04; Eyes closed, mouth open
                                              
 DEF END_GENIE_CLOSED                         EQU $01
 DEF END_GENIE_POINT                          EQU $02

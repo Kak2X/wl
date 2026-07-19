@@ -6,8 +6,8 @@
 	dw LevelBlock_WaterCave	; 16x16 Blocks 
 	db $01,$A0	; Player Y
 	db $0F,$18	; Player X
-	db OBJ_WARIO_STAND ; OBJLst Frame
-	db OBJLST_XFLIP	; OBJLst Flags (Face Right)
+	db SPR_WARIO_STAND ; Player sprite
+	db SPRMAP_XFLIP	; Player sprite flags (Face Right)
 	db $01,$60	; Scroll Y
 	db $0E,$B0	; Scroll X
 	db DIR_NONE		; Screen Lock Flags

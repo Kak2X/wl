@@ -7,22 +7,22 @@
 ;        BGColi_HitItemBox spawns a coin by calling SubCall_ActS_SpawnCoinFromBlock.
 ; Meant to be called by Act_ItemInBox.
 Act_ItemInBox_Unused_SpawnCoin: 
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Coin
+	mActSprMapPtrTable SprMapPtrTable_Act_Coin
 	jr   Act_ItemInBox_SetDrop
 	
 ; =============== Act_ItemInBox_Unused_Spawn10Coin ===============
 ; [TCRF] Unreachable code -- a 10-coin is never placed inside item boxes.
 ; Meant to be called by Act_ItemInBox.
 Act_ItemInBox_Unused_Spawn10Coin:
-	mActOBJLstPtrTable OBJLstPtrTable_Act_10Coin
+	mActSprMapPtrTable SprMapPtrTable_Act_10Coin
 	jr   Act_ItemInBox_SetDrop
 	
 ; =============== Act_ItemInBox_SpawnStar ===============
 ; Spawns a star from an item box.
 ; Meant to be called by Act_ItemInBox.
 Act_ItemInBox_SpawnStar:
-	; Set initial OBJLst
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Star
+	; Set initial animation
+	mActSprMapPtrTable SprMapPtrTable_Act_Star
 	jr   Act_ItemInBox_SetDrop
 	
 ; =============== Act_ItemInBox_SetDrop ===============
@@ -38,7 +38,7 @@ Act_ItemInBox_SetDrop:
 	
 	xor  a
 	ld   [sActSetTimer2], a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	
 	; Move whatever we're spawning 8px above, to make it look like
 	; it's coming from the top of the item box.
@@ -59,7 +59,7 @@ Act_ItemInBox_SetDrop:
 	ld   a, DIR_R			; Move right
 	ld   [sActSetDir], a
 	ld   a, [sPlFlags]
-	bit  OBJLSTB_XFLIP, a	; Player facing right?
+	bit  SPRMAPB_XFLIP, a	; Player facing right?
 	ret  nz					; If so, return
 	ld   a, DIR_L			; Move left otherwise
 	ld   [sActSetDir], a
@@ -89,7 +89,7 @@ Act_Unused_SpawnCustom:
 .notFound:
 	ret
 .slotFound:
-	mActS_SetOBJBank OBJLstPtrTable_Act_Unused_Blank
+	mActS_SetOBJBank SprMapPtrTable_Act_Unused_Blank
 	
 	ld   a, $02		; Enabled
 	ldi  [hl], a
@@ -136,14 +136,14 @@ Act_Unused_SpawnCustom:
 	ldi  [hl], a				; Rel.X (Origin)
 	
 	; [POI] Uses this thing, interestingly
-	ld   a, LOW(OBJLstPtrTable_Act_Unused_Blank)	; OBJLst Table
+	ld   a, LOW(SprMapPtrTable_Act_Unused_Blank)	; Animation
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Unused_Blank)
+	ld   a, HIGH(SprMapPtrTable_Act_Unused_Blank)
 	ldi  [hl], a
 	
 	xor  a						; Dir
 	ldi  [hl], a
-	xor  a						; OBJLst ID
+	xor  a						; Sprite mapping ID
 	ldi  [hl], a
 	
 	; [POI] The actor ID comes straight from an otherwise unused variable.
@@ -180,15 +180,15 @@ Act_Unused_SpawnCustom:
 	ld   a, HIGH(sActDummyBlock)
 	ldi  [hl], a
 	
-	ld   a, LOW(OBJLstSharedPtrTable_Act_Key)
+	ld   a, LOW(SprMapSharedPtrTable_Act_Key)
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedPtrTable_Act_Key)
+	ld   a, HIGH(SprMapSharedPtrTable_Act_Key)
 	ldi  [hl], a
 	ret
 
-; =============== mActS_SetOBJLstTableForDefault ===============
-; This macro generates code for an inline ActS_SetOBJLstTableForDefault.
-MACRO mActS_SetOBJLstTableForDefault
+; =============== mActS_SetSprMapTableForDefault ===============
+; This macro generates code for an inline ActS_SetSprMapTableForDefault.
+MACRO mActS_SetSprMapTableForDefault
 	; Generate the table index
 	; DE = ((sActSetId & $0F) - 7) * 2
 	ld   a, [sActSetId]
@@ -198,20 +198,20 @@ MACRO mActS_SetOBJLstTableForDefault
 	ld   e, a				
 	ld   d, $00
 	
-	; Index the ptr table with OBJLstPtrTable
-	ld   hl, OBJLstPtrTableSet_Act_Defaults		
+	; Index the ptr table with SprMapPtrTable
+	ld   hl, SprMapPtrTableSet_Act_Defaults		
 	add  hl, de
-	; Get the read pointer and use it as OBJLstPtrTable
+	; Get the read pointer and use it as SprMapPtrTable
 	ldi  a, [hl]
-	ld   [sActSetOBJLstPtrTablePtr], a
+	ld   [sActSetSprMapPtrTablePtr], a
 	ld   a, [hl]
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   [sActSetSprMapPtrTablePtr+1], a
 ENDM
  
-; =============== ActS_SetOBJLstTableForDefault ===============
-; This subroutine sets the OBJLstPtrTable for the currently processed *default* actor.
-ActS_SetOBJLstTableForDefault:;I
-	mActS_SetOBJLstTableForDefault
+; =============== ActS_SetSprMapTableForDefault ===============
+; This subroutine sets the SprMapPtrTable for the currently processed *default* actor.
+ActS_SetSprMapTableForDefault:;I
+	mActS_SetSprMapTableForDefault
 	ret
 	
 ; =============== ActColi_SetForDefault ===============
@@ -274,7 +274,7 @@ ActInit_Default_ItemUsed:
 	call ActS_SetCodePtr
 	
 	; Set animation
-	mActS_SetOBJLstTableForDefault
+	mActS_SetSprMapTableForDefault
 	
 	; The item should stand on top of the block, not inside it
 	ld   bc, -$10
@@ -299,8 +299,8 @@ ActS_DefaultStand:
 	
 	ld   a, ACTFLAG_UNUSED_NOBUMPKILL
 	ld   [sActSetOpts], a
-	; Every 8 frames increase the OBJLst id
-	call ActS_IncOBJLstIdEvery8
+	; Every 8 frames increase the sprite mapping id
+	call ActS_IncSprMapIdEvery8
 	
 	; If the actor is standing on a solid block, return
 	call ActColi_GetBlockId_Ground
@@ -403,8 +403,8 @@ ActInit_Default:
 	ld   bc, SubCall_Act_ItemGround
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Key
+	; Set initial animation
+	mActSprMapPtrTable SprMapPtrTable_Act_Key
 	
 	ld   a, ACTFLAG_UNUSED_NOBUMPKILL	; Not necessary
 	ld   [sActSetOpts], a
@@ -483,10 +483,10 @@ Act_ItemInBox:
 	xor  a
 	ld   [sActItemYSpeed], a
 	ld   [sActItemRiseTimer], a	; Rise up as normal
-	ld   [sActSetOBJLstId], a	; Reset anim frame
+	ld   [sActSetSprMapId], a	; Reset anim frame
 	
 	; Set animation
-	mActS_SetOBJLstTableForDefault
+	mActS_SetSprMapTableForDefault
 	
 	; Replace code ptr with the item
 	ld   bc, SubCall_Act_ItemGround
@@ -504,7 +504,7 @@ Act_ItemGround:
 	ld   [sActSetOpts], a
 	
 	; Animate every $10 frames
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	;
 	; Make the item rise up from the item box.
@@ -659,7 +659,7 @@ ActS_Spawn10CoinHeld:
 .notFound:
 	ret
 .slotFound:
-	mActS_SetOBJBank OBJLstPtrTable_Act_10CoinHeld
+	mActS_SetOBJBank SprMapPtrTable_Act_10CoinHeld
 	
 	ld   a, ATV_ONSCREEN		; Enabled
 	ldi  [hl], a
@@ -684,13 +684,13 @@ ActS_Spawn10CoinHeld:
 	ld   a, $10					
 	ldi  [hl], a				; Rel.Y (Origin)
 	ldi  [hl], a				; Rel.X (Origin)
-	ld   a, LOW(OBJLstPtrTable_Act_10CoinHeld)	; OBJLst Table
+	ld   a, LOW(SprMapPtrTable_Act_10CoinHeld)	; Animation
 	ldi  [hl], a				
-	ld   a, HIGH(OBJLstPtrTable_Act_10CoinHeld)	; OBJLst Table
+	ld   a, HIGH(SprMapPtrTable_Act_10CoinHeld)	; Animation
 	ldi  [hl], a
 	xor  a						; Dir
 	ldi  [hl], a
-	xor  a						; OBJLSt ID
+	xor  a						; Sprite mapping ID
 	ldi  [hl], a
 	ld   a, ACT_10COIN			; Actor ID
 	ldi  [hl], a
@@ -715,9 +715,9 @@ ActS_Spawn10CoinHeld:
 	ldi  [hl], a
 	ld   a, HIGH(sActDummyBlock); Level layout ptr (not used)
 	ldi  [hl], a
-	ld   a, LOW(OBJLstSharedPtrTable_Act_10Coin)		; Shared table ptr 
+	ld   a, LOW(SprMapSharedPtrTable_Act_10Coin)		; Shared table ptr 
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedPtrTable_Act_10Coin)		; Shared table ptr
+	ld   a, HIGH(SprMapSharedPtrTable_Act_10Coin)		; Shared table ptr
 	ldi  [hl], a
 	
 	ld   a, $01					; Mark the coin as held
@@ -727,16 +727,16 @@ ActS_Spawn10CoinHeld:
 	ld   a, SFX1_0B
 	ld   [sSFX1Set], a
 	ret
-; =============== OBJLstSharedPtrTable_Act_10Coin ===============
-OBJLstSharedPtrTable_Act_10Coin:
-	dw OBJLstPtrTable_Act_10Coin;X
-	dw OBJLstPtrTable_Act_10Coin;X
-	dw OBJLstPtrTable_Act_10Coin;X
-	dw OBJLstPtrTable_Act_10Coin;X
-	dw OBJLstPtrTable_Act_10Coin
-	dw OBJLstPtrTable_Act_10Coin
-	dw OBJLstPtrTable_Act_10Coin;X
-	dw OBJLstPtrTable_Act_10Coin;X
+; =============== SprMapSharedPtrTable_Act_10Coin ===============
+SprMapSharedPtrTable_Act_10Coin:
+	dw SprMapPtrTable_Act_10Coin;X
+	dw SprMapPtrTable_Act_10Coin;X
+	dw SprMapPtrTable_Act_10Coin;X
+	dw SprMapPtrTable_Act_10Coin;X
+	dw SprMapPtrTable_Act_10Coin
+	dw SprMapPtrTable_Act_10Coin
+	dw SprMapPtrTable_Act_10Coin;X
+	dw SprMapPtrTable_Act_10Coin;X
 
 ; =============== ActS_SpawnKeyHeld ===============
 ; Spawns a key held by the player.
@@ -759,7 +759,7 @@ ActS_SpawnKeyHeld:
 	jr   .loop
 	
 .slotFound:
-	mActS_SetOBJBank OBJLstPtrTable_Act_Key
+	mActS_SetOBJBank SprMapPtrTable_Act_Key
 	
 	ld   a, ATV_ONSCREEN		; Enabled
 	ldi  [hl], a
@@ -785,13 +785,13 @@ ActS_SpawnKeyHeld:
 	ldi  [hl], a
 	ld   a, [sPlXRel]		; Rel.X (Origin)
 	ldi  [hl], a				
-	ld   a, LOW(OBJLstPtrTable_Act_Key)		; OBJLst Table
+	ld   a, LOW(SprMapPtrTable_Act_Key)		; Animation
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Key)		; OBJLst Table
+	ld   a, HIGH(SprMapPtrTable_Act_Key)		; Animation
 	ldi  [hl], a
 	xor  a						; Dir
 	ldi  [hl], a
-	xor  a						; OBJLst ID
+	xor  a						; Sprite mapping ID
 	ldi  [hl], a
 	ld   a, $0A					; Actor ID
 	ldi  [hl], a
@@ -816,9 +816,9 @@ ActS_SpawnKeyHeld:
 	ldi  [hl], a
 	ld   a, HIGH(sActDummyBlock); Level layout ptr (not used)
 	ldi  [hl], a
-	ld   a, LOW(OBJLstSharedPtrTable_Act_Key)	; Shared table ptr
+	ld   a, LOW(SprMapSharedPtrTable_Act_Key)	; Shared table ptr
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedPtrTable_Act_Key)	; Shared table ptr
+	ld   a, HIGH(SprMapSharedPtrTable_Act_Key)	; Shared table ptr
 	ldi  [hl], a
 	ld   a, $01					; Mark the key as held
 	ld   [sActHeld], a
@@ -828,15 +828,15 @@ ActS_SpawnKeyHeld:
 	ld   a, SFX1_0B
 	ld   [sSFX1Set], a
 	ret
-OBJLstSharedPtrTable_Act_Key:
-	dw OBJLstPtrTable_Act_Key;X
-	dw OBJLstPtrTable_Act_Key;X
-	dw OBJLstPtrTable_Act_Key;X
-	dw OBJLstPtrTable_Act_Key;X
-	dw OBJLstPtrTable_Act_Key
-	dw OBJLstPtrTable_Act_Key
-	dw OBJLstPtrTable_Act_Key;X
-	dw OBJLstPtrTable_Act_Key;X
+SprMapSharedPtrTable_Act_Key:
+	dw SprMapPtrTable_Act_Key;X
+	dw SprMapPtrTable_Act_Key;X
+	dw SprMapPtrTable_Act_Key;X
+	dw SprMapPtrTable_Act_Key;X
+	dw SprMapPtrTable_Act_Key
+	dw SprMapPtrTable_Act_Key
+	dw SprMapPtrTable_Act_Key;X
+	dw SprMapPtrTable_Act_Key;X
 
 ; =============== ActS_SpawnStunStar ===============
 ; This subroutine spawns the circling stars shown when an heavy enemy or boss is stunned.
@@ -878,7 +878,7 @@ ActS_SpawnStunStar:
 	jr   .checkSlot
 	
 .slotFound:
-	mActS_SetOBJBank OBJLstPtrTable_Act_StunStar
+	mActS_SetOBJBank SprMapPtrTable_Act_StunStar
 	
 	ld   a, ATV_ONSCREEN		; Enabled
 	ldi  [hl], a
@@ -922,14 +922,14 @@ ActS_SpawnStunStar:
 	ldi  [hl], a				; Rel.Y (Origin)
 	ldi  [hl], a				; Rel.X (Origin)
 	
-	ld   a, LOW(OBJLstPtrTable_Act_StunStar)	; OBJLst
+	ld   a, LOW(SprMapPtrTable_Act_StunStar)	; Animation
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstPtrTable_Act_StunStar)
+	ld   a, HIGH(SprMapPtrTable_Act_StunStar)
 	ldi  [hl], a
 	
 	xor  a						; Dir (none)
 	ldi  [hl], a
-	xor  a						; OBJLst frame
+	xor  a						; Sprite mapping ID
 	ldi  [hl], a
 	
 	; Actor ID is set to $06 purely to avoid conflicts.
@@ -969,22 +969,22 @@ ActS_SpawnStunStar:
 	ld   a, HIGH(sActDummyBlock)
 	ldi  [hl], a
 	
-	ld   a, LOW(OBJLstSharedPtrTable_Act_StunStar)	; OBJLst shared table
+	ld   a, LOW(SprMapSharedPtrTable_Act_StunStar)	; Default animation table
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedPtrTable_Act_StunStar)
+	ld   a, HIGH(SprMapSharedPtrTable_Act_StunStar)
 	ldi  [hl], a
 	
 	ret
 	
-OBJLstSharedPtrTable_Act_StunStar:
-	dw OBJLstPtrTable_Act_StunStar;X
-	dw OBJLstPtrTable_Act_StunStar;X
-	dw OBJLstPtrTable_Act_StunStar;X
-	dw OBJLstPtrTable_Act_StunStar;X
-	dw OBJLstPtrTable_Act_StunStar;X
-	dw OBJLstPtrTable_Act_StunStar;X
-	dw OBJLstPtrTable_Act_StunStar;X
-	dw OBJLstPtrTable_Act_StunStar;X
+SprMapSharedPtrTable_Act_StunStar:
+	dw SprMapPtrTable_Act_StunStar;X
+	dw SprMapPtrTable_Act_StunStar;X
+	dw SprMapPtrTable_Act_StunStar;X
+	dw SprMapPtrTable_Act_StunStar;X
+	dw SprMapPtrTable_Act_StunStar;X
+	dw SprMapPtrTable_Act_StunStar;X
+	dw SprMapPtrTable_Act_StunStar;X
+	dw SprMapPtrTable_Act_StunStar;X
 	
 ; =============== Act_StunStar ===============
 ; Loop code for the star effect applied to another stunned actor.
@@ -1042,9 +1042,9 @@ Act_StunStar:
 	ld   a, [sTimer]
 	and  a, $01
 	jr   nz, .chkDespawn
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .chkDespawn:
 	; Despawn after $3C frames
 	ld   a, [sActSetTimer]
@@ -1056,14 +1056,14 @@ Act_StunStar:
 	ld   [sActSetStatus], a
 	ret
 	
-OBJLst_Act_StunStar0: INCBIN "data/objlst/actor/stunstar0.bin"
-OBJLst_Act_StunStar1: INCBIN "data/objlst/actor/stunstar1.bin"
-OBJLst_Act_StunStar2: INCBIN "data/objlst/actor/stunstar2.bin"
-OBJLst_Act_StunStar3: INCBIN "data/objlst/actor/stunstar3.bin"
-OBJLst_Act_StunStar4: INCBIN "data/objlst/actor/stunstar4.bin"
-OBJLst_Act_StunStar5: INCBIN "data/objlst/actor/stunstar5.bin"
-OBJLst_Act_StunStar6: INCBIN "data/objlst/actor/stunstar6.bin"
-OBJLst_Act_StunStar8: INCBIN "data/objlst/actor/stunstar8.bin"
+SprMap_Act_StunStar0: INCBIN "data/sprmap/actor/stunstar0.bin"
+SprMap_Act_StunStar1: INCBIN "data/sprmap/actor/stunstar1.bin"
+SprMap_Act_StunStar2: INCBIN "data/sprmap/actor/stunstar2.bin"
+SprMap_Act_StunStar3: INCBIN "data/sprmap/actor/stunstar3.bin"
+SprMap_Act_StunStar4: INCBIN "data/sprmap/actor/stunstar4.bin"
+SprMap_Act_StunStar5: INCBIN "data/sprmap/actor/stunstar5.bin"
+SprMap_Act_StunStar6: INCBIN "data/sprmap/actor/stunstar6.bin"
+SprMap_Act_StunStar8: INCBIN "data/sprmap/actor/stunstar8.bin"
 
 ; =============== ActS_SpawnHeartInvincible ===============
 ; Spawns a heart after interacting with an actor while invincible, then awards 10 hearts. 
@@ -1118,7 +1118,7 @@ ActS_SpawnHeartInvincible:
 	ret
 	
 .slotFound:
-	mActS_SetOBJBank OBJLstPtrTable_Act_Heart
+	mActS_SetOBJBank SprMapPtrTable_Act_Heart
 	
 	ld   a, $02					; Active actor
 	ldi  [hl], a
@@ -1160,14 +1160,14 @@ ActS_SpawnHeartInvincible:
 	ldi  [hl], a				; Rel Y / Origin
 	ldi  [hl], a				; Rel X / Origin
 	
-	ld   a, LOW(OBJLstPtrTable_Act_Heart)		; OBJLst table ptr
+	ld   a, LOW(SprMapPtrTable_Act_Heart)		; Animation
 	ldi  [hl], a				
-	ld   a, HIGH(OBJLstPtrTable_Act_Heart)	; OBJLst table ptr
+	ld   a, HIGH(SprMapPtrTable_Act_Heart)	; Animation
 	ldi  [hl], a				
 	
 	xor  a						; Direction
 	ldi  [hl], a
-	xor  a						; OBJLstId
+	xor  a						; SprMapId
 	ldi  [hl], a
 	ld   a, ACT_HEART			; Actor ID -- doesn't really change anything here
 	ldi  [hl], a
@@ -1195,23 +1195,23 @@ ActS_SpawnHeartInvincible:
 	ldi  [hl], a
 	ld   a, HIGH(sActDummyBlock); Level layout ptr (not used)
 	ldi  [hl], a
-	ld   a, LOW(OBJLstSharedTablePtr_Act_HeartInvincible)		; OBJLstSharedTable ptr
+	ld   a, LOW(SprMapSharedTablePtr_Act_HeartInvincible)		; SprMapSharedTable ptr
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedTablePtr_Act_HeartInvincible)		; OBJLstSharedTable ptr
+	ld   a, HIGH(SprMapSharedTablePtr_Act_HeartInvincible)		; SprMapSharedTable ptr
 	ldi  [hl], a
 	; Award 10 hearts for the kill (alongside the normal 1 heart given)
 	call Game_Add10Hearts
 	ret
 	
-OBJLstSharedTablePtr_Act_HeartInvincible:
-	dw OBJLstPtrTable_Act_Heart;X
-	dw OBJLstPtrTable_Act_Heart;X
-	dw OBJLstPtrTable_Act_Heart;X
-	dw OBJLstPtrTable_Act_Heart;X
-	dw OBJLstPtrTable_Act_Heart;X
-	dw OBJLstPtrTable_Act_Heart;X
-	dw OBJLstPtrTable_Act_Heart;X
-	dw OBJLstPtrTable_Act_Heart;X
+SprMapSharedTablePtr_Act_HeartInvincible:
+	dw SprMapPtrTable_Act_Heart;X
+	dw SprMapPtrTable_Act_Heart;X
+	dw SprMapPtrTable_Act_Heart;X
+	dw SprMapPtrTable_Act_Heart;X
+	dw SprMapPtrTable_Act_Heart;X
+	dw SprMapPtrTable_Act_Heart;X
+	dw SprMapPtrTable_Act_Heart;X
+	dw SprMapPtrTable_Act_Heart;X
 	
 ; =============== Act_HeartInvincible ===============
 Act_HeartInvincible:
@@ -1224,9 +1224,9 @@ Act_HeartInvincible:
 	ld   a, [sTimer]
 	and  a, $03
 	jr   nz, .moveUp
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .moveUp:
 	ld   bc, -$02				; Move 2px up
 	call ActS_MoveDown
@@ -1292,8 +1292,8 @@ ActS_CoinGame:
 	cp   a, $1E					; Don't spawn any coins for the first $1E frames
 	jp   nc, .incSecTimer
 	
-assert BANK(OBJLstPtrTable_Act_Coin) == BANK(OBJLstPtrTable_Act_10Coin), "OBJLstPtrTable_Act_Coin and OBJLstPtrTable_Act_10Coin must be in the same bank."
-	mActS_SetOBJBank OBJLstPtrTable_Act_Coin
+assert BANK(SprMapPtrTable_Act_Coin) == BANK(SprMapPtrTable_Act_10Coin), "SprMapPtrTable_Act_Coin and SprMapPtrTable_Act_10Coin must be in the same bank."
+	mActS_SetOBJBank SprMapPtrTable_Act_Coin
 	
 	;--
 	; Randomize the properties of the spawned coin
@@ -1304,18 +1304,18 @@ assert BANK(OBJLstPtrTable_Act_Coin) == BANK(OBJLstPtrTable_Act_10Coin), "OBJLst
 .spawnCoin:
 	ld   a, ACTCOLI_COIN
 	ld   [sCoinGameColiType], a
-	ld   a, LOW(OBJLstPtrTable_Act_Coin)
-	ld   [sCoinGameOBJLstPtrTablePtr_Low], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Coin)
-	ld   [sCoinGameOBJLstPtrTablePtr_High], a
+	ld   a, LOW(SprMapPtrTable_Act_Coin)
+	ld   [sCoinGameSprMapPtrTablePtr_Low], a
+	ld   a, HIGH(SprMapPtrTable_Act_Coin)
+	ld   [sCoinGameSprMapPtrTablePtr_High], a
 	jr   .spawnAct
 .spawn10Coin:
 	ld   a, ACTCOLI_10COIN
 	ld   [sCoinGameColiType], a
-	ld   a, LOW(OBJLstPtrTable_Act_10Coin)
-	ld   [sCoinGameOBJLstPtrTablePtr_Low], a
-	ld   a, HIGH(OBJLstPtrTable_Act_10Coin)
-	ld   [sCoinGameOBJLstPtrTablePtr_High], a
+	ld   a, LOW(SprMapPtrTable_Act_10Coin)
+	ld   [sCoinGameSprMapPtrTablePtr_Low], a
+	ld   a, HIGH(SprMapPtrTable_Act_10Coin)
+	ld   [sCoinGameSprMapPtrTablePtr_High], a
 	;--
 	
 .spawnAct:
@@ -1349,9 +1349,9 @@ assert BANK(OBJLstPtrTable_Act_Coin) == BANK(OBJLstPtrTable_Act_10Coin), "OBJLst
 	ldi  [hl], a
 	ld   a, [sActSetRelX]		; Rel.X (Origin)
 	ldi  [hl], a
-	ld   a, [sCoinGameOBJLstPtrTablePtr_Low]	; OBJLst Table
+	ld   a, [sCoinGameSprMapPtrTablePtr_Low]	; Animation
 	ldi  [hl], a
-	ld   a, [sCoinGameOBJLstPtrTablePtr_High]
+	ld   a, [sCoinGameSprMapPtrTablePtr_High]
 	ldi  [hl], a
 	
 	;--
@@ -1371,7 +1371,7 @@ assert BANK(OBJLstPtrTable_Act_Coin) == BANK(OBJLstPtrTable_Act_10Coin), "OBJLst
 	ldi  [hl], a		; Write the result
 	;--
 	
-	xor  a				; OBJLst ID
+	xor  a				; Sprite mapping ID
 	ldi  [hl], a
 	ld   a, ACT_COIN	; Actor ID
 	ldi  [hl], a
@@ -1408,9 +1408,9 @@ assert BANK(OBJLstPtrTable_Act_Coin) == BANK(OBJLstPtrTable_Act_10Coin), "OBJLst
 	ld   a, HIGH(sActDummyBlock)
 	ldi  [hl], a
 	
-	ld   a, LOW(OBJLstSharedPtrTable_Act_Coin)	; OBJLst shared table
+	ld   a, LOW(SprMapSharedPtrTable_Act_Coin)	; Set default animation table
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedPtrTable_Act_Coin)
+	ld   a, HIGH(SprMapSharedPtrTable_Act_Coin)
 	ld   [hl], a
 .incSecTimer:
 	; Handle the secondary time limit.
@@ -1455,7 +1455,7 @@ ActS_SpawnCoinFromDash:
 	ld   l, a
 	jr   .nextSlot
 .found:
-	mActS_SetOBJBank OBJLstPtrTable_Act_Coin
+	mActS_SetOBJBank SprMapPtrTable_Act_Coin
 	
 	ld   a, [sActSetStatus]		; Activity status
 	ldi  [hl], a
@@ -1487,9 +1487,9 @@ ActS_SpawnCoinFromDash:
 	ld   a, [sActSetRelX]		; X Origin
 	ldi  [hl], a
 	
-	ld   a, LOW(OBJLstPtrTable_Act_Coin) ; OBJLstPtrTable
+	ld   a, LOW(SprMapPtrTable_Act_Coin) ; SprMapPtrTable
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Coin)
+	ld   a, HIGH(SprMapPtrTable_Act_Coin)
 	ldi  [hl], a
 	
 	; Make the coin go to the opposite side of the actor (read: going torwards the player)
@@ -1500,7 +1500,7 @@ ActS_SpawnCoinFromDash:
 	swap a						
 	ldi  [hl], a
 	
-	xor  a						; OBJLstId (reset)
+	xor  a						; SprMapId (reset)
 	ldi  [hl], a
 	ld   a, ACT_COIN			; Actor ID
 	ldi  [hl], a
@@ -1533,9 +1533,9 @@ ActS_SpawnCoinFromDash:
 	ld   a, HIGH(sActDummyBlock)
 	ldi  [hl], a
 	
-	ld   a, LOW(OBJLstSharedPtrTable_Act_Coin)	; Shared table ptr
+	ld   a, LOW(SprMapSharedPtrTable_Act_Coin)	; Shared table ptr
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedPtrTable_Act_Coin)	; Shared table ptr
+	ld   a, HIGH(SprMapSharedPtrTable_Act_Coin)	; Shared table ptr
 	ldi  [hl], a
 	ret
 	
@@ -1561,7 +1561,7 @@ ActS_Spawn10Coin:
 	ld   l, a
 	jr   .nextSlot
 .found:
-	mActS_SetOBJBank OBJLstPtrTable_Act_10Coin
+	mActS_SetOBJBank SprMapPtrTable_Act_10Coin
 	ld   a, [sActSetStatus]		; Activity status
 	ldi  [hl], a
 	
@@ -1592,16 +1592,16 @@ ActS_Spawn10Coin:
 	ld   a, [sActSetRelX]		; X Origin
 	ldi  [hl], a
 	
-	ld   a, LOW(OBJLstPtrTable_Act_10Coin) ; OBJLstPtrTable
+	ld   a, LOW(SprMapPtrTable_Act_10Coin) ; SprMapPtrTable
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstPtrTable_Act_10Coin)
+	ld   a, HIGH(SprMapPtrTable_Act_10Coin)
 	ldi  [hl], a
 	
 	; Make the 10-coin move away from the player, unlike normal coins
 	ld   a, [sActSetDir]		; Direction
 	ldi  [hl], a
 	
-	xor  a						; OBJLstId (reset)
+	xor  a						; SprMapId (reset)
 	ldi  [hl], a
 	
 	; This reuses the actor ID for normal coins.
@@ -1637,9 +1637,9 @@ ActS_Spawn10Coin:
 	ld   a, HIGH(sActDummyBlock)
 	ldi  [hl], a
 	
-	ld   a, LOW(OBJLstSharedPtrTable_Act_10Coin)	; OBJLst shared table ptr
+	ld   a, LOW(SprMapSharedPtrTable_Act_10Coin)	; Set default animation table ptr
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedPtrTable_Act_10Coin)
+	ld   a, HIGH(SprMapSharedPtrTable_Act_10Coin)
 	ldi  [hl], a
 	ret
 ; =============== ActS_SpawnCoinFromBlock ===============
@@ -1663,7 +1663,7 @@ ActS_SpawnCoinFromBlock:
 	ld   l, a
 	jr   .nextSlot
 .found:
-	mActS_SetOBJBank OBJLstPtrTable_Act_Coin
+	mActS_SetOBJBank SprMapPtrTable_Act_Coin
 	
 	ld   a, $02					; Active actor
 	ldi  [hl], a
@@ -1692,16 +1692,16 @@ ActS_SpawnCoinFromBlock:
 	ldi  [hl], a
 	ld   a, $00					; Rel X (not used)
 	ldi  [hl], a
-	ld   a, LOW(OBJLstPtrTable_Act_Coin)		; OBJLst table ptr
+	ld   a, LOW(SprMapPtrTable_Act_Coin)		; Animation
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Coin)		; OBJLst table ptr
+	ld   a, HIGH(SprMapPtrTable_Act_Coin)		; Animation
 	ldi  [hl], a
 	
 	; Pick the coin direction based on the player's direction.
 	mPlFlagsToXDir
 	
 	ldi  [hl], a
-	xor  a						; OBJLst Id
+	xor  a						; Sprite mapping ID
 	ldi  [hl], a
 	ld   a, ACT_COIN			; Actor ID
 	ldi  [hl], a
@@ -1766,22 +1766,22 @@ ENDC
 	ldi  [hl], a
 	ld   a, HIGH(sActDummyBlock2)	; Level layout ptr (not used)
 	ldi  [hl], a
-	ld   a, LOW(OBJLstSharedPtrTable_Act_Coin)	; OBJLst shared table
+	ld   a, LOW(SprMapSharedPtrTable_Act_Coin)	; Set default animation table
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedPtrTable_Act_Coin)	; OBJLst shared table
+	ld   a, HIGH(SprMapSharedPtrTable_Act_Coin)	; Set default animation table
 	ldi  [hl], a
 	ret
-; =============== OBJLstSharedPtrTable_Act_Coin ===============
+; =============== SprMapSharedPtrTable_Act_Coin ===============
 ; [TCRF] Not used, and no reason to use it.
-OBJLstSharedPtrTable_Act_Coin:
-	dw OBJLstPtrTable_Act_Coin;X
-	dw OBJLstPtrTable_Act_Coin;X
-	dw OBJLstPtrTable_Act_Coin;X
-	dw OBJLstPtrTable_Act_Coin;X
-	dw OBJLstPtrTable_Act_Coin;X
-	dw OBJLstPtrTable_Act_Coin;X
-	dw OBJLstPtrTable_Act_Coin;X
-	dw OBJLstPtrTable_Act_Coin;X
+SprMapSharedPtrTable_Act_Coin:
+	dw SprMapPtrTable_Act_Coin;X
+	dw SprMapPtrTable_Act_Coin;X
+	dw SprMapPtrTable_Act_Coin;X
+	dw SprMapPtrTable_Act_Coin;X
+	dw SprMapPtrTable_Act_Coin;X
+	dw SprMapPtrTable_Act_Coin;X
+	dw SprMapPtrTable_Act_Coin;X
+	dw SprMapPtrTable_Act_Coin;X
 
 ; =============== Act_Coin ===============
 ; Loop code for coins and 10-coins.
@@ -1822,9 +1822,9 @@ Act_Coin_ChkAnimSpeed:
 	and  a, $0F
 	jr   nz, .end
 	; Increase the anim frame
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .end:
 	ret
 
@@ -1838,7 +1838,7 @@ Act_Coin_ChkAnimSpeed_Ground:
 	jr   c, Act_Coin_Anim4		; If so, animate every 4 frames
 	; Otherwise, animate every 8 frames
 Act_Coin_Anim8:
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	jr   Act_Coin_MoveHorz
 	
 Act_Coin_Anim4:
@@ -1846,9 +1846,9 @@ Act_Coin_Anim4:
 	ld   a, [sTimer]
 	and  a, $03
 	jr   nz, .noInc
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .noInc:
 	jr   Act_Coin_MoveHorz
 	
@@ -1857,9 +1857,9 @@ Act_Coin_Anim2:
 	ld   a, [sTimer]
 	and  a, $01
 	jr   nz, .noInc
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .noInc:
 ;--
 
@@ -2040,7 +2040,7 @@ Act_CoinGame_Coin_ChkAnimSpeed:
 	
 	; Otherwise, animate every 8 frames
 Act_CoinGame_Coin_Anim8:
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	jr   Act_CoinGame_Coin_MoveHorz
 	
 Act_CoinGame_Coin_Anim4:
@@ -2048,9 +2048,9 @@ Act_CoinGame_Coin_Anim4:
 	ld   a, [sTimer]
 	and  a, $03
 	jr   nz, .noInc
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .noInc:
 	jr   Act_CoinGame_Coin_MoveHorz
 	
@@ -2059,9 +2059,9 @@ Act_CoinGame_Coin_Anim2:
 	ld   a, [sTimer]
 	and  a, $01
 	jr   nz, .noInc
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .noInc:
 ;--
 
@@ -2207,106 +2207,106 @@ Act_CoinGame_Coin_MoveLeft:
 	call ActS_MoveRight
 	ret
 	
-; =============== OBJLstPtrTableSet_Act_Defaults ===============
-; This table defines the OBJLstPtrTable used for the default actors.
-OBJLstPtrTableSet_Act_Defaults:
-	dw OBJLstPtrTable_Act_GarlicPot
-	dw OBJLstPtrTable_Act_JetPot
-	dw OBJLstPtrTable_Act_DragonPot
-	dw OBJLstPtrTable_Act_Key
-	dw OBJLstPtrTable_Act_Heart
-	dw OBJLstPtrTable_Act_Star;X
-	dw OBJLstPtrTable_Act_Coin;X
-	dw OBJLstPtrTable_Act_10Coin
-	dw OBJLstPtrTable_Act_BullPot
+; =============== SprMapPtrTableSet_Act_Defaults ===============
+; This table defines the SprMapPtrTable used for the default actors.
+SprMapPtrTableSet_Act_Defaults:
+	dw SprMapPtrTable_Act_GarlicPot
+	dw SprMapPtrTable_Act_JetPot
+	dw SprMapPtrTable_Act_DragonPot
+	dw SprMapPtrTable_Act_Key
+	dw SprMapPtrTable_Act_Heart
+	dw SprMapPtrTable_Act_Star;X
+	dw SprMapPtrTable_Act_Coin;X
+	dw SprMapPtrTable_Act_10Coin
+	dw SprMapPtrTable_Act_BullPot
 	
-OBJLstPtrTable_Act_GarlicPot:
-	dw OBJLst_Act_GarlicPot0
-	dw OBJLst_Act_GarlicPot1
-	dw OBJLst_Act_GarlicPot0
-	dw OBJLst_Act_GarlicPot1
+SprMapPtrTable_Act_GarlicPot:
+	dw SprMap_Act_GarlicPot0
+	dw SprMap_Act_GarlicPot1
+	dw SprMap_Act_GarlicPot0
+	dw SprMap_Act_GarlicPot1
 	dw $0000
 	dw $0000;X
 	dw $0000;X
 	dw $0000;X
-OBJLstPtrTable_Act_DragonPot:
-	dw OBJLst_Act_DragonPot0
-	dw OBJLst_Act_DragonPot1
-	dw OBJLst_Act_DragonPot0
-	dw OBJLst_Act_DragonPot1
+SprMapPtrTable_Act_DragonPot:
+	dw SprMap_Act_DragonPot0
+	dw SprMap_Act_DragonPot1
+	dw SprMap_Act_DragonPot0
+	dw SprMap_Act_DragonPot1
 	dw $0000
 	dw $0000;X
 	dw $0000;X
 	dw $0000;X
-OBJLstPtrTable_Act_JetPot:
-	dw OBJLst_Act_JetPot0
-	dw OBJLst_Act_JetPot1
-	dw OBJLst_Act_JetPot0
-	dw OBJLst_Act_JetPot1
+SprMapPtrTable_Act_JetPot:
+	dw SprMap_Act_JetPot0
+	dw SprMap_Act_JetPot1
+	dw SprMap_Act_JetPot0
+	dw SprMap_Act_JetPot1
 	dw $0000
 	dw $0000;X
 	dw $0000;X
 	dw $0000;X
 ; [TCRF] The key has two frames like other items, but they are identical.
-OBJLstPtrTable_Act_Key:
-	dw OBJLst_Act_Key0
-	dw OBJLst_Act_Key1
-	dw OBJLst_Act_Key0
-	dw OBJLst_Act_Key1
+SprMapPtrTable_Act_Key:
+	dw SprMap_Act_Key0
+	dw SprMap_Act_Key1
+	dw SprMap_Act_Key0
+	dw SprMap_Act_Key1
 	dw $0000
 	dw $0000;X
 	dw $0000;X
 	dw $0000;X
-OBJLstPtrTable_Act_Heart:
-	dw OBJLst_Act_Heart0
-	dw OBJLst_Act_Heart1
-	dw OBJLst_Act_Heart0
-	dw OBJLst_Act_Heart1
+SprMapPtrTable_Act_Heart:
+	dw SprMap_Act_Heart0
+	dw SprMap_Act_Heart1
+	dw SprMap_Act_Heart0
+	dw SprMap_Act_Heart1
 	dw $0000
 	dw $0000;X
 	dw $0000;X
 	dw $0000;X
-OBJLstPtrTable_Act_Star:
-	dw OBJLst_Act_Star0
-	dw OBJLst_Act_Star1
-	dw OBJLst_Act_Star0
-	dw OBJLst_Act_Star1
+SprMapPtrTable_Act_Star:
+	dw SprMap_Act_Star0
+	dw SprMap_Act_Star1
+	dw SprMap_Act_Star0
+	dw SprMap_Act_Star1
 	dw $0000
 	dw $0000;X
 	dw $0000;X
 	dw $0000;X
-OBJLstPtrTable_Act_Coin:
-	dw OBJLst_Act_Coin0
-	dw OBJLst_Act_Coin1
-	dw OBJLst_Act_Coin2
-	dw OBJLst_Act_Coin1
+SprMapPtrTable_Act_Coin:
+	dw SprMap_Act_Coin0
+	dw SprMap_Act_Coin1
+	dw SprMap_Act_Coin2
+	dw SprMap_Act_Coin1
 	dw $0000
 	dw $0000
 	dw $0000
 	dw $0000;X
-OBJLstPtrTable_Act_10Coin:
-	dw OBJLst_Act_10Coin0
-	dw OBJLst_Act_10Coin1
-	dw OBJLst_Act_10Coin2
-	dw OBJLst_Act_10Coin1
+SprMapPtrTable_Act_10Coin:
+	dw SprMap_Act_10Coin0
+	dw SprMap_Act_10Coin1
+	dw SprMap_Act_10Coin2
+	dw SprMap_Act_10Coin1
 	dw $0000
 	dw $0000
 	dw $0000;X
 	dw $0000;X
-OBJLstPtrTable_Act_10CoinHeld:
-	dw OBJLst_Act_10Coin0
-	dw OBJLst_Act_10Coin0
-	dw OBJLst_Act_10Coin0
-	dw OBJLst_Act_10Coin0
+SprMapPtrTable_Act_10CoinHeld:
+	dw SprMap_Act_10Coin0
+	dw SprMap_Act_10Coin0
+	dw SprMap_Act_10Coin0
+	dw SprMap_Act_10Coin0
 	dw $0000
 	dw $0000
 	dw $0000;X
 	dw $0000;X
-OBJLstPtrTable_Act_BullPot:
-	dw OBJLst_Act_BullPot0
-	dw OBJLst_Act_BullPot1
-	dw OBJLst_Act_BullPot0
-	dw OBJLst_Act_BullPot1
+SprMapPtrTable_Act_BullPot:
+	dw SprMap_Act_BullPot0
+	dw SprMap_Act_BullPot1
+	dw SprMap_Act_BullPot0
+	dw SprMap_Act_BullPot1
 	dw $0000
 	dw $0000;X
 	dw $0000;X
@@ -2314,66 +2314,66 @@ OBJLstPtrTable_Act_BullPot:
 	
 ; [TCRF] Unused blank sprite map list, only used by unreferenced spawn code.
 ;        May have been used for invisible actors. 
-OBJLstPtrTable_Act_Unused_Blank:
-	dw OBJLst_Act_Unused_Blank;X
+SprMapPtrTable_Act_Unused_Blank:
+	dw SprMap_Act_Unused_Blank;X
 	dw $0000;X
 	dw $0000;X
 	dw $0000;X
 	dw $0000;X
 
 
-OBJLstPtrTable_Act_StunStar: 	
-	dw OBJLst_Act_StunStar0
-	dw OBJLst_Act_StunStar1
-	dw OBJLst_Act_StunStar2
-	dw OBJLst_Act_StunStar3
-	dw OBJLst_Act_StunStar4
-	dw OBJLst_Act_StunStar5
-	dw OBJLst_Act_StunStar6
-	dw OBJLst_Act_StunStar8
+SprMapPtrTable_Act_StunStar: 	
+	dw SprMap_Act_StunStar0
+	dw SprMap_Act_StunStar1
+	dw SprMap_Act_StunStar2
+	dw SprMap_Act_StunStar3
+	dw SprMap_Act_StunStar4
+	dw SprMap_Act_StunStar5
+	dw SprMap_Act_StunStar6
+	dw SprMap_Act_StunStar8
 	dw $0000
 	dw $0000;X
 	dw $0000;X
 	dw $0000;X
 
-OBJLstPtrTable_Act_StarKill:
-	dw OBJLst_Act_StarKill0
-	dw OBJLst_Act_StarKill1
-	dw OBJLst_Act_StarKill2
-	dw OBJLst_Act_StarKill3
-	dw OBJLst_Act_StarKill_Blank
-	dw OBJLst_Act_StarKill_Blank
+SprMapPtrTable_Act_StarKill:
+	dw SprMap_Act_StarKill0
+	dw SprMap_Act_StarKill1
+	dw SprMap_Act_StarKill2
+	dw SprMap_Act_StarKill3
+	dw SprMap_Act_StarKill_Blank
+	dw SprMap_Act_StarKill_Blank
 	dw $0000;X
 	dw $0000;X
 	dw $0000;X
 	dw $0000;X
 
-OBJLst_Act_StarKill0: INCBIN "data/objlst/actor/starkill0.bin"
-OBJLst_Act_StarKill1: INCBIN "data/objlst/actor/starkill1.bin"
-OBJLst_Act_StarKill2: INCBIN "data/objlst/actor/starkill2.bin"
-OBJLst_Act_StarKill3: INCBIN "data/objlst/actor/starkill3.bin"
-OBJLst_Act_Coin0: INCBIN "data/objlst/actor/coin0.bin"
-OBJLst_Act_Coin1: INCBIN "data/objlst/actor/coin1.bin"
-OBJLst_Act_Coin2: INCBIN "data/objlst/actor/coin2.bin"
-OBJLst_Act_10Coin0: INCBIN "data/objlst/actor/10coin0.bin"
-OBJLst_Act_10Coin1: INCBIN "data/objlst/actor/10coin1.bin"
-OBJLst_Act_10Coin2: INCBIN "data/objlst/actor/10coin2.bin"
-OBJLst_Act_GarlicPot0: INCBIN "data/objlst/actor/garlicpot0.bin"
-OBJLst_Act_GarlicPot1: INCBIN "data/objlst/actor/garlicpot1.bin"
-OBJLst_Act_DragonPot0: INCBIN "data/objlst/actor/dragonpot0.bin"
-OBJLst_Act_DragonPot1: INCBIN "data/objlst/actor/dragonpot1.bin"
-OBJLst_Act_JetPot0: INCBIN "data/objlst/actor/jetpot0.bin"
-OBJLst_Act_JetPot1: INCBIN "data/objlst/actor/jetpot1.bin"
-OBJLst_Act_BullPot0: INCBIN "data/objlst/actor/bullpot0.bin"
-OBJLst_Act_BullPot1: INCBIN "data/objlst/actor/bullpot1.bin"
-OBJLst_Act_Key0: INCBIN "data/objlst/actor/key0.bin"
-OBJLst_Act_Key1: INCBIN "data/objlst/actor/key1.bin" ; [TCRF] Same as OBJLst_Act_Key0
-OBJLst_Act_Heart0: INCBIN "data/objlst/actor/heart0.bin"
-OBJLst_Act_Heart1: INCBIN "data/objlst/actor/heart1.bin"
-OBJLst_Act_Star0: INCBIN "data/objlst/actor/star0.bin"
-OBJLst_Act_Star1: INCBIN "data/objlst/actor/star1.bin"
-OBJLst_Act_Unused_Blank: INCBIN "data/objlst/actor/unused_blank.bin"
-OBJLst_Act_StarKill_Blank: INCBIN "data/objlst/actor/starkill_blank.bin"
+SprMap_Act_StarKill0: INCBIN "data/sprmap/actor/starkill0.bin"
+SprMap_Act_StarKill1: INCBIN "data/sprmap/actor/starkill1.bin"
+SprMap_Act_StarKill2: INCBIN "data/sprmap/actor/starkill2.bin"
+SprMap_Act_StarKill3: INCBIN "data/sprmap/actor/starkill3.bin"
+SprMap_Act_Coin0: INCBIN "data/sprmap/actor/coin0.bin"
+SprMap_Act_Coin1: INCBIN "data/sprmap/actor/coin1.bin"
+SprMap_Act_Coin2: INCBIN "data/sprmap/actor/coin2.bin"
+SprMap_Act_10Coin0: INCBIN "data/sprmap/actor/10coin0.bin"
+SprMap_Act_10Coin1: INCBIN "data/sprmap/actor/10coin1.bin"
+SprMap_Act_10Coin2: INCBIN "data/sprmap/actor/10coin2.bin"
+SprMap_Act_GarlicPot0: INCBIN "data/sprmap/actor/garlicpot0.bin"
+SprMap_Act_GarlicPot1: INCBIN "data/sprmap/actor/garlicpot1.bin"
+SprMap_Act_DragonPot0: INCBIN "data/sprmap/actor/dragonpot0.bin"
+SprMap_Act_DragonPot1: INCBIN "data/sprmap/actor/dragonpot1.bin"
+SprMap_Act_JetPot0: INCBIN "data/sprmap/actor/jetpot0.bin"
+SprMap_Act_JetPot1: INCBIN "data/sprmap/actor/jetpot1.bin"
+SprMap_Act_BullPot0: INCBIN "data/sprmap/actor/bullpot0.bin"
+SprMap_Act_BullPot1: INCBIN "data/sprmap/actor/bullpot1.bin"
+SprMap_Act_Key0: INCBIN "data/sprmap/actor/key0.bin"
+SprMap_Act_Key1: INCBIN "data/sprmap/actor/key1.bin" ; [TCRF] Same as SprMap_Act_Key0
+SprMap_Act_Heart0: INCBIN "data/sprmap/actor/heart0.bin"
+SprMap_Act_Heart1: INCBIN "data/sprmap/actor/heart1.bin"
+SprMap_Act_Star0: INCBIN "data/sprmap/actor/star0.bin"
+SprMap_Act_Star1: INCBIN "data/sprmap/actor/star1.bin"
+SprMap_Act_Unused_Blank: INCBIN "data/sprmap/actor/unused_blank.bin"
+SprMap_Act_StarKill_Blank: INCBIN "data/sprmap/actor/starkill_blank.bin"
 
 ; =============== ActInit_Helmut ===============
 ActInit_Helmut:
@@ -2391,19 +2391,19 @@ ActInit_Helmut:
 	ld   bc, SubCall_Act_Helmut
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
+	; Set initial animation
 	push bc
-	ld   bc, OBJLstPtrTable_ActInit_Helmut
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_ActInit_Helmut
+	call ActS_SetSprMapPtr
 	pop  bc
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_Helmut
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_Helmut
+	call ActS_SetSprMapSharedTablePtr
 	ret
 	
-OBJLstPtrTable_ActInit_Helmut:
-	dw OBJLst_Act_Helmut_MoveD
+SprMapPtrTable_ActInit_Helmut:
+	dw SprMap_Act_Helmut_MoveD
 	dw $0000;X
 
 ; =============== ActInit_Helmut ===============
@@ -2443,11 +2443,11 @@ Act_Helmut_Main:
 	ld   bc, +$01
 	call ActS_MoveDown
 	
-	; Set OBJLst ptr
-	ld   a, LOW(OBJLstPtrTable_Act_Helmut_MoveD)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Helmut_MoveD)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	; Set SprMap ptr
+	ld   a, LOW(SprMapPtrTable_Act_Helmut_MoveD)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Helmut_MoveD)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; When the ground is reached, start moving upwards
 	call ActColi_GetBlockId_Ground
@@ -2480,17 +2480,17 @@ Act_Helmut_Main:
 	call ActS_MoveDown		; And move down by that
 	;--
 	
-	; Use different OBJLst if we moved up or down
-	ld   a, LOW(OBJLstPtrTable_Act_Helmut_MoveU)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Helmut_MoveU)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	; Use different SprMap if we moved up or down
+	ld   a, LOW(SprMapPtrTable_Act_Helmut_MoveU)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Helmut_MoveU)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	bit  7, b				; MSB set (moving up)?
 	ret  nz					; If so, return
-	ld   a, LOW(OBJLstPtrTable_Act_Helmut_MoveD)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Helmut_MoveD)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Helmut_MoveD)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Helmut_MoveD)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	ret
 .topReached:
 	ld   a, SFX4_11
@@ -2514,30 +2514,30 @@ Act_Helmut_MoveUOffTbl:
 	dw $0000
 	dw $0001
 .end:
-OBJLstPtrTable_Act_Helmut_Idle:
-	dw OBJLst_Act_Helmut_MoveD
-	dw OBJLst_Act_Helmut_MoveU
+SprMapPtrTable_Act_Helmut_Idle:
+	dw SprMap_Act_Helmut_MoveD
+	dw SprMap_Act_Helmut_MoveU
 	dw $0000
-OBJLstPtrTable_Act_Helmut_MoveU:
-	dw OBJLst_Act_Helmut_MoveU
+SprMapPtrTable_Act_Helmut_MoveU:
+	dw SprMap_Act_Helmut_MoveU
 	dw $0000;X
-OBJLstPtrTable_Act_Helmut_MoveD:
-	dw OBJLst_Act_Helmut_MoveD
+SprMapPtrTable_Act_Helmut_MoveD:
+	dw SprMap_Act_Helmut_MoveD
 	dw $0000;X
-OBJLstSharedPtrTable_Act_Helmut:
-	dw OBJLstPtrTable_Act_Helmut_Idle;X
-	dw OBJLstPtrTable_Act_Helmut_Idle;X
-	dw OBJLstPtrTable_Act_Helmut_Idle;X
-	dw OBJLstPtrTable_Act_Helmut_Idle;X
-	dw OBJLstPtrTable_Act_Helmut_Idle
-	dw OBJLstPtrTable_Act_Helmut_Idle
-	dw OBJLstPtrTable_Act_Helmut_Idle;X
-	dw OBJLstPtrTable_Act_Helmut_Idle;X
+SprMapSharedPtrTable_Act_Helmut:
+	dw SprMapPtrTable_Act_Helmut_Idle;X
+	dw SprMapPtrTable_Act_Helmut_Idle;X
+	dw SprMapPtrTable_Act_Helmut_Idle;X
+	dw SprMapPtrTable_Act_Helmut_Idle;X
+	dw SprMapPtrTable_Act_Helmut_Idle
+	dw SprMapPtrTable_Act_Helmut_Idle
+	dw SprMapPtrTable_Act_Helmut_Idle;X
+	dw SprMapPtrTable_Act_Helmut_Idle;X
 	
-OBJLst_Act_Helmut_MoveD: INCBIN "data/objlst/actor/helmut_moved.bin"
-OBJLst_Act_Helmut_MoveU: INCBIN "data/objlst/actor/helmut_moveu.bin"
+SprMap_Act_Helmut_MoveD: INCBIN "data/sprmap/actor/helmut_moved.bin"
+SprMap_Act_Helmut_MoveU: INCBIN "data/sprmap/actor/helmut_moveu.bin"
 ; [TCRF] Unused mapping for the stun frame. There's only one of them mapped though.
-OBJLst_Act_Helmut_Unused_Stun: INCBIN "data/objlst/actor/helmut_unused_stun.bin"
+SprMap_Act_Helmut_Unused_Stun: INCBIN "data/sprmap/actor/helmut_unused_stun.bin"
 GFX_Act_Helmut: INCBIN "data/gfx/actor/helmut.bin"
 ; =============== ActInit_Goom ===============
 ActInit_Goom:
@@ -2554,15 +2554,15 @@ ActInit_Goom:
 	ld   bc, SubCall_Act_Goom
 	call ActS_SetCodePtr
 	;--
-	; Set initial OBJLst
+	; Set initial animation
 	push bc
-	ld   bc, OBJLstPtrTable_ActInit_Goom
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_ActInit_Goom
+	call ActS_SetSprMapPtr
 	pop  bc
 	;--
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_Goom
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_Goom
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Set the collision type, and save it as default.
 	; This actor is completely harmless
@@ -2572,8 +2572,8 @@ ActInit_Goom:
 	mSubCall ActS_SaveColiType ; BANK $02
 	ret
 	
-OBJLstPtrTable_ActInit_Goom:
-	dw OBJLst_Act_Goom_WalkL0
+SprMapPtrTable_ActInit_Goom:
+	dw SprMap_Act_Goom_WalkL0
 	dw $0000
 
 ; =============== Act_Goom ===============
@@ -2657,7 +2657,7 @@ Act_Goom_Main:
 ; Attempts to move the actor.
 Act_Goom_Move:
 	; Animate every 8 frames
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	; Moving left or right?
 	ld   a, [sActSetDir]
@@ -2683,10 +2683,10 @@ Act_Goom_Move:
 	ld   bc, -$01		
 	call ActS_MoveRight
 	
-	ld   a, LOW(OBJLstPtrTable_Act_Goom_WalkL)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Goom_WalkL)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Goom_WalkL)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Goom_WalkL)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	;--
 	ret
 .moveR:
@@ -2709,17 +2709,17 @@ Act_Goom_Move:
 	ld   bc, +$01
 	call ActS_MoveRight
 	
-	ld   a, LOW(OBJLstPtrTable_Act_Goom_WalkR)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Goom_WalkR)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Goom_WalkR)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Goom_WalkR)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	ret
 ; =============== Act_Goom_SwitchMove ===============
 ; Starts moving the actor in the opposite direction.
 Act_Goom_SwitchMove:
 	; Reset anim frame to standing frame
 	xor  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	
 	; Set a delay of $1E frames before moving again
 	ld   a, $1E
@@ -2736,94 +2736,94 @@ Act_Goom_SwitchMove:
 	bit  DIRB_R, a					; Will we be moving right?
 	jr   z, .toL					; If not, use the right frame
 .toR:
-	ld   a, LOW(OBJLstPtrTable_Act_Goom_WalkL)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Goom_WalkL)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Goom_WalkL)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Goom_WalkL)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	ret
 .toL:
-	ld   a, LOW(OBJLstPtrTable_Act_Goom_WalkR)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Goom_WalkR)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Goom_WalkR)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Goom_WalkR)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	ret
 	
-; =============== OBJLstSharedPtrTable_Act_Goom ===============
-; Global OBJLst table for Act_Goom
-OBJLstSharedPtrTable_Act_Goom: 
+; =============== SprMapSharedPtrTable_Act_Goom ===============
+; Default animations for Act_Goom
+SprMapSharedPtrTable_Act_Goom: 
 	; Standard tables
 	
-	; [TCRF] OBJLstPtrTable_Act_Goom_Unused_* is a pair of unused 1-frame animations.
+	; [TCRF] SprMapPtrTable_Act_Goom_Unused_* is a pair of unused 1-frame animations.
 	;		 It uses one frame from the stun animation, except it's not displayed upside down.
-	;		 The OBJLst data is unique, since X and Y flipping isn't supported.
-	dw OBJLstPtrTable_Act_Goom_Unused_StunAltL;X	; [TCRF] Unused copy of one frame of the stun
-	dw OBJLstPtrTable_Act_Goom_Unused_StunAltR;X
-	dw OBJLstPtrTable_Act_Goom_RestoreL
-	dw OBJLstPtrTable_Act_Goom_RestoreR
-	dw OBJLstPtrTable_Act_Goom_StunL
-	dw OBJLstPtrTable_Act_Goom_StunR
-	dw OBJLstPtrTable_Act_Goom_WalkL;X	; [TCRF] Custom entries, but they are directly used
-	dw OBJLstPtrTable_Act_Goom_WalkR;X
+	;		 The SprMap data is unique, since X and Y flipping isn't supported.
+	dw SprMapPtrTable_Act_Goom_Unused_StunAltL;X	; [TCRF] Unused copy of one frame of the stun
+	dw SprMapPtrTable_Act_Goom_Unused_StunAltR;X
+	dw SprMapPtrTable_Act_Goom_RestoreL
+	dw SprMapPtrTable_Act_Goom_RestoreR
+	dw SprMapPtrTable_Act_Goom_StunL
+	dw SprMapPtrTable_Act_Goom_StunR
+	dw SprMapPtrTable_Act_Goom_WalkL;X	; [TCRF] Custom entries, but they are directly used
+	dw SprMapPtrTable_Act_Goom_WalkR;X
 
-OBJLstPtrTable_Act_Goom_WalkL:
-	dw OBJLst_Act_Goom_WalkL0
-	dw OBJLst_Act_Goom_WalkL1
-	dw OBJLst_Act_Goom_WalkL0
-	dw OBJLst_Act_Goom_WalkL2
+SprMapPtrTable_Act_Goom_WalkL:
+	dw SprMap_Act_Goom_WalkL0
+	dw SprMap_Act_Goom_WalkL1
+	dw SprMap_Act_Goom_WalkL0
+	dw SprMap_Act_Goom_WalkL2
 	dw $0000
-OBJLstPtrTable_Act_Goom_WalkR:
-	dw OBJLst_Act_Goom_WalkR0
-	dw OBJLst_Act_Goom_WalkR1
-	dw OBJLst_Act_Goom_WalkR0
-	dw OBJLst_Act_Goom_WalkR2
+SprMapPtrTable_Act_Goom_WalkR:
+	dw SprMap_Act_Goom_WalkR0
+	dw SprMap_Act_Goom_WalkR1
+	dw SprMap_Act_Goom_WalkR0
+	dw SprMap_Act_Goom_WalkR2
 	dw $0000
-OBJLstPtrTable_Act_Goom_StunL:
-	dw OBJLst_Act_Goom_StunL0
-	dw OBJLst_Act_Goom_StunL1
-	dw OBJLst_Act_Goom_StunL0
-	dw OBJLst_Act_Goom_StunL2
+SprMapPtrTable_Act_Goom_StunL:
+	dw SprMap_Act_Goom_StunL0
+	dw SprMap_Act_Goom_StunL1
+	dw SprMap_Act_Goom_StunL0
+	dw SprMap_Act_Goom_StunL2
 	dw $0000
-OBJLstPtrTable_Act_Goom_StunR:
-	dw OBJLst_Act_Goom_StunR0
-	dw OBJLst_Act_Goom_StunR1
-	dw OBJLst_Act_Goom_StunR0
-	dw OBJLst_Act_Goom_StunR2
+SprMapPtrTable_Act_Goom_StunR:
+	dw SprMap_Act_Goom_StunR0
+	dw SprMap_Act_Goom_StunR1
+	dw SprMap_Act_Goom_StunR0
+	dw SprMap_Act_Goom_StunR2
 	dw $0000
-OBJLstPtrTable_Act_Goom_Unused_StunAltL:
-	dw OBJLst_Act_Goom_Unused_StunAltL;X
+SprMapPtrTable_Act_Goom_Unused_StunAltL:
+	dw SprMap_Act_Goom_Unused_StunAltL;X
 	dw $0000;X
-OBJLstPtrTable_Act_Goom_Unused_StunAltR:
-	dw OBJLst_Act_Goom_Unused_StunAltR;X
+SprMapPtrTable_Act_Goom_Unused_StunAltR:
+	dw SprMap_Act_Goom_Unused_StunAltR;X
 	dw $0000;X
-OBJLstPtrTable_Act_Goom_RestoreL:
-	dw OBJLst_Act_Goom_StunL0
-	dw OBJLst_Act_Goom_WalkL1
-	dw OBJLst_Act_Goom_WalkL1
+SprMapPtrTable_Act_Goom_RestoreL:
+	dw SprMap_Act_Goom_StunL0
+	dw SprMap_Act_Goom_WalkL1
+	dw SprMap_Act_Goom_WalkL1
 	dw $0000;X
-OBJLstPtrTable_Act_Goom_RestoreR:
-	dw OBJLst_Act_Goom_StunR0
-	dw OBJLst_Act_Goom_WalkR1
-	dw OBJLst_Act_Goom_WalkR1
+SprMapPtrTable_Act_Goom_RestoreR:
+	dw SprMap_Act_Goom_StunR0
+	dw SprMap_Act_Goom_WalkR1
+	dw SprMap_Act_Goom_WalkR1
 	dw $0000;X
 
-; [TCRF] OBJLst_Act_Goom_Unused_Spit* is for spitting out the projectile.
+; [TCRF] SprMap_Act_Goom_Unused_Spit* is for spitting out the projectile.
 ;        There's a proper sprite mapping for this.
-OBJLst_Act_Goom_WalkL0: INCBIN "data/objlst/actor/goom_walkl0.bin"
-OBJLst_Act_Goom_WalkL1: INCBIN "data/objlst/actor/goom_walkl1.bin"
-OBJLst_Act_Goom_WalkL2: INCBIN "data/objlst/actor/goom_walkl2.bin"
-OBJLst_Act_Goom_Unused_SpitL: INCBIN "data/objlst/actor/goom_unused_spitl.bin"
-OBJLst_Act_Goom_StunL0: INCBIN "data/objlst/actor/goom_stunl0.bin"
-OBJLst_Act_Goom_StunL1: INCBIN "data/objlst/actor/goom_stunl1.bin"
-OBJLst_Act_Goom_StunL2: INCBIN "data/objlst/actor/goom_stunl2.bin"
-OBJLst_Act_Goom_Unused_StunAltL: INCBIN "data/objlst/actor/goom_unused_stunaltl.bin"
-OBJLst_Act_Goom_WalkR0: INCBIN "data/objlst/actor/goom_walkr0.bin"
-OBJLst_Act_Goom_WalkR1: INCBIN "data/objlst/actor/goom_walkr1.bin"
-OBJLst_Act_Goom_WalkR2: INCBIN "data/objlst/actor/goom_walkr2.bin"
-OBJLst_Act_Goom_Unused_SpitR: INCBIN "data/objlst/actor/goom_unused_spitr.bin"
-OBJLst_Act_Goom_StunR0: INCBIN "data/objlst/actor/goom_stunr0.bin"
-OBJLst_Act_Goom_StunR1: INCBIN "data/objlst/actor/goom_stunr1.bin"
-OBJLst_Act_Goom_StunR2: INCBIN "data/objlst/actor/goom_stunr2.bin"
-OBJLst_Act_Goom_Unused_StunAltR: INCBIN "data/objlst/actor/goom_unused_stunaltr.bin"
+SprMap_Act_Goom_WalkL0: INCBIN "data/sprmap/actor/goom_walkl0.bin"
+SprMap_Act_Goom_WalkL1: INCBIN "data/sprmap/actor/goom_walkl1.bin"
+SprMap_Act_Goom_WalkL2: INCBIN "data/sprmap/actor/goom_walkl2.bin"
+SprMap_Act_Goom_Unused_SpitL: INCBIN "data/sprmap/actor/goom_unused_spitl.bin"
+SprMap_Act_Goom_StunL0: INCBIN "data/sprmap/actor/goom_stunl0.bin"
+SprMap_Act_Goom_StunL1: INCBIN "data/sprmap/actor/goom_stunl1.bin"
+SprMap_Act_Goom_StunL2: INCBIN "data/sprmap/actor/goom_stunl2.bin"
+SprMap_Act_Goom_Unused_StunAltL: INCBIN "data/sprmap/actor/goom_unused_stunaltl.bin"
+SprMap_Act_Goom_WalkR0: INCBIN "data/sprmap/actor/goom_walkr0.bin"
+SprMap_Act_Goom_WalkR1: INCBIN "data/sprmap/actor/goom_walkr1.bin"
+SprMap_Act_Goom_WalkR2: INCBIN "data/sprmap/actor/goom_walkr2.bin"
+SprMap_Act_Goom_Unused_SpitR: INCBIN "data/sprmap/actor/goom_unused_spitr.bin"
+SprMap_Act_Goom_StunR0: INCBIN "data/sprmap/actor/goom_stunr0.bin"
+SprMap_Act_Goom_StunR1: INCBIN "data/sprmap/actor/goom_stunr1.bin"
+SprMap_Act_Goom_StunR2: INCBIN "data/sprmap/actor/goom_stunr2.bin"
+SprMap_Act_Goom_Unused_StunAltR: INCBIN "data/sprmap/actor/goom_unused_stunaltr.bin"
 GFX_Act_Goom: INCBIN "data/gfx/actor/goom.bin"
 
 ; =============== ActInit_SSTeacupBoss ===============
@@ -2857,8 +2857,8 @@ ENDC
 
 	; This boss moves in the foreground -- there's no visible sprite
 	mActS_SetBlankFrame
-	ld   bc, OBJLstSharedPtrTable_Act_None
-	call ActS_SetOBJLstSharedTablePtr
+	ld   bc, SprMapSharedPtrTable_Act_None
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Adjust the actor's position slightly, since it isn't aligned to the
 	; 16x16 grid limitation of the actor layout.
@@ -3150,9 +3150,9 @@ Act_SSTeacupBoss_Mode_Wind_Main:
 	jr   c, .tryMove					; If so, skip
 	xor  a								; Otherwise, reset the timer
 	ld   [sActTimer], a
-	ld   a, [sActSetOBJLstId]			; AnimFrame++
+	ld   a, [sActSetSprMapId]			; AnimFrame++
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	;--
 .tryMove:
 	;--
@@ -3475,7 +3475,7 @@ Act_SSTeacupBoss_SpawnWatch:
 	inc  a						; SpawnCount++
 	ld   [sActSSTeacupBossSpawnCount], a
 	
-	mActS_SetOBJBank OBJLstSharedPtrTable_Act_Watch
+	mActS_SetOBJBank SprMapSharedPtrTable_Act_Watch
 	
 	ld   a, ATV_ONSCREEN		; Enabled
 	ldi  [hl], a
@@ -3509,14 +3509,14 @@ Act_SSTeacupBoss_SpawnWatch:
 	ldi  [hl], a				; Rel.Y (Origin)
 	ldi  [hl], a				; Rel.X (Origin)
 	
-	ld   a, LOW(OBJLstPtrTable_Act_None)	; OBJLst Table (none)
+	ld   a, LOW(SprMapPtrTable_Act_None)	; Animation (none)
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstPtrTable_Act_None)
+	ld   a, HIGH(SprMapPtrTable_Act_None)
 	ldi  [hl], a
 	
 	ld   a, DIR_L			; Dir
 	ldi  [hl], a
-	xor  a						; OBJLst ID
+	xor  a						; Sprite mapping ID
 	ldi  [hl], a
 	
 	; Actor ID -- With the same assumption about the actor group.
@@ -3550,9 +3550,9 @@ Act_SSTeacupBoss_SpawnWatch:
 	ld   a, HIGH(sActDummyBlock)
 	ldi  [hl], a
 	
-	ld   a, LOW(OBJLstSharedPtrTable_Act_Watch)		; OBJLst shared table
+	ld   a, LOW(SprMapSharedPtrTable_Act_Watch)		; Set default animation table
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedPtrTable_Act_Watch)
+	ld   a, HIGH(SprMapSharedPtrTable_Act_Watch)
 	ldi  [hl], a
 	
 	ld   a, SFX1_29		; Play SFX
@@ -3623,9 +3623,9 @@ Act_SSTeacupBoss_Mode_Hit:
 	ld   a, [sTimer]
 	and  a, $01
 	jr   nz, .chkDuck
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	;--
 .chkDuck:
 	; Move the player left 1px (as if the wind effect was active)
@@ -3952,7 +3952,7 @@ ActS_SpawnBigCoin:
 .noSpawn:
 	ret ; We actually never get here
 .slotFound:
-	mActS_SetOBJBank OBJLstSharedPtrTable_Act_BigCoin
+	mActS_SetOBJBank SprMapSharedPtrTable_Act_BigCoin
 	
 	ld   a, ATV_ONSCREEN		; Enabled
 	ldi  [hl], a
@@ -3996,14 +3996,14 @@ ActS_SpawnBigCoin:
 	ldi  [hl], a				; Rel.Y (Origin)
 	ldi  [hl], a				; Rel.X (Origin)
 	
-	ld   a, LOW(OBJLstPtrTable_Act_None)	; OBJLst Table
+	ld   a, LOW(SprMapPtrTable_Act_None)	; Animation
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstPtrTable_Act_None)
+	ld   a, HIGH(SprMapPtrTable_Act_None)
 	ldi  [hl], a
 	
 	xor  a						; Dir
 	ldi  [hl], a
-	xor  a						; OBJLst ID
+	xor  a						; Sprite mapping ID
 	ldi  [hl], a
 	
 	; Assume current + 1
@@ -4038,9 +4038,9 @@ ActS_SpawnBigCoin:
 	ldi  [hl], a
 	ld   a, HIGH(sActDummyBlock)
 	ldi  [hl], a
-	ld   a, LOW(OBJLstSharedPtrTable_Act_BigCoin)	; OBJLst shared table
+	ld   a, LOW(SprMapSharedPtrTable_Act_BigCoin)	; Set default animation table
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedPtrTable_Act_BigCoin)
+	ld   a, HIGH(SprMapSharedPtrTable_Act_BigCoin)
 	ldi  [hl], a
 	
 	ret
@@ -4064,15 +4064,15 @@ ActInit_BigCoin:
 	ld   bc, SubCall_Act_BigCoin
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
+	; Set initial animation
 	push bc
-	ld   bc, OBJLstPtrTable_ActInit_BigCoin
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_ActInit_BigCoin
+	call ActS_SetSprMapPtr
 	pop  bc
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_BigCoin
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_BigCoin
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Set collision type
 	ld   a, ACTCOLI_BIGCOIN
@@ -4091,17 +4091,17 @@ ActInit_BigCoin:
 	call ActS_MoveRight
 	ret
 	
-OBJLstPtrTable_ActInit_BigCoin:
-	dw OBJLst_Act_BigCoin0
+SprMapPtrTable_ActInit_BigCoin:
+	dw SprMap_Act_BigCoin0
 	dw $0000;X
 	
 ; =============== Act_BigCoin ===============
 Act_BigCoin:
 	; Force set the correct sprite map table
-	ld   a, LOW(OBJLstPtrTable_BigCoinL)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_BigCoinL)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_BigCoinL)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_BigCoinL)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	ld   a, [sActSetTimer]	; Timer++
 	inc  a
@@ -4113,9 +4113,9 @@ Act_BigCoin:
 	ld   a, [sTimer]
 	and  a, $03
 	jr   nz, .end
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .end:
 	ret
 	
@@ -4202,40 +4202,40 @@ Act_BigCoin_Move:
 	ld   [sActSetYSpeed_High], a
 .end:
 	ret
-OBJLstPtrTable_BigCoinL:
-	dw OBJLst_Act_BigCoin0
-	dw OBJLst_Act_BigCoin0
-	dw OBJLst_Act_BigCoin1
-	dw OBJLst_Act_BigCoin2
-	dw OBJLst_Act_BigCoin3
+SprMapPtrTable_BigCoinL:
+	dw SprMap_Act_BigCoin0
+	dw SprMap_Act_BigCoin0
+	dw SprMap_Act_BigCoin1
+	dw SprMap_Act_BigCoin2
+	dw SprMap_Act_BigCoin3
 	dw $0000
 
-; [TCRF] Unused animation which is like OBJLstPtrTable_BigCoinL, but in reverse,
+; [TCRF] Unused animation which is like SprMapPtrTable_BigCoinL, but in reverse,
 ;        meant for big coins facing right. (somehow)
 ;		 This is referenced in the parent table, but it never gets a chance to be used.
-OBJLstPtrTable_BigCoin_Unused_R:
-	dw OBJLst_Act_BigCoin3;X
-	dw OBJLst_Act_BigCoin2;X
-	dw OBJLst_Act_BigCoin1;X
-	dw OBJLst_Act_BigCoin0;X
-	dw OBJLst_Act_BigCoin0;X
+SprMapPtrTable_BigCoin_Unused_R:
+	dw SprMap_Act_BigCoin3;X
+	dw SprMap_Act_BigCoin2;X
+	dw SprMap_Act_BigCoin1;X
+	dw SprMap_Act_BigCoin0;X
+	dw SprMap_Act_BigCoin0;X
 	dw $0000;X
 
 ; [TCRF] This curiously references the unused animation instead of having dummy entries.
-OBJLstSharedPtrTable_Act_BigCoin:
-	dw OBJLstPtrTable_BigCoinL;X
-	dw OBJLstPtrTable_BigCoin_Unused_R;X
-	dw OBJLstPtrTable_BigCoinL;X
-	dw OBJLstPtrTable_BigCoin_Unused_R;X
-	dw OBJLstPtrTable_BigCoinL;X
-	dw OBJLstPtrTable_BigCoin_Unused_R;X
-	dw OBJLstPtrTable_BigCoinL;X
-	dw OBJLstPtrTable_BigCoin_Unused_R;X
+SprMapSharedPtrTable_Act_BigCoin:
+	dw SprMapPtrTable_BigCoinL;X
+	dw SprMapPtrTable_BigCoin_Unused_R;X
+	dw SprMapPtrTable_BigCoinL;X
+	dw SprMapPtrTable_BigCoin_Unused_R;X
+	dw SprMapPtrTable_BigCoinL;X
+	dw SprMapPtrTable_BigCoin_Unused_R;X
+	dw SprMapPtrTable_BigCoinL;X
+	dw SprMapPtrTable_BigCoin_Unused_R;X
 
-OBJLst_Act_BigCoin0: INCBIN "data/objlst/actor/bigcoin0.bin"
-OBJLst_Act_BigCoin1: INCBIN "data/objlst/actor/bigcoin1.bin"
-OBJLst_Act_BigCoin2: INCBIN "data/objlst/actor/bigcoin2.bin"
-OBJLst_Act_BigCoin3: INCBIN "data/objlst/actor/bigcoin3.bin"
+SprMap_Act_BigCoin0: INCBIN "data/sprmap/actor/bigcoin0.bin"
+SprMap_Act_BigCoin1: INCBIN "data/sprmap/actor/bigcoin1.bin"
+SprMap_Act_BigCoin2: INCBIN "data/sprmap/actor/bigcoin2.bin"
+SprMap_Act_BigCoin3: INCBIN "data/sprmap/actor/bigcoin3.bin"
 GFX_Act_BigCoin: INCBIN "data/gfx/actor/bigcoin.bin"
 
 ; =============== ActInit_Checkpoint ===============
@@ -4256,15 +4256,15 @@ ActInit_Checkpoint:
 	ld   bc, SubCall_Act_Checkpoint
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
+	; Set initial animation
 	push bc
-	ld   bc, OBJLstPtrTable_Act_Checkpoint_Inactive
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_Checkpoint_Inactive
+	call ActS_SetSprMapPtr
 	pop  bc
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_Checkpoint
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_Checkpoint
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Set collision type
 	ld   a, $10
@@ -4281,8 +4281,8 @@ ActInit_Checkpoint:
 	ld   [sActCheckPointStatus], a
 	
 	push bc							; and light up the eyes
-	ld   bc, OBJLstPtrTable_Act_Checkpoint_Active
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_Checkpoint_Active
+	call ActS_SetSprMapPtr
 	pop  bc
 	
 	ret
@@ -4318,8 +4318,8 @@ Act_Checkpoint_Inactive:
 	ld   [sActCheckPointStatus], a
 	
 	push bc							; Set glowing eyes
-	ld   bc, OBJLstPtrTable_Act_Checkpoint_Activating
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_Checkpoint_Activating
+	call ActS_SetSprMapPtr
 	pop  bc
 	
 	ld   a, CHECKPOINT_ACTIVATING	; Save checkpoint flag
@@ -4332,8 +4332,8 @@ Act_Checkpoint_Inactive:
 	
 ; =============== Act_Checkpoint_Inactive ===============
 Act_Checkpoint_Activating:
-	call ActS_IncOBJLstIdEvery8
-	ld   a, [sActSetOBJLstId]
+	call ActS_IncSprMapIdEvery8
+	ld   a, [sActSetSprMapId]
 	cp   a, $02					; Is the animation over?
 	ret  c						; If not, return
 	
@@ -4342,47 +4342,47 @@ Act_Checkpoint_Activating:
 	ld   [sActCheckPointStatus], a
 	
 	push bc
-	ld   bc, OBJLstPtrTable_Act_Checkpoint_Active
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_Checkpoint_Active
+	call ActS_SetSprMapPtr
 	pop  bc
 	ret
 	
 ; =============== Act_Checkpoint_Active ===============
 Act_Checkpoint_Active:
-	call ActS_IncOBJLstIdEvery8
-	ld   a, LOW(OBJLstPtrTable_Act_Checkpoint_Active)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Checkpoint_Active)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	call ActS_IncSprMapIdEvery8
+	ld   a, LOW(SprMapPtrTable_Act_Checkpoint_Active)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Checkpoint_Active)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	ret
 	
-OBJLstSharedPtrTable_Act_Checkpoint:
-	dw OBJLstPtrTable_Act_Checkpoint_Inactive;X
-	dw OBJLstPtrTable_Act_Checkpoint_Inactive;X
-	dw OBJLstPtrTable_Act_Checkpoint_Inactive;X
-	dw OBJLstPtrTable_Act_Checkpoint_Inactive;X
-	dw OBJLstPtrTable_Act_Checkpoint_Inactive;X
-	dw OBJLstPtrTable_Act_Checkpoint_Inactive;X
-	dw OBJLstPtrTable_Act_Checkpoint_Inactive;X
-	dw OBJLstPtrTable_Act_Checkpoint_Inactive;X
+SprMapSharedPtrTable_Act_Checkpoint:
+	dw SprMapPtrTable_Act_Checkpoint_Inactive;X
+	dw SprMapPtrTable_Act_Checkpoint_Inactive;X
+	dw SprMapPtrTable_Act_Checkpoint_Inactive;X
+	dw SprMapPtrTable_Act_Checkpoint_Inactive;X
+	dw SprMapPtrTable_Act_Checkpoint_Inactive;X
+	dw SprMapPtrTable_Act_Checkpoint_Inactive;X
+	dw SprMapPtrTable_Act_Checkpoint_Inactive;X
+	dw SprMapPtrTable_Act_Checkpoint_Inactive;X
 
-OBJLstPtrTable_Act_Checkpoint_Inactive:
-	dw OBJLst_Act_Checkpoint0
+SprMapPtrTable_Act_Checkpoint_Inactive:
+	dw SprMap_Act_Checkpoint0
 	dw $0000;X
 ; [TCRF] Last frame doesn't get to be played, though it's used elsewhere.
-OBJLstPtrTable_Act_Checkpoint_Activating:
-	dw OBJLst_Act_Checkpoint0
-	dw OBJLst_Act_Checkpoint1
-	dw OBJLst_Act_Checkpoint2;X
+SprMapPtrTable_Act_Checkpoint_Activating:
+	dw SprMap_Act_Checkpoint0
+	dw SprMap_Act_Checkpoint1
+	dw SprMap_Act_Checkpoint2;X
 	dw $0000;X
-OBJLstPtrTable_Act_Checkpoint_Active:
-	dw OBJLst_Act_Checkpoint1
-	dw OBJLst_Act_Checkpoint2
+SprMapPtrTable_Act_Checkpoint_Active:
+	dw SprMap_Act_Checkpoint1
+	dw SprMap_Act_Checkpoint2
 	dw $0000
 
-OBJLst_Act_Checkpoint0: INCBIN "data/objlst/actor/checkpoint0.bin"
-OBJLst_Act_Checkpoint1: INCBIN "data/objlst/actor/checkpoint1.bin"
-OBJLst_Act_Checkpoint2: INCBIN "data/objlst/actor/checkpoint2.bin"
+SprMap_Act_Checkpoint0: INCBIN "data/sprmap/actor/checkpoint0.bin"
+SprMap_Act_Checkpoint1: INCBIN "data/sprmap/actor/checkpoint1.bin"
+SprMap_Act_Checkpoint2: INCBIN "data/sprmap/actor/checkpoint2.bin"
 GFX_Act_Checkpoint: INCBIN "data/gfx/actor/checkpoint.bin"
 
 ; =============== ActInit_Puff ===============
@@ -4401,15 +4401,15 @@ ActInit_Puff:
 	ld   bc, SubCall_Act_Puff
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
+	; Set initial animation
 	push bc
-	ld   bc, OBJLstPtrTable_ActInit_Puff
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_ActInit_Puff
+	call ActS_SetSprMapPtr
 	pop  bc
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_Puff
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_Puff
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Make defeatable on all sides
 	mActColiMask ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM
@@ -4426,8 +4426,8 @@ ActInit_Puff:
 	ld   [sActSetTimer4], a ; Not used
 	ret
 	
-OBJLstPtrTable_ActInit_Puff:
-	dw OBJLst_Act_Puff_Idle0
+SprMapPtrTable_ActInit_Puff:
+	dw SprMap_Act_Puff_Idle0
 	dw $0000;X
 	
 ; =============== Act_Puff ===============
@@ -4487,7 +4487,7 @@ Act_Puff_Main:
 	; The main difference between modes in a pair is about:
 	; - Collision type (to avoid retriggering any effect)
 	; - Collision box size
-	; - Animation (aka OBJLstPtrTable)
+	; - Animation (aka SprMapPtrTable)
 	
 	ld   a, [sActLocalRoutineId]
 	and  a, $03
@@ -4512,8 +4512,8 @@ Act_Puff_Activate_NoJump:
 	ld   [sActLocalRoutineId], a
 	
 	push bc
-	ld   bc, OBJLstPtrTable_Act_Puff_Inflate			; Update OBJLst
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_Puff_Inflate			; Update animation
+	call ActS_SetSprMapPtr
 	pop  bc
 	
 	ld   a, -$14				; Increase collision box height
@@ -4527,11 +4527,11 @@ Act_Puff_IdleNoAnim:
 	ld   a, COLI
 	ld   [sActSetColiType], a
 	
-	call ActS_IncOBJLstIdEvery8
-	ld   a, LOW(OBJLstPtrTable_Act_Puff_Idle)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Puff_Idle)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	call ActS_IncSprMapIdEvery8
+	ld   a, LOW(SprMapPtrTable_Act_Puff_Idle)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Puff_Idle)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; 1/10th chance of switching to Act_Puff_IdleWithAnim.
 	; This is done to make the idle animation start at random intervals.
@@ -4543,8 +4543,8 @@ Act_Puff_IdleNoAnim:
 	ld   [sActLocalRoutineId], a
 	
 	push bc
-	ld   bc, OBJLstPtrTable_Act_Puff_Wave
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_Puff_Wave
+	call ActS_SetSprMapPtr
 	pop  bc
 	
 	ret
@@ -4556,24 +4556,24 @@ Act_Puff_IdleWithAnim:
 	ld   a, COLI
 	ld   [sActSetColiType], a
 	
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
-	ld   a, LOW(OBJLstPtrTable_Act_Puff_Wave)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Puff_Wave)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Puff_Wave)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Puff_Wave)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; Display the 4 frames of animation.
 	; Once we're done, return to the main idle mode.
-	ld   a, [sActSetOBJLstId]
-	cp   a, $04					; sActSetOBJLstId < $04?
+	ld   a, [sActSetSprMapId]
+	cp   a, $04					; sActSetSprMapId < $04?
 	ret  c						; If so, return
 	; Otherwise, return to routine $00
 	ld   a, PUFF_RTN_IDLE
 	ld   [sActLocalRoutineId], a
 	push bc
-	ld   bc, OBJLstPtrTable_Act_Puff_Idle
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_Puff_Idle
+	call ActS_SetSprMapPtr
 	pop  bc
 	ret
 	
@@ -4588,19 +4588,19 @@ Act_Puff_Inflate:
 	ld   a, [sTimer]
 	and  a, $03
 	jr   nz, .chkAnim
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .chkAnim:
-	; Set OBJLst for this animation
-	ld   a, LOW(OBJLstPtrTable_Act_Puff_Inflate)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Puff_Inflate)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	; Set animation
+	ld   a, LOW(SprMapPtrTable_Act_Puff_Inflate)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Puff_Inflate)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; Wait until all $0C frames are played
-	ld   a, [sActSetOBJLstId]
-	cp   a, $0C						; sActSetOBJLstId < $0C?
+	ld   a, [sActSetSprMapId]
+	cp   a, $0C						; sActSetSprMapId < $0C?
 	ret  c							; If so, return
 	
 	; After that, switch to routine $03
@@ -4608,8 +4608,8 @@ Act_Puff_Inflate:
 	ld   [sActLocalRoutineId], a
 	
 	push bc
-	ld   bc, OBJLstPtrTable_Act_Puff_Deflate
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_Puff_Deflate
+	call ActS_SetSprMapPtr
 	pop  bc
 	
 	ld   a, -$08					; Reduce height from $14 to $08
@@ -4624,94 +4624,94 @@ Act_Puff_Deflate:
 	ld   a, COLI
 	ld   [sActSetColiType], a
 	
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
-	ld   a, LOW(OBJLstPtrTable_Act_Puff_Deflate)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Puff_Deflate)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Puff_Deflate)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Puff_Deflate)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	
 	; Wait until all $0C frames are played
-	ld   a, [sActSetOBJLstId]
-	cp   a, $0C						; sActSetOBJLstId < $0C?
+	ld   a, [sActSetSprMapId]
+	cp   a, $0C						; sActSetSprMapId < $0C?
 	ret  c							; If so, return
 	
 	; After that, switch to routine $00
 	ld   a, $00
 	ld   [sActLocalRoutineId], a
 	push bc
-	ld   bc, OBJLstPtrTable_Act_Puff_Idle
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_Puff_Idle
+	call ActS_SetSprMapPtr
 	pop  bc
 	ret
 	
-OBJLstPtrTable_Act_Puff_Idle:
-	dw OBJLst_Act_Puff_Idle0
+SprMapPtrTable_Act_Puff_Idle:
+	dw SprMap_Act_Puff_Idle0
 	dw $0000
-OBJLstPtrTable_Act_Puff_Wave:
-	dw OBJLst_Act_Puff_Idle0
-	dw OBJLst_Act_Puff_Idle1
-	dw OBJLst_Act_Puff_Idle0
-	dw OBJLst_Act_Puff_Idle2
+SprMapPtrTable_Act_Puff_Wave:
+	dw SprMap_Act_Puff_Idle0
+	dw SprMap_Act_Puff_Idle1
+	dw SprMap_Act_Puff_Idle0
+	dw SprMap_Act_Puff_Idle2
 	dw $0000;X
-OBJLstPtrTable_Act_Puff_Inflate:
-	dw OBJLst_Act_Puff_Idle0
-	dw OBJLst_Act_Puff_Idle0
-	dw OBJLst_Act_Puff_Inflate0
-	dw OBJLst_Act_Puff_Inflate0
-	dw OBJLst_Act_Puff_Inflate1
-	dw OBJLst_Act_Puff_Inflate1
-	dw OBJLst_Act_Puff_Inflate2
-	dw OBJLst_Act_Puff_Inflate2
-	dw OBJLst_Act_Puff_Inflate1
-	dw OBJLst_Act_Puff_Inflate2
-	dw OBJLst_Act_Puff_Inflate1
-	dw OBJLst_Act_Puff_Inflate2
+SprMapPtrTable_Act_Puff_Inflate:
+	dw SprMap_Act_Puff_Idle0
+	dw SprMap_Act_Puff_Idle0
+	dw SprMap_Act_Puff_Inflate0
+	dw SprMap_Act_Puff_Inflate0
+	dw SprMap_Act_Puff_Inflate1
+	dw SprMap_Act_Puff_Inflate1
+	dw SprMap_Act_Puff_Inflate2
+	dw SprMap_Act_Puff_Inflate2
+	dw SprMap_Act_Puff_Inflate1
+	dw SprMap_Act_Puff_Inflate2
+	dw SprMap_Act_Puff_Inflate1
+	dw SprMap_Act_Puff_Inflate2
 	dw $0000;X
-OBJLstPtrTable_Act_Puff_Deflate:
-	dw OBJLst_Act_Puff_Inflate2
-	dw OBJLst_Act_Puff_Inflate2
-	dw OBJLst_Act_Puff_Inflate2
-	dw OBJLst_Act_Puff_Inflate2
-	dw OBJLst_Act_Puff_Inflate2
-	dw OBJLst_Act_Puff_Inflate1
-	dw OBJLst_Act_Puff_Inflate0
-	dw OBJLst_Act_Puff_Idle0
-	dw OBJLst_Act_Puff_Idle1
-	dw OBJLst_Act_Puff_Idle0
-	dw OBJLst_Act_Puff_Idle2
-	dw OBJLst_Act_Puff_Idle0
+SprMapPtrTable_Act_Puff_Deflate:
+	dw SprMap_Act_Puff_Inflate2
+	dw SprMap_Act_Puff_Inflate2
+	dw SprMap_Act_Puff_Inflate2
+	dw SprMap_Act_Puff_Inflate2
+	dw SprMap_Act_Puff_Inflate2
+	dw SprMap_Act_Puff_Inflate1
+	dw SprMap_Act_Puff_Inflate0
+	dw SprMap_Act_Puff_Idle0
+	dw SprMap_Act_Puff_Idle1
+	dw SprMap_Act_Puff_Idle0
+	dw SprMap_Act_Puff_Idle2
+	dw SprMap_Act_Puff_Idle0
 	dw $0000;X
 
 ; [TCRF] Stun animation gets cut short since only the first frame
 ;        is displayed when the actor is defeated.
-OBJLstPtrTable_Act_Puff_Stun:
-	dw OBJLst_Act_Puff_Stun0
-	dw OBJLst_Act_Puff_Stun_Unused_1;X
-	dw OBJLst_Act_Puff_Stun0;X
-	dw OBJLst_Act_Puff_Stun_Unused_2;X
+SprMapPtrTable_Act_Puff_Stun:
+	dw SprMap_Act_Puff_Stun0
+	dw SprMap_Act_Puff_Stun_Unused_1;X
+	dw SprMap_Act_Puff_Stun0;X
+	dw SprMap_Act_Puff_Stun_Unused_2;X
 	dw $0000;X
 
-OBJLstSharedPtrTable_Act_Puff:
-	dw OBJLstPtrTable_Act_Puff_Stun;X
-	dw OBJLstPtrTable_Act_Puff_Stun;X
-	dw OBJLstPtrTable_Act_Puff_Stun;X
-	dw OBJLstPtrTable_Act_Puff_Stun;X
-	dw OBJLstPtrTable_Act_Puff_Stun
-	dw OBJLstPtrTable_Act_Puff_Stun;X
-	dw OBJLstPtrTable_Act_Puff_Stun;X
-	dw OBJLstPtrTable_Act_Puff_Stun;X
+SprMapSharedPtrTable_Act_Puff:
+	dw SprMapPtrTable_Act_Puff_Stun;X
+	dw SprMapPtrTable_Act_Puff_Stun;X
+	dw SprMapPtrTable_Act_Puff_Stun;X
+	dw SprMapPtrTable_Act_Puff_Stun;X
+	dw SprMapPtrTable_Act_Puff_Stun
+	dw SprMapPtrTable_Act_Puff_Stun;X
+	dw SprMapPtrTable_Act_Puff_Stun;X
+	dw SprMapPtrTable_Act_Puff_Stun;X
 
-OBJLst_Act_Puff_Idle0: INCBIN "data/objlst/actor/puff_idle0.bin"
-OBJLst_Act_Puff_Idle1: INCBIN "data/objlst/actor/puff_idle1.bin"
-OBJLst_Act_Puff_Idle2: INCBIN "data/objlst/actor/puff_idle2.bin"
-OBJLst_Act_Puff_Inflate0: INCBIN "data/objlst/actor/puff_inflate0.bin"
-OBJLst_Act_Puff_Inflate1: INCBIN "data/objlst/actor/puff_inflate1.bin"
-OBJLst_Act_Puff_Inflate2: INCBIN "data/objlst/actor/puff_inflate2.bin"
-OBJLst_Act_Puff_Stun0: INCBIN "data/objlst/actor/puff_stun0.bin"
-OBJLst_Act_Puff_Stun_Unused_1: INCBIN "data/objlst/actor/puff_stun_unused_1.bin"
-OBJLst_Act_Puff_Stun_Unused_2: INCBIN "data/objlst/actor/puff_stun_unused_2.bin"
+SprMap_Act_Puff_Idle0: INCBIN "data/sprmap/actor/puff_idle0.bin"
+SprMap_Act_Puff_Idle1: INCBIN "data/sprmap/actor/puff_idle1.bin"
+SprMap_Act_Puff_Idle2: INCBIN "data/sprmap/actor/puff_idle2.bin"
+SprMap_Act_Puff_Inflate0: INCBIN "data/sprmap/actor/puff_inflate0.bin"
+SprMap_Act_Puff_Inflate1: INCBIN "data/sprmap/actor/puff_inflate1.bin"
+SprMap_Act_Puff_Inflate2: INCBIN "data/sprmap/actor/puff_inflate2.bin"
+SprMap_Act_Puff_Stun0: INCBIN "data/sprmap/actor/puff_stun0.bin"
+SprMap_Act_Puff_Stun_Unused_1: INCBIN "data/sprmap/actor/puff_stun_unused_1.bin"
+SprMap_Act_Puff_Stun_Unused_2: INCBIN "data/sprmap/actor/puff_stun_unused_2.bin"
 GFX_Act_Puff: INCBIN "data/gfx/actor/puff.bin"
 
 ; =============== ActInit_LavaBubble ===============
@@ -4733,15 +4733,15 @@ ActInit_LavaBubble:
 	ld   bc, SubCall_Act_LavaBubble
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
+	; Set initial animation
 	push bc
-	ld   bc, OBJLstPtrTable_ActInit_LavaBubble
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_ActInit_LavaBubble
+	call ActS_SetSprMapPtr
 	pop  bc
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_LavaBubble
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_LavaBubble
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Touching a fireball should hurt on all sides, obviously
 	mActColiMask ACTCOLI_DAMAGE, ACTCOLI_DAMAGE, ACTCOLI_DAMAGE, ACTCOLI_DAMAGE
@@ -4760,11 +4760,11 @@ ActInit_LavaBubble:
 	ret
 	
 ; [POI] This "preview animation" is only visible in debug freeroam mode.
-;       Well, everything under OBJLstPtrTable_ActInit is only technically visible in debug,
+;       Well, everything under SprMapPtrTable_ActInit is only technically visible in debug,
 ;       but for the lava bubble it's particularly noticeable since it isn't visible at first in normal gameplay.
 ;       As soon as the game is unpaused, the lava bubble hides itself.
-OBJLstPtrTable_ActInit_LavaBubble:
-	dw OBJLst_Act_LavaBubble0
+SprMapPtrTable_ActInit_LavaBubble:
+	dw SprMap_Act_LavaBubble0
 	dw $0000;X
 	
 ; =============== Act_LavaBubble ===============
@@ -4808,7 +4808,7 @@ Act_LavaBubble_Wait:
 	ret
 ; =============== Act_LavaBubble_Main ===============
 Act_LavaBubble_Main:
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	ld   a, [sActSetTimer]			; Timer++
 	inc  a
@@ -4819,10 +4819,10 @@ Act_LavaBubble_Main:
 	jr   nz, Act_LavaBubble_Wait	; If so, continue to wait
 	
 .chkJump:
-	ld   a, LOW(OBJLstPtrTable_Act_LavaBubble)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_LavaBubble)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_LavaBubble)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_LavaBubble)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	call Act_LavaBubble_ChkJump
 	ret
@@ -4855,24 +4855,24 @@ Act_LavaBubble_ChkJump:
 	ld   a, SFX4_10
 	ld   [sSFX4Set], a
 	ret
-OBJLstPtrTable_Act_LavaBubble:
-	dw OBJLst_Act_LavaBubble0
-	dw OBJLst_Act_LavaBubble1
-	dw OBJLst_Act_LavaBubble2
+SprMapPtrTable_Act_LavaBubble:
+	dw SprMap_Act_LavaBubble0
+	dw SprMap_Act_LavaBubble1
+	dw SprMap_Act_LavaBubble2
 	dw $0000
-OBJLstSharedPtrTable_Act_LavaBubble:
-	dw OBJLstPtrTable_Act_LavaBubble;X
-	dw OBJLstPtrTable_Act_LavaBubble;X
-	dw OBJLstPtrTable_Act_LavaBubble;X
-	dw OBJLstPtrTable_Act_LavaBubble;X
-	dw OBJLstPtrTable_Act_LavaBubble;X
-	dw OBJLstPtrTable_Act_LavaBubble;X
-	dw OBJLstPtrTable_Act_LavaBubble;X
-	dw OBJLstPtrTable_Act_LavaBubble;X
+SprMapSharedPtrTable_Act_LavaBubble:
+	dw SprMapPtrTable_Act_LavaBubble;X
+	dw SprMapPtrTable_Act_LavaBubble;X
+	dw SprMapPtrTable_Act_LavaBubble;X
+	dw SprMapPtrTable_Act_LavaBubble;X
+	dw SprMapPtrTable_Act_LavaBubble;X
+	dw SprMapPtrTable_Act_LavaBubble;X
+	dw SprMapPtrTable_Act_LavaBubble;X
+	dw SprMapPtrTable_Act_LavaBubble;X
 
-OBJLst_Act_LavaBubble0: INCBIN "data/objlst/actor/lavabubble0.bin"
-OBJLst_Act_LavaBubble1: INCBIN "data/objlst/actor/lavabubble1.bin"
-OBJLst_Act_LavaBubble2: INCBIN "data/objlst/actor/lavabubble2.bin"
+SprMap_Act_LavaBubble0: INCBIN "data/sprmap/actor/lavabubble0.bin"
+SprMap_Act_LavaBubble1: INCBIN "data/sprmap/actor/lavabubble1.bin"
+SprMap_Act_LavaBubble2: INCBIN "data/sprmap/actor/lavabubble2.bin"
 GFX_Act_LavaBubble: INCBIN "data/gfx/actor/lavabubble.bin"
 
 ; =============== ActInit_TreasureChestLid ===============
@@ -4894,9 +4894,9 @@ ActInit_TreasureChestLid:
 	ld   bc, SubCall_Act_TreasureChestLid
 	call ActS_SetCodePtr
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_TreasureChestLid
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_TreasureChestLid
+	call ActS_SetSprMapSharedTablePtr
 	
 	;--
 	; [TCRF] Asserts that a valid treasure ID was specified in the room definition.
@@ -4931,10 +4931,10 @@ ActInit_TreasureChestLid:
 	jr   z, .isClosed		; If not, jump
 	
 .isOpen:
-	; Set initial OBJLst when open
+	; Set initial animation when open
 	push bc
-	ld   bc, OBJLstPtrTable_Act_TreasureChestLid_Open
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_TreasureChestLid_Open
+	call ActS_SetSprMapPtr
 	pop  bc
 	
 	xor  a						; Make intangible
@@ -4943,10 +4943,10 @@ ActInit_TreasureChestLid:
 	ld   [sActLocalRoutineId], a
 	ret
 .isClosed:
-	; Set initial OBJLst when closed
+	; Set initial animation when closed
 	push bc
-	ld   bc, OBJLstPtrTable_Act_TreasureChestLid_Closed
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_TreasureChestLid_Closed
+	call ActS_SetSprMapPtr
 	pop  bc
 	
 	ld   a, ACTCOLI_TOPSOLIDHIT		; Dash to open
@@ -4983,11 +4983,11 @@ Level_TreasureCompletionMask_B0F:
 	dw %0100000000000000 ; J
 	dw %1000000000000000 ; E
 
-OBJLstPtrTable_Act_TreasureChestLid_Closed:
-	dw OBJLst_Act_TreasureChestLid_Closed
+SprMapPtrTable_Act_TreasureChestLid_Closed:
+	dw SprMap_Act_TreasureChestLid_Closed
 	dw $0000;X
-OBJLstPtrTable_Act_TreasureChestLid_Open:
-	dw OBJLst_Act_TreasureChestLid_Open
+SprMapPtrTable_Act_TreasureChestLid_Open:
+	dw SprMap_Act_TreasureChestLid_Open
 	dw $0000;X
 	
 ; =============== Act_TreasureChestLid ===============
@@ -5009,8 +5009,8 @@ Act_TreasureChestLid_Closed:
 	ret
 .openLid:
 	push bc
-	ld   bc, OBJLstPtrTable_Act_TreasureChestLid_Open	; Set opened frame
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_TreasureChestLid_Open	; Set opened frame
+	call ActS_SetSprMapPtr
 	pop  bc
 	
 	xor  a						; Clear collision
@@ -5022,10 +5022,10 @@ Act_TreasureChestLid_Closed:
 	
 ; =============== Act_TreasureChestLid_Open ===============
 Act_TreasureChestLid_Open:
-	ld   a, LOW(OBJLstPtrTable_Act_TreasureChestLid_Open)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_TreasureChestLid_Open)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_TreasureChestLid_Open)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_TreasureChestLid_Open)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	xor  a
 	ld   [sActSetColiType], a
 	ret
@@ -5051,7 +5051,7 @@ Act_TreasureChestLid_SpawnTreasure:
 	jr   .checkSlot
 	ret ; We can't get here
 .slotFound:
-	mActS_SetOBJBank OBJLstSharedPtrTable_Act_Treasure
+	mActS_SetOBJBank SprMapSharedPtrTable_Act_Treasure
 	
 	ld   a, ATV_ONSCREEN		; Enabled
 	ldi  [hl], a
@@ -5076,14 +5076,14 @@ Act_TreasureChestLid_SpawnTreasure:
 	ldi  [hl], a				; Rel.Y (Origin)
 	ldi  [hl], a				; Rel.X (Origin)
 	
-	ld   a, LOW(OBJLstPtrTable_Act_Treasure)		; OBJLst Table
+	ld   a, LOW(SprMapPtrTable_Act_Treasure)		; Animation
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Treasure)
+	ld   a, HIGH(SprMapPtrTable_Act_Treasure)
 	ldi  [hl], a
 	
 	xor  a
 	ldi  [hl], a				; Dir
-	ldi  [hl], a				; OBJLst ID
+	ldi  [hl], a				; Sprite mapping ID
 	
 	; Actor ID
 	; This does an assuption on the actor group definition.
@@ -5115,24 +5115,24 @@ Act_TreasureChestLid_SpawnTreasure:
 	ld   a, HIGH(sActDummyBlock)
 	ldi  [hl], a
 	
-	ld   a, LOW(OBJLstSharedPtrTable_Act_Treasure)		; OBJLst shared table
+	ld   a, LOW(SprMapSharedPtrTable_Act_Treasure)		; Set default animation table
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedPtrTable_Act_Treasure)
+	ld   a, HIGH(SprMapSharedPtrTable_Act_Treasure)
 	ldi  [hl], a
 	ret
 	
-OBJLstSharedPtrTable_Act_TreasureChestLid:
-	dw OBJLstPtrTable_Act_TreasureChestLid_Closed;X
-	dw OBJLstPtrTable_Act_TreasureChestLid_Closed;X
-	dw OBJLstPtrTable_Act_TreasureChestLid_Closed;X
-	dw OBJLstPtrTable_Act_TreasureChestLid_Closed;X
-	dw OBJLstPtrTable_Act_TreasureChestLid_Closed;X
-	dw OBJLstPtrTable_Act_TreasureChestLid_Closed;X
-	dw OBJLstPtrTable_Act_TreasureChestLid_Closed;X
-	dw OBJLstPtrTable_Act_TreasureChestLid_Closed;X
+SprMapSharedPtrTable_Act_TreasureChestLid:
+	dw SprMapPtrTable_Act_TreasureChestLid_Closed;X
+	dw SprMapPtrTable_Act_TreasureChestLid_Closed;X
+	dw SprMapPtrTable_Act_TreasureChestLid_Closed;X
+	dw SprMapPtrTable_Act_TreasureChestLid_Closed;X
+	dw SprMapPtrTable_Act_TreasureChestLid_Closed;X
+	dw SprMapPtrTable_Act_TreasureChestLid_Closed;X
+	dw SprMapPtrTable_Act_TreasureChestLid_Closed;X
+	dw SprMapPtrTable_Act_TreasureChestLid_Closed;X
 
-OBJLst_Act_TreasureChestLid_Closed: INCBIN "data/objlst/actor/treasurechestlid_closed.bin"
-OBJLst_Act_TreasureChestLid_Open: INCBIN "data/objlst/actor/treasurechestlid_open.bin"
+SprMap_Act_TreasureChestLid_Closed: INCBIN "data/sprmap/actor/treasurechestlid_closed.bin"
+SprMap_Act_TreasureChestLid_Open: INCBIN "data/sprmap/actor/treasurechestlid_open.bin"
 GFX_Act_TreasureChestLid: INCBIN "data/gfx/actor/treasurechestlid.bin"
 
 ; =============== ActInit_Treasure ===============
@@ -5154,15 +5154,15 @@ ActInit_Treasure:
 	ld   bc, SubCall_Act_Treasure
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
+	; Set initial animation
 	push bc
-	ld   bc, OBJLstPtrTable_ActInit_Treasure
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_ActInit_Treasure
+	call ActS_SetSprMapPtr
 	pop  bc
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_Treasure
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_Treasure
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Treasure ID doubles as collision type (more or less).
 	; The specific treasure you get once you touch it does depend on the collision type.
@@ -5189,13 +5189,13 @@ ActInit_Treasure:
 	ret
 	
 ; All treasures use the same sprite mappings (they are all 2x2 anyway, with the graphics loaded at the same address...)
-OBJLstPtrTable_Act_Treasure:
-	dw OBJLst_Act_Treasure0
-	dw OBJLst_Act_Treasure0
-	dw OBJLst_Act_Treasure1
+SprMapPtrTable_Act_Treasure:
+	dw SprMap_Act_Treasure0
+	dw SprMap_Act_Treasure0
+	dw SprMap_Act_Treasure1
 	dw $0000
-OBJLstPtrTable_ActInit_Treasure:
-	dw OBJLst_Act_Treasure2
+SprMapPtrTable_ActInit_Treasure:
+	dw SprMap_Act_Treasure2
 	dw $0000;X
 
 ; =============== Act_Treasure ===============
@@ -5222,18 +5222,18 @@ Act_Treasure:
 	; Once the treasure rises from the chest, animate it.
 	;
 	
-	ld   a, LOW(OBJLstPtrTable_Act_Treasure)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Treasure)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Treasure)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Treasure)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; Every 4 frames increase the anim counter
 	ld   a, [sTimer]
 	and  a, $03
 	jr   nz, .chkColi
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	
 .chkColi:
 	ld   a, [sActSetRoutineId]
@@ -5244,10 +5244,10 @@ Act_Treasure:
 	; Otherwise...
 	ld   a, $01						; Mark a treasure as held (so we can't throw it)
 	ld   [sActHeldTreasure], a
-	ld   a, LOW(OBJLstPtrTable_Act_Treasure)			; ?
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Treasure)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Treasure)			; ?
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Treasure)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	jp   SubCall_ActS_StartHeldForce
 	
 ; =============== Act_Treasure_SpawnShine ===============
@@ -5271,7 +5271,7 @@ Act_Treasure_SpawnShine:
 	jr   .checkSlot
 	
 .slotFound:
-	mActS_SetOBJBank OBJLstSharedPtrTable_Act_TreasureShine
+	mActS_SetOBJBank SprMapSharedPtrTable_Act_TreasureShine
 	
 	ld   a, $02				; Enabled
 	ldi  [hl], a
@@ -5295,14 +5295,14 @@ Act_Treasure_SpawnShine:
 	ldi  [hl], a				; Rel.Y (Origin)
 	ldi  [hl], a				; Rel.X (Origin)
 	
-	ld   a, LOW(OBJLstPtrTable_Act_TreasureShine)	; OBJLst Table
+	ld   a, LOW(SprMapPtrTable_Act_TreasureShine)	; Animation
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstPtrTable_Act_TreasureShine)
+	ld   a, HIGH(SprMapPtrTable_Act_TreasureShine)
 	ldi  [hl], a
 	
 	xor  a
 	ldi  [hl], a			; Dir
-	ldi  [hl], a			; OBJLst ID
+	ldi  [hl], a			; Sprite mapping ID
 	
 	ld   a, [sActSetId]		; Actor ID - same as treasure
 	inc  a
@@ -5336,24 +5336,24 @@ Act_Treasure_SpawnShine:
 	ld   a, HIGH(sActDummyBlock)
 	ldi  [hl], a
 	
-	ld   a, LOW(OBJLstSharedPtrTable_Act_TreasureShine)	; OBJLst shared table
+	ld   a, LOW(SprMapSharedPtrTable_Act_TreasureShine)	; Set default animation table
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedPtrTable_Act_TreasureShine)
+	ld   a, HIGH(SprMapSharedPtrTable_Act_TreasureShine)
 	ldi  [hl], a
 	ret
-OBJLstSharedPtrTable_Act_Treasure:
-	dw OBJLstPtrTable_Act_Treasure;X
-	dw OBJLstPtrTable_Act_Treasure;X
-	dw OBJLstPtrTable_Act_Treasure
-	dw OBJLstPtrTable_Act_Treasure
-	dw OBJLstPtrTable_Act_Treasure
-	dw OBJLstPtrTable_Act_Treasure
-	dw OBJLstPtrTable_Act_Treasure;X
-	dw OBJLstPtrTable_Act_Treasure;X
+SprMapSharedPtrTable_Act_Treasure:
+	dw SprMapPtrTable_Act_Treasure;X
+	dw SprMapPtrTable_Act_Treasure;X
+	dw SprMapPtrTable_Act_Treasure
+	dw SprMapPtrTable_Act_Treasure
+	dw SprMapPtrTable_Act_Treasure
+	dw SprMapPtrTable_Act_Treasure
+	dw SprMapPtrTable_Act_Treasure;X
+	dw SprMapPtrTable_Act_Treasure;X
 
-OBJLst_Act_Treasure0: INCBIN "data/objlst/actor/treasure0.bin"
-OBJLst_Act_Treasure1: INCBIN "data/objlst/actor/treasure1.bin"
-OBJLst_Act_Treasure2: INCBIN "data/objlst/actor/treasure2.bin"
+SprMap_Act_Treasure0: INCBIN "data/sprmap/actor/treasure0.bin"
+SprMap_Act_Treasure1: INCBIN "data/sprmap/actor/treasure1.bin"
+SprMap_Act_Treasure2: INCBIN "data/sprmap/actor/treasure2.bin"
 GFX_Act_TreasureC: INCBIN "data/gfx/actor/treasurec.bin"
 GFX_Act_TreasureI: INCBIN "data/gfx/actor/treasurei.bin"
 GFX_Act_TreasureF: INCBIN "data/gfx/actor/treasuref.bin"
@@ -5391,14 +5391,14 @@ ActInit_TreasureShine:
 	ld   bc, SubCall_Act_TreasureShine
 	call ActS_SetCodePtr
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_TreasureShine
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_TreasureShine
+	call ActS_SetSprMapSharedTablePtr
 	
-	; Set initial OBJLst
+	; Set initial animation
 	push bc
-	ld   bc, OBJLstPtrTable_Act_TreasureShine
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_TreasureShine
+	call ActS_SetSprMapPtr
 	pop  bc
 	
 	; Make intangible
@@ -5412,11 +5412,11 @@ ActInit_TreasureShine:
 	ld   [sActSetId], a
 	ret
 	
-OBJLstPtrTable_Act_TreasureShine:
-	dw OBJLst_Act_TreasureShine0
-	dw OBJLst_Act_TreasureShine1
-	dw OBJLst_Act_None
-	dw OBJLst_Act_None
+SprMapPtrTable_Act_TreasureShine:
+	dw SprMap_Act_TreasureShine0
+	dw SprMap_Act_TreasureShine1
+	dw SprMap_Act_None
+	dw SprMap_Act_None
 	dw $0000
 
 ; =============== Act_TreasureShine ===============
@@ -5425,15 +5425,15 @@ Act_TreasureShine:
 	ld   a, [sTimer]
 	and  a, $01
 	jr   nz, .trackPos
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .trackPos:
 
-	ld   a, LOW(OBJLstPtrTable_Act_TreasureShine)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_TreasureShine)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_TreasureShine)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_TreasureShine)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	;
 	; Make the shine use the same position as the treasure
@@ -5461,18 +5461,18 @@ Act_TreasureShine:
 	ld   [sActSetY_High], a
 	ret
 	
-OBJLstSharedPtrTable_Act_TreasureShine:
-	dw OBJLstPtrTable_Act_TreasureShine;X
-	dw OBJLstPtrTable_Act_TreasureShine;X
-	dw OBJLstPtrTable_Act_TreasureShine;X
-	dw OBJLstPtrTable_Act_TreasureShine;X
-	dw OBJLstPtrTable_Act_TreasureShine;X
-	dw OBJLstPtrTable_Act_TreasureShine;X
-	dw OBJLstPtrTable_Act_TreasureShine;X
-	dw OBJLstPtrTable_Act_TreasureShine;X
+SprMapSharedPtrTable_Act_TreasureShine:
+	dw SprMapPtrTable_Act_TreasureShine;X
+	dw SprMapPtrTable_Act_TreasureShine;X
+	dw SprMapPtrTable_Act_TreasureShine;X
+	dw SprMapPtrTable_Act_TreasureShine;X
+	dw SprMapPtrTable_Act_TreasureShine;X
+	dw SprMapPtrTable_Act_TreasureShine;X
+	dw SprMapPtrTable_Act_TreasureShine;X
+	dw SprMapPtrTable_Act_TreasureShine;X
 
-OBJLst_Act_TreasureShine0: INCBIN "data/objlst/actor/treasureshine0.bin"
-OBJLst_Act_TreasureShine1: INCBIN "data/objlst/actor/treasureshine1.bin"
+SprMap_Act_TreasureShine0: INCBIN "data/sprmap/actor/treasureshine0.bin"
+SprMap_Act_TreasureShine1: INCBIN "data/sprmap/actor/treasureshine1.bin"
 GFX_Act_TreasureShine: INCBIN "data/gfx/actor/treasureshine.bin"
 
 ; =============== ActInit_TorchFlame ===============
@@ -5492,14 +5492,14 @@ ActInit_TorchFlame:
 	ld   bc, SubCall_Act_TorchFlame
 	call ActS_SetCodePtr
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_TorchFlame
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_TorchFlame
+	call ActS_SetSprMapSharedTablePtr
 	
-	; Set initial OBJLst
+	; Set initial animation
 	push bc
-	ld   bc, OBJLstPtrTable_Act_TorchFlame
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_TorchFlame
+	call ActS_SetSprMapPtr
 	pop  bc
 	
 	; Set blank collision type
@@ -5508,13 +5508,13 @@ ActInit_TorchFlame:
 	mSubCall ActS_SaveColiType ; BANK $02
 	ret
 	
-OBJLstPtrTable_Act_TorchFlame:
-	dw OBJLst_Act_TorchFlame0
-	dw OBJLst_Act_TorchFlame0
-	dw OBJLst_Act_None
-	dw OBJLst_Act_TorchFlame1
-	dw OBJLst_Act_TorchFlame1
-	dw OBJLst_Act_None
+SprMapPtrTable_Act_TorchFlame:
+	dw SprMap_Act_TorchFlame0
+	dw SprMap_Act_TorchFlame0
+	dw SprMap_Act_None
+	dw SprMap_Act_TorchFlame1
+	dw SprMap_Act_TorchFlame1
+	dw SprMap_Act_None
 	dw $0000
 
 ; =============== Act_TorchFlame ===============
@@ -5525,30 +5525,30 @@ Act_TorchFlame:
 	; Every other frame increase the anim counter
 	ld   a, [sTimer]
 	and  a, $01
-	jr   nz, .setOBJLst
-	ld   a, [sActSetOBJLstId]
+	jr   nz, .setSprMap
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
-.setOBJLst:
+	ld   [sActSetSprMapId], a
+.setSprMap:
 	; Not sure why that's here
-	ld   a, LOW(OBJLstPtrTable_Act_TorchFlame)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_TorchFlame)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_TorchFlame)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_TorchFlame)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	ret
 	
-OBJLstSharedPtrTable_Act_TorchFlame:
-	dw OBJLstPtrTable_Act_TorchFlame;X
-	dw OBJLstPtrTable_Act_TorchFlame;X
-	dw OBJLstPtrTable_Act_TorchFlame;X
-	dw OBJLstPtrTable_Act_TorchFlame;X
-	dw OBJLstPtrTable_Act_TorchFlame;X
-	dw OBJLstPtrTable_Act_TorchFlame;X
-	dw OBJLstPtrTable_Act_TorchFlame;X
-	dw OBJLstPtrTable_Act_TorchFlame;X
+SprMapSharedPtrTable_Act_TorchFlame:
+	dw SprMapPtrTable_Act_TorchFlame;X
+	dw SprMapPtrTable_Act_TorchFlame;X
+	dw SprMapPtrTable_Act_TorchFlame;X
+	dw SprMapPtrTable_Act_TorchFlame;X
+	dw SprMapPtrTable_Act_TorchFlame;X
+	dw SprMapPtrTable_Act_TorchFlame;X
+	dw SprMapPtrTable_Act_TorchFlame;X
+	dw SprMapPtrTable_Act_TorchFlame;X
 
-OBJLst_Act_TorchFlame0: INCBIN "data/objlst/actor/torchflame0.bin"
-OBJLst_Act_TorchFlame1: INCBIN "data/objlst/actor/torchflame1.bin"
+SprMap_Act_TorchFlame0: INCBIN "data/sprmap/actor/torchflame0.bin"
+SprMap_Act_TorchFlame1: INCBIN "data/sprmap/actor/torchflame1.bin"
 GFX_Act_TorchFlame: INCBIN "data/gfx/actor/torchflame.bin"
 
 ; =============== ActInit_Spark ===============
@@ -5566,15 +5566,15 @@ ActInit_Spark:
 	ld   bc, SubCall_Act_Spark
 	call ActS_SetCodePtr
 	;--
-	; Set initial OBJLst
+	; Set initial animation
 	push bc
-	ld   bc, OBJLstPtrTable_ActInit_Spark
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_ActInit_Spark
+	call ActS_SetSprMapPtr
 	pop  bc
 	;--
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_Spark
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_Spark
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Set the collision type, and save it as default.
 	mActColiMask ACTCOLI_DAMAGE,ACTCOLI_DAMAGE,ACTCOLI_DAMAGE,ACTCOLI_DAMAGE
@@ -5592,8 +5592,8 @@ ActInit_Spark:
 	ld   [sActSparkStepsLeft], a
 	ld   [sActSparkDir], a
 	ret
-OBJLstPtrTable_ActInit_Spark:
-	dw OBJLst_Act_Spark0
+SprMapPtrTable_ActInit_Spark:
+	dw SprMap_Act_Spark0
 	dw $0000;X
 ; =============== Act_Spark ===============
 Act_Spark:
@@ -5643,15 +5643,15 @@ Act_Spark_Main:
 	ld   a, [sTimer]
 	and  a, $03
 	jr   nz, .move
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .move:
-	; Weird that it's being set all the time (it's also the only OBJLst this actor has)
-	ld   a, LOW(OBJLstPtrTable_Act_Spark)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Spark)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	; Weird that it's being set all the time (it's also the only animation this actor has)
+	ld   a, LOW(SprMapPtrTable_Act_Spark)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Spark)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; Every other execution frame...
 	ld   a, [sActSetTimer]
@@ -5875,31 +5875,31 @@ Act_Spark_Drop:
 	ld   [sActSparkStepsLeft], a
 	ret
 	
-; =============== OBJLstPtrTable_Act_Spark ===============
-OBJLstPtrTable_Act_Spark:
-	dw OBJLst_Act_Spark0
-	dw OBJLst_Act_Spark1
-	dw OBJLst_Act_Spark2
-	dw OBJLst_Act_Spark3
+; =============== SprMapPtrTable_Act_Spark ===============
+SprMapPtrTable_Act_Spark:
+	dw SprMap_Act_Spark0
+	dw SprMap_Act_Spark1
+	dw SprMap_Act_Spark2
+	dw SprMap_Act_Spark3
 	dw $0000
 
-OBJLstSharedPtrTable_Act_Spark:
-	dw OBJLstPtrTable_Act_Spark;X
-	dw OBJLstPtrTable_Act_Spark;X
-	dw OBJLstPtrTable_Act_Spark;X
-	dw OBJLstPtrTable_Act_Spark;X
-	dw OBJLstPtrTable_Act_Spark
-	dw OBJLstPtrTable_Act_Spark;X
-	dw OBJLstPtrTable_Act_Spark;X
-	dw OBJLstPtrTable_Act_Spark;X
+SprMapSharedPtrTable_Act_Spark:
+	dw SprMapPtrTable_Act_Spark;X
+	dw SprMapPtrTable_Act_Spark;X
+	dw SprMapPtrTable_Act_Spark;X
+	dw SprMapPtrTable_Act_Spark;X
+	dw SprMapPtrTable_Act_Spark
+	dw SprMapPtrTable_Act_Spark;X
+	dw SprMapPtrTable_Act_Spark;X
+	dw SprMapPtrTable_Act_Spark;X
 
 ; [TCRF] The unused frames are variations of existing frames with an alternate palette
-OBJLst_Act_Spark0: INCBIN "data/objlst/actor/spark0.bin"
-OBJLst_Act_Spark1: INCBIN "data/objlst/actor/spark1.bin"
-OBJLst_Act_Spark_Unused_Alt3: INCBIN "data/objlst/actor/spark_unused_alt3.bin"
-OBJLst_Act_Spark2: INCBIN "data/objlst/actor/spark2.bin"
-OBJLst_Act_Spark_Unused_Alt1: INCBIN "data/objlst/actor/spark_unused_alt1.bin"
-OBJLst_Act_Spark3: INCBIN "data/objlst/actor/spark3.bin"
+SprMap_Act_Spark0: INCBIN "data/sprmap/actor/spark0.bin"
+SprMap_Act_Spark1: INCBIN "data/sprmap/actor/spark1.bin"
+SprMap_Act_Spark_Unused_Alt3: INCBIN "data/sprmap/actor/spark_unused_alt3.bin"
+SprMap_Act_Spark2: INCBIN "data/sprmap/actor/spark2.bin"
+SprMap_Act_Spark_Unused_Alt1: INCBIN "data/sprmap/actor/spark_unused_alt1.bin"
+SprMap_Act_Spark3: INCBIN "data/sprmap/actor/spark3.bin"
 GFX_Act_Spark: INCBIN "data/gfx/actor/spark.bin"
 
 ; =============== ActInit_Seal ===============
@@ -5921,12 +5921,12 @@ ActInit_Seal:
 	ld   bc, SubCall_Act_Seal
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
-	mActOBJLstPtrTable OBJLstPtrTable_ActInit_Seal
+	; Set initial animation
+	mActSprMapPtrTable SprMapPtrTable_ActInit_Seal
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_Seal
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_Seal
+	call ActS_SetSprMapSharedTablePtr
 	
 	; The actor carries the spear pointing below, so that's the side which deals damage.
 	mActColiMask ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_DAMAGE
@@ -5944,9 +5944,9 @@ ActInit_Seal:
 	xor  a
 	ld   [sActSetTimer7], a
 	ret
-; =============== OBJLstPtrTable_ActInit_Seal ===============
-OBJLstPtrTable_ActInit_Seal:
-	dw OBJLst_Act_Seal_IdleL0
+; =============== SprMapPtrTable_ActInit_Seal ===============
+SprMapPtrTable_ActInit_Seal:
+	dw SprMap_Act_Seal_IdleL0
 	dw $0000
 
 ; =============== Act_Seal ===============
@@ -5999,7 +5999,7 @@ Act_Seal_SwitchToIdle:
 	ld   [sActSealRangeCheckDelay], a
 	
 	xor  a						; Reset anim
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	ld   [sActSealTurnTimer], a
 	ret
 	
@@ -6008,7 +6008,7 @@ Act_Seal_SwitchToIdle:
 ; The spear points down below in this mode.
 Act_Seal_Idle:
 	; Animate every 8 frames
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 .chkRange:
 	; 
@@ -6089,10 +6089,10 @@ Act_Seal_Idle:
 ; Moves the actor right 1px until it reaches a solid block.
 .moveRight:
 	; Set idle swim anim
-	ld   a, LOW(OBJLstPtrTable_Act_Seal_IdleR)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Seal_IdleR)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Seal_IdleR)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Seal_IdleR)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	; If there's a solid block in the way, turn immediately
 	call ActColi_GetBlockId_LowR
 	mSubCall ActBGColi_IsEmptyWaterBlock
@@ -6107,10 +6107,10 @@ Act_Seal_Idle:
 ; Moves the actor left 1px until it reaches a solid block.
 .moveLeft:
 	; Set idle swim anim
-	ld   a, LOW(OBJLstPtrTable_Act_Seal_IdleL)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Seal_IdleL)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Seal_IdleL)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Seal_IdleL)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	; If there's a solid block in the way, turn immediately
 	call ActColi_GetBlockId_LowL
 	mSubCall ActBGColi_IsEmptyWaterBlock
@@ -6126,7 +6126,7 @@ Act_Seal_SwitchToTracking:
 	ld   a, SEAL_RTN_TRACK			; Next mode
 	ld   [sActLocalRoutineId], a
 	xor  a							; Reset anim / mode timer
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	ld   [sActSealModeTimer], a
 	ret
 	
@@ -6134,7 +6134,7 @@ Act_Seal_SwitchToTracking:
 ; Mode $01: Tracks the player both horizontally and vertically for a bit before shooting.
 Act_Seal_Track:
 	; Animate every 8 frames
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	;
 	; Move horizontally at 0.5px/frame towards the player until we either:
@@ -6324,10 +6324,10 @@ Act_Seal_Track_MoveRight:
 	ret  nz
 	
 	; Set swim/track anim
-	ld   a, LOW(OBJLstPtrTable_Act_Seal_TrackR)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Seal_TrackR)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Seal_TrackR)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Seal_TrackR)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; Move right 1px
 	ld   bc, +$01
@@ -6354,10 +6354,10 @@ Act_Seal_Track_MoveLeft:
 	ret  nz
 	
 	; Set swim/track anim
-	ld   a, LOW(OBJLstPtrTable_Act_Seal_TrackL)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Seal_TrackL)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Seal_TrackL)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Seal_TrackL)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; Move left 1px
 	ld   bc, -$01
@@ -6408,7 +6408,7 @@ Act_Seal_Shoot:
 	jr   nc, .nextMode
 	
 	; Animate every 8 frames
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	; At frame $10, spawn the separate spear actor and set the new anim frame without the spear.
 	ld   a, [sActSealModeTimer]
@@ -6425,10 +6425,10 @@ Act_Seal_Shoot:
 	jr   nz, .setFrameL
 	ret ; [POI] We never get here
 .setFrameR:
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Seal_ShootR
+	mActSprMapPtrTable SprMapPtrTable_Act_Seal_ShootR
 	ret
 .setFrameL:
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Seal_ShootL
+	mActSprMapPtrTable SprMapPtrTable_Act_Seal_ShootL
 	ret
 .nextMode:
 	ld   a, SEAL_RTN_RETREAT
@@ -6438,14 +6438,14 @@ Act_Seal_Shoot:
 	ld   [sActSetColiType], a
 	xor  a
 	ld   [sActSealModeTimer], a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	ret
 	
 ; =============== Act_Seal_Shoot ===============
 ; Mode $03: The seal moves away in the opposite direction for $96 frames.
 Act_Seal_Retreat:
 	; Animate every 8 frames
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	; When the mode timer reaches $96, switch back to the idle mode
 	ld   a, [sActSealModeTimer]		
@@ -6517,10 +6517,10 @@ Act_Seal_Retreat:
 ; =============== .moveLeft ===============
 ; Moves the actor left 1px, setting the proper anim.
 .moveLeft:
-	ld   a, LOW(OBJLstPtrTable_Act_Seal_RetreatL)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Seal_RetreatL)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Seal_RetreatL)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Seal_RetreatL)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; If there isn't a water block in the way, don't move
 	call ActColi_GetBlockId_LowL
@@ -6535,10 +6535,10 @@ Act_Seal_Retreat:
 ; =============== .moveRight ===============
 ; Moves the actor left 1px, setting the proper anim.
 .moveRight:
-	ld   a, LOW(OBJLstPtrTable_Act_Seal_RetreatR)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Seal_RetreatR)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Seal_RetreatR)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Seal_RetreatR)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	; If there isn't a water block in the way, don't move
 	call ActColi_GetBlockId_LowR
 	mSubCall ActBGColi_IsEmptyWaterBlock
@@ -6612,7 +6612,7 @@ Act_SealSpear_MoveLeft:
 	ld   bc, -$02
 	call ActS_MoveRight
 	
-	mActOBJLstPtrTable OBJLstPtrTable_Act_SealSpearL
+	mActSprMapPtrTable SprMapPtrTable_Act_SealSpearL
 	
 	; If the spear reaches a solid block, stop it
 	call ActColi_GetBlockId_LowL
@@ -6627,7 +6627,7 @@ Act_SealSpear_MoveRight:
 	ld   bc, +$02
 	call ActS_MoveRight
 	
-	mActOBJLstPtrTable OBJLstPtrTable_Act_SealSpearR
+	mActSprMapPtrTable SprMapPtrTable_Act_SealSpearR
 	
 	; If the spear reaches a solid block, stop it
 	call ActColi_GetBlockId_LowR
@@ -6657,7 +6657,7 @@ Act_Seal_SpawnSpear:
 	jr   .checkSlot
 	
 .slotFound:
-	mActS_SetOBJBank OBJLstSharedPtrTable_Act_Seal
+	mActS_SetOBJBank SprMapSharedPtrTable_Act_Seal
 	
 	ld   a, $02				; Enabled
 	
@@ -6701,15 +6701,15 @@ Act_Seal_SpawnSpear:
 	ldi  [hl], a				; Rel.Y (Origin)
 	ldi  [hl], a				; Rel.X (Origin)
 	
-	ld   a, LOW(OBJLstPtrTable_Act_None)	; OBJLst Table
+	ld   a, LOW(SprMapPtrTable_Act_None)	; Animation
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstPtrTable_Act_None)
+	ld   a, HIGH(SprMapPtrTable_Act_None)
 	ldi  [hl], a
 	
 	ld   a, [sActSetDir]		; Direction
 	ldi  [hl], a
 	
-	xor  a						; OBJLst ID
+	xor  a						; Sprite mapping ID
 	ldi  [hl], a
 	
 	ld   a, [sActSetId]			; Actor ID
@@ -6740,82 +6740,82 @@ Act_Seal_SpawnSpear:
 	ld   a, HIGH(sActDummyBlock)
 	ldi  [hl], a
 	
-	ld   a, LOW(OBJLstSharedPtrTable_Act_Seal)		; OBJLst shared table
+	ld   a, LOW(SprMapSharedPtrTable_Act_Seal)		; Set default animation table
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedPtrTable_Act_Seal)
+	ld   a, HIGH(SprMapSharedPtrTable_Act_Seal)
 	ldi  [hl], a
 	ret
 	
-; =============== OBJLstSharedPtrTable_Act_Seal ===============
-OBJLstSharedPtrTable_Act_Seal:
-	dw OBJLstPtrTable_Act_Seal_StunL;X
-	dw OBJLstPtrTable_Act_Seal_StunR;X
-	dw OBJLstPtrTable_Act_Seal_StunL;X
-	dw OBJLstPtrTable_Act_Seal_StunR;X
-	dw OBJLstPtrTable_Act_Seal_StunL
-	dw OBJLstPtrTable_Act_Seal_StunR
-	dw OBJLstPtrTable_Act_Seal_StunL;X
-	dw OBJLstPtrTable_Act_Seal_StunR;X
+; =============== SprMapSharedPtrTable_Act_Seal ===============
+SprMapSharedPtrTable_Act_Seal:
+	dw SprMapPtrTable_Act_Seal_StunL;X
+	dw SprMapPtrTable_Act_Seal_StunR;X
+	dw SprMapPtrTable_Act_Seal_StunL;X
+	dw SprMapPtrTable_Act_Seal_StunR;X
+	dw SprMapPtrTable_Act_Seal_StunL
+	dw SprMapPtrTable_Act_Seal_StunR
+	dw SprMapPtrTable_Act_Seal_StunL;X
+	dw SprMapPtrTable_Act_Seal_StunR;X
 
-OBJLstPtrTable_Act_Seal_IdleL:
-	dw OBJLst_Act_Seal_IdleL0
-	dw OBJLst_Act_Seal_IdleL1
+SprMapPtrTable_Act_Seal_IdleL:
+	dw SprMap_Act_Seal_IdleL0
+	dw SprMap_Act_Seal_IdleL1
 	dw $0000
-OBJLstPtrTable_Act_Seal_IdleR:
-	dw OBJLst_Act_Seal_IdleR0
-	dw OBJLst_Act_Seal_IdleR1
+SprMapPtrTable_Act_Seal_IdleR:
+	dw SprMap_Act_Seal_IdleR0
+	dw SprMap_Act_Seal_IdleR1
 	dw $0000
-OBJLstPtrTable_Act_Seal_TrackL:
-	dw OBJLst_Act_Seal_TrackL0
-	dw OBJLst_Act_Seal_TrackL1
+SprMapPtrTable_Act_Seal_TrackL:
+	dw SprMap_Act_Seal_TrackL0
+	dw SprMap_Act_Seal_TrackL1
 	dw $0000
-OBJLstPtrTable_Act_Seal_TrackR:
-	dw OBJLst_Act_Seal_TrackR0
-	dw OBJLst_Act_Seal_TrackR1
+SprMapPtrTable_Act_Seal_TrackR:
+	dw SprMap_Act_Seal_TrackR0
+	dw SprMap_Act_Seal_TrackR1
 	dw $0000
-OBJLstPtrTable_Act_Seal_ShootL:
-	dw OBJLst_Act_Seal_RetreatL0
+SprMapPtrTable_Act_Seal_ShootL:
+	dw SprMap_Act_Seal_RetreatL0
 	dw $0000
-OBJLstPtrTable_Act_Seal_ShootR:
-	dw OBJLst_Act_Seal_RetreatR0
+SprMapPtrTable_Act_Seal_ShootR:
+	dw SprMap_Act_Seal_RetreatR0
 	dw $0000
-OBJLstPtrTable_Act_Seal_StunL:
-	dw OBJLst_Act_Seal_StunL
+SprMapPtrTable_Act_Seal_StunL:
+	dw SprMap_Act_Seal_StunL
 	dw $0000
-OBJLstPtrTable_Act_Seal_StunR:
-	dw OBJLst_Act_Seal_StunR
+SprMapPtrTable_Act_Seal_StunR:
+	dw SprMap_Act_Seal_StunR
 	dw $0000
-OBJLstPtrTable_Act_Seal_RetreatL:
-	dw OBJLst_Act_Seal_RetreatL0
-	dw OBJLst_Act_Seal_RetreatL1
+SprMapPtrTable_Act_Seal_RetreatL:
+	dw SprMap_Act_Seal_RetreatL0
+	dw SprMap_Act_Seal_RetreatL1
 	dw $0000
-OBJLstPtrTable_Act_Seal_RetreatR:
-	dw OBJLst_Act_Seal_RetreatR0
-	dw OBJLst_Act_Seal_RetreatR1
+SprMapPtrTable_Act_Seal_RetreatR:
+	dw SprMap_Act_Seal_RetreatR0
+	dw SprMap_Act_Seal_RetreatR1
 	dw $0000
-OBJLstPtrTable_Act_SealSpearL:
-	dw OBJLst_Act_SealSpearL
+SprMapPtrTable_Act_SealSpearL:
+	dw SprMap_Act_SealSpearL
 	dw $0000;X
-OBJLstPtrTable_Act_SealSpearR:
-	dw OBJLst_Act_SealSpearR
+SprMapPtrTable_Act_SealSpearR:
+	dw SprMap_Act_SealSpearR
 	dw $0000;X
 
-OBJLst_Act_Seal_IdleL0: INCBIN "data/objlst/actor/seal_idlel0.bin"
-OBJLst_Act_Seal_IdleL1: INCBIN "data/objlst/actor/seal_idlel1.bin"
-OBJLst_Act_Seal_StunL: INCBIN "data/objlst/actor/seal_stunl.bin"
-OBJLst_Act_Seal_TrackL0: INCBIN "data/objlst/actor/seal_trackl0.bin"
-OBJLst_Act_Seal_TrackL1: INCBIN "data/objlst/actor/seal_trackl1.bin"
-OBJLst_Act_SealSpearL: INCBIN "data/objlst/actor/sealspearl.bin"
-OBJLst_Act_Seal_RetreatL0: INCBIN "data/objlst/actor/seal_retreatl0.bin"
-OBJLst_Act_Seal_RetreatL1: INCBIN "data/objlst/actor/seal_retreatl1.bin"
-OBJLst_Act_Seal_IdleR0: INCBIN "data/objlst/actor/seal_idler0.bin"
-OBJLst_Act_Seal_IdleR1: INCBIN "data/objlst/actor/seal_idler1.bin"
-OBJLst_Act_Seal_StunR: INCBIN "data/objlst/actor/seal_stunr.bin"
-OBJLst_Act_Seal_TrackR0: INCBIN "data/objlst/actor/seal_trackr0.bin"
-OBJLst_Act_Seal_TrackR1: INCBIN "data/objlst/actor/seal_trackr1.bin"
-OBJLst_Act_SealSpearR: INCBIN "data/objlst/actor/sealspearr.bin"
-OBJLst_Act_Seal_RetreatR0: INCBIN "data/objlst/actor/seal_retreatr0.bin"
-OBJLst_Act_Seal_RetreatR1: INCBIN "data/objlst/actor/seal_retreatr1.bin"
+SprMap_Act_Seal_IdleL0: INCBIN "data/sprmap/actor/seal_idlel0.bin"
+SprMap_Act_Seal_IdleL1: INCBIN "data/sprmap/actor/seal_idlel1.bin"
+SprMap_Act_Seal_StunL: INCBIN "data/sprmap/actor/seal_stunl.bin"
+SprMap_Act_Seal_TrackL0: INCBIN "data/sprmap/actor/seal_trackl0.bin"
+SprMap_Act_Seal_TrackL1: INCBIN "data/sprmap/actor/seal_trackl1.bin"
+SprMap_Act_SealSpearL: INCBIN "data/sprmap/actor/sealspearl.bin"
+SprMap_Act_Seal_RetreatL0: INCBIN "data/sprmap/actor/seal_retreatl0.bin"
+SprMap_Act_Seal_RetreatL1: INCBIN "data/sprmap/actor/seal_retreatl1.bin"
+SprMap_Act_Seal_IdleR0: INCBIN "data/sprmap/actor/seal_idler0.bin"
+SprMap_Act_Seal_IdleR1: INCBIN "data/sprmap/actor/seal_idler1.bin"
+SprMap_Act_Seal_StunR: INCBIN "data/sprmap/actor/seal_stunr.bin"
+SprMap_Act_Seal_TrackR0: INCBIN "data/sprmap/actor/seal_trackr0.bin"
+SprMap_Act_Seal_TrackR1: INCBIN "data/sprmap/actor/seal_trackr1.bin"
+SprMap_Act_SealSpearR: INCBIN "data/sprmap/actor/sealspearr.bin"
+SprMap_Act_Seal_RetreatR0: INCBIN "data/sprmap/actor/seal_retreatr0.bin"
+SprMap_Act_Seal_RetreatR1: INCBIN "data/sprmap/actor/seal_retreatr1.bin"
 GFX_Act_Seal: INCBIN "data/gfx/actor/seal.bin"
 
 ; =============== LoadGFX_Act_BigHeart ===============
@@ -6867,7 +6867,7 @@ ActS_SpawnBigHeart:
 	jr   .checkSlot
 	
 .slotFound:
-	mActS_SetOBJBank OBJLstSharedPtrTable_Act_BigHeart
+	mActS_SetOBJBank SprMapSharedPtrTable_Act_BigHeart
 	
 	ld   a, ATV_ONSCREEN		; Enabled
 	ldi  [hl], a
@@ -6896,14 +6896,14 @@ ActS_SpawnBigHeart:
 	ldi  [hl], a				; Rel.Y (Origin)
 	ldi  [hl], a				; Rel.X (Origin)
 	
-	ld   a, LOW(OBJLstPtrTable_Act_None)	; OBJLst Table
+	ld   a, LOW(SprMapPtrTable_Act_None)	; Animation
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstPtrTable_Act_None)
+	ld   a, HIGH(SprMapPtrTable_Act_None)
 	ldi  [hl], a
 	
 	xor  a						; Dir
 	ldi  [hl], a
-	xor  a						; OBJLst ID
+	xor  a						; Sprite mapping ID
 	ldi  [hl], a
 	
 	; Assume current + 1
@@ -6938,9 +6938,9 @@ ActS_SpawnBigHeart:
 	ld   a, HIGH(sActDummyBlock)
 	ldi  [hl], a
 	
-	ld   a, LOW(OBJLstSharedPtrTable_Act_BigHeart)		; OBJLst shared table
+	ld   a, LOW(SprMapSharedPtrTable_Act_BigHeart)		; Set default animation table
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedPtrTable_Act_BigHeart)
+	ld   a, HIGH(SprMapSharedPtrTable_Act_BigHeart)
 	ldi  [hl], a
 	ret
 	
@@ -7017,7 +7017,7 @@ ActS_HeartGame_SpawnHearts:
 	cp   a, ACTSLOT_COUNT_LO	; Were 5 hearts spawned already? (the low priority actor limit)
 	jp   nc, .noSpawn			; If so, skip
 	
-	mActS_SetOBJBank OBJLstSharedPtrTable_Act_BigHeart
+	mActS_SetOBJBank SprMapSharedPtrTable_Act_BigHeart
 	
 	ld   a, ATV_ONSCREEN		; Enabled
 	ldi  [hl], a
@@ -7052,14 +7052,14 @@ ActS_HeartGame_SpawnHearts:
 	ldi  [hl], a				; Rel.Y (Origin)
 	ldi  [hl], a				; Rel.X (Origin)
 	
-	ld   a, LOW(OBJLstPtrTable_Act_None)	; OBJLstPtrTable
+	ld   a, LOW(SprMapPtrTable_Act_None)	; SprMapPtrTable
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstPtrTable_Act_None)
+	ld   a, HIGH(SprMapPtrTable_Act_None)
 	ldi  [hl], a
 	
 	xor  a						; Direction
 	ldi  [hl], a
-	xor  a						; OBJLst Id
+	xor  a						; Sprite mapping ID
 	ldi  [hl], a
 	ld   a, [sActSetId]			; Actor ID
 	ldi  [hl], a
@@ -7090,9 +7090,9 @@ ActS_HeartGame_SpawnHearts:
 	ld   a, HIGH(sActDummyBlock)
 	ldi  [hl], a
 	
-	ld   a, LOW(OBJLstSharedPtrTable_Act_BigHeart)		; OBJLst shared table
+	ld   a, LOW(SprMapSharedPtrTable_Act_BigHeart)		; Set default animation table
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedPtrTable_Act_BigHeart)
+	ld   a, HIGH(SprMapSharedPtrTable_Act_BigHeart)
 	ldi  [hl], a
 	
 .noSpawn:
@@ -7132,12 +7132,12 @@ ActInit_BigHeart:
 	ld   bc, SubCall_Act_BigHeart
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
-	mActOBJLstPtrTable OBJLstPtrTable_ActInit_BigHeart
+	; Set initial animation
+	mActSprMapPtrTable SprMapPtrTable_ActInit_BigHeart
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_BigHeart
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_BigHeart
+	call ActS_SetSprMapSharedTablePtr
 	
 	ld   a, ACTCOLI_BIGHEART
 	ld   [sActSetColiType], a
@@ -7149,8 +7149,8 @@ ActInit_BigHeart:
 	ld   [sActBigHeartPopUpTimer], a
 	ret
 	
-OBJLstPtrTable_ActInit_BigHeart:
-	dw OBJLst_Act_BigHeart0
+SprMapPtrTable_ActInit_BigHeart:
+	dw SprMap_Act_BigHeart0
 	dw $0000;X
 
 ; =============== Act_BigHeart ===============
@@ -7158,12 +7158,12 @@ Act_BigHeart:
 	ld   a, [sActSetTimer]	; Timer++
 	inc  a					
 	ld   [sActSetTimer], a
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
-	ld   a, LOW(OBJLstPtrTable_Act_BigHeart)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_BigHeart)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_BigHeart)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_BigHeart)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; Until the heart is rising from the big block/ground, make it intangible
 	ld   a, [sActBigHeartPopUpTimer]
@@ -7186,22 +7186,22 @@ Act_BigHeart:
 	ld   bc, -$01
 	call ActS_MoveDown
 	ret
-OBJLstPtrTable_Act_BigHeart:
-	dw OBJLst_Act_BigHeart0
-	dw OBJLst_Act_BigHeart1
+SprMapPtrTable_Act_BigHeart:
+	dw SprMap_Act_BigHeart0
+	dw SprMap_Act_BigHeart1
 	dw $0000
-OBJLstSharedPtrTable_Act_BigHeart:
-	dw OBJLstPtrTable_Act_BigHeart;X
-	dw OBJLstPtrTable_Act_BigHeart;X
-	dw OBJLstPtrTable_Act_BigHeart;X
-	dw OBJLstPtrTable_Act_BigHeart;X
-	dw OBJLstPtrTable_Act_BigHeart;X
-	dw OBJLstPtrTable_Act_BigHeart;X
-	dw OBJLstPtrTable_Act_BigHeart;X
-	dw OBJLstPtrTable_Act_BigHeart;X
+SprMapSharedPtrTable_Act_BigHeart:
+	dw SprMapPtrTable_Act_BigHeart;X
+	dw SprMapPtrTable_Act_BigHeart;X
+	dw SprMapPtrTable_Act_BigHeart;X
+	dw SprMapPtrTable_Act_BigHeart;X
+	dw SprMapPtrTable_Act_BigHeart;X
+	dw SprMapPtrTable_Act_BigHeart;X
+	dw SprMapPtrTable_Act_BigHeart;X
+	dw SprMapPtrTable_Act_BigHeart;X
 
-OBJLst_Act_BigHeart0: INCBIN "data/objlst/actor/bigheart0.bin"
-OBJLst_Act_BigHeart1: INCBIN "data/objlst/actor/bigheart1.bin"
+SprMap_Act_BigHeart0: INCBIN "data/sprmap/actor/bigheart0.bin"
+SprMap_Act_BigHeart1: INCBIN "data/sprmap/actor/bigheart1.bin"
 GFX_Act_BigHeart: INCBIN "data/gfx/actor/bigheart.bin"
 ; [TCRF] Unreferenced spikeball graphics, different from the other spikeballs used by Act_Mole and Act_Penguin.
 ;        Did an actor get removed but the graphics were left in?

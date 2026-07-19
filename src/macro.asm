@@ -210,7 +210,7 @@ ENDM
 ; IN:
 ; - 1: Ptr to init code (Bank $02)
 ; - 2: Actor flags (ACTFLAGB_*)
-; - 3: Bank number for (initial?) OBJLst
+; - 3: Bank number for (initial?) SprMap
 MACRO mActCodeDef
 	dw \1
 	db \2,\3
@@ -245,37 +245,37 @@ MACRO mActColiMask
 DEF COLI = \1<<ACTCOLIMB_R|\2<<ACTCOLIMB_L|\3<<ACTCOLIMB_U|\4<<ACTCOLIMB_D
 ENDM
 
-; =============== mActOBJLstPtrTable ===============
-; Sets the specified OBJLst for the currently processed actor.
+; =============== mActSprMapPtrTable ===============
+; Sets the specified SprMap for the currently processed actor.
 ; IN
-; - 1: Ptr to OBJLstPtrTable
-MACRO mActOBJLstPtrTable
+; - 1: Ptr to SprMapPtrTable
+MACRO mActSprMapPtrTable
 	push bc
 	ld   bc, \1
-	call ActS_SetOBJLstPtr
+	call ActS_SetSprMapPtr
 	pop  bc
 ENDM
 
 ; =============== mActS_SetBlankFrame ===============
-; Switches the OBJLst for the current actor to the empty one.
+; Switches the SprMap for the current actor to the empty one.
 ; Used to hide the actor.
 MACRO mActS_SetBlankFrame
-	mActOBJLstPtrTable OBJLstPtrTable_Act_None
+	mActSprMapPtrTable SprMapPtrTable_Act_None
 ENDM
 
-; =============== mActOBJLstPtrTableByDir ===============
-; Like mActOBJLstPtrTable, except the animation used depends on the direction it's facing.
-; This is meant for actors, since they don't support OBJLst flipping, so they have to split
-; the left-facing and right-facing variations as two different OBJLst.
+; =============== mActSprMapPtrTableByDir ===============
+; Like mActSprMapPtrTable, except the animation used depends on the direction it's facing.
+; This is meant for actors, since they don't support SprMap flipping, so they have to split
+; the left-facing and right-facing variations as two different SprMap.
 ; IN
-; - 1: Ptr to OBJLstPtrTable to use when facing left
-; - 2: Ptr to OBJLstPtrTable to use when facing right
-MACRO mActOBJLstPtrTableByDir
-	mActOBJLstPtrTable \1		; Set the one when facing left first
+; - 1: Ptr to SprMapPtrTable to use when facing left
+; - 2: Ptr to SprMapPtrTable to use when facing right
+MACRO mActSprMapPtrTableByDir
+	mActSprMapPtrTable \1		; Set the one when facing left first
 	ld   a, [sActSetDir]
 	bit  DIRB_R, a			; Facing right?
 	ret  z					; If not, return
-	mActOBJLstPtrTable \2		; Set the one when facing right
+	mActSprMapPtrTable \2		; Set the one when facing right
 ENDM
 
 ; =============== mActSetYSpeed ===============
@@ -292,15 +292,15 @@ MACRO mActSetYSpeed
 ENDM
 
 ; =============== mActS_SetOBJBank ===============
-; Saves the bank number for locating the OBJLst.
+; Saves the bank number for locating the SprMap.
 ; Should be used during actor spawning.
 ; IN:
-; - 1: Label to OBJLst ptr table
+; - 1: Label to SprMap ptr table
 ; - E: Slot ID
 MACRO mActS_SetOBJBank
 	ld   a, BANK(\1)		; A = Target bank
 	push hl
-	ld   hl, sActOBJLstBank	; HL = Start of bank table
+	ld   hl, sActSprMapBank	; HL = Start of bank table
 	ld   d, $00				; DE = Slot Id
 	add  hl, de				; Index it
 	ld   [hl], a			
@@ -523,9 +523,9 @@ MACRO mActCheckThrownId
 ENDM
 
 ; =============== mActFlagToDir ===============
-; Gets the actor direction value given an OBJLst flags bitmask.
+; Gets the actor direction value given an SprMap flags bitmask.
 ; IN
-; - 1: Ptr to OBJLst flags value
+; - 1: Ptr to SprMap flags value
 ; OUT
 ; - A: Directional value
 MACRO mActFlagsToXDir
@@ -535,18 +535,18 @@ MACRO mActFlagsToXDir
 	; R $20 -> $01
 	; L $00 -> $02
 	ld   a, [\1]
-	and  a, OBJLST_XFLIP	; Filter the X flip flag (if $20; we're moving right)
+	and  a, SPRMAP_XFLIP	; Filter the X flip flag (if $20; we're moving right)
 	ld   b, a				; For the xor to work, the R value only needs to become $30
 	rrca					; A |= (A >> 1) will do
 	or   a, b				
-	xor  OBJLST_XFLIP		; Invert the flip bit
+	xor  SPRMAP_XFLIP		; Invert the flip bit
 	swap a					; >> 4
 ENDM
 
 ; =============== mActFlagToDir ===============
 ; Gets the actor direction value based on the direction the player's facing
 ; IN
-; - 1: Ptr to OBJLst flags value
+; - 1: Ptr to SprMap flags value
 MACRO mPlFlagsToXDir
 	mActFlagsToXDir sPlFlags
 ENDM

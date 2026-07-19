@@ -77,7 +77,7 @@ ScrollLocks_C31B: INCBIN "data/lvl/c31b/scroll_locks.bin"
 ;  6|- $0B-$0C: Ptr to 16x16 block definitions (Bank $0B)
 ;  7|- $0D-$0E: Player Y pos
 ;  8|- $0F-$10: Player X pos
-;  9|- $11    : Initial animation frame (OBJLst Id) 
+;  9|- $11    : Initial animation frame (Sprite mapping ID) 
 ; 10|- $12    : Player flags for OAMWrite
 ; 11|- $13-$14: Scroll Y pos (without offset)
 ; 12|- $15-$16: Scroll X pos (without offset)
@@ -436,23 +436,23 @@ Game_PowerupStatePtrTbl:
 	dw .dragon
 .small:		
 	db $01
-	db OBJ_SMALLWARIO_STAND
+	db SPR_SMALLWARIO_STAND
 	dw GFX_NormalHat
 .garlic:	
 	db $00
-	db OBJ_WARIO_STAND
+	db SPR_WARIO_STAND
 	dw GFX_NormalHat
 .bull:		
 	db $00
-	db OBJ_WARIO_STAND
+	db SPR_WARIO_STAND
 	dw GFX_BullHat
 .jet:		
 	db $00
-	db OBJ_WARIO_STAND
+	db SPR_WARIO_STAND
 	dw GFX_JetHat
 .dragon:	
 	db $00
-	db OBJ_WARIO_STAND
+	db SPR_WARIO_STAND
 	dw GFX_DragonHat
 	
 ; =============== Level_LoadScrollLocks ===============

@@ -21,15 +21,15 @@ ActInit_DoorFrame:
 	ld   bc, SubCall_Act_DoorFrame
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
+	; Set initial animation
 	push bc
-	ld   bc, OBJLstPtrTable_Act_DoorFrame
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_DoorFrame
+	call ActS_SetSprMapPtr
 	pop  bc
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_DoorFrame
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_DoorFrame
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Set collision type
 	xor  a
@@ -37,29 +37,29 @@ ActInit_DoorFrame:
 	mSubCall ActS_SaveColiType ; BANK $02
 	ret
 	
-OBJLstPtrTable_Act_DoorFrame:
-	dw OBJLst_Act_DoorFrame
+SprMapPtrTable_Act_DoorFrame:
+	dw SprMap_Act_DoorFrame
 	dw $0000;X
 
 Act_DoorFrame:;I
 	; Yeah. Could have been omitted but oh well.
-	ld   a, LOW(OBJLstPtrTable_Act_DoorFrame)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_DoorFrame)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_DoorFrame)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_DoorFrame)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	ret
 	
-OBJLstSharedPtrTable_Act_DoorFrame:
-	dw OBJLstPtrTable_Act_DoorFrame;X
-	dw OBJLstPtrTable_Act_DoorFrame;X
-	dw OBJLstPtrTable_Act_DoorFrame;X
-	dw OBJLstPtrTable_Act_DoorFrame;X
-	dw OBJLstPtrTable_Act_DoorFrame;X
-	dw OBJLstPtrTable_Act_DoorFrame;X
-	dw OBJLstPtrTable_Act_DoorFrame;X
-	dw OBJLstPtrTable_Act_DoorFrame;X
+SprMapSharedPtrTable_Act_DoorFrame:
+	dw SprMapPtrTable_Act_DoorFrame;X
+	dw SprMapPtrTable_Act_DoorFrame;X
+	dw SprMapPtrTable_Act_DoorFrame;X
+	dw SprMapPtrTable_Act_DoorFrame;X
+	dw SprMapPtrTable_Act_DoorFrame;X
+	dw SprMapPtrTable_Act_DoorFrame;X
+	dw SprMapPtrTable_Act_DoorFrame;X
+	dw SprMapPtrTable_Act_DoorFrame;X
 
-OBJLst_Act_DoorFrame: INCBIN "data/objlst/actor/doorframe.bin"
+SprMap_Act_DoorFrame: INCBIN "data/sprmap/actor/doorframe.bin"
 GFX_Act_DoorFrame: INCBIN "data/gfx/actor/doorframe.bin"
 
 ; =============== ActInit_CoinLock ===============
@@ -82,15 +82,15 @@ ActInit_CoinLock:
 	ld   bc, SubCall_Act_CoinLock
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
+	; Set initial animation
 	push bc
-	ld   bc, OBJLstPtrTable_Act_CoinLock_Closed
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_CoinLock_Closed
+	call ActS_SetSprMapPtr
 	pop  bc
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_CoinLock
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_CoinLock
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Set collision type
 	ld   a, ACTCOLI_LOCK
@@ -109,23 +109,23 @@ ActInit_CoinLock:
 	ld   [sLvlExitDoor], a
 	ld   [sActLocalRoutineId], a
 	
-	push bc						; Update OBJLst (since its eyes glow once open)
-	ld   bc, OBJLstPtrTable_Act_CoinLock_Open
-	call ActS_SetOBJLstPtr
+	push bc						; Update animation (since its eyes glow once open)
+	ld   bc, SprMapPtrTable_Act_CoinLock_Open
+	call ActS_SetSprMapPtr
 	pop  bc
 	
 	xor  a						; Make intangible
 	ld   [sActSetColiType], a
 	ret
 	
-OBJLstPtrTable_Act_CoinLock_Closed:
-	dw OBJLst_Act_CoinLock0
+SprMapPtrTable_Act_CoinLock_Closed:
+	dw SprMap_Act_CoinLock0
 	dw $0000;X
-OBJLstPtrTable_Act_CoinLock_Open:
-	dw OBJLst_Act_CoinLock0
-	dw OBJLst_Act_CoinLock1
-	dw OBJLst_Act_CoinLock2
-	dw OBJLst_Act_CoinLock1
+SprMapPtrTable_Act_CoinLock_Open:
+	dw SprMap_Act_CoinLock0
+	dw SprMap_Act_CoinLock1
+	dw SprMap_Act_CoinLock2
+	dw SprMap_Act_CoinLock1
 	dw $0000
 
 ; =============== Act_CoinLock ===============
@@ -169,8 +169,8 @@ Act_CoinLock_Closed:
 	ld   [sActCoinLockUnlockTimer], a
 	
 	push bc					; Set glowing eyes
-	ld   bc, OBJLstPtrTable_Act_CoinLock_Open
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_CoinLock_Open
+	call ActS_SetSprMapPtr
 	pop  bc
 	
 	ld   a, SFX1_26		; Play along screen shake effect
@@ -185,9 +185,9 @@ Act_CoinLock_Opening:
 	ld   a, [sTimer]
 	and  a, $0F
 	jr   nz, .moveUp
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	
 .moveUp:
 	; Move up lock at 0.25px/frame
@@ -228,25 +228,25 @@ Act_CoinLock_Open:
 	ld   a, [sTimer]
 	and  a, $0F
 	jr   nz, .end
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .end:
 	ret
 	
-OBJLstSharedPtrTable_Act_CoinLock:
-	dw OBJLstPtrTable_Act_CoinLock_Closed;X
-	dw OBJLstPtrTable_Act_CoinLock_Closed;X
-	dw OBJLstPtrTable_Act_CoinLock_Closed;X
-	dw OBJLstPtrTable_Act_CoinLock_Closed;X
-	dw OBJLstPtrTable_Act_CoinLock_Closed;X
-	dw OBJLstPtrTable_Act_CoinLock_Closed;X
-	dw OBJLstPtrTable_Act_CoinLock_Closed;X
-	dw OBJLstPtrTable_Act_CoinLock_Closed;X
+SprMapSharedPtrTable_Act_CoinLock:
+	dw SprMapPtrTable_Act_CoinLock_Closed;X
+	dw SprMapPtrTable_Act_CoinLock_Closed;X
+	dw SprMapPtrTable_Act_CoinLock_Closed;X
+	dw SprMapPtrTable_Act_CoinLock_Closed;X
+	dw SprMapPtrTable_Act_CoinLock_Closed;X
+	dw SprMapPtrTable_Act_CoinLock_Closed;X
+	dw SprMapPtrTable_Act_CoinLock_Closed;X
+	dw SprMapPtrTable_Act_CoinLock_Closed;X
 
-OBJLst_Act_CoinLock0: INCBIN "data/objlst/actor/coinlock0.bin"
-OBJLst_Act_CoinLock1: INCBIN "data/objlst/actor/coinlock1.bin"
-OBJLst_Act_CoinLock2: INCBIN "data/objlst/actor/coinlock2.bin"
+SprMap_Act_CoinLock0: INCBIN "data/sprmap/actor/coinlock0.bin"
+SprMap_Act_CoinLock1: INCBIN "data/sprmap/actor/coinlock1.bin"
+SprMap_Act_CoinLock2: INCBIN "data/sprmap/actor/coinlock2.bin"
 GFX_Act_CoinLock: INCBIN "data/gfx/actor/coinlock.bin"
 
 ; =============== ActInit_CartTrain ===============
@@ -265,15 +265,15 @@ ActInit_CartTrain:
 	ld   bc, SubCall_Act_CartTrain
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
+	; Set initial animation
 	push bc
-	ld   bc, OBJLstPtrTable_Act_CartTrain
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_CartTrain
+	call ActS_SetSprMapPtr
 	
-	; Set OBJLst shared table
+	; Set default animation table
 	pop  bc
-	ld   bc, OBJLstSharedPtrTable_Act_CartTrain
-	call ActS_SetOBJLstSharedTablePtr
+	ld   bc, SprMapSharedPtrTable_Act_CartTrain
+	call ActS_SetSprMapSharedTablePtr
 	
 	ld   a, ACTCOLI_TOPSOLID
 	ld   [sActSetColiType], a
@@ -288,11 +288,11 @@ ActInit_CartTrain:
 	mSubCall ActS_SaveColiType ; BANK $02
 	ret
 	
-OBJLstPtrTable_Act_CartTrain:
-	dw OBJLst_Act_Cart00
-	dw OBJLst_Act_Cart01
-	dw OBJLst_Act_Cart02
-	dw OBJLst_Act_Cart03
+SprMapPtrTable_Act_CartTrain:
+	dw SprMap_Act_Cart00
+	dw SprMap_Act_Cart01
+	dw SprMap_Act_Cart02
+	dw SprMap_Act_Cart03
 	dw $0000
 
 
@@ -306,9 +306,9 @@ Act_CartTrain:
 	ld   a, [sTimer]
 	and  a, $03
 	jr   nz, .chkMove
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	
 .chkMove:
 	ld   a, [sActCartTrainCanMove]
@@ -387,30 +387,30 @@ Act_CartTrain_StopMove:
 	xor  a						; Disable moving for now
 	ld   [sActCartTrainCanMove], a
 	ret
-OBJLstSharedPtrTable_Act_CartTrain:
-	dw OBJLstPtrTable_Act_CartTrain;X
-	dw OBJLstPtrTable_Act_CartTrain;X
-	dw OBJLstPtrTable_Act_CartTrain;X
-	dw OBJLstPtrTable_Act_CartTrain;X
-	dw OBJLstPtrTable_Act_CartTrain;X
-	dw OBJLstPtrTable_Act_CartTrain;X
-	dw OBJLstPtrTable_Act_CartTrain;X
-	dw OBJLstPtrTable_Act_CartTrain;X
+SprMapSharedPtrTable_Act_CartTrain:
+	dw SprMapPtrTable_Act_CartTrain;X
+	dw SprMapPtrTable_Act_CartTrain;X
+	dw SprMapPtrTable_Act_CartTrain;X
+	dw SprMapPtrTable_Act_CartTrain;X
+	dw SprMapPtrTable_Act_CartTrain;X
+	dw SprMapPtrTable_Act_CartTrain;X
+	dw SprMapPtrTable_Act_CartTrain;X
+	dw SprMapPtrTable_Act_CartTrain;X
 
-OBJLst_Act_Cart00: INCBIN "data/objlst/actor/cart00.bin"
-OBJLst_Act_Cart01: INCBIN "data/objlst/actor/cart01.bin"
-OBJLst_Act_Cart02: INCBIN "data/objlst/actor/cart02.bin"
-OBJLst_Act_Cart03: INCBIN "data/objlst/actor/cart03.bin"
+SprMap_Act_Cart00: INCBIN "data/sprmap/actor/cart00.bin"
+SprMap_Act_Cart01: INCBIN "data/sprmap/actor/cart01.bin"
+SprMap_Act_Cart02: INCBIN "data/sprmap/actor/cart02.bin"
+SprMap_Act_Cart03: INCBIN "data/sprmap/actor/cart03.bin"
 ; [TCRF] A significant amount of unused sprite mappings went here.
 ;        These are perfectly valid (as a 2x2 square), but they appear broken (using the tiles reserved for powerups)
-OBJLst_Act_Cart_Unused_04: INCBIN "data/objlst/actor/cart_unused_04.bin"
-OBJLst_Act_Cart_Unused_05: INCBIN "data/objlst/actor/cart_unused_05.bin"
-OBJLst_Act_Cart_Unused_06: INCBIN "data/objlst/actor/cart_unused_06.bin"
-OBJLst_Act_Cart_Unused_07: INCBIN "data/objlst/actor/cart_unused_07.bin"
-OBJLst_Act_Cart_Unused_08: INCBIN "data/objlst/actor/cart_unused_08.bin"
-OBJLst_Act_Cart_Unused_09: INCBIN "data/objlst/actor/cart_unused_09.bin"
-OBJLst_Act_Cart_Unused_0A: INCBIN "data/objlst/actor/cart_unused_0a.bin"
-OBJLst_Act_Cart_Unused_0B: INCBIN "data/objlst/actor/cart_unused_0b.bin"
+SprMap_Act_Cart_Unused_04: INCBIN "data/sprmap/actor/cart_unused_04.bin"
+SprMap_Act_Cart_Unused_05: INCBIN "data/sprmap/actor/cart_unused_05.bin"
+SprMap_Act_Cart_Unused_06: INCBIN "data/sprmap/actor/cart_unused_06.bin"
+SprMap_Act_Cart_Unused_07: INCBIN "data/sprmap/actor/cart_unused_07.bin"
+SprMap_Act_Cart_Unused_08: INCBIN "data/sprmap/actor/cart_unused_08.bin"
+SprMap_Act_Cart_Unused_09: INCBIN "data/sprmap/actor/cart_unused_09.bin"
+SprMap_Act_Cart_Unused_0A: INCBIN "data/sprmap/actor/cart_unused_0a.bin"
+SprMap_Act_Cart_Unused_0B: INCBIN "data/sprmap/actor/cart_unused_0b.bin"
 GFX_Act_Cart: INCBIN "data/gfx/actor/cart.bin"
 
 ; =============== ActInit_Cart ===============
@@ -433,15 +433,15 @@ ActInit_Cart:
 	ld   bc, SubCall_Act_Cart
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
+	; Set initial animation
 	push bc
-	ld   bc, OBJLstPtrTable_Act_Cart
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_Cart
+	call ActS_SetSprMapPtr
 	pop  bc
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_Cart
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_Cart
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Set collision type
 	ld   a, ACTCOLI_TOPSOLID
@@ -458,23 +458,23 @@ ActInit_Cart:
 	mSubCall ActS_SaveColiType ; BANK $02
 	ret
 	
-OBJLstPtrTable_Act_Cart:
-	dw OBJLst_Act_Cart00
-	dw OBJLst_Act_Cart01
+SprMapPtrTable_Act_Cart:
+	dw SprMap_Act_Cart00
+	dw SprMap_Act_Cart01
 	dw $0000
 
-OBJLstPtrTable_Act_Cart_MoveR:
-	dw OBJLst_Act_Cart03
-	dw OBJLst_Act_Cart02
-	dw OBJLst_Act_Cart01
-	dw OBJLst_Act_Cart00
+SprMapPtrTable_Act_Cart_MoveR:
+	dw SprMap_Act_Cart03
+	dw SprMap_Act_Cart02
+	dw SprMap_Act_Cart01
+	dw SprMap_Act_Cart00
 	dw $0000
 ; [TCRF] Doesn't get a chance to be used
-OBJLstPtrTable_Act_Cart_Unused_MoveL:
-	dw OBJLst_Act_Cart00;X
-	dw OBJLst_Act_Cart01;X
-	dw OBJLst_Act_Cart02;X
-	dw OBJLst_Act_Cart03;X
+SprMapPtrTable_Act_Cart_Unused_MoveL:
+	dw SprMap_Act_Cart00;X
+	dw SprMap_Act_Cart01;X
+	dw SprMap_Act_Cart02;X
+	dw SprMap_Act_Cart03;X
 	dw $0000;X
 
 
@@ -484,7 +484,7 @@ Act_Cart:
 	inc  a
 	ld   [sActSetTimer], a
 	
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	call Act_Cart_DoFall		; Always handle gravity
 	ld   a, [sActCartCanMove]
@@ -585,21 +585,21 @@ Act_Cart_Idle:
 	ld   a, $01					; Otherwise, resume moving
 	ld   [sActCartTrainCanMove], a
 	
-	; Depending on the direction, pick the correct OBJLstTable
+	; Depending on the direction, pick the correct SprMapTable
 	
 	;--
 	; [TCRF] This part is for the cart moving left, which can't happen
 	push bc
-	ld   bc, OBJLstPtrTable_Act_Cart_Unused_MoveL	; For moving left
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_Cart_Unused_MoveL	; For moving left
+	call ActS_SetSprMapPtr
 	pop  bc
 	ld   a, [sActSetDir]
 	bit  DIRB_R, a				; Is the cart facing right?
 	ret  z						; If not, return
 	;--
 	push bc
-	ld   bc, OBJLstPtrTable_Act_Cart_MoveR	; For moving right
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_Cart_MoveR	; For moving right
+	call ActS_SetSprMapPtr
 	pop  bc
 	ret
 	
@@ -654,27 +654,27 @@ Act_Cart_Unused_StopMove:
 	; Special code unique to this subroutine, not found in Act_CartTrain_StopMove.
 	; This reloads the animation, since we just changed direction.
 	push bc
-	ld   bc, OBJLstPtrTable_Act_Cart_Unused_MoveL	; For facing left
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_Cart_Unused_MoveL	; For facing left
+	call ActS_SetSprMapPtr
 	pop  bc
 	ld   a, [sActSetDir]
 	bit  DIRB_R, a				; Is it facing right?
 	ret  z						; If not, return
 	push bc
-	ld   bc, OBJLstPtrTable_Act_Cart_MoveR	; For facing left
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_Cart_MoveR	; For facing left
+	call ActS_SetSprMapPtr
 	pop  bc
 	;--
 	ret  
-OBJLstSharedPtrTable_Act_Cart:
-	dw OBJLstPtrTable_Act_Cart;X
-	dw OBJLstPtrTable_Act_Cart;X
-	dw OBJLstPtrTable_Act_Cart;X
-	dw OBJLstPtrTable_Act_Cart;X
-	dw OBJLstPtrTable_Act_Cart;X
-	dw OBJLstPtrTable_Act_Cart;X
-	dw OBJLstPtrTable_Act_Cart;X
-	dw OBJLstPtrTable_Act_Cart;X
+SprMapSharedPtrTable_Act_Cart:
+	dw SprMapPtrTable_Act_Cart;X
+	dw SprMapPtrTable_Act_Cart;X
+	dw SprMapPtrTable_Act_Cart;X
+	dw SprMapPtrTable_Act_Cart;X
+	dw SprMapPtrTable_Act_Cart;X
+	dw SprMapPtrTable_Act_Cart;X
+	dw SprMapPtrTable_Act_Cart;X
+	dw SprMapPtrTable_Act_Cart;X
 	
 ; =============== ActInit_Wolf ===============
 ; Knife-throwing enemy.
@@ -693,12 +693,12 @@ ActInit_Wolf:
 	ld   bc, SubCall_Act_Wolf
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Wolf_WalkL
+	; Set initial animation
+	mActSprMapPtrTable SprMapPtrTable_Act_Wolf_WalkL
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_Wolf
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_Wolf
+	call ActS_SetSprMapSharedTablePtr
 	
 	; [BUG] The collision here is handled a bit inconsistently.
 	;		At first, this actor is completely safe to touch even when it moves normally.
@@ -734,8 +734,8 @@ ENDC
 	ld   [sActWolfMoveDelay], a
 	ret
 	
-OBJLstPtrTable_ActInit_Unused_Wolf:
-	dw OBJLst_Act_Wolf_AlertL1;X
+SprMapPtrTable_ActInit_Unused_Wolf:
+	dw SprMap_Act_Wolf_AlertL1;X
 	dw $0000;X
 
 ; =============== Act_Wolf ===============
@@ -843,7 +843,7 @@ Act_Wolf_Walk:
 	or   a						
 	jp   nz, Act_Wolf_WaitTurn	
 	
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	; Move depending on the actor's direction
 	ld   a, [sActSetDir]
@@ -955,13 +955,13 @@ Act_Wolf_WaitTurn:
 	bit  DIRB_R, a			; Facing right?
 	jr   nz, .dirR			; If so, jump
 .dirL:
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Wolf_WalkL
+	mActSprMapPtrTable SprMapPtrTable_Act_Wolf_WalkL
 	mActColiMask ACTCOLI_NORM, ACTCOLI_DAMAGE, ACTCOLI_NORM, ACTCOLI_NORM
 	ld   a, COLI
 	ld   [sActSetColiType], a
 	ret
 .dirR:
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Wolf_WalkR
+	mActSprMapPtrTable SprMapPtrTable_Act_Wolf_WalkR
 	mActColiMask ACTCOLI_DAMAGE, ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM
 	ld   a, COLI
 	ld   [sActSetColiType], a
@@ -997,10 +997,10 @@ Act_Wolf_MoveLeft:
 	ld   bc, -$01
 	call ActS_MoveRight
 	
-	ld   a, LOW(OBJLstPtrTable_Act_Wolf_WalkL)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Wolf_WalkL)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Wolf_WalkL)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Wolf_WalkL)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; Make the actor face left
 	ld   a, [sActSetDir]
@@ -1032,10 +1032,10 @@ Act_Wolf_MoveRight:
 	ld   bc, +$01
 	call ActS_MoveRight
 	
-	ld   a, LOW(OBJLstPtrTable_Act_Wolf_WalkR)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Wolf_WalkR)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Wolf_WalkR)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Wolf_WalkR)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; Make the actor face right
 	ld   a, [sActSetDir]
@@ -1058,13 +1058,13 @@ Act_Wolf_StartKnifeAlert:
 	bit  DIRB_R, a				; Is the actor facing right?
 	jr   nz, .dirR				; If so, jump
 .dirL:
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Wolf_AlertL
+	mActSprMapPtrTable SprMapPtrTable_Act_Wolf_AlertL
 	mActColiMask ACTCOLI_NORM, ACTCOLI_DAMAGE, ACTCOLI_NORM, ACTCOLI_NORM
 	ld   a, COLI
 	ld   [sActSetColiType], a
 	ret
 .dirR:
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Wolf_AlertR
+	mActSprMapPtrTable SprMapPtrTable_Act_Wolf_AlertR
 	mActColiMask ACTCOLI_DAMAGE, ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM
 	ld   a, COLI
 	ld   [sActSetColiType], a
@@ -1080,7 +1080,7 @@ Act_Wolf_Alert:
 	dec  a						; Otherwise, timer--;
 	ld   [sActWolfModeTimer], a
 	
-	call ActS_IncOBJLstIdEvery8	
+	call ActS_IncSprMapIdEvery8	
 	
 	; Every 8 frames play a SFX
 	ld   a, [sActSetTimer]
@@ -1101,22 +1101,22 @@ Act_Wolf_Alert:
 	bit  DIRB_R, a			; Facing right?
 	jr   nz, .dirR			; If so, jump
 .dirL:
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Wolf_ThrowL
+	mActSprMapPtrTable SprMapPtrTable_Act_Wolf_ThrowL
 	ret
 .dirR:
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Wolf_ThrowR
+	mActSprMapPtrTable SprMapPtrTable_Act_Wolf_ThrowR
 	ret
 	
 ; =============== Act_Wolf_ThrowKnife ===============
 ; Waits for a bit before throwing the knife.
 Act_Wolf_ThrowKnife:
 	; Spawn the knife once the animation ends
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	cp   a, $04						; Has the animation ended? (frame >= $04)
 	jr   nc, .endMode				; If so, jump
 	
 	; Otherwise continue animating it every 8 frames
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	ret
 .endMode:
 	ld   a, WOLF_RTN_POSTKNIFE
@@ -1147,10 +1147,10 @@ Act_Wolf_PostKnifeWait:
 	bit  DIRB_R, a				; Facing right?
 	jr   nz, .dirR				; If so, jump
 .dirL:
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Wolf_ThrowEndL
+	mActSprMapPtrTable SprMapPtrTable_Act_Wolf_ThrowEndL
 	ret
 .dirR:
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Wolf_ThrowEndR
+	mActSprMapPtrTable SprMapPtrTable_Act_Wolf_ThrowEndR
 	ret
 .endMode:
 	; Move immediately, but wait for $50 frames before another knife
@@ -1224,7 +1224,7 @@ Act_WolfKnife_Despawn:
 Act_WolfKnife_MoveLeft:
 	ld   bc, -$03
 	call ActS_MoveRight
-	mActOBJLstPtrTable OBJLstPtrTable_Act_WolfKnifeL
+	mActSprMapPtrTable SprMapPtrTable_Act_WolfKnifeL
 	
 	; If the knife reaches a solid block, stop it
 	call ActColi_GetBlockId_LowL
@@ -1237,7 +1237,7 @@ Act_WolfKnife_MoveLeft:
 Act_WolfKnife_MoveRight:
 	ld   bc, +$03
 	call ActS_MoveRight
-	mActOBJLstPtrTable OBJLstPtrTable_Act_WolfKnifeR
+	mActSprMapPtrTable SprMapPtrTable_Act_WolfKnifeR
 	call ActColi_GetBlockId_LowR
 	mSubCall ActBGColi_IsSolidOnTop
 	or   a
@@ -1265,7 +1265,7 @@ Act_Wolf_SpawnKnife:
 	jr   .checkSlot
 	
 .slotFound:
-	mActS_SetOBJBank OBJLstSharedPtrTable_Act_Wolf
+	mActS_SetOBJBank SprMapSharedPtrTable_Act_Wolf
 	
 	ld   a, $02				; Enabled
 	ldi  [hl], a
@@ -1298,14 +1298,14 @@ Act_Wolf_SpawnKnife:
 	ldi  [hl], a				; Rel.Y (Origin)
 	ldi  [hl], a				; Rel.X (Origin)
 	
-	ld   a, LOW(OBJLstPtrTable_Act_None)	; OBJLst Table
+	ld   a, LOW(SprMapPtrTable_Act_None)	; Animation
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstPtrTable_Act_None)
+	ld   a, HIGH(SprMapPtrTable_Act_None)
 	ldi  [hl], a
 	
 	ld   a, [sActSetDir]		; Dir
 	ldi  [hl], a
-	xor  a						; OBJLst ID
+	xor  a						; Sprite mapping ID
 	ldi  [hl], a
 	
 	; Actor ID
@@ -1340,99 +1340,99 @@ Act_Wolf_SpawnKnife:
 	ld   a, HIGH(sActDummyBlock)
 	ldi  [hl], a
 	
-	ld   a, LOW(OBJLstSharedPtrTable_Act_Wolf)		; OBJLst shared table
+	ld   a, LOW(SprMapSharedPtrTable_Act_Wolf)		; Set default animation table
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedPtrTable_Act_Wolf)
+	ld   a, HIGH(SprMapSharedPtrTable_Act_Wolf)
 	ldi  [hl], a
 	
 	ld   a, SFX1_29		; Play knife throw SFX
 	ld   [sSFX1Set], a
 	ret
-OBJLstSharedPtrTable_Act_Wolf:
-	dw OBJLstPtrTable_Act_Wolf_StunL;X
-	dw OBJLstPtrTable_Act_Wolf_StunR;X
-	dw OBJLstPtrTable_Act_Wolf_WalkL
-	dw OBJLstPtrTable_Act_Wolf_WalkR
-	dw OBJLstPtrTable_Act_Wolf_StunL
-	dw OBJLstPtrTable_Act_Wolf_StunR
-	dw OBJLstPtrTable_Act_Wolf_WalkL;X
-	dw OBJLstPtrTable_Act_Wolf_WalkR;X
+SprMapSharedPtrTable_Act_Wolf:
+	dw SprMapPtrTable_Act_Wolf_StunL;X
+	dw SprMapPtrTable_Act_Wolf_StunR;X
+	dw SprMapPtrTable_Act_Wolf_WalkL
+	dw SprMapPtrTable_Act_Wolf_WalkR
+	dw SprMapPtrTable_Act_Wolf_StunL
+	dw SprMapPtrTable_Act_Wolf_StunR
+	dw SprMapPtrTable_Act_Wolf_WalkL;X
+	dw SprMapPtrTable_Act_Wolf_WalkR;X
 
-OBJLstPtrTable_Act_Wolf_WalkL:
-	dw OBJLst_Act_Wolf_WalkL0
-	dw OBJLst_Act_Wolf_WalkL1
-	dw OBJLst_Act_Wolf_WalkL2
-	dw OBJLst_Act_Wolf_WalkL1
+SprMapPtrTable_Act_Wolf_WalkL:
+	dw SprMap_Act_Wolf_WalkL0
+	dw SprMap_Act_Wolf_WalkL1
+	dw SprMap_Act_Wolf_WalkL2
+	dw SprMap_Act_Wolf_WalkL1
 	dw $0000
-OBJLstPtrTable_Act_Wolf_WalkR:
-	dw OBJLst_Act_Wolf_WalkR0
-	dw OBJLst_Act_Wolf_WalkR1
-	dw OBJLst_Act_Wolf_WalkR2
-	dw OBJLst_Act_Wolf_WalkR1
+SprMapPtrTable_Act_Wolf_WalkR:
+	dw SprMap_Act_Wolf_WalkR0
+	dw SprMap_Act_Wolf_WalkR1
+	dw SprMap_Act_Wolf_WalkR2
+	dw SprMap_Act_Wolf_WalkR1
 	dw $0000
-OBJLstPtrTable_Act_Wolf_StunL:
-	dw OBJLst_Act_Wolf_StunL
+SprMapPtrTable_Act_Wolf_StunL:
+	dw SprMap_Act_Wolf_StunL
 	dw $0000
-OBJLstPtrTable_Act_Wolf_StunR:
-	dw OBJLst_Act_Wolf_StunR
+SprMapPtrTable_Act_Wolf_StunR:
+	dw SprMap_Act_Wolf_StunR
 	dw $0000
-OBJLstPtrTable_Act_Wolf_AlertL:
-	dw OBJLst_Act_Wolf_AlertL0
-	dw OBJLst_Act_Wolf_AlertL1
-	dw OBJLst_Act_Wolf_AlertL0
-	dw OBJLst_Act_Wolf_AlertL1
+SprMapPtrTable_Act_Wolf_AlertL:
+	dw SprMap_Act_Wolf_AlertL0
+	dw SprMap_Act_Wolf_AlertL1
+	dw SprMap_Act_Wolf_AlertL0
+	dw SprMap_Act_Wolf_AlertL1
 	dw $0000
-OBJLstPtrTable_Act_Wolf_AlertR:
-	dw OBJLst_Act_Wolf_AlertR0
-	dw OBJLst_Act_Wolf_AlertR1
-	dw OBJLst_Act_Wolf_AlertR0
-	dw OBJLst_Act_Wolf_AlertR1
+SprMapPtrTable_Act_Wolf_AlertR:
+	dw SprMap_Act_Wolf_AlertR0
+	dw SprMap_Act_Wolf_AlertR1
+	dw SprMap_Act_Wolf_AlertR0
+	dw SprMap_Act_Wolf_AlertR1
 	dw $0000
-OBJLstPtrTable_Act_Wolf_ThrowL:
-	dw OBJLst_Act_Wolf_AlertL1
-	dw OBJLst_Act_Wolf_ThrowL0
-	dw OBJLst_Act_Wolf_ThrowL1
-	dw OBJLst_Act_Wolf_ThrowL0
-	dw OBJLst_Act_Wolf_AlertL1
+SprMapPtrTable_Act_Wolf_ThrowL:
+	dw SprMap_Act_Wolf_AlertL1
+	dw SprMap_Act_Wolf_ThrowL0
+	dw SprMap_Act_Wolf_ThrowL1
+	dw SprMap_Act_Wolf_ThrowL0
+	dw SprMap_Act_Wolf_AlertL1
 	dw $0000;X
-OBJLstPtrTable_Act_Wolf_ThrowR:
-	dw OBJLst_Act_Wolf_AlertR1
-	dw OBJLst_Act_Wolf_ThrowR0
-	dw OBJLst_Act_Wolf_ThrowR1
-	dw OBJLst_Act_Wolf_ThrowR0
-	dw OBJLst_Act_Wolf_AlertR1
+SprMapPtrTable_Act_Wolf_ThrowR:
+	dw SprMap_Act_Wolf_AlertR1
+	dw SprMap_Act_Wolf_ThrowR0
+	dw SprMap_Act_Wolf_ThrowR1
+	dw SprMap_Act_Wolf_ThrowR0
+	dw SprMap_Act_Wolf_AlertR1
 	dw $0000;X
-OBJLstPtrTable_Act_Wolf_ThrowEndL:
-	dw OBJLst_Act_Wolf_AlertL1
+SprMapPtrTable_Act_Wolf_ThrowEndL:
+	dw SprMap_Act_Wolf_AlertL1
 	dw $0000;X
-OBJLstPtrTable_Act_Wolf_ThrowEndR:
-	dw OBJLst_Act_Wolf_AlertR1
+SprMapPtrTable_Act_Wolf_ThrowEndR:
+	dw SprMap_Act_Wolf_AlertR1
 	dw $0000;X
-OBJLstPtrTable_Act_WolfKnifeL:
-	dw OBJLst_Act_WolfKnifeL
+SprMapPtrTable_Act_WolfKnifeL:
+	dw SprMap_Act_WolfKnifeL
 	dw $0000;X
-OBJLstPtrTable_Act_WolfKnifeR:
-	dw OBJLst_Act_WolfKnifeR
+SprMapPtrTable_Act_WolfKnifeR:
+	dw SprMap_Act_WolfKnifeR
 	dw $0000;X
 
-OBJLst_Act_Wolf_AlertL1: INCBIN "data/objlst/actor/wolf_alertl1.bin"
-OBJLst_Act_Wolf_AlertL0: INCBIN "data/objlst/actor/wolf_alertl0.bin"
-OBJLst_Act_Wolf_StunL: INCBIN "data/objlst/actor/wolf_stunl.bin"
-OBJLst_Act_Wolf_WalkL0: INCBIN "data/objlst/actor/wolf_walkl0.bin"
-OBJLst_Act_Wolf_WalkL1: INCBIN "data/objlst/actor/wolf_walkl1.bin"
-OBJLst_Act_Wolf_WalkL2: INCBIN "data/objlst/actor/wolf_walkl2.bin"
-OBJLst_Act_WolfKnifeL: INCBIN "data/objlst/actor/wolfknifel.bin"
-OBJLst_Act_Wolf_ThrowL1: INCBIN "data/objlst/actor/wolf_throwl1.bin"
-OBJLst_Act_Wolf_ThrowL0: INCBIN "data/objlst/actor/wolf_throwl0.bin"
-OBJLst_Act_Wolf_AlertR1: INCBIN "data/objlst/actor/wolf_alertr1.bin"
-OBJLst_Act_Wolf_AlertR0: INCBIN "data/objlst/actor/wolf_alertr0.bin"
-OBJLst_Act_Wolf_StunR: INCBIN "data/objlst/actor/wolf_stunr.bin"
-OBJLst_Act_Wolf_WalkR0: INCBIN "data/objlst/actor/wolf_walkr0.bin"
-OBJLst_Act_Wolf_WalkR1: INCBIN "data/objlst/actor/wolf_walkr1.bin"
-OBJLst_Act_Wolf_WalkR2: INCBIN "data/objlst/actor/wolf_walkr2.bin"
-OBJLst_Act_WolfKnifeR: INCBIN "data/objlst/actor/wolfknifer.bin"
-OBJLst_Act_Wolf_ThrowR1: INCBIN "data/objlst/actor/wolf_throwr1.bin"
-OBJLst_Act_Wolf_ThrowR0: INCBIN "data/objlst/actor/wolf_throwr0.bin"
+SprMap_Act_Wolf_AlertL1: INCBIN "data/sprmap/actor/wolf_alertl1.bin"
+SprMap_Act_Wolf_AlertL0: INCBIN "data/sprmap/actor/wolf_alertl0.bin"
+SprMap_Act_Wolf_StunL: INCBIN "data/sprmap/actor/wolf_stunl.bin"
+SprMap_Act_Wolf_WalkL0: INCBIN "data/sprmap/actor/wolf_walkl0.bin"
+SprMap_Act_Wolf_WalkL1: INCBIN "data/sprmap/actor/wolf_walkl1.bin"
+SprMap_Act_Wolf_WalkL2: INCBIN "data/sprmap/actor/wolf_walkl2.bin"
+SprMap_Act_WolfKnifeL: INCBIN "data/sprmap/actor/wolfknifel.bin"
+SprMap_Act_Wolf_ThrowL1: INCBIN "data/sprmap/actor/wolf_throwl1.bin"
+SprMap_Act_Wolf_ThrowL0: INCBIN "data/sprmap/actor/wolf_throwl0.bin"
+SprMap_Act_Wolf_AlertR1: INCBIN "data/sprmap/actor/wolf_alertr1.bin"
+SprMap_Act_Wolf_AlertR0: INCBIN "data/sprmap/actor/wolf_alertr0.bin"
+SprMap_Act_Wolf_StunR: INCBIN "data/sprmap/actor/wolf_stunr.bin"
+SprMap_Act_Wolf_WalkR0: INCBIN "data/sprmap/actor/wolf_walkr0.bin"
+SprMap_Act_Wolf_WalkR1: INCBIN "data/sprmap/actor/wolf_walkr1.bin"
+SprMap_Act_Wolf_WalkR2: INCBIN "data/sprmap/actor/wolf_walkr2.bin"
+SprMap_Act_WolfKnifeR: INCBIN "data/sprmap/actor/wolfknifer.bin"
+SprMap_Act_Wolf_ThrowR1: INCBIN "data/sprmap/actor/wolf_throwr1.bin"
+SprMap_Act_Wolf_ThrowR0: INCBIN "data/sprmap/actor/wolf_throwr0.bin"
 GFX_Act_Wolf: INCBIN "data/gfx/actor/wolf.bin"
 
 ; =============== ActInit_Penguin ===============
@@ -1453,15 +1453,15 @@ ActInit_Penguin:
 	ld   bc, SubCall_Act_Penguin
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
+	; Set initial animation
 	push bc
-	ld   bc, OBJLstPtrTable_Act_Penguin_WalkL
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_Penguin_WalkL
+	call ActS_SetSprMapPtr
 	pop  bc
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_Penguin
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_Penguin
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Set as safe to touch initially
 	mActColiMask ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM
@@ -1481,8 +1481,8 @@ ActInit_Penguin:
 	ld   [sActPenguinAlertDelay], a
 	ret
 	
-OBJLstPtrTable_ActInit_Unused_Penguin:
-	dw OBJLst_Act_Penguin_WalkL0;X
+SprMapPtrTable_ActInit_Unused_Penguin:
+	dw SprMap_Act_Penguin_WalkL0;X
 	dw $0000;X
 	
 ; =============== Act_Penguin ===============
@@ -1568,7 +1568,7 @@ Act_Penguin_Walk:
 	or   a
 	jr   nz, Act_Penguin_WaitTurn
 	
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	; Move depending on the actor's direction
 	ld   a, [sActSetDir]
@@ -1672,8 +1672,8 @@ Act_Penguin_WaitTurn:
 	jr   nz, .dirR			; If so, jump
 .dirL:
 	push bc
-	ld   bc, OBJLstPtrTable_Act_Penguin_WalkL
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_Penguin_WalkL
+	call ActS_SetSprMapPtr
 	pop  bc
 	mActColiMask ACTCOLI_NORM, ACTCOLI_DAMAGE, ACTCOLI_NORM, ACTCOLI_NORM
 	ld   a, COLI
@@ -1681,8 +1681,8 @@ Act_Penguin_WaitTurn:
 	ret
 .dirR:
 	push bc
-	ld   bc, OBJLstPtrTable_Act_Penguin_WalkR
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_Penguin_WalkR
+	call ActS_SetSprMapPtr
 	pop  bc
 	mActColiMask ACTCOLI_DAMAGE, ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM
 	ld   a, COLI
@@ -1713,10 +1713,10 @@ Act_Penguin_MoveLeft:
 	jr   z, Act_Penguin_SetTurnDelay
 	
 	
-	ld   a, LOW(OBJLstPtrTable_Act_Penguin_WalkL)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Penguin_WalkL)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Penguin_WalkL)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Penguin_WalkL)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; Make the actor face left
 	ld   a, [sActSetDir]
@@ -1748,10 +1748,10 @@ Act_Penguin_MoveRight:
 	or   a
 	jr   z, Act_Penguin_SetTurnDelay
 	
-	ld   a, LOW(OBJLstPtrTable_Act_Penguin_WalkR)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Penguin_WalkR)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Penguin_WalkR)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Penguin_WalkR)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; Make the actor face right
 	ld   a, [sActSetDir]
@@ -1780,8 +1780,8 @@ Act_Penguin_StartShootAlert:
 	jr   nz, .dirR			; If so, jump
 .dirL:
 	push bc
-	ld   bc, OBJLstPtrTable_Act_Penguin_OpenLidL
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_Penguin_OpenLidL
+	call ActS_SetSprMapPtr
 	pop  bc
 	mActColiMask ACTCOLI_NORM, ACTCOLI_DAMAGE, ACTCOLI_NORM, ACTCOLI_NORM
 	ld   a, COLI
@@ -1789,8 +1789,8 @@ Act_Penguin_StartShootAlert:
 	ret
 .dirR:;R
 	push bc
-	ld   bc, OBJLstPtrTable_Act_Penguin_OpenLidR
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_Penguin_OpenLidR
+	call ActS_SetSprMapPtr
 	pop  bc
 	mActColiMask ACTCOLI_DAMAGE, ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM
 	ld   a, COLI
@@ -1804,14 +1804,14 @@ Act_Penguin_Alert:
 	ld   a, [sTimer]
 	and  a, $0F
 	jr   nz, .chkSpawn
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	
 .chkSpawn:
 	;
-	; Spawn the spike ball exactly when the lid opens (sActSetOBJLstId == $02)
-	; When the lid closes (sActSetOBJLstId == $03), switch to the next mode.
+	; Spawn the spike ball exactly when the lid opens (sActSetSprMapId == $02)
+	; When the lid closes (sActSetSprMapId == $03), switch to the next mode.
 	;
 	; Note that since the spike ball is another actor, it will handle timing by itself.
 	; It's meant to be in sync with the animation of the penguin kicking the spike ball,
@@ -1827,7 +1827,7 @@ Act_Penguin_Alert:
 	and  a, $01
 	ret  nz
 	
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	cp   a, $03					; AnimCnt >= $03?
 	jr   nc, .endMode			; If so, switch to the next mode
 	cp   a, $02					; AnimCnt < $02?
@@ -1855,14 +1855,14 @@ Act_Penguin_Alert:
 	jr   nz, .dirR
 .dirL:
 	push bc
-	ld   bc, OBJLstPtrTable_Act_Penguin_KickL
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_Penguin_KickL
+	call ActS_SetSprMapPtr
 	pop  bc
 	ret
 .dirR:
 	push bc
-	ld   bc, OBJLstPtrTable_Act_Penguin_KickR
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_Penguin_KickR
+	call ActS_SetSprMapPtr
 	pop  bc
 	ret
 ; =============== Act_Penguin_Kick ===============
@@ -1870,7 +1870,7 @@ Act_Penguin_Alert:
 ; Meant to be in sync with the timing done in Act_PenguinSpike.
 Act_Penguin_Kick:
 	; Switch to the next mode once the animation ends
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	cp   a, $03					; Has the animation ended? (frame >= $03)
 	jr   nc, .endMode			; If so, jump
 	
@@ -1878,9 +1878,9 @@ Act_Penguin_Kick:
 	ld   a, [sTimer]
 	and  a, $0F
 	jr   nz, .end
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .end:
 	ret
 .endMode:
@@ -1912,14 +1912,14 @@ Act_Penguin_PostKickWait:
 	jr   nz, .dirR				; If so, jump
 .dirL:
 	push bc
-	ld   bc, OBJLstPtrTable_Act_Penguin_PostKickL
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_Penguin_PostKickL
+	call ActS_SetSprMapPtr
 	pop  bc
 	ret
 .dirR:
 	push bc
-	ld   bc, OBJLstPtrTable_Act_Penguin_PostKickR
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_Penguin_PostKickR
+	call ActS_SetSprMapPtr
 	pop  bc
 	ret
 ; =============== Act_Penguin_SetShootDelay ===============
@@ -1939,10 +1939,10 @@ Act_PenguinSpikeBall:
 	
 	; Reuse first frame from MoveL animation.
 	; Not a problem since we aren't cycling the animations until the thing moves.
-	ld   a, LOW(OBJLstPtrTable_Act_PenguinSpikeBall_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_PenguinSpikeBall_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_PenguinSpikeBall_MoveL)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_PenguinSpikeBall_MoveL)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; With sActPenguinSpikeTimer starting out at $40,
 	; don't move until the timer elapses.
@@ -1986,7 +1986,7 @@ Act_PenguinSpikeBall_Move:
 	inc  a
 	ld   [sActSetTimer], a
 	
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 .doBounce:
 	; Handle bounce effect.
@@ -2056,10 +2056,10 @@ Act_PenguinSpikeBall_MoveLeft:
 	call ActS_MoveRight
 	
 	; Animate in that direction
-	ld   a, LOW(OBJLstPtrTable_Act_PenguinSpikeBall_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_PenguinSpikeBall_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_PenguinSpikeBall_MoveL)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_PenguinSpikeBall_MoveL)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; If the spikeball goes against a solid block, mark as dead
 	call ActColi_GetBlockId_LowL
@@ -2074,10 +2074,10 @@ Act_PenguinSpikeBall_MoveRight:
 	call ActS_MoveRight
 	
 	; Animate in that direction
-	ld   a, LOW(OBJLstPtrTable_Act_PenguinSpikeBall_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_PenguinSpikeBall_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_PenguinSpikeBall_MoveR)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_PenguinSpikeBall_MoveR)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; If the spikeball goes against a solid block, mark as dead
 	call ActColi_GetBlockId_LowR
@@ -2107,7 +2107,7 @@ Act_Penguin_SpawnSpikeBall:
 	jr   .checkSlot
 	
 .slotFound:
-	mActS_SetOBJBank OBJLstSharedPtrTable_Act_PenguinSpikeBall
+	mActS_SetOBJBank SprMapSharedPtrTable_Act_PenguinSpikeBall
 	
 	ld   a, $02				; Enabled
 	ldi  [hl], a
@@ -2138,14 +2138,14 @@ Act_Penguin_SpawnSpikeBall:
 	ldi  [hl], a				; Rel.Y (Origin)
 	ldi  [hl], a				; Rel.X (Origin)
 	
-	ld   a, LOW(OBJLstPtrTable_Act_None)	; OBJLst Table
+	ld   a, LOW(SprMapPtrTable_Act_None)	; Animation
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstPtrTable_Act_None)
+	ld   a, HIGH(SprMapPtrTable_Act_None)
 	ldi  [hl], a
 	
 	ld   a, [sActSetDir]		; Dir
 	ldi  [hl], a
-	xor  a						; OBJLst ID
+	xor  a						; Sprite mapping ID
 	ldi  [hl], a
 	
 	; Actor ID
@@ -2179,134 +2179,134 @@ Act_Penguin_SpawnSpikeBall:
 	ldi  [hl], a
 	ld   a, HIGH(sActDummyBlock)
 	ldi  [hl], a
-	ld   a, LOW(OBJLstSharedPtrTable_Act_PenguinSpikeBall)	; OBJLst shared table
+	ld   a, LOW(SprMapSharedPtrTable_Act_PenguinSpikeBall)	; Set default animation table
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedPtrTable_Act_PenguinSpikeBall)
+	ld   a, HIGH(SprMapSharedPtrTable_Act_PenguinSpikeBall)
 	ld   [hl], a
 	ret
-OBJLstSharedPtrTable_Act_Penguin:
-	dw OBJLstPtrTable_Act_Penguin_StunL;X
-	dw OBJLstPtrTable_Act_Penguin_StunR;X
-	dw OBJLstPtrTable_Act_Penguin_WalkL
-	dw OBJLstPtrTable_Act_Penguin_WalkR
-	dw OBJLstPtrTable_Act_Penguin_StunL
-	dw OBJLstPtrTable_Act_Penguin_StunR
-	dw OBJLstPtrTable_Act_Penguin_WalkL;X
-	dw OBJLstPtrTable_Act_Penguin_WalkR;X
-OBJLstSharedPtrTable_Act_PenguinSpikeBall:
-	dw OBJLstPtrTable_Act_PenguinSpikeBall_MoveL;X
-	dw OBJLstPtrTable_Act_PenguinSpikeBall_MoveR;X
-	dw OBJLstPtrTable_Act_PenguinSpikeBall_MoveL;X
-	dw OBJLstPtrTable_Act_PenguinSpikeBall_MoveR;X
-	dw OBJLstPtrTable_Act_PenguinSpikeBall_MoveL
-	dw OBJLstPtrTable_Act_PenguinSpikeBall_MoveR
-	dw OBJLstPtrTable_Act_PenguinSpikeBall_MoveL;X
-	dw OBJLstPtrTable_Act_PenguinSpikeBall_MoveR;X
+SprMapSharedPtrTable_Act_Penguin:
+	dw SprMapPtrTable_Act_Penguin_StunL;X
+	dw SprMapPtrTable_Act_Penguin_StunR;X
+	dw SprMapPtrTable_Act_Penguin_WalkL
+	dw SprMapPtrTable_Act_Penguin_WalkR
+	dw SprMapPtrTable_Act_Penguin_StunL
+	dw SprMapPtrTable_Act_Penguin_StunR
+	dw SprMapPtrTable_Act_Penguin_WalkL;X
+	dw SprMapPtrTable_Act_Penguin_WalkR;X
+SprMapSharedPtrTable_Act_PenguinSpikeBall:
+	dw SprMapPtrTable_Act_PenguinSpikeBall_MoveL;X
+	dw SprMapPtrTable_Act_PenguinSpikeBall_MoveR;X
+	dw SprMapPtrTable_Act_PenguinSpikeBall_MoveL;X
+	dw SprMapPtrTable_Act_PenguinSpikeBall_MoveR;X
+	dw SprMapPtrTable_Act_PenguinSpikeBall_MoveL
+	dw SprMapPtrTable_Act_PenguinSpikeBall_MoveR
+	dw SprMapPtrTable_Act_PenguinSpikeBall_MoveL;X
+	dw SprMapPtrTable_Act_PenguinSpikeBall_MoveR;X
 
-OBJLstPtrTable_Act_Penguin_WalkL:
-	dw OBJLst_Act_Penguin_WalkL0
-	dw OBJLst_Act_Penguin_WalkL1
-	dw OBJLst_Act_Penguin_WalkL0
-	dw OBJLst_Act_Penguin_WalkL2
+SprMapPtrTable_Act_Penguin_WalkL:
+	dw SprMap_Act_Penguin_WalkL0
+	dw SprMap_Act_Penguin_WalkL1
+	dw SprMap_Act_Penguin_WalkL0
+	dw SprMap_Act_Penguin_WalkL2
 	dw $0000
-OBJLstPtrTable_Act_Penguin_WalkR:
-	dw OBJLst_Act_Penguin_WalkR0
-	dw OBJLst_Act_Penguin_WalkR1
-	dw OBJLst_Act_Penguin_WalkR0
-	dw OBJLst_Act_Penguin_WalkR2
+SprMapPtrTable_Act_Penguin_WalkR:
+	dw SprMap_Act_Penguin_WalkR0
+	dw SprMap_Act_Penguin_WalkR1
+	dw SprMap_Act_Penguin_WalkR0
+	dw SprMap_Act_Penguin_WalkR2
 	dw $0000
-OBJLstPtrTable_Act_Penguin_StunL:
-	dw OBJLst_Act_Penguin_StunL
+SprMapPtrTable_Act_Penguin_StunL:
+	dw SprMap_Act_Penguin_StunL
 	dw $0000
-OBJLstPtrTable_Act_Penguin_StunR:
-	dw OBJLst_Act_Penguin_StunR
+SprMapPtrTable_Act_Penguin_StunR:
+	dw SprMap_Act_Penguin_StunR
 	dw $0000
 ; [TCRF] OpenLid and Kick get cut short... but it's more of the same.
-OBJLstPtrTable_Act_Penguin_OpenLidL:
-	dw OBJLst_Act_Penguin_WalkL0
-	dw OBJLst_Act_Penguin_OpenLidL0
-	dw OBJLst_Act_Penguin_OpenLidL1
-	dw OBJLst_Act_Penguin_OpenLidL1
-	dw OBJLst_Act_Penguin_OpenLidL1;X
+SprMapPtrTable_Act_Penguin_OpenLidL:
+	dw SprMap_Act_Penguin_WalkL0
+	dw SprMap_Act_Penguin_OpenLidL0
+	dw SprMap_Act_Penguin_OpenLidL1
+	dw SprMap_Act_Penguin_OpenLidL1
+	dw SprMap_Act_Penguin_OpenLidL1;X
 	dw $0000;X
-OBJLstPtrTable_Act_Penguin_OpenLidR:
-	dw OBJLst_Act_Penguin_WalkR0
-	dw OBJLst_Act_Penguin_OpenLidR0
-	dw OBJLst_Act_Penguin_OpenLidR1
-	dw OBJLst_Act_Penguin_OpenLidR1
-	dw OBJLst_Act_Penguin_OpenLidR1;X
+SprMapPtrTable_Act_Penguin_OpenLidR:
+	dw SprMap_Act_Penguin_WalkR0
+	dw SprMap_Act_Penguin_OpenLidR0
+	dw SprMap_Act_Penguin_OpenLidR1
+	dw SprMap_Act_Penguin_OpenLidR1
+	dw SprMap_Act_Penguin_OpenLidR1;X
 	dw $0000;X
-OBJLstPtrTable_Act_Penguin_KickL:
-	dw OBJLst_Act_Penguin_WalkL0
-	dw OBJLst_Act_Penguin_WalkL0
-	dw OBJLst_Act_Penguin_WalkL1
-	dw OBJLst_Act_Penguin_WalkL1
-	dw OBJLst_Act_Penguin_WalkL1;X
+SprMapPtrTable_Act_Penguin_KickL:
+	dw SprMap_Act_Penguin_WalkL0
+	dw SprMap_Act_Penguin_WalkL0
+	dw SprMap_Act_Penguin_WalkL1
+	dw SprMap_Act_Penguin_WalkL1
+	dw SprMap_Act_Penguin_WalkL1;X
 	dw $0000;X
-OBJLstPtrTable_Act_Penguin_KickR:
-	dw OBJLst_Act_Penguin_WalkR0
-	dw OBJLst_Act_Penguin_WalkR0
-	dw OBJLst_Act_Penguin_WalkR1
-	dw OBJLst_Act_Penguin_WalkR1
-	dw OBJLst_Act_Penguin_WalkR1;X
+SprMapPtrTable_Act_Penguin_KickR:
+	dw SprMap_Act_Penguin_WalkR0
+	dw SprMap_Act_Penguin_WalkR0
+	dw SprMap_Act_Penguin_WalkR1
+	dw SprMap_Act_Penguin_WalkR1
+	dw SprMap_Act_Penguin_WalkR1;X
 	dw $0000;X
-OBJLstPtrTable_Act_Penguin_PostKickL:
-	dw OBJLst_Act_Penguin_WalkL0
+SprMapPtrTable_Act_Penguin_PostKickL:
+	dw SprMap_Act_Penguin_WalkL0
 	dw $0000;X
-OBJLstPtrTable_Act_Penguin_PostKickR:
-	dw OBJLst_Act_Penguin_WalkR0
+SprMapPtrTable_Act_Penguin_PostKickR:
+	dw SprMap_Act_Penguin_WalkR0
 	dw $0000;X
 	
-OBJLstPtrTable_Act_PenguinSpikeBall_MoveL:
-	dw OBJLst_Act_PenguinSpikeBall0
-	dw OBJLst_Act_PenguinSpikeBall1
-	dw OBJLst_Act_PenguinSpikeBall2
-	dw OBJLst_Act_PenguinSpikeBall3
-	dw OBJLst_Act_PenguinSpikeBall4
+SprMapPtrTable_Act_PenguinSpikeBall_MoveL:
+	dw SprMap_Act_PenguinSpikeBall0
+	dw SprMap_Act_PenguinSpikeBall1
+	dw SprMap_Act_PenguinSpikeBall2
+	dw SprMap_Act_PenguinSpikeBall3
+	dw SprMap_Act_PenguinSpikeBall4
 	dw $0000
 ; [BUG] This is identical to MoveL, but it should have been in reverse-order.
 ;		It's barely noticeable anyway.
-OBJLstPtrTable_Act_PenguinSpikeBall_MoveR:
+SprMapPtrTable_Act_PenguinSpikeBall_MoveR:
 IF FIX_BUGS
-	dw OBJLst_Act_PenguinSpikeBall4
-	dw OBJLst_Act_PenguinSpikeBall3
-	dw OBJLst_Act_PenguinSpikeBall2
-	dw OBJLst_Act_PenguinSpikeBall1
-	dw OBJLst_Act_PenguinSpikeBall0
+	dw SprMap_Act_PenguinSpikeBall4
+	dw SprMap_Act_PenguinSpikeBall3
+	dw SprMap_Act_PenguinSpikeBall2
+	dw SprMap_Act_PenguinSpikeBall1
+	dw SprMap_Act_PenguinSpikeBall0
 	dw $0000
 ELSE
-	dw OBJLst_Act_PenguinSpikeBall0
-	dw OBJLst_Act_PenguinSpikeBall1
-	dw OBJLst_Act_PenguinSpikeBall2
-	dw OBJLst_Act_PenguinSpikeBall3
-	dw OBJLst_Act_PenguinSpikeBall4
+	dw SprMap_Act_PenguinSpikeBall0
+	dw SprMap_Act_PenguinSpikeBall1
+	dw SprMap_Act_PenguinSpikeBall2
+	dw SprMap_Act_PenguinSpikeBall3
+	dw SprMap_Act_PenguinSpikeBall4
 	dw $0000
 ENDC
 
-OBJLst_Act_Penguin_WalkL0: INCBIN "data/objlst/actor/penguin_walkl0.bin"
-OBJLst_Act_Penguin_WalkL1: INCBIN "data/objlst/actor/penguin_walkl1.bin"
-OBJLst_Act_Penguin_WalkL2: INCBIN "data/objlst/actor/penguin_walkl2.bin"
-OBJLst_Act_Penguin_OpenLidL0: INCBIN "data/objlst/actor/penguin_openlidl0.bin"
-OBJLst_Act_Penguin_OpenLidL1: INCBIN "data/objlst/actor/penguin_openlidl1.bin"
-OBJLst_Act_Penguin_StunL: INCBIN "data/objlst/actor/penguin_stunl.bin"
-OBJLst_Act_PenguinSpikeBall0: INCBIN "data/objlst/actor/penguinspikeball0.bin"
-OBJLst_Act_PenguinSpikeBall1: INCBIN "data/objlst/actor/penguinspikeball1.bin"
-OBJLst_Act_PenguinSpikeBall2: INCBIN "data/objlst/actor/penguinspikeball2.bin"
-OBJLst_Act_PenguinSpikeBall3: INCBIN "data/objlst/actor/penguinspikeball3.bin"
-OBJLst_Act_PenguinSpikeBall4: INCBIN "data/objlst/actor/penguinspikeball4.bin"
-OBJLst_Act_Penguin_WalkR0: INCBIN "data/objlst/actor/penguin_walkr0.bin"
-OBJLst_Act_Penguin_WalkR1: INCBIN "data/objlst/actor/penguin_walkr1.bin"
-OBJLst_Act_Penguin_WalkR2: INCBIN "data/objlst/actor/penguin_walkr2.bin"
-OBJLst_Act_Penguin_OpenLidR0: INCBIN "data/objlst/actor/penguin_openlidr0.bin"
-OBJLst_Act_Penguin_OpenLidR1: INCBIN "data/objlst/actor/penguin_openlidr1.bin"
-OBJLst_Act_Penguin_StunR: INCBIN "data/objlst/actor/penguin_stunr.bin"
+SprMap_Act_Penguin_WalkL0: INCBIN "data/sprmap/actor/penguin_walkl0.bin"
+SprMap_Act_Penguin_WalkL1: INCBIN "data/sprmap/actor/penguin_walkl1.bin"
+SprMap_Act_Penguin_WalkL2: INCBIN "data/sprmap/actor/penguin_walkl2.bin"
+SprMap_Act_Penguin_OpenLidL0: INCBIN "data/sprmap/actor/penguin_openlidl0.bin"
+SprMap_Act_Penguin_OpenLidL1: INCBIN "data/sprmap/actor/penguin_openlidl1.bin"
+SprMap_Act_Penguin_StunL: INCBIN "data/sprmap/actor/penguin_stunl.bin"
+SprMap_Act_PenguinSpikeBall0: INCBIN "data/sprmap/actor/penguinspikeball0.bin"
+SprMap_Act_PenguinSpikeBall1: INCBIN "data/sprmap/actor/penguinspikeball1.bin"
+SprMap_Act_PenguinSpikeBall2: INCBIN "data/sprmap/actor/penguinspikeball2.bin"
+SprMap_Act_PenguinSpikeBall3: INCBIN "data/sprmap/actor/penguinspikeball3.bin"
+SprMap_Act_PenguinSpikeBall4: INCBIN "data/sprmap/actor/penguinspikeball4.bin"
+SprMap_Act_Penguin_WalkR0: INCBIN "data/sprmap/actor/penguin_walkr0.bin"
+SprMap_Act_Penguin_WalkR1: INCBIN "data/sprmap/actor/penguin_walkr1.bin"
+SprMap_Act_Penguin_WalkR2: INCBIN "data/sprmap/actor/penguin_walkr2.bin"
+SprMap_Act_Penguin_OpenLidR0: INCBIN "data/sprmap/actor/penguin_openlidr0.bin"
+SprMap_Act_Penguin_OpenLidR1: INCBIN "data/sprmap/actor/penguin_openlidr1.bin"
+SprMap_Act_Penguin_StunR: INCBIN "data/sprmap/actor/penguin_stunr.bin"
 ; [TCRF] Block of unused sprite mappings in the middle of this data.
 ;        These are similarly broken as the unused ones in Act_Cart.
-OBJLst_Act_Penguin_Unused_00: INCBIN "data/objlst/actor/penguin_unused_00.bin"
-OBJLst_Act_Penguin_Unused_01: INCBIN "data/objlst/actor/penguin_unused_01.bin"
-OBJLst_Act_Penguin_Unused_02: INCBIN "data/objlst/actor/penguin_unused_02.bin"
-OBJLst_Act_Penguin_Unused_03: INCBIN "data/objlst/actor/penguin_unused_03.bin"
-OBJLst_Act_Penguin_Unused_04: INCBIN "data/objlst/actor/penguin_unused_04.bin"
+SprMap_Act_Penguin_Unused_00: INCBIN "data/sprmap/actor/penguin_unused_00.bin"
+SprMap_Act_Penguin_Unused_01: INCBIN "data/sprmap/actor/penguin_unused_01.bin"
+SprMap_Act_Penguin_Unused_02: INCBIN "data/sprmap/actor/penguin_unused_02.bin"
+SprMap_Act_Penguin_Unused_03: INCBIN "data/sprmap/actor/penguin_unused_03.bin"
+SprMap_Act_Penguin_Unused_04: INCBIN "data/sprmap/actor/penguin_unused_04.bin"
 GFX_Act_Penguin: INCBIN "data/gfx/actor/penguin.bin"
 
 ; =============== ActInit_DD ===============
@@ -2326,15 +2326,15 @@ ActInit_DD:
 	ld   bc, SubCall_Act_DD
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
+	; Set initial animation
 	push bc
-	ld   bc, OBJLstPtrTable_Act_DD_WalkL
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_DD_WalkL
+	call ActS_SetSprMapPtr
 	pop  bc
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_DD
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_DD
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Set collision type
 	mActColiMask ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM
@@ -2351,8 +2351,8 @@ ActInit_DD:
 	ld   [sActDDMoveDelay], a
 	ret
 	
-OBJLstPtrTable_ActInit_Unused_DD:
-	dw OBJLst_Act_DD_WalkL0;X
+SprMapPtrTable_ActInit_Unused_DD:
+	dw SprMap_Act_DD_WalkL0;X
 	dw $0000;X
 
 ; =============== Act_DD ===============
@@ -2455,7 +2455,7 @@ Act_DD_Walk:
 	or   a
 	jr   nz, Act_DD_WaitTurn
 	
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	; Move depending on the actor's direction
 	ld   a, [sActSetDir]
@@ -2544,14 +2544,14 @@ Act_DD_WaitTurn:
 	jr   nz, .dirR			; If so, jump
 .dirL:
 	push bc
-	ld   bc, OBJLstPtrTable_Act_DD_WalkL
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_DD_WalkL
+	call ActS_SetSprMapPtr
 	pop  bc
 	ret
 .dirR:
 	push bc
-	ld   bc, OBJLstPtrTable_Act_DD_WalkR
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_DD_WalkR
+	call ActS_SetSprMapPtr
 	pop  bc
 	ret
 	
@@ -2585,10 +2585,10 @@ Act_DD_MoveLeft:
 	ld   bc, -$01
 	call ActS_MoveRight
 	
-	ld   a, LOW(OBJLstPtrTable_Act_DD_WalkL)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_DD_WalkL)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_DD_WalkL)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_DD_WalkL)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; Make the actor face left
 	ld   a, [sActSetDir]
@@ -2619,10 +2619,10 @@ Act_DD_MoveRight:
 	ld   bc, +$01
 	call ActS_MoveRight
 	
-	ld   a, LOW(OBJLstPtrTable_Act_DD_WalkR)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_DD_WalkR)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_DD_WalkR)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_DD_WalkR)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; Make the actor face right
 	ld   a, [sActSetDir]
@@ -2644,14 +2644,14 @@ Act_DD_StartAlert:
 	jr   nz, .dirR				; If so, jump
 .dirL:
 	push bc
-	ld   bc, OBJLstPtrTable_Act_DD_AlertL
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_DD_AlertL
+	call ActS_SetSprMapPtr
 	pop  bc
 	ret
 .dirR:
 	push bc
-	ld   bc, OBJLstPtrTable_Act_DD_AlertR
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_DD_AlertR
+	call ActS_SetSprMapPtr
 	pop  bc
 	ret
 	
@@ -2664,7 +2664,7 @@ Act_DD_Alert:
 	dec  a						; Otherwise, timer--;
 	ld   [sActDDModeTimer], a
 	
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	; Every $20 frames play the boomerang alert SFX
 	ld   a, [sActDDModeTimer]
@@ -2687,14 +2687,14 @@ Act_DD_Alert:
 	jr   nz, .dirR			; If so, jump
 .dirL:
 	push bc
-	ld   bc, OBJLstPtrTable_Act_DD_ThrowL
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_DD_ThrowL
+	call ActS_SetSprMapPtr
 	pop  bc
 	ret
 .dirR:
 	push bc
-	ld   bc, OBJLstPtrTable_Act_DD_ThrowR
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_DD_ThrowR
+	call ActS_SetSprMapPtr
 	pop  bc
 	ret
 	
@@ -2702,12 +2702,12 @@ Act_DD_Alert:
 ; Waits for a bit before throwing the boomerang.
 Act_DD_ThrowBoomerang:
 	; Spawn the knife once the animation ends
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	cp   a, $03						; Has the animation ended? (frame >= $03)
 	jr   nc, .endMode				; If so, jump
 	
 	; Otherwise continue animating it every 8 frames
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	ret
 .endMode:
 	ld   a, DD_RTN_POSTTHROW
@@ -2735,14 +2735,14 @@ Act_DD_PostThrowWait:
 	jr   nz, .dirR				; If so, jump
 .dirL:
 	push bc
-	ld   bc, OBJLstPtrTable_Act_DD_PostThrowL
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_DD_PostThrowL
+	call ActS_SetSprMapPtr
 	pop  bc
 	ret
 .dirR:
 	push bc
-	ld   bc, OBJLstPtrTable_Act_DD_PostThrowR
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_DD_PostThrowR
+	call ActS_SetSprMapPtr
 	pop  bc
 	ret
 ; =============== Act_DD_SetThrowDelay ===============
@@ -2764,9 +2764,9 @@ Act_DDBoomerang:
 	ld   a, [sTimer]
 	and  a, $01
 	jr   nz, .move
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	
 .move:
 	ld   a, [sActSetTimer]				; Timer++
@@ -2811,19 +2811,19 @@ Act_DDBoomerang_Despawn:
 Act_DDBoomerang_MoveLeft:
 	ld   bc, -$01
 	call ActS_MoveRight
-	ld   a, LOW(OBJLstPtrTable_Act_DDBoomerang_SpinL)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_DDBoomerang_SpinL)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_DDBoomerang_SpinL)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_DDBoomerang_SpinL)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	ret
 ; =============== Act_DDBoomerang_MoveRight ===============
 Act_DDBoomerang_MoveRight:
 	ld   bc, +$01
 	call ActS_MoveRight
-	ld   a, LOW(OBJLstPtrTable_Act_DDBoomerang_SpinR)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_DDBoomerang_SpinR)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_DDBoomerang_SpinR)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_DDBoomerang_SpinR)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	ret
 ; =============== Act_DDBoomerang_MoveVert ===============
 ; Handles the vertical movement arc of the boomerang.
@@ -2902,7 +2902,7 @@ Act_DDBoomerang_Turn:
 	xor  DIR_R|DIR_L
 	ld   [sActSetDir], a
 	xor  a						; Reset anim frame
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	ret
 ; =============== Act_DD_SpawnBoomerang ===============
 ; Spawns the boomerang thrown by the actor.
@@ -2925,7 +2925,7 @@ Act_DD_SpawnBoomerang:
 	jr   .checkSlot
 	
 .slotFound:
-	mActS_SetOBJBank OBJLstSharedPtrTable_Act_DD
+	mActS_SetOBJBank SprMapSharedPtrTable_Act_DD
 	
 	ld   a, $02				; Enabled
 	ldi  [hl], a
@@ -2959,14 +2959,14 @@ Act_DD_SpawnBoomerang:
 	ldi  [hl], a				; Rel.Y (Origin)
 	ldi  [hl], a				; Rel.X (Origin)
 	
-	ld   a, LOW(OBJLstPtrTable_Act_DDBoomerang_SpinL)		; OBJLst Table
+	ld   a, LOW(SprMapPtrTable_Act_DDBoomerang_SpinL)		; Animation
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstPtrTable_Act_DDBoomerang_SpinL)
+	ld   a, HIGH(SprMapPtrTable_Act_DDBoomerang_SpinL)
 	ldi  [hl], a
 	
 	ld   a, [sActSetDir]		; Dir
 	ldi  [hl], a
-	xor  a						; OBJLst ID
+	xor  a						; Sprite mapping ID
 	ldi  [hl], a
 	
 	
@@ -3002,126 +3002,126 @@ Act_DD_SpawnBoomerang:
 	ld   a, HIGH(sActDummyBlock)
 	ldi  [hl], a
 	
-	ld   a, LOW(OBJLstSharedPtrTable_Act_DD)		; OBJLst shared table
+	ld   a, LOW(SprMapSharedPtrTable_Act_DD)		; Set default animation table
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedPtrTable_Act_DD)
+	ld   a, HIGH(SprMapSharedPtrTable_Act_DD)
 	ldi  [hl], a
 	ret
-OBJLstSharedPtrTable_Act_DD:
-	dw OBJLstPtrTable_Act_DD_StunL;X
-	dw OBJLstPtrTable_Act_DD_StunR;X
-	dw OBJLstPtrTable_Act_DD_StunL
-	dw OBJLstPtrTable_Act_DD_StunR
-	dw OBJLstPtrTable_Act_DD_StunL
-	dw OBJLstPtrTable_Act_DD_StunR
-	dw OBJLstPtrTable_Act_DD_StunL;X
-	dw OBJLstPtrTable_Act_DD_StunR;X
+SprMapSharedPtrTable_Act_DD:
+	dw SprMapPtrTable_Act_DD_StunL;X
+	dw SprMapPtrTable_Act_DD_StunR;X
+	dw SprMapPtrTable_Act_DD_StunL
+	dw SprMapPtrTable_Act_DD_StunR
+	dw SprMapPtrTable_Act_DD_StunL
+	dw SprMapPtrTable_Act_DD_StunR
+	dw SprMapPtrTable_Act_DD_StunL;X
+	dw SprMapPtrTable_Act_DD_StunR;X
 
-OBJLstPtrTable_Act_DD_WalkL:
-	dw OBJLst_Act_DD_WalkL0
-	dw OBJLst_Act_DD_WalkL1
-	dw OBJLst_Act_DD_WalkL0
-	dw OBJLst_Act_DD_WalkL2
+SprMapPtrTable_Act_DD_WalkL:
+	dw SprMap_Act_DD_WalkL0
+	dw SprMap_Act_DD_WalkL1
+	dw SprMap_Act_DD_WalkL0
+	dw SprMap_Act_DD_WalkL2
 	dw $0000
-OBJLstPtrTable_Act_DD_WalkR:
-	dw OBJLst_Act_DD_WalkR0
-	dw OBJLst_Act_DD_WalkR1
-	dw OBJLst_Act_DD_WalkR0
-	dw OBJLst_Act_DD_WalkR2
+SprMapPtrTable_Act_DD_WalkR:
+	dw SprMap_Act_DD_WalkR0
+	dw SprMap_Act_DD_WalkR1
+	dw SprMap_Act_DD_WalkR0
+	dw SprMap_Act_DD_WalkR2
 	dw $0000
-OBJLstPtrTable_Act_DD_StunL:
-	dw OBJLst_Act_DD_StunL
+SprMapPtrTable_Act_DD_StunL:
+	dw SprMap_Act_DD_StunL
 	dw $0000
-OBJLstPtrTable_Act_DD_StunR:
-	dw OBJLst_Act_DD_StunR
+SprMapPtrTable_Act_DD_StunR:
+	dw SprMap_Act_DD_StunR
 	dw $0000
-OBJLstPtrTable_Act_DD_AlertL:
-	dw OBJLst_Act_DD_WalkL0
-	dw OBJLst_Act_DD_AlertL0
-	dw OBJLst_Act_DD_WalkL0
-	dw OBJLst_Act_DD_AlertL1
+SprMapPtrTable_Act_DD_AlertL:
+	dw SprMap_Act_DD_WalkL0
+	dw SprMap_Act_DD_AlertL0
+	dw SprMap_Act_DD_WalkL0
+	dw SprMap_Act_DD_AlertL1
 	dw $0000
-OBJLstPtrTable_Act_DD_AlertR:
-	dw OBJLst_Act_DD_WalkR0
-	dw OBJLst_Act_DD_AlertR0
-	dw OBJLst_Act_DD_WalkR0
-	dw OBJLst_Act_DD_AlertR1
+SprMapPtrTable_Act_DD_AlertR:
+	dw SprMap_Act_DD_WalkR0
+	dw SprMap_Act_DD_AlertR0
+	dw SprMap_Act_DD_WalkR0
+	dw SprMap_Act_DD_AlertR1
 	dw $0000
-OBJLstPtrTable_Act_DD_ThrowL:
-	dw OBJLst_Act_DD_WalkL0
-	dw OBJLst_Act_DD_AlertL0
-	dw OBJLst_Act_DD_WalkL0
-	dw OBJLst_Act_DD_ThrowL
+SprMapPtrTable_Act_DD_ThrowL:
+	dw SprMap_Act_DD_WalkL0
+	dw SprMap_Act_DD_AlertL0
+	dw SprMap_Act_DD_WalkL0
+	dw SprMap_Act_DD_ThrowL
 	dw $0000;X
-OBJLstPtrTable_Act_DD_ThrowR:
-	dw OBJLst_Act_DD_WalkR0
-	dw OBJLst_Act_DD_AlertR0
-	dw OBJLst_Act_DD_WalkR0
-	dw OBJLst_Act_DD_ThrowR
+SprMapPtrTable_Act_DD_ThrowR:
+	dw SprMap_Act_DD_WalkR0
+	dw SprMap_Act_DD_AlertR0
+	dw SprMap_Act_DD_WalkR0
+	dw SprMap_Act_DD_ThrowR
 	dw $0000;X
-OBJLstPtrTable_Act_DD_PostThrowL:
-	dw OBJLst_Act_DD_ThrowL
+SprMapPtrTable_Act_DD_PostThrowL:
+	dw SprMap_Act_DD_ThrowL
 	dw $0000;X
-OBJLstPtrTable_Act_DD_PostThrowR:
-	dw OBJLst_Act_DD_ThrowR
+SprMapPtrTable_Act_DD_PostThrowR:
+	dw SprMap_Act_DD_ThrowR
 	dw $0000;X
-OBJLstPtrTable_Act_DDBoomerang_SpinL:
-	dw OBJLst_Act_DDBoomerang0
-	dw OBJLst_Act_DDBoomerang1
-	dw OBJLst_Act_DDBoomerang2
-	dw OBJLst_Act_DDBoomerang3
-	dw OBJLst_Act_DDBoomerang4
-	dw OBJLst_Act_DDBoomerang5
-	dw OBJLst_Act_DDBoomerang6
-	dw OBJLst_Act_DDBoomerang7
+SprMapPtrTable_Act_DDBoomerang_SpinL:
+	dw SprMap_Act_DDBoomerang0
+	dw SprMap_Act_DDBoomerang1
+	dw SprMap_Act_DDBoomerang2
+	dw SprMap_Act_DDBoomerang3
+	dw SprMap_Act_DDBoomerang4
+	dw SprMap_Act_DDBoomerang5
+	dw SprMap_Act_DDBoomerang6
+	dw SprMap_Act_DDBoomerang7
 	dw $0000
-OBJLstPtrTable_Act_DDBoomerang_SpinR:
-	dw OBJLst_Act_DDBoomerang7
-	dw OBJLst_Act_DDBoomerang6
-	dw OBJLst_Act_DDBoomerang5
-	dw OBJLst_Act_DDBoomerang4
-	dw OBJLst_Act_DDBoomerang3
-	dw OBJLst_Act_DDBoomerang2
-	dw OBJLst_Act_DDBoomerang1
-	dw OBJLst_Act_DDBoomerang0
+SprMapPtrTable_Act_DDBoomerang_SpinR:
+	dw SprMap_Act_DDBoomerang7
+	dw SprMap_Act_DDBoomerang6
+	dw SprMap_Act_DDBoomerang5
+	dw SprMap_Act_DDBoomerang4
+	dw SprMap_Act_DDBoomerang3
+	dw SprMap_Act_DDBoomerang2
+	dw SprMap_Act_DDBoomerang1
+	dw SprMap_Act_DDBoomerang0
 	dw $0000
 
-OBJLst_Act_DD_WalkL0: INCBIN "data/objlst/actor/dd_walkl0.bin"
-OBJLst_Act_DD_AlertL0: INCBIN "data/objlst/actor/dd_alertl0.bin"
-OBJLst_Act_DD_AlertL1: INCBIN "data/objlst/actor/dd_alertl1.bin"
-OBJLst_Act_DD_StunL: INCBIN "data/objlst/actor/dd_stunl.bin"
-; [TCRF] Unused duplicate of OBJLst_Act_DD_WalkL0.
-OBJLst_Act_DD_Unused_WalkL0Copy: INCBIN "data/objlst/actor/dd_unused_walkl0_copy.bin"
-OBJLst_Act_DD_WalkL1: INCBIN "data/objlst/actor/dd_walkl1.bin"
-OBJLst_Act_DD_WalkL2: INCBIN "data/objlst/actor/dd_walkl2.bin"
-OBJLst_Act_DD_ThrowL: INCBIN "data/objlst/actor/dd_throwl.bin"
-OBJLst_Act_DDBoomerang0: INCBIN "data/objlst/actor/ddboomerang0.bin"
-OBJLst_Act_DDBoomerang2: INCBIN "data/objlst/actor/ddboomerang2.bin"
-OBJLst_Act_DDBoomerang4: INCBIN "data/objlst/actor/ddboomerang4.bin"
-OBJLst_Act_DDBoomerang6: INCBIN "data/objlst/actor/ddboomerang6.bin"
-OBJLst_Act_DDBoomerang7: INCBIN "data/objlst/actor/ddboomerang7.bin"
-OBJLst_Act_DDBoomerang1: INCBIN "data/objlst/actor/ddboomerang1.bin"
-OBJLst_Act_DDBoomerang3: INCBIN "data/objlst/actor/ddboomerang3.bin"
-OBJLst_Act_DDBoomerang5: INCBIN "data/objlst/actor/ddboomerang5.bin"
-OBJLst_Act_DD_WalkR0: INCBIN "data/objlst/actor/dd_walkr0.bin"
-OBJLst_Act_DD_AlertR0: INCBIN "data/objlst/actor/dd_alertr0.bin"
-OBJLst_Act_DD_AlertR1: INCBIN "data/objlst/actor/dd_alertr1.bin"
-OBJLst_Act_DD_StunR: INCBIN "data/objlst/actor/dd_stunr.bin"
-; [TCRF] Unused duplicate of OBJLst_Act_DD_WalkR0.
-OBJLst_Act_DD_Unused_WalkR0Copy: INCBIN "data/objlst/actor/dd_unused_walkr0_copy.bin"
-OBJLst_Act_DD_WalkR1: INCBIN "data/objlst/actor/dd_walkr1.bin"
-OBJLst_Act_DD_WalkR2: INCBIN "data/objlst/actor/dd_walkr2.bin"
-OBJLst_Act_DD_ThrowR: INCBIN "data/objlst/actor/dd_throwr.bin"
+SprMap_Act_DD_WalkL0: INCBIN "data/sprmap/actor/dd_walkl0.bin"
+SprMap_Act_DD_AlertL0: INCBIN "data/sprmap/actor/dd_alertl0.bin"
+SprMap_Act_DD_AlertL1: INCBIN "data/sprmap/actor/dd_alertl1.bin"
+SprMap_Act_DD_StunL: INCBIN "data/sprmap/actor/dd_stunl.bin"
+; [TCRF] Unused duplicate of SprMap_Act_DD_WalkL0.
+SprMap_Act_DD_Unused_WalkL0Copy: INCBIN "data/sprmap/actor/dd_unused_walkl0_copy.bin"
+SprMap_Act_DD_WalkL1: INCBIN "data/sprmap/actor/dd_walkl1.bin"
+SprMap_Act_DD_WalkL2: INCBIN "data/sprmap/actor/dd_walkl2.bin"
+SprMap_Act_DD_ThrowL: INCBIN "data/sprmap/actor/dd_throwl.bin"
+SprMap_Act_DDBoomerang0: INCBIN "data/sprmap/actor/ddboomerang0.bin"
+SprMap_Act_DDBoomerang2: INCBIN "data/sprmap/actor/ddboomerang2.bin"
+SprMap_Act_DDBoomerang4: INCBIN "data/sprmap/actor/ddboomerang4.bin"
+SprMap_Act_DDBoomerang6: INCBIN "data/sprmap/actor/ddboomerang6.bin"
+SprMap_Act_DDBoomerang7: INCBIN "data/sprmap/actor/ddboomerang7.bin"
+SprMap_Act_DDBoomerang1: INCBIN "data/sprmap/actor/ddboomerang1.bin"
+SprMap_Act_DDBoomerang3: INCBIN "data/sprmap/actor/ddboomerang3.bin"
+SprMap_Act_DDBoomerang5: INCBIN "data/sprmap/actor/ddboomerang5.bin"
+SprMap_Act_DD_WalkR0: INCBIN "data/sprmap/actor/dd_walkr0.bin"
+SprMap_Act_DD_AlertR0: INCBIN "data/sprmap/actor/dd_alertr0.bin"
+SprMap_Act_DD_AlertR1: INCBIN "data/sprmap/actor/dd_alertr1.bin"
+SprMap_Act_DD_StunR: INCBIN "data/sprmap/actor/dd_stunr.bin"
+; [TCRF] Unused duplicate of SprMap_Act_DD_WalkR0.
+SprMap_Act_DD_Unused_WalkR0Copy: INCBIN "data/sprmap/actor/dd_unused_walkr0_copy.bin"
+SprMap_Act_DD_WalkR1: INCBIN "data/sprmap/actor/dd_walkr1.bin"
+SprMap_Act_DD_WalkR2: INCBIN "data/sprmap/actor/dd_walkr2.bin"
+SprMap_Act_DD_ThrowR: INCBIN "data/sprmap/actor/dd_throwr.bin"
 ; [TCRF] Unused broken mappings like Act_Cart.
 ;        Again, these are likely not meant to be for this actor, even though they've been put here.
-OBJLst_Act_DD_Unused_01: INCBIN "data/objlst/actor/dd_unused_01.bin"
-OBJLst_Act_DD_Unused_02: INCBIN "data/objlst/actor/dd_unused_02.bin"
-OBJLst_Act_DD_Unused_03: INCBIN "data/objlst/actor/dd_unused_03.bin"
-OBJLst_Act_DD_Unused_04: INCBIN "data/objlst/actor/dd_unused_04.bin"
-OBJLst_Act_DD_Unused_05: INCBIN "data/objlst/actor/dd_unused_05.bin"
-OBJLst_Act_DD_Unused_06: INCBIN "data/objlst/actor/dd_unused_06.bin"
-OBJLst_Act_DD_Unused_07: INCBIN "data/objlst/actor/dd_unused_07.bin"
-OBJLst_Act_DD_Unused_08: INCBIN "data/objlst/actor/dd_unused_08.bin"
+SprMap_Act_DD_Unused_01: INCBIN "data/sprmap/actor/dd_unused_01.bin"
+SprMap_Act_DD_Unused_02: INCBIN "data/sprmap/actor/dd_unused_02.bin"
+SprMap_Act_DD_Unused_03: INCBIN "data/sprmap/actor/dd_unused_03.bin"
+SprMap_Act_DD_Unused_04: INCBIN "data/sprmap/actor/dd_unused_04.bin"
+SprMap_Act_DD_Unused_05: INCBIN "data/sprmap/actor/dd_unused_05.bin"
+SprMap_Act_DD_Unused_06: INCBIN "data/sprmap/actor/dd_unused_06.bin"
+SprMap_Act_DD_Unused_07: INCBIN "data/sprmap/actor/dd_unused_07.bin"
+SprMap_Act_DD_Unused_08: INCBIN "data/sprmap/actor/dd_unused_08.bin"
 GFX_Act_DD: INCBIN "data/gfx/actor/dd.bin"
 
 ; =============== ActInit_PouncerDrop ===============
@@ -3144,15 +3144,15 @@ ActInit_PouncerDrop:
 	ld   bc, SubCall_Act_PouncerDrop
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
+	; Set initial animation
 	push bc
-	ld   bc, OBJLstPtrTable_ActInit_PouncerDrop
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_ActInit_PouncerDrop
+	call ActS_SetSprMapPtr
 	pop  bc
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_PouncerDrop
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_PouncerDrop
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Make every side except the top bounce the player.
 	; The bounce effect will have to be overridden to instakill the player.
@@ -3181,8 +3181,8 @@ ActInit_PouncerDrop:
 	ld   [sActPouncerDropMoveUMask], a
 	ret
 	
-OBJLstPtrTable_ActInit_PouncerDrop:
-	dw OBJLst_Act_Pouncer_Angry
+SprMapPtrTable_ActInit_PouncerDrop:
+	dw SprMap_Act_Pouncer_Angry
 	dw $0000;X
 
 ; =============== Act_PouncerDrop ===============
@@ -3210,18 +3210,18 @@ Act_PouncerDrop:
 ; =============== Act_PouncerDrop_Main ===============
 Act_PouncerDrop_Main:
 	; Override animation always
-	ld   a, LOW(OBJLstPtrTable_Act_PouncerDrop_Angry)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_PouncerDrop_Angry)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_PouncerDrop_Angry)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_PouncerDrop_Angry)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; Every $10 frames increase the anim frame
 	ld   a, [sTimer]
 	and  a, $0F
 	jr   nz, .chkTimers
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	
 .chkTimers:
 	ld   a, [sActSetTimer]		; Timer++
@@ -3248,10 +3248,10 @@ Act_PouncerDrop_Main:
 ; =============== Act_PouncerDrop_MoveUp ===============
 ; In this mode, the actor moves up slowly until the target pos is reached.
 Act_PouncerDrop_MoveUp:
-	ld   a, LOW(OBJLstPtrTable_Act_PouncerDrop_Neutral)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_PouncerDrop_Neutral)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_PouncerDrop_Neutral)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_PouncerDrop_Neutral)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; Check if we reached the target Y pos, and if so, stop moving for a bit before dropping.
 	ld   a, [sActSetRelY]		; B = Y pos
@@ -3293,10 +3293,10 @@ Act_PouncerDrop_MoveUp:
 ; In the middle of this, the animation is updated to the angry frame.
 Act_PouncerDrop_WaitBeforeDrop:
 	; Set the angry face at first
-	ld   a, LOW(OBJLstPtrTable_Act_PouncerDrop_Angry)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_PouncerDrop_Angry)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_PouncerDrop_Angry)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_PouncerDrop_Angry)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; Handle the timer...
 	ld   a, [sActPouncerDropPreDropDelay]			; Timer--;
@@ -3306,10 +3306,10 @@ Act_PouncerDrop_WaitBeforeDrop:
 	ret  c										; If so, return
 	
 	; Then, if the timer was >= $14, write back the neutral face
-	ld   a, LOW(OBJLstPtrTable_Act_PouncerDrop_Neutral)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_PouncerDrop_Neutral)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_PouncerDrop_Neutral)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_PouncerDrop_Neutral)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	ret
 	
 ; =============== Act_PouncerDrop_WaitAfterDrop ===============
@@ -3451,25 +3451,25 @@ Act_PouncerDrop_KillOtherAct:
 	ld   [sActSetRoutineId], a
 	ret
 	
-OBJLstPtrTable_Act_PouncerDrop_Neutral:
-	dw OBJLst_Act_Pouncer_Neutral
+SprMapPtrTable_Act_PouncerDrop_Neutral:
+	dw SprMap_Act_Pouncer_Neutral
 	dw $0000
-OBJLstPtrTable_Act_PouncerDrop_Angry:
-	dw OBJLst_Act_Pouncer_Angry
+SprMapPtrTable_Act_PouncerDrop_Angry:
+	dw SprMap_Act_Pouncer_Angry
 	dw $0000
 
-OBJLstSharedPtrTable_Act_PouncerDrop:
-	dw OBJLstPtrTable_Act_PouncerDrop_Angry;X
-	dw OBJLstPtrTable_Act_PouncerDrop_Angry;X
-	dw OBJLstPtrTable_Act_PouncerDrop_Angry;X
-	dw OBJLstPtrTable_Act_PouncerDrop_Angry;X
-	dw OBJLstPtrTable_Act_PouncerDrop_Angry;X
-	dw OBJLstPtrTable_Act_PouncerDrop_Angry;X
-	dw OBJLstPtrTable_Act_PouncerDrop_Angry;X
-	dw OBJLstPtrTable_Act_PouncerDrop_Angry;X
+SprMapSharedPtrTable_Act_PouncerDrop:
+	dw SprMapPtrTable_Act_PouncerDrop_Angry;X
+	dw SprMapPtrTable_Act_PouncerDrop_Angry;X
+	dw SprMapPtrTable_Act_PouncerDrop_Angry;X
+	dw SprMapPtrTable_Act_PouncerDrop_Angry;X
+	dw SprMapPtrTable_Act_PouncerDrop_Angry;X
+	dw SprMapPtrTable_Act_PouncerDrop_Angry;X
+	dw SprMapPtrTable_Act_PouncerDrop_Angry;X
+	dw SprMapPtrTable_Act_PouncerDrop_Angry;X
 
-OBJLst_Act_Pouncer_Angry: INCBIN "data/objlst/actor/pouncer_angry.bin"
-OBJLst_Act_Pouncer_Neutral: INCBIN "data/objlst/actor/pouncer_neutral.bin"
+SprMap_Act_Pouncer_Angry: INCBIN "data/sprmap/actor/pouncer_angry.bin"
+SprMap_Act_Pouncer_Neutral: INCBIN "data/sprmap/actor/pouncer_neutral.bin"
 GFX_Act_Pouncer: INCBIN "data/gfx/actor/pouncer.bin"
 
 ; =============== ActInit_PouncerFollow ===============
@@ -3491,15 +3491,15 @@ ActInit_PouncerFollow:
 	ld   bc, SubCall_Act_PouncerFollow
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
+	; Set initial animation
 	push bc
-	ld   bc, OBJLstPtrTable_Act_PouncerFollow
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_PouncerFollow
+	call ActS_SetSprMapPtr
 	pop  bc
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_PouncerDrop
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_PouncerDrop
+	call ActS_SetSprMapSharedTablePtr
 	
 	ld   a, $00							; Collision will be set later
 	ld   [sActSetColiType], a
@@ -3513,18 +3513,18 @@ ActInit_PouncerFollow:
 	
 ; =============== Act_PouncerFollow ===============
 Act_PouncerFollow:
-	ld   a, LOW(OBJLstPtrTable_Act_PouncerFollow)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_PouncerFollow)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_PouncerFollow)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_PouncerFollow)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; Every $10 frames increase the anim frame
 	ld   a, [sTimer]
 	and  a, $0F
 	jr   nz, .setColi
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	
 .setColi:
 	ld   a, [sActSetTimer]		; Timer++
@@ -3773,9 +3773,9 @@ Act_PouncerFollow_GetBlockId_GroundL:
 	and  a, $7F		; Remove MSB
 	ret
 	
-OBJLstPtrTable_Act_PouncerFollow:
-	dw OBJLst_Act_Pouncer_Angry
-	dw OBJLst_Act_Pouncer_Neutral
+SprMapPtrTable_Act_PouncerFollow:
+	dw SprMap_Act_Pouncer_Angry
+	dw SprMap_Act_Pouncer_Neutral
 	dw $0000
 
 ; =============== ActInit_Driller ===============
@@ -3798,15 +3798,15 @@ ActInit_Driller:
 	ld   bc, SubCall_Act_Driller
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
+	; Set initial animation
 	push bc
-	ld   bc, OBJLstPtrTable_ActInit_Driller
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_ActInit_Driller
+	call ActS_SetSprMapPtr
 	pop  bc
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_Driller
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_Driller
+	call ActS_SetSprMapSharedTablePtr
 	
 	mActColiMask ACTCOLI_DAMAGE, ACTCOLI_DAMAGE, ACTCOLI_DAMAGE, ACTCOLI_DAMAGE
 	ld   a, COLI
@@ -3821,8 +3821,8 @@ ActInit_Driller:
 	ld   [sActSetDir], a
 	ret
 
-OBJLstPtrTable_ActInit_Driller:
-	dw OBJLst_Act_Driller_Move0
+SprMapPtrTable_ActInit_Driller:
+	dw SprMap_Act_Driller_Move0
 	dw $0000
 	
 ; =============== Act_Driller ===============
@@ -3854,7 +3854,7 @@ Act_Driller_Main:;I
 	inc  a
 	ld   [sActSetTimer], a
 	
-	call ActS_IncOBJLstIdEvery8		; Increase anim counter every 8 frames
+	call ActS_IncSprMapIdEvery8		; Increase anim counter every 8 frames
 	
 	; Move every 8 frames
 	ld   a, [sActSetTimer]
@@ -3907,10 +3907,10 @@ Act_Driller_Main:;I
 Act_Driller_MoveLeft:
 	ld   bc, -$01
 	call ActS_MoveRight
-	ld   a, LOW(OBJLstPtrTable_Act_Driller_Move)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Driller_Move)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Driller_Move)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Driller_Move)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	ret
 	
 ; =============== Act_Driller_MoveRight ===============
@@ -3918,10 +3918,10 @@ Act_Driller_MoveLeft:
 Act_Driller_MoveRight:
 	ld   bc, +$01
 	call ActS_MoveRight
-	ld   a, LOW(OBJLstPtrTable_Act_Driller_Move)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Driller_Move)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Driller_Move)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Driller_Move)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	ret
 	
 ; =============== Act_Driller_Turn ===============
@@ -3949,8 +3949,8 @@ Act_Driller_StartDrop:
 	call ActS_SetCodePtr
 	
 	push bc										; Set drill anim
-	ld   bc, OBJLstPtrTable_Act_Driller_Drop
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_Driller_Drop
+	call ActS_SetSprMapPtr
 	pop  bc
 	
 	xor  a										; Reset drop speed
@@ -3985,7 +3985,7 @@ Act_DrillerDrop_Main:
 	inc  a
 	ld   [sActSetTimer], a
 	
-	call ActS_IncOBJLstIdEvery8	; Increase anim counter every 8 frames
+	call ActS_IncSprMapIdEvery8	; Increase anim counter every 8 frames
 	
 .chkLand:
 	ld   a, [sActDrillerSafeTouch]
@@ -4054,8 +4054,8 @@ Act_DrillerDrop_Land:
 	ld   [sActSetYSpeed_High], a
 	push bc
 	
-	ld   bc, OBJLstPtrTable_Act_Driller_Land	; We aren't spinning anymore
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_Act_Driller_Land	; We aren't spinning anymore
+	call ActS_SetSprMapPtr
 	pop  bc
 	ret
 Act_DrillerDrop_Safe:
@@ -4068,39 +4068,39 @@ Act_DrillerDrop_Safe:
 	
 	ret
 	
-OBJLstPtrTable_Act_Driller_Move:
-	dw OBJLst_Act_Driller_Move0
-	dw OBJLst_Act_Driller_Move1
-	dw OBJLst_Act_Driller_Move2
+SprMapPtrTable_Act_Driller_Move:
+	dw SprMap_Act_Driller_Move0
+	dw SprMap_Act_Driller_Move1
+	dw SprMap_Act_Driller_Move2
 	dw $0000
-OBJLstPtrTable_Act_Driller_Drop:
-	dw OBJLst_Act_Driller_Drop0
-	dw OBJLst_Act_Driller_Drop1
+SprMapPtrTable_Act_Driller_Drop:
+	dw SprMap_Act_Driller_Drop0
+	dw SprMap_Act_Driller_Drop1
 	dw $0000
-OBJLstPtrTable_Act_Driller_Land:
-	dw OBJLst_Act_Driller_Land0
-	dw OBJLst_Act_Driller_Land1
-	dw OBJLst_Act_Driller_Land2
+SprMapPtrTable_Act_Driller_Land:
+	dw SprMap_Act_Driller_Land0
+	dw SprMap_Act_Driller_Land1
+	dw SprMap_Act_Driller_Land2
 	dw $0000
 
-OBJLstSharedPtrTable_Act_Driller:
-	dw OBJLstPtrTable_Act_Driller_Move;X
-	dw OBJLstPtrTable_Act_Driller_Move;X
-	dw OBJLstPtrTable_Act_Driller_Move;X
-	dw OBJLstPtrTable_Act_Driller_Move;X
-	dw OBJLstPtrTable_Act_Driller_Land
-	dw OBJLstPtrTable_Act_Driller_Land
-	dw OBJLstPtrTable_Act_Driller_Move;X
-	dw OBJLstPtrTable_Act_Driller_Move;X
+SprMapSharedPtrTable_Act_Driller:
+	dw SprMapPtrTable_Act_Driller_Move;X
+	dw SprMapPtrTable_Act_Driller_Move;X
+	dw SprMapPtrTable_Act_Driller_Move;X
+	dw SprMapPtrTable_Act_Driller_Move;X
+	dw SprMapPtrTable_Act_Driller_Land
+	dw SprMapPtrTable_Act_Driller_Land
+	dw SprMapPtrTable_Act_Driller_Move;X
+	dw SprMapPtrTable_Act_Driller_Move;X
 	
-OBJLst_Act_Driller_Move0: INCBIN "data/objlst/actor/driller_move0.bin"
-OBJLst_Act_Driller_Move1: INCBIN "data/objlst/actor/driller_move1.bin"
-OBJLst_Act_Driller_Move2: INCBIN "data/objlst/actor/driller_move2.bin"
-OBJLst_Act_Driller_Land0: INCBIN "data/objlst/actor/driller_land0.bin"
-OBJLst_Act_Driller_Land1: INCBIN "data/objlst/actor/driller_land1.bin"
-OBJLst_Act_Driller_Land2: INCBIN "data/objlst/actor/driller_land2.bin"
-OBJLst_Act_Driller_Drop0: INCBIN "data/objlst/actor/driller_drop0.bin"
-OBJLst_Act_Driller_Drop1: INCBIN "data/objlst/actor/driller_drop1.bin"
+SprMap_Act_Driller_Move0: INCBIN "data/sprmap/actor/driller_move0.bin"
+SprMap_Act_Driller_Move1: INCBIN "data/sprmap/actor/driller_move1.bin"
+SprMap_Act_Driller_Move2: INCBIN "data/sprmap/actor/driller_move2.bin"
+SprMap_Act_Driller_Land0: INCBIN "data/sprmap/actor/driller_land0.bin"
+SprMap_Act_Driller_Land1: INCBIN "data/sprmap/actor/driller_land1.bin"
+SprMap_Act_Driller_Land2: INCBIN "data/sprmap/actor/driller_land2.bin"
+SprMap_Act_Driller_Drop0: INCBIN "data/sprmap/actor/driller_drop0.bin"
+SprMap_Act_Driller_Drop1: INCBIN "data/sprmap/actor/driller_drop1.bin"
 GFX_Act_Driller: INCBIN "data/gfx/actor/driller.bin"
 
 ; =============== ActInit_SpikeBall ===============
@@ -4123,15 +4123,15 @@ ActInit_SpikeBall:
 	ld   bc, SubCall_Act_SpikeBall
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
+	; Set initial animation
 	push bc
-	ld   bc, OBJLstPtrTable_ActInit_SpikeBall
-	call ActS_SetOBJLstPtr
+	ld   bc, SprMapPtrTable_ActInit_SpikeBall
+	call ActS_SetSprMapPtr
 	pop  bc
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_SpikeBall
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_SpikeBall
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Set collision type
 	mActColiMask ACTCOLI_DAMAGE,ACTCOLI_DAMAGE,ACTCOLI_DAMAGE,ACTCOLI_DAMAGE
@@ -4146,20 +4146,20 @@ ActInit_SpikeBall:
 	ld   [sActSpikeBallDropTimer], a
 	ld   [sActSpikeBallLandTimer], a
 	
-	; Depending on the direction, set a different OBJLstPtrTable.
+	; Depending on the direction, set a different SprMapPtrTable.
 	ld   a, [sActSetDir]
 	bit  DIRB_R, a
-	call nz, ActInit_SpikeBall_SetOBJLstPtrTableR
+	call nz, ActInit_SpikeBall_SetSprMapPtrTableR
 	ld   a, [sActSetDir]
 	bit  DIRB_L, a
-	call nz, ActInit_SpikeBall_SetOBJLstPtrTableL
+	call nz, ActInit_SpikeBall_SetSprMapPtrTableL
 	xor  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	ret
 	
-; =============== OBJLstPtrTable_ActInit_SpikeBall ===============
-OBJLstPtrTable_ActInit_SpikeBall:
-	dw OBJLst_Act_SpikeBall0
+; =============== SprMapPtrTable_ActInit_SpikeBall ===============
+SprMapPtrTable_ActInit_SpikeBall:
+	dw SprMap_Act_SpikeBall0
 	dw $0000
 
 ; =============== Act_SpikeBall ===============
@@ -4204,9 +4204,9 @@ Act_SpikeBall:
 	ld   a, [sTimer]
 	and  a, $03
 	jr   nz, .chkAir
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	
 .chkAir:
 	ld   a, [sActSetYSpeed_Low]
@@ -4231,13 +4231,13 @@ Act_SpikeBall_MoveLeft:
 	; Otherwise move left at 1px/frame
 	ld   bc, -$01
 	call ActS_MoveRight
-; =============== ActInit_SpikeBall_SetOBJLstPtrTableL ===============
-; Sets the initial OBJLstPtrTable when the actor is facing left.
-ActInit_SpikeBall_SetOBJLstPtrTableL:
-	ld   a, LOW(OBJLstPtrTable_Act_SpikeBallL)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_SpikeBallL)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+; =============== ActInit_SpikeBall_SetSprMapPtrTableL ===============
+; Sets the initial SprMapPtrTable when the actor is facing left.
+ActInit_SpikeBall_SetSprMapPtrTableL:
+	ld   a, LOW(SprMapPtrTable_Act_SpikeBallL)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_SpikeBallL)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	ret
 ; =============== Act_SpikeBall_MoveRight ===============
 ; Moves the actor to the right.
@@ -4251,13 +4251,13 @@ Act_SpikeBall_MoveRight:
 	ld   bc, +$01
 	call ActS_MoveRight
 	
-; =============== ActInit_SpikeBall_SetOBJLstPtrTableR ===============
-; Sets the initial OBJLstPtrTable when the actor is facing right.
-ActInit_SpikeBall_SetOBJLstPtrTableR:
-	ld   a, LOW(OBJLstPtrTable_Act_SpikeBallR)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_SpikeBallR)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+; =============== ActInit_SpikeBall_SetSprMapPtrTableR ===============
+; Sets the initial SprMapPtrTable when the actor is facing right.
+ActInit_SpikeBall_SetSprMapPtrTableR:
+	ld   a, LOW(SprMapPtrTable_Act_SpikeBallR)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_SpikeBallR)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	ret
 ; =============== Act_SpikeBall_Dead ===============
 ; Kills the spikeball.
@@ -4374,32 +4374,32 @@ ENDC
 	xor  a
 	ld   [sActSetYSpeed_Low], a
 	ret
-OBJLstPtrTable_Act_SpikeBallL:
-	dw OBJLst_Act_SpikeBall0
-	dw OBJLst_Act_SpikeBall1
-	dw OBJLst_Act_SpikeBall2
-	dw OBJLst_Act_SpikeBall3
+SprMapPtrTable_Act_SpikeBallL:
+	dw SprMap_Act_SpikeBall0
+	dw SprMap_Act_SpikeBall1
+	dw SprMap_Act_SpikeBall2
+	dw SprMap_Act_SpikeBall3
 	dw $0000
-OBJLstPtrTable_Act_SpikeBallR:
-	dw OBJLst_Act_SpikeBall3
-	dw OBJLst_Act_SpikeBall2
-	dw OBJLst_Act_SpikeBall1
-	dw OBJLst_Act_SpikeBall0
+SprMapPtrTable_Act_SpikeBallR:
+	dw SprMap_Act_SpikeBall3
+	dw SprMap_Act_SpikeBall2
+	dw SprMap_Act_SpikeBall1
+	dw SprMap_Act_SpikeBall0
 	dw $0000
-OBJLstSharedPtrTable_Act_SpikeBall:
-	dw OBJLstPtrTable_ActInit_SpikeBall;X
-	dw OBJLstPtrTable_ActInit_SpikeBall;X
-	dw OBJLstPtrTable_ActInit_SpikeBall;X
-	dw OBJLstPtrTable_ActInit_SpikeBall;X
-	dw OBJLstPtrTable_ActInit_SpikeBall
-	dw OBJLstPtrTable_ActInit_SpikeBall
-	dw OBJLstPtrTable_ActInit_SpikeBall;X
-	dw OBJLstPtrTable_ActInit_SpikeBall;X
+SprMapSharedPtrTable_Act_SpikeBall:
+	dw SprMapPtrTable_ActInit_SpikeBall;X
+	dw SprMapPtrTable_ActInit_SpikeBall;X
+	dw SprMapPtrTable_ActInit_SpikeBall;X
+	dw SprMapPtrTable_ActInit_SpikeBall;X
+	dw SprMapPtrTable_ActInit_SpikeBall
+	dw SprMapPtrTable_ActInit_SpikeBall
+	dw SprMapPtrTable_ActInit_SpikeBall;X
+	dw SprMapPtrTable_ActInit_SpikeBall;X
 
-OBJLst_Act_SpikeBall0: INCBIN "data/objlst/actor/spikeball0.bin"
-OBJLst_Act_SpikeBall1: INCBIN "data/objlst/actor/spikeball1.bin"
-OBJLst_Act_SpikeBall2: INCBIN "data/objlst/actor/spikeball2.bin"
-OBJLst_Act_SpikeBall3: INCBIN "data/objlst/actor/spikeball3.bin"
+SprMap_Act_SpikeBall0: INCBIN "data/sprmap/actor/spikeball0.bin"
+SprMap_Act_SpikeBall1: INCBIN "data/sprmap/actor/spikeball1.bin"
+SprMap_Act_SpikeBall2: INCBIN "data/sprmap/actor/spikeball2.bin"
+SprMap_Act_SpikeBall3: INCBIN "data/sprmap/actor/spikeball3.bin"
 GFX_Act_SpikeBall: INCBIN "data/gfx/actor/spikeball.bin"
 
 ; =============== ActInit_CoinCrab ===============
@@ -4421,12 +4421,12 @@ ActInit_CoinCrab:
 	ld   bc, SubCall_Act_CoinCrab
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
-	mActOBJLstPtrTable OBJLstPtrTable_ActInit_CoinCrab
+	; Set initial animation
+	mActSprMapPtrTable SprMapPtrTable_ActInit_CoinCrab
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_CoinCrab
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_CoinCrab
+	call ActS_SetSprMapSharedTablePtr
 	
 	; It's intangible by default (when hidden in the sand)
 	xor  a
@@ -4488,7 +4488,7 @@ Act_CoinCrab_Unused_SwitchToHidden:
 	xor  a
 	ld   [sActLocalRoutineId], a
 	
-	mActOBJLstPtrTable OBJLstPtrTable_Act_CoinCrab_Hidden
+	mActSprMapPtrTable SprMapPtrTable_Act_CoinCrab_Hidden
 	
 	; Warp back to the original position when the crab burrows back into the sand.
 	; (to avoid misalignments when solid blocks are in the way)
@@ -4502,7 +4502,7 @@ Act_CoinCrab_Unused_SwitchToHidden:
 ; Mode $00. The crab is hidden in the ground, intangible.
 Act_CoinCrab_Hidden:
 	; Animate every 8 frames
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	; Turn every 8 frames
 	ld   a, [sActSetTimer]
@@ -4542,7 +4542,7 @@ Act_CoinCrab_Hidden:
 	ld   a, CCRB_RTN_EXITSAND		; Next mode
 	ld   [sActLocalRoutineId], a
 	
-	mActOBJLstPtrTable OBJLstPtrTable_Act_CoinCrab_Hidden
+	mActSprMapPtrTable SprMapPtrTable_Act_CoinCrab_Hidden
 	
 	; Set the jump out of sand
 	mActSetYSpeed -$05
@@ -4581,10 +4581,10 @@ Act_CoinCrab_ExitSand:
 	;
 	call ActS_FallDownMax4Speed
 	
-	; [BUG] ActS_IncOBJLstIdEvery8 is not called here.
-	;       This makes unused the second frame of OBJLstPtrTable_Act_CoinCrab_Dust.
+	; [BUG] ActS_IncSprMapIdEvery8 is not called here.
+	;       This makes unused the second frame of SprMapPtrTable_Act_CoinCrab_Dust.
 IF FIX_BUGS
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 ENDC
 	
 	;
@@ -4610,15 +4610,15 @@ ENDC
 ; [TCRF] Unreachable code.
 ;        This animation is only set during Mode $04, which is unused.
 Act_CoinCrab_Unused_SetHiddenAnim: 
-	mActOBJLstPtrTable OBJLstPtrTable_Act_CoinCrab_Hidden
+	mActSprMapPtrTable SprMapPtrTable_Act_CoinCrab_Hidden
 	ret
 ; =============== Act_CoinCrab_SetDustAnim ===============
 Act_CoinCrab_SetDustAnim:
-	mActOBJLstPtrTable OBJLstPtrTable_Act_CoinCrab_Dust
+	mActSprMapPtrTable SprMapPtrTable_Act_CoinCrab_Dust
 	ret
 ; =============== Act_CoinCrab_SetStandAnim ===============
 Act_CoinCrab_SetStandAnim:
-	mActOBJLstPtrTable OBJLstPtrTable_Act_CoinCrab_Stand
+	mActSprMapPtrTable SprMapPtrTable_Act_CoinCrab_Stand
 	ret
 	
 ; =============== Act_CoinCrab_SwitchToStand ===============
@@ -4626,7 +4626,7 @@ Act_CoinCrab_SwitchToStand:
 	ld   a, CCRB_RTN_STAND
 	ld   [sActLocalRoutineId], a
 	
-	mActOBJLstPtrTable OBJLstPtrTable_Act_CoinCrab_Stand ; Not necessary
+	mActSprMapPtrTable SprMapPtrTable_Act_CoinCrab_Stand ; Not necessary
 	
 	call Act_CoinCrab_SetRunDir
 	
@@ -4657,7 +4657,7 @@ Act_CoinCrab_Stand:
 .nextMode:
 	ld   a, CCRB_RTN_RUN
 	ld   [sActLocalRoutineId], a
-	mActOBJLstPtrTable OBJLstPtrTable_Act_CoinCrab_Run
+	mActSprMapPtrTable SprMapPtrTable_Act_CoinCrab_Run
 	xor  a
 	ld   [sActCoinCrabModeTimer], a
 	ret
@@ -4679,7 +4679,7 @@ Act_CoinCrab_Run:
 	; jr  c, Act_CoinCrab_Unused_SwitchToEnterSand
 	
 	; Animate every 8 frames
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	; Move horizontally
 	ld   a, [sActSetDir]
@@ -4718,7 +4718,7 @@ Act_CoinCrab_Unused_SwitchToEnterSand:
 	ld   a, CCRB_RTN_UNUSED_ENTERSAND
 	ld   [sActLocalRoutineId], a
 	
-	mActOBJLstPtrTable OBJLstPtrTable_Act_CoinCrab_Stand
+	mActSprMapPtrTable SprMapPtrTable_Act_CoinCrab_Stand
 	
 	xor  a
 	ld   [sActCoinCrabAnimTimer], a
@@ -4733,7 +4733,7 @@ Act_CoinCrab_Unused_SwitchToEnterSand:
 ; [TCRF] Unreachable code.
 ;        See Act_CoinCrab_Run for more info.
 Act_CoinCrab_Unused_EnterSand: 
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	call ActS_FallDownMax4Speed
 
 	ld   a, [sActCoinCrabAnimTimer]		; Timer++
@@ -4756,48 +4756,48 @@ Act_CoinCrab_Unused_EnterSand:
 	call z, Act_CoinCrab_Unused_SetHiddenAnim	; If so, set the "sand dust" frame
 	ret
 	
-OBJLstSharedPtrTable_Act_CoinCrab:
-	dw OBJLstPtrTable_Act_CoinCrab_Stun;X
-	dw OBJLstPtrTable_Act_CoinCrab_Stun;X
-	dw OBJLstPtrTable_Act_CoinCrab_Stun;X
-	dw OBJLstPtrTable_Act_CoinCrab_Stun;X
-	dw OBJLstPtrTable_Act_CoinCrab_Stun
-	dw OBJLstPtrTable_Act_CoinCrab_Stun
-	dw OBJLstPtrTable_Act_CoinCrab_Stun;X
-	dw OBJLstPtrTable_Act_CoinCrab_Stun;X
+SprMapSharedPtrTable_Act_CoinCrab:
+	dw SprMapPtrTable_Act_CoinCrab_Stun;X
+	dw SprMapPtrTable_Act_CoinCrab_Stun;X
+	dw SprMapPtrTable_Act_CoinCrab_Stun;X
+	dw SprMapPtrTable_Act_CoinCrab_Stun;X
+	dw SprMapPtrTable_Act_CoinCrab_Stun
+	dw SprMapPtrTable_Act_CoinCrab_Stun
+	dw SprMapPtrTable_Act_CoinCrab_Stun;X
+	dw SprMapPtrTable_Act_CoinCrab_Stun;X
 
-OBJLstPtrTable_ActInit_CoinCrab:
-	dw OBJLst_Act_CoinCrab_Hidden
+SprMapPtrTable_ActInit_CoinCrab:
+	dw SprMap_Act_CoinCrab_Hidden
 	dw $0000
-OBJLstPtrTable_Act_CoinCrab_Stand:
-	dw OBJLst_Act_CoinCrab_Stand
+SprMapPtrTable_Act_CoinCrab_Stand:
+	dw SprMap_Act_CoinCrab_Stand
 	dw $0000;X
-OBJLstPtrTable_Act_CoinCrab_Dust:
-	dw OBJLst_Act_CoinCrab_Dust0
-	dw OBJLst_Act_CoinCrab_Unused_Dust1;X ; [TCRF] The mode where this would be used doesn't animate frames
-	dw OBJLst_Act_CoinCrab_Unused_Dust1;X
+SprMapPtrTable_Act_CoinCrab_Dust:
+	dw SprMap_Act_CoinCrab_Dust0
+	dw SprMap_Act_CoinCrab_Unused_Dust1;X ; [TCRF] The mode where this would be used doesn't animate frames
+	dw SprMap_Act_CoinCrab_Unused_Dust1;X
 	dw $0000;X
-OBJLstPtrTable_Act_CoinCrab_Stun:
-	dw OBJLst_Act_CoinCrab_Stun
+SprMapPtrTable_Act_CoinCrab_Stun:
+	dw SprMap_Act_CoinCrab_Stun
 	dw $0000;X
-OBJLstPtrTable_Act_CoinCrab_Hidden:
-	dw OBJLst_Act_CoinCrab_Hidden
+SprMapPtrTable_Act_CoinCrab_Hidden:
+	dw SprMap_Act_CoinCrab_Hidden
 	dw $0000;X
-OBJLstPtrTable_Act_CoinCrab_Run:
-	dw OBJLst_Act_CoinCrab_Run0
-	dw OBJLst_Act_CoinCrab_Run1
-	dw OBJLst_Act_CoinCrab_Run0
-	dw OBJLst_Act_CoinCrab_Run2
+SprMapPtrTable_Act_CoinCrab_Run:
+	dw SprMap_Act_CoinCrab_Run0
+	dw SprMap_Act_CoinCrab_Run1
+	dw SprMap_Act_CoinCrab_Run0
+	dw SprMap_Act_CoinCrab_Run2
 	dw $0000
 
-OBJLst_Act_CoinCrab_Run0: INCBIN "data/objlst/actor/coincrab_run0.bin"
-OBJLst_Act_CoinCrab_Run1: INCBIN "data/objlst/actor/coincrab_run1.bin"
-OBJLst_Act_CoinCrab_Run2: INCBIN "data/objlst/actor/coincrab_run2.bin"
-OBJLst_Act_CoinCrab_Stand: INCBIN "data/objlst/actor/coincrab_stand.bin"
-OBJLst_Act_CoinCrab_Stun: INCBIN "data/objlst/actor/coincrab_stun.bin"
-OBJLst_Act_CoinCrab_Dust0: INCBIN "data/objlst/actor/coincrab_dust0.bin"
-OBJLst_Act_CoinCrab_Unused_Dust1: INCBIN "data/objlst/actor/coincrab_unused_dust1.bin"
-OBJLst_Act_CoinCrab_Hidden: INCBIN "data/objlst/actor/coincrab_hidden.bin"
+SprMap_Act_CoinCrab_Run0: INCBIN "data/sprmap/actor/coincrab_run0.bin"
+SprMap_Act_CoinCrab_Run1: INCBIN "data/sprmap/actor/coincrab_run1.bin"
+SprMap_Act_CoinCrab_Run2: INCBIN "data/sprmap/actor/coincrab_run2.bin"
+SprMap_Act_CoinCrab_Stand: INCBIN "data/sprmap/actor/coincrab_stand.bin"
+SprMap_Act_CoinCrab_Stun: INCBIN "data/sprmap/actor/coincrab_stun.bin"
+SprMap_Act_CoinCrab_Dust0: INCBIN "data/sprmap/actor/coincrab_dust0.bin"
+SprMap_Act_CoinCrab_Unused_Dust1: INCBIN "data/sprmap/actor/coincrab_unused_dust1.bin"
+SprMap_Act_CoinCrab_Hidden: INCBIN "data/sprmap/actor/coincrab_hidden.bin"
 GFX_Act_CoinCrab: INCBIN "data/gfx/actor/coincrab.bin"
 
 ; =============== ActInit_ThunderCloud ===============
@@ -4816,12 +4816,12 @@ ActInit_ThunderCloud:
 	ld   bc, SubCall_Act_ThunderCloud
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
-	mActOBJLstPtrTable OBJLstPtrTable_Act_ThunderCloud_Move
+	; Set initial animation
+	mActSprMapPtrTable SprMapPtrTable_Act_ThunderCloud_Move
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_ThunderCloud
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_ThunderCloud
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Make intangible
 	xor  a							
@@ -4850,7 +4850,7 @@ Act_ThunderCloud:
 	cp   a, ATV_ONSCREEN		; Is it visible & active?
 	jr   z, .incTimer			; If so, jump
 	xor  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .incTimer:
 	ld   a, [sActSetTimer]		; Timer++
 	inc  a
@@ -4906,7 +4906,7 @@ ENDR
 	call Act_ThunderCloud_UpdateHSpeed
 	call Act_ThunderCloud_MoveH
 	
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	;
 	; When the cloud's speed is $00, 1/8 chance of shooting out a thunderbolt.
@@ -4924,7 +4924,7 @@ ENDR
 	; Wait $3C frames in the "flashing" anim before shooting
 	ld   a, $3C				
 	ld   [sActThunderCloudShootTimer], a
-	mActOBJLstPtrTable OBJLstPtrTable_Act_ThunderCloud_Shoot	
+	mActSprMapPtrTable SprMapPtrTable_Act_ThunderCloud_Shoot	
 	
 	; Since the cloud can bob up and down, restore the original Y coord,
 	; so thunderbolts spawn from the same Y position.
@@ -4941,14 +4941,14 @@ Act_ThunderCloud_WaitShoot:
 	ld   a, [sTimer]
 	and  a, $03
 	jr   nz, .chkSpawn
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .chkSpawn:
-	ld   a, LOW(OBJLstPtrTable_Act_ThunderCloud_Shoot)	; Set anim
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_ThunderCloud_Shoot)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_ThunderCloud_Shoot)	; Set anim
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_ThunderCloud_Shoot)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	ld   a, [sActThunderCloudShootTimer]	; Delay--
 	dec  a
@@ -5023,7 +5023,7 @@ Act_ThunderCloud_MoveH:
 	and  a, $01
 	ret  nz
 	
-	mActOBJLstPtrTable OBJLstPtrTable_Act_ThunderCloud_Move
+	mActSprMapPtrTable SprMapPtrTable_Act_ThunderCloud_Move
 	
 	; Prevent the cloud from going through solid blocks
 	ld   a, [sActThunderCloudHSpeed_High]
@@ -5055,32 +5055,32 @@ Act_ThunderCloud_YPath:
 	db +$00,+$01,+$02,+$01,+$00,-$01,-$02,-$01
 .end:
 
-OBJLstPtrTable_Act_ThunderCloud_Move:
-	dw OBJLst_Act_ThunderCloud0
+SprMapPtrTable_Act_ThunderCloud_Move:
+	dw SprMap_Act_ThunderCloud0
 	dw $0000
-OBJLstPtrTable_Act_ThunderCloud_Shoot:
-	dw OBJLst_Act_ThunderCloud0
-	dw OBJLst_Act_ThunderCloud1
+SprMapPtrTable_Act_ThunderCloud_Shoot:
+	dw SprMap_Act_ThunderCloud0
+	dw SprMap_Act_ThunderCloud1
 	dw $0000
-OBJLstPtrTable_Act_Thunder:
-	dw OBJLst_Act_Thunder0
-	dw OBJLst_Act_Thunder1
+SprMapPtrTable_Act_Thunder:
+	dw SprMap_Act_Thunder0
+	dw SprMap_Act_Thunder1
 	dw $0000
 
-OBJLstSharedPtrTable_Act_ThunderCloud:
-	dw OBJLstPtrTable_Act_ThunderCloud_Move;X
-	dw OBJLstPtrTable_Act_ThunderCloud_Move;X
-	dw OBJLstPtrTable_Act_ThunderCloud_Move;X
-	dw OBJLstPtrTable_Act_ThunderCloud_Move;X
-	dw OBJLstPtrTable_Act_ThunderCloud_Move;X
-	dw OBJLstPtrTable_Act_ThunderCloud_Move;X
-	dw OBJLstPtrTable_Act_ThunderCloud_Move;X
-	dw OBJLstPtrTable_Act_ThunderCloud_Move;X
+SprMapSharedPtrTable_Act_ThunderCloud:
+	dw SprMapPtrTable_Act_ThunderCloud_Move;X
+	dw SprMapPtrTable_Act_ThunderCloud_Move;X
+	dw SprMapPtrTable_Act_ThunderCloud_Move;X
+	dw SprMapPtrTable_Act_ThunderCloud_Move;X
+	dw SprMapPtrTable_Act_ThunderCloud_Move;X
+	dw SprMapPtrTable_Act_ThunderCloud_Move;X
+	dw SprMapPtrTable_Act_ThunderCloud_Move;X
+	dw SprMapPtrTable_Act_ThunderCloud_Move;X
 
-OBJLst_Act_ThunderCloud0: INCBIN "data/objlst/actor/thundercloud0.bin"
-OBJLst_Act_Thunder0: INCBIN "data/objlst/actor/thunder0.bin"
-OBJLst_Act_Thunder1: INCBIN "data/objlst/actor/thunder1.bin"
-OBJLst_Act_ThunderCloud1: INCBIN "data/objlst/actor/thundercloud1.bin"
+SprMap_Act_ThunderCloud0: INCBIN "data/sprmap/actor/thundercloud0.bin"
+SprMap_Act_Thunder0: INCBIN "data/sprmap/actor/thunder0.bin"
+SprMap_Act_Thunder1: INCBIN "data/sprmap/actor/thunder1.bin"
+SprMap_Act_ThunderCloud1: INCBIN "data/sprmap/actor/thundercloud1.bin"
 GFX_Act_ThunderCloud: INCBIN "data/gfx/actor/thundercloud.bin"
 
 ; =============== Act_ThunderCloud_SpawnThunder ===============
@@ -5133,14 +5133,14 @@ Act_ThunderCloud_SpawnThunder:
 	ldi  [hl], a				; Rel.Y (Origin)
 	ldi  [hl], a				; Rel.X (Origin)
 	
-	ld   a, LOW(OBJLstPtrTable_Act_Thunder)	; OBJLst Table
+	ld   a, LOW(SprMapPtrTable_Act_Thunder)	; Animation
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Thunder)
+	ld   a, HIGH(SprMapPtrTable_Act_Thunder)
 	ldi  [hl], a
 	
 	ld   a, [sActSetDir]	; Dir
 	ldi  [hl], a
-	xor  a					; OBJLst ID
+	xor  a					; Sprite mapping ID
 	ldi  [hl], a
 	
 	ld   a, [sActSetId]		; Actor ID
@@ -5171,9 +5171,9 @@ Act_ThunderCloud_SpawnThunder:
 	ld   a, HIGH(sActDummyBlock)
 	ldi  [hl], a
 	
-	ld   a, LOW(OBJLstSharedPtrTable_Act_ThunderCloud)	; OBJLst shared table
+	ld   a, LOW(SprMapSharedPtrTable_Act_ThunderCloud)	; Set default animation table
 	ldi  [hl], a
-	ld   a, HIGH(OBJLstSharedPtrTable_Act_ThunderCloud)
+	ld   a, HIGH(SprMapSharedPtrTable_Act_ThunderCloud)
 	ldi  [hl], a
 	
 	ld   a, SFX4_07	; Play shoot SFX
@@ -5195,9 +5195,9 @@ Act_Thunder:
 	ld   a, [sTimer]
 	and  a, $03
 	jr   nz, .moveDown
-	ld   a, [sActSetOBJLstId]
+	ld   a, [sActSetSprMapId]
 	inc  a
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 .moveDown:
 	; Move down at 4px/frame until hitting a solid block
 	ld   bc, +$04
@@ -5267,12 +5267,12 @@ ActInit_Hedgehog:
 	ld   bc, SubCall_Act_Hedgehog
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
-	mActOBJLstPtrTable OBJLstPtrTable_ActInit_Hedgehog
+	; Set initial animation
+	mActSprMapPtrTable SprMapPtrTable_ActInit_Hedgehog
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_Hedgehog
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_Hedgehog
+	call ActS_SetSprMapSharedTablePtr
 	
 	mActColiMask ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM, ACTCOLI_NORM
 	ld   a, COLI
@@ -5280,8 +5280,8 @@ ActInit_Hedgehog:
 	mSubCall ActS_SaveColiType ; BANK $02
 	ret
 	
-OBJLstPtrTable_ActInit_Hedgehog:
-	dw OBJLst_Act_Hedgehog_MoveL0
+SprMapPtrTable_ActInit_Hedgehog:
+	dw SprMap_Act_Hedgehog_MoveL0
 	dw $0000;X
 	
 ; =============== Act_Hedgehog ===============
@@ -5346,7 +5346,7 @@ Act_Hedgehog_Main:
 	ld   a, [sActSetTimer]
 	and  a, $02								; sActSetTimer % 2 == 0?
 	jr   z, .chkStartAttack					; If so, jump
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	ret
 ;--
 .noWater:
@@ -5448,14 +5448,14 @@ Act_Hedgehog_Main:
 	mActColiMask ACTCOLI_DAMAGE, ACTCOLI_NORM, ACTCOLI_DAMAGE, ACTCOLI_NORM
 	ld   a, COLI
 	ld   [sActSetColiType], a
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Hedgehog_SpikeL		
+	mActSprMapPtrTable SprMapPtrTable_Act_Hedgehog_SpikeL		
 	ld   a, [sActSetDir]
 	
 	bit  DIRB_L, a					; Facing left?
 	ret  nz							; If so, return
 	
 	; Set the one when facing right
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Hedgehog_SpikeR		
+	mActSprMapPtrTable SprMapPtrTable_Act_Hedgehog_SpikeR		
 	mActColiMask ACTCOLI_NORM, ACTCOLI_DAMAGE, ACTCOLI_DAMAGE, ACTCOLI_NORM
 	ld   a, COLI
 	ld   [sActSetColiType], a
@@ -5464,17 +5464,17 @@ Act_Hedgehog_Main:
 	
 Act_Hedgehog_MoveH:
 	; Animate every 8 frames
-	call ActS_IncOBJLstIdEvery8
+	call ActS_IncSprMapIdEvery8
 	
 	ld   a, [sActSetDir]
 	bit  DIRB_R, a					; Is the actor facing right?
 	jr   nz, .moveR					; If so, jump
 .moveL:
 	; Set sprite mapping
-	ld   a, LOW(OBJLstPtrTable_Act_Hedgehog_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Hedgehog_MoveL)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Hedgehog_MoveL)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Hedgehog_MoveL)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 	
 	; Set left direction
 	ld   a, [sActSetDir]
@@ -5507,10 +5507,10 @@ Act_Hedgehog_MoveH:
 	
 .moveR:
 	; Set sprite mapping
-	ld   a, LOW(OBJLstPtrTable_Act_Hedgehog_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr], a
-	ld   a, HIGH(OBJLstPtrTable_Act_Hedgehog_MoveR)
-	ld   [sActSetOBJLstPtrTablePtr+1], a
+	ld   a, LOW(SprMapPtrTable_Act_Hedgehog_MoveR)
+	ld   [sActSetSprMapPtrTablePtr], a
+	ld   a, HIGH(SprMapPtrTable_Act_Hedgehog_MoveR)
+	ld   [sActSetSprMapPtrTablePtr+1], a
 
 	; Set right direction
 	ld   a, [sActSetDir]
@@ -5561,7 +5561,7 @@ Act_Hedgehog_CheckStartAttack:
 
 	; B = If 1, the player is moving right
 	ld   a, [sPlFlags]
-	and  a, OBJLST_XFLIP	; Filter the X flip flag (if $20; we're moving right)
+	and  a, SPRMAP_XFLIP	; Filter the X flip flag (if $20; we're moving right)
 	swap a					; A >> 4 (and shift it out to the first bit)
 	rrca					; A >> 1 ("")
 	ld   b, a
@@ -5646,89 +5646,89 @@ Act_Hedgehog_CheckStartAttack:
 	ld   [sActHedgehogSpikeTimer], a
 	
 	; Set the correct stand anim
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Hedgehog_MoveL		; Set the one when facing left first
+	mActSprMapPtrTable SprMapPtrTable_Act_Hedgehog_MoveL		; Set the one when facing left first
 	ld   a, [sActSetDir]
 	bit  DIRB_L, a					; Facing left?
 	ret  nz							; If so, return
-	mActOBJLstPtrTable OBJLstPtrTable_Act_Hedgehog_MoveR		; Set the one when facing right
+	mActSprMapPtrTable SprMapPtrTable_Act_Hedgehog_MoveR		; Set the one when facing right
 	ret
 	
 ; =============== Act_SpearGoom_Turn ===============
 ; Makes the actor switch direction.
 Act_Hedgehog_Turn:
 	xor  a						; Reset anim frame
-	ld   [sActSetOBJLstId], a
+	ld   [sActSetSprMapId], a
 	ld   a, [sActSetDir]		; Switch direction
 	xor  DIR_L|DIR_R
 	ld   [sActSetDir], a
 	ret
-; =============== OBJLstSharedPtrTable_Act_Hedgehog ===============
-OBJLstSharedPtrTable_Act_Hedgehog:
-	dw OBJLstPtrTable_Act_Hedgehog_StunL;X
-	dw OBJLstPtrTable_Act_Hedgehog_StunR;X
-	dw OBJLstPtrTable_Act_Hedgehog_RecoverL
-	dw OBJLstPtrTable_Act_Hedgehog_RecoverR
-	dw OBJLstPtrTable_Act_Hedgehog_StunL
-	dw OBJLstPtrTable_Act_Hedgehog_StunR
-	dw OBJLstPtrTable_Act_Hedgehog_MoveL;X
-	dw OBJLstPtrTable_Act_Hedgehog_MoveR;X
+; =============== SprMapSharedPtrTable_Act_Hedgehog ===============
+SprMapSharedPtrTable_Act_Hedgehog:
+	dw SprMapPtrTable_Act_Hedgehog_StunL;X
+	dw SprMapPtrTable_Act_Hedgehog_StunR;X
+	dw SprMapPtrTable_Act_Hedgehog_RecoverL
+	dw SprMapPtrTable_Act_Hedgehog_RecoverR
+	dw SprMapPtrTable_Act_Hedgehog_StunL
+	dw SprMapPtrTable_Act_Hedgehog_StunR
+	dw SprMapPtrTable_Act_Hedgehog_MoveL;X
+	dw SprMapPtrTable_Act_Hedgehog_MoveR;X
 
-OBJLstPtrTable_Act_Hedgehog_SpikeL:
-	dw OBJLst_Act_Hedgehog_SpikeL
+SprMapPtrTable_Act_Hedgehog_SpikeL:
+	dw SprMap_Act_Hedgehog_SpikeL
 	dw $0000;X
-OBJLstPtrTable_Act_Hedgehog_SpikeR:
-	dw OBJLst_Act_Hedgehog_SpikeR
+SprMapPtrTable_Act_Hedgehog_SpikeR:
+	dw SprMap_Act_Hedgehog_SpikeR
 	dw $0000;X
-OBJLstPtrTable_Act_Hedgehog_RecoverL:
-	dw OBJLst_Act_Hedgehog_StunL0
-	dw OBJLst_Act_Hedgehog_MoveL0
-	dw OBJLst_Act_Hedgehog_MoveL0
+SprMapPtrTable_Act_Hedgehog_RecoverL:
+	dw SprMap_Act_Hedgehog_StunL0
+	dw SprMap_Act_Hedgehog_MoveL0
+	dw SprMap_Act_Hedgehog_MoveL0
 	dw $0000;X
-OBJLstPtrTable_Act_Hedgehog_RecoverR:
-	dw OBJLst_Act_Hedgehog_StunR0
-	dw OBJLst_Act_Hedgehog_MoveR0
-	dw OBJLst_Act_Hedgehog_MoveR0
+SprMapPtrTable_Act_Hedgehog_RecoverR:
+	dw SprMap_Act_Hedgehog_StunR0
+	dw SprMap_Act_Hedgehog_MoveR0
+	dw SprMap_Act_Hedgehog_MoveR0
 	dw $0000;X
-OBJLstPtrTable_Act_Hedgehog_StunL:
-	dw OBJLst_Act_Hedgehog_StunL0
-	dw OBJLst_Act_Hedgehog_StunL1
+SprMapPtrTable_Act_Hedgehog_StunL:
+	dw SprMap_Act_Hedgehog_StunL0
+	dw SprMap_Act_Hedgehog_StunL1
 	dw $0000
-OBJLstPtrTable_Act_Hedgehog_StunR:
-	dw OBJLst_Act_Hedgehog_StunR0
-	dw OBJLst_Act_Hedgehog_StunR1
+SprMapPtrTable_Act_Hedgehog_StunR:
+	dw SprMap_Act_Hedgehog_StunR0
+	dw SprMap_Act_Hedgehog_StunR1
 	dw $0000
-OBJLstPtrTable_Act_Hedgehog_MoveL:
-	dw OBJLst_Act_Hedgehog_MoveL0
-	dw OBJLst_Act_Hedgehog_MoveL1
-	dw OBJLst_Act_Hedgehog_MoveL0
-	dw OBJLst_Act_Hedgehog_MoveL2
+SprMapPtrTable_Act_Hedgehog_MoveL:
+	dw SprMap_Act_Hedgehog_MoveL0
+	dw SprMap_Act_Hedgehog_MoveL1
+	dw SprMap_Act_Hedgehog_MoveL0
+	dw SprMap_Act_Hedgehog_MoveL2
 	dw $0000
-OBJLstPtrTable_Act_Hedgehog_MoveR:
-	dw OBJLst_Act_Hedgehog_MoveR0
-	dw OBJLst_Act_Hedgehog_MoveR1
-	dw OBJLst_Act_Hedgehog_MoveR0
-	dw OBJLst_Act_Hedgehog_MoveR2
+SprMapPtrTable_Act_Hedgehog_MoveR:
+	dw SprMap_Act_Hedgehog_MoveR0
+	dw SprMap_Act_Hedgehog_MoveR1
+	dw SprMap_Act_Hedgehog_MoveR0
+	dw SprMap_Act_Hedgehog_MoveR2
 	dw $0000
 
-OBJLst_Act_Hedgehog_MoveL0: INCBIN "data/objlst/actor/hedgehog_movel0.bin"
-OBJLst_Act_Hedgehog_MoveL1: INCBIN "data/objlst/actor/hedgehog_movel1.bin"
-OBJLst_Act_Hedgehog_MoveL2: INCBIN "data/objlst/actor/hedgehog_movel2.bin"
-OBJLst_Act_Hedgehog_SpikeL: INCBIN "data/objlst/actor/hedgehog_spikel.bin"
+SprMap_Act_Hedgehog_MoveL0: INCBIN "data/sprmap/actor/hedgehog_movel0.bin"
+SprMap_Act_Hedgehog_MoveL1: INCBIN "data/sprmap/actor/hedgehog_movel1.bin"
+SprMap_Act_Hedgehog_MoveL2: INCBIN "data/sprmap/actor/hedgehog_movel2.bin"
+SprMap_Act_Hedgehog_SpikeL: INCBIN "data/sprmap/actor/hedgehog_spikel.bin"
 ; [TCRF] Unused animation frame using otherwise unused graphics, likely the original stun animation.
 ;        The stun animation used here is... odd. Unlike most other actors, it's more or less
 ;        identical to the walking animation, except upside down.
 ;        However, a frame more in line with what's used for other actors exists, unused.
-OBJLst_Act_Hedgehog_Unused_DeadL: INCBIN "data/objlst/actor/hedgehog_unused_deadl.bin"
-OBJLst_Act_Hedgehog_StunL0: INCBIN "data/objlst/actor/hedgehog_stunl0.bin"
-OBJLst_Act_Hedgehog_StunL1: INCBIN "data/objlst/actor/hedgehog_stunl1.bin"
-OBJLst_Act_Hedgehog_MoveR0: INCBIN "data/objlst/actor/hedgehog_mover0.bin"
-OBJLst_Act_Hedgehog_MoveR1: INCBIN "data/objlst/actor/hedgehog_mover1.bin"
-OBJLst_Act_Hedgehog_MoveR2: INCBIN "data/objlst/actor/hedgehog_mover2.bin"
-OBJLst_Act_Hedgehog_SpikeR: INCBIN "data/objlst/actor/hedgehog_spiker.bin"
+SprMap_Act_Hedgehog_Unused_DeadL: INCBIN "data/sprmap/actor/hedgehog_unused_deadl.bin"
+SprMap_Act_Hedgehog_StunL0: INCBIN "data/sprmap/actor/hedgehog_stunl0.bin"
+SprMap_Act_Hedgehog_StunL1: INCBIN "data/sprmap/actor/hedgehog_stunl1.bin"
+SprMap_Act_Hedgehog_MoveR0: INCBIN "data/sprmap/actor/hedgehog_mover0.bin"
+SprMap_Act_Hedgehog_MoveR1: INCBIN "data/sprmap/actor/hedgehog_mover1.bin"
+SprMap_Act_Hedgehog_MoveR2: INCBIN "data/sprmap/actor/hedgehog_mover2.bin"
+SprMap_Act_Hedgehog_SpikeR: INCBIN "data/sprmap/actor/hedgehog_spiker.bin"
 ; [TCRF] Same as the above one, except flipped horizontally.
-OBJLst_Act_Hedgehog_Unused_DeadR: INCBIN "data/objlst/actor/hedgehog_unused_deadr.bin"
-OBJLst_Act_Hedgehog_StunR0: INCBIN "data/objlst/actor/hedgehog_stunr0.bin"
-OBJLst_Act_Hedgehog_StunR1: INCBIN "data/objlst/actor/hedgehog_stunr1.bin"
+SprMap_Act_Hedgehog_Unused_DeadR: INCBIN "data/sprmap/actor/hedgehog_unused_deadr.bin"
+SprMap_Act_Hedgehog_StunR0: INCBIN "data/sprmap/actor/hedgehog_stunr0.bin"
+SprMap_Act_Hedgehog_StunR1: INCBIN "data/sprmap/actor/hedgehog_stunr1.bin"
 GFX_Act_Hedgehog: INCBIN "data/gfx/actor/hedgehog.bin"
 
 
@@ -5754,12 +5754,12 @@ ActInit_SpikePillarR:
 	ld   bc, SubCall_Act_SpikePillarR
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
-	mActOBJLstPtrTable OBJLstPtrTable_Act_SpikePillarR
+	; Set initial animation
+	mActSprMapPtrTable SprMapPtrTable_Act_SpikePillarR
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_SpikePillar
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_SpikePillar
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Touching a spiky pillar deals damage no matter what
 	mActColiMask ACTCOLI_DAMAGE, ACTCOLI_DAMAGE, ACTCOLI_DAMAGE, ACTCOLI_DAMAGE
@@ -5795,12 +5795,12 @@ ActInit_SpikePillarL:
 	ld   bc, SubCall_Act_SpikePillarL
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
-	mActOBJLstPtrTable OBJLstPtrTable_Act_SpikePillarL
+	; Set initial animation
+	mActSprMapPtrTable SprMapPtrTable_Act_SpikePillarL
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_SpikePillar
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_SpikePillar
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Touching a spiky pillar deals damage no matter what
 	mActColiMask ACTCOLI_DAMAGE, ACTCOLI_DAMAGE, ACTCOLI_DAMAGE, ACTCOLI_DAMAGE
@@ -5836,12 +5836,12 @@ ActInit_SpikePillarU:
 	ld   bc, SubCall_Act_SpikePillarU
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
-	mActOBJLstPtrTable OBJLstPtrTable_Act_SpikePillarU
+	; Set initial animation
+	mActSprMapPtrTable SprMapPtrTable_Act_SpikePillarU
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_SpikePillar
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_SpikePillar
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Touching a spiky pillar deals damage no matter what
 	mActColiMask ACTCOLI_DAMAGE, ACTCOLI_DAMAGE, ACTCOLI_DAMAGE, ACTCOLI_DAMAGE
@@ -5872,12 +5872,12 @@ ActInit_SpikePillarD:
 	ld   bc, SubCall_Act_SpikePillarD
 	call ActS_SetCodePtr
 	
-	; Set initial OBJLst
-	mActOBJLstPtrTable OBJLstPtrTable_Act_SpikePillarD
+	; Set initial animation
+	mActSprMapPtrTable SprMapPtrTable_Act_SpikePillarD
 	
-	; Set OBJLst shared table
-	ld   bc, OBJLstSharedPtrTable_Act_SpikePillar
-	call ActS_SetOBJLstSharedTablePtr
+	; Set default animation table
+	ld   bc, SprMapSharedPtrTable_Act_SpikePillar
+	call ActS_SetSprMapSharedTablePtr
 	
 	; Touching a spiky pillar deals damage no matter what
 	mActColiMask ACTCOLI_DAMAGE, ACTCOLI_DAMAGE, ACTCOLI_DAMAGE, ACTCOLI_DAMAGE
@@ -5889,17 +5889,17 @@ ActInit_SpikePillarD:
 	ld   [sActSpikePillarMoveTimer], a
 	ret
 	
-OBJLstPtrTable_Act_SpikePillarR:
-	dw OBJLst_Act_SpikePillarR
+SprMapPtrTable_Act_SpikePillarR:
+	dw SprMap_Act_SpikePillarR
 	dw $0000;X
-OBJLstPtrTable_Act_SpikePillarL:
-	dw OBJLst_Act_SpikePillarL
+SprMapPtrTable_Act_SpikePillarL:
+	dw SprMap_Act_SpikePillarL
 	dw $0000;X
-OBJLstPtrTable_Act_SpikePillarD:
-	dw OBJLst_Act_SpikePillarD
+SprMapPtrTable_Act_SpikePillarD:
+	dw SprMap_Act_SpikePillarD
 	dw $0000;X
-OBJLstPtrTable_Act_SpikePillarU:
-	dw OBJLst_Act_SpikePillarU
+SprMapPtrTable_Act_SpikePillarU:
+	dw SprMap_Act_SpikePillarU
 	dw $0000;X
 
 
@@ -6027,20 +6027,20 @@ Act_SpikePillarD:;I
 	call ActS_MoveDown
 	ret
 	
-OBJLstSharedPtrTable_Act_SpikePillar:
-	dw OBJLstPtrTable_Act_SpikePillarR;X
-	dw OBJLstPtrTable_Act_SpikePillarL;X
-	dw OBJLstPtrTable_Act_SpikePillarR;X
-	dw OBJLstPtrTable_Act_SpikePillarL;X
-	dw OBJLstPtrTable_Act_SpikePillarR;X
-	dw OBJLstPtrTable_Act_SpikePillarL;X
-	dw OBJLstPtrTable_Act_SpikePillarR;X
-	dw OBJLstPtrTable_Act_SpikePillarL;X
+SprMapSharedPtrTable_Act_SpikePillar:
+	dw SprMapPtrTable_Act_SpikePillarR;X
+	dw SprMapPtrTable_Act_SpikePillarL;X
+	dw SprMapPtrTable_Act_SpikePillarR;X
+	dw SprMapPtrTable_Act_SpikePillarL;X
+	dw SprMapPtrTable_Act_SpikePillarR;X
+	dw SprMapPtrTable_Act_SpikePillarL;X
+	dw SprMapPtrTable_Act_SpikePillarR;X
+	dw SprMapPtrTable_Act_SpikePillarL;X
 
-OBJLst_Act_SpikePillarR: INCBIN "data/objlst/actor/spikepillarr.bin"
-OBJLst_Act_SpikePillarL: INCBIN "data/objlst/actor/spikepillarl.bin"
-OBJLst_Act_SpikePillarD: INCBIN "data/objlst/actor/spikepillard.bin"
-OBJLst_Act_SpikePillarU: INCBIN "data/objlst/actor/spikepillaru.bin"
+SprMap_Act_SpikePillarR: INCBIN "data/sprmap/actor/spikepillarr.bin"
+SprMap_Act_SpikePillarL: INCBIN "data/sprmap/actor/spikepillarl.bin"
+SprMap_Act_SpikePillarD: INCBIN "data/sprmap/actor/spikepillard.bin"
+SprMap_Act_SpikePillarU: INCBIN "data/sprmap/actor/spikepillaru.bin"
 GFX_Act_SpikePillarH: INCBIN "data/gfx/actor/spikepillarh.bin"
 GFX_Act_SpikePillarV: INCBIN "data/gfx/actor/spikepillarv.bin"
 
